@@ -7,6 +7,7 @@ Main goal of the redesign is to offer a clean, modern interface with minimum of 
 * nicely designed dashboard item for new registrations to be imported/updated to customer database. Confirm registration to consumer using a template, add a todo list for processing payments
 * nicely designed dashboard item for all courses this week. Item contains course title, a status, when not default, time slot, instructor and room. Dashboard can by dynamically filtered for course title/room/instructor. On filter change, boxes move animatedly to their new positions.
 * on selecting an item, an animated menu pops up to either edit the course data or open the attendance list for that course, prefilled with all registrations
+* on adding new items, suggest title and other values based on existing items in this category of items. Used for target groups, groups and courses
 * change instructors by dragging them from a sidebar onto a course; all instances of this course get a now instructor
 * change room by dragging them from a sidebar onto a course; all instances of this course get a new room
 * marking a day as holiday asks for a title and removes all courses from that day
