@@ -6,16 +6,19 @@ import { FaRegCircleUser, FaEnvelope } from "react-icons/fa6";
 import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
+import { useCourseTargetsStore } from "../stores/useCourseTargetsStore";
 
 const MainLayout = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const courseTargets = useCourseTargetsStore((state) => state.courseTargets);
+  const activeCourses = courseTargets.filter((course) => course.isActive);
 
   return (
     <div className="h-screen flex mx-auto">
       <aside
         className={cn(
           isMenuOpen ? "w-64 px-5" : "w-12 px-2",
-          "h-screen flex flex-col bg-linear-to-r from-[#133830] to-[#185548] transition-all duration-300",
+          "h-screen flex flex-col bg-linear-to-r from-[#133830] to-[#185548] transition-all duration-200",
         )}
       >
         <div className="flex py-4 items-center justify-between">
@@ -53,6 +56,11 @@ const MainLayout = () => {
               <IoSchool className="text-2xl cursor-pointer fill-[#5FFDDE]" />
               <span className="text-[#5FFDDE]">Courses</span>
             </NavLink>
+            <div>
+              {activeCourses.map((course) => (
+                <div key={course.id}>{course.name}</div>
+              ))}
+            </div>
             <NavLink to="/users" className="flex gap-3">
               <ImUsers className="text-2xl cursor-pointer fill-[#5FFDDE]" />
               <span className="text-[#5FFDDE]">Users</span>

@@ -3,3 +3,5 @@
 ./customerApp/dist
 ./customerApp/.env
 ./customerApp/.env.local
+.idea
+.vscode
