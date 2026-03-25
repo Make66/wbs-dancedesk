@@ -1,2 +1,5 @@
 .DS_Store
-.idea
+./customerApp/node_modules
+./customerApp/dist
+./customerApp/.env
+./customerApp/.env.local
