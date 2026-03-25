@@ -1,6 +1,7 @@
 model Target {
   name       String?    @default("Erwachsene")
   imageUrl   String     @default("./assets/images/no-profile-picture")
+  seq        Int        @default(0)
   categories Category[] @ignore
 
   // Common fields

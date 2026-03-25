@@ -1,6 +1,5 @@
-model Instructor {
-  name     String? @default("John Doe Instructor")
-  imageUrl String  @default("./assets/images/no-profile-picture")
+model Registration {
+  name String? @default("Room 1")
 
   // Common fields
   id        String   @id @default(cuid())

@@ -4,33 +4,11 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-  seed     = "node prisma/seed.ts"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  seed            = "node prisma/seed.ts"
 }
 
 datasource db {
   provider = "postgresql"
-}
-
-model BaseModel {
-  // not used directly - copy to other models
-  // Common fields
-  id        String   @id @default(cuid())
-  tenantId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
-}
-
-model Address {
-  // Common address fields
-  street    String @default("123 Main St")
-  city      String @default("Anytown")
-  zipCode   String @default("12345")
-  longitude Float  @default(0.0)
-  latitude  Float  @default(0.0)
-
-  // don't use
-  id String @id @default(cuid())
 }

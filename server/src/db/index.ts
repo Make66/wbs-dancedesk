@@ -9,11 +9,7 @@
 //   console.log(error);
 //   process.exit(1);
 // }
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../generated/prisma/client.ts";
-const adapter = new PrismaMariaDb({
-  host: "localhost",
-  port: 3306,
-  connectionLimit: 5,
-});
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });

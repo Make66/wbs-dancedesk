@@ -2,6 +2,7 @@ model Category {
   name     String?  @default("Paare Grundkurs")
   target   Target   @relation(fields: [targetId], references: [id])
   targetId String
+  seq      Int      @default(0)
   courses  Course[] @ignore
 
   // Common fields
