@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     /* Base Options: */
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
     "esModuleInterop": true,
-    "lib": ["es2022"],
-    "target": "es2022",
+    /* "ignoreDeprecations": "6.0", */
+    "lib": ["ES2023"],
     "skipLibCheck": true,
     "allowJs": true,
     "resolveJsonModule": true,
@@ -17,7 +20,6 @@
     /* Node Stuff */
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
-    "module": "preserve",
     "noEmit": false,
     "outDir": "dist",
     /* Paths */

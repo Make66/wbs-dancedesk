@@ -3,16 +3,24 @@ model Course {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
 
-  startsAt         DateTime @default(now())
-  endsAt           DateTime @default(now())
-  repeat           Int      @default(0)
-  frequency        String   @default("weekly")
-  room             Room?    @relation(fields: [roomId], references: [id])
+  startsAt         DateTime    @default(now())
+  endsAt           DateTime    @default(now())
+  repeat           Int         @default(0)
+  frequency        String      @default("weekly")
+  room             Room?       @relation(fields: [roomId], references: [id])
   roomId           String?
-  isIgnoreCalendar Boolean  @default(false)
-  dates            Json     @default("[]")
-  seatsCurrent     Int      @default(20)
-  seatsMax         Int      @default(20)
+  isIgnoreCalendar Boolean     @default(false)
+  dates            Json        @default("[]")
+  seatsCurrent     Int         @default(20)
+  seatsMax         Int         @default(20)
+  paymentTypes     String[]    @default(["bar", "paypal", "bank"])
+  contractTypes    String[]    @default(["standard", "trial"])
+  instructor       Instructor? @relation(fields: [instructorId], references: [id])
+  instructorId     String?
+  textTerms        Text?       @relation("CourseTerms", fields: [textTermsId], references: [id])
+  textTermsId      String?
+  textInfo         Text?       @relation("CourseInfo", fields: [textInfoId], references: [id])
+  textInfoId       String?
 
   // Common fields
   id        String   @id @default(cuid())
@@ -25,4 +33,6 @@ model Course {
   // it will come back as unknown / JsonValue — you may need to cast it to any[] 
   // or your specific date type where you use it.
   // for postgres use dates Json[] @default("[]")
+  text   Text?   @relation(fields: [textId], references: [id])
+  textId String?
 }
