@@ -1,0 +1,22 @@
+model Customer {
+  email     String @unique @default("noreply@email.de")
+  website   String @default("https://www.wbscodingschool.com")
+  name      String @default("DanceSchool Flip'n Bit")
+  logoUrl   String @default("./assets/images/logo.webp")
+  primary   String @default("#B5252B")
+  secondary String @default("#858384")
+
+  // Common address fields
+  street    String @default("123 Main St")
+  city      String @default("Any town")
+  zipCode   String @default("12345")
+  longitude Float  @default(0.0)
+  latitude  Float  @default(0.0)
+
+  // Common fields
+  id        String   @id @default(cuid())
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+}

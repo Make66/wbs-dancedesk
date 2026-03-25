@@ -1,0 +1,13 @@
+model Category {
+  name     String?  @default("Paare Grundkurs")
+  target   Target   @relation(fields: [targetId], references: [id])
+  targetId String
+  courses  Course[] @ignore
+
+  // Common fields
+  id        String   @id @default(cuid())
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+}

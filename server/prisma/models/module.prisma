@@ -1,0 +1,12 @@
+model Module {
+  name     String @default("Module 1")
+  position Int    @default(0)
+  color    String @default("#B5252B")
+
+  // Common fields
+  id        String   @id @default(cuid())
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+}

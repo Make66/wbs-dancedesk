@@ -33,3 +33,12 @@ Main goal of the redesign is to offer a clean, modern interface with minimum of 
 
 ## Tools used
 * Trello: https://trello.com/b/OBGj6jTR/mein-trello-board
+
+# Project setup
+
+```npm install prisma --save-dev
+npm install @prisma/client @prisma/adapter-pg pg
+
+// This will create a generated directory based on where you set the output to in the Prisma Schema. Any time your import Prisma Client, it will need to come from this generated client API
+npx prisma generate
+´´´

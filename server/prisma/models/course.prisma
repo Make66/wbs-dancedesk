@@ -1,0 +1,28 @@
+model Course {
+  name       String?  @default("Grundkurs 1")
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  startsAt         DateTime @default(now())
+  endsAt           DateTime @default(now())
+  repeat           Int      @default(0)
+  frequency        String   @default("weekly")
+  room             Room?    @relation(fields: [roomId], references: [id])
+  roomId           String?
+  isIgnoreCalendar Boolean  @default(false)
+  dates            Json     @default("[]")
+  seatsCurrent     Int      @default(20)
+  seatsMax         Int      @default(20)
+
+  // Common fields
+  id        String   @id @default(cuid())
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+
+  // remark on dates: On the application side, when reading dates from Prisma 
+  // it will come back as unknown / JsonValue — you may need to cast it to any[] 
+  // or your specific date type where you use it.
+  // for postgres use dates Json[] @default("[]")
+}
