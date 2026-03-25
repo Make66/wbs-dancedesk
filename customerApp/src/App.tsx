@@ -1,7 +1,20 @@
+import { BrowserRouter, Route, Routes } from "react-router";
+import MainLayout from "./layouts/MainLayout";
+import { HomePage, CoursesPage } from "./pages";
 import "./App.css";
 
 function App() {
-  return <div className="h-screen w-full bg-gray-900"></div>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/users" element={<div className="p-6">UsersPage</div>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
