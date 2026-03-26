@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { validateZod } from '#middlewares';
-import { createPost, deletePost, getAllPosts, getSinglePost, updatePost } from '#controllers';
+import { createTarget, deletePost, getAllPosts, getSinglePost, updatePost } from '#controllers';
 import { postSchema } from '#schemas';
 import { authenticate, hasRole } from '#middlewares';
 

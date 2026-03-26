@@ -3,6 +3,7 @@ model Target {
   imageUrl   String     @default("./assets/images/no-profile-picture")
   seq        Int        @default(0)
   categories Category[] @ignore
+  active    Boolean    @default(true)
 
   // Common fields
   id        String   @id @default(cuid())

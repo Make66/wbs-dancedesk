@@ -5,11 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch --conditions development --experimental-transform-types --disable-warning=ExperimentalWarning --env-file=.env.development.local src/index.ts",
+    "dev": "node --watch --conditions development --experimental-transform-types --disable-warning=ExperimentalWarning --env-file=.env src/index.ts",
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "node --env-file=.env.production.local dist/index.js"
+    "start": "node --env-file=.env dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +32,7 @@
     "@types/node": "^24.1.0",
     "@types/pg": "^8.20.0",
     "prisma": "^7.5.0",
+    "prisma-zod-generator": "^2.1.4",
     "typescript": "^5.8.3"
   },
   "imports": {

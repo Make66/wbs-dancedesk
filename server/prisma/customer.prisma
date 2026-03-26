@@ -1,10 +1,13 @@
 model Customer {
+  name      String @default("DanceSchool Flip'n Bit")
   email     String @unique @default("noreply@email.de")
   website   String @default("https://www.wbscodingschool.com")
-  name      String @default("DanceSchool Flip'n Bit")
   logoUrl   String @default("./assets/images/logo.webp")
   primary   String @default("#B5252B")
   secondary String @default("#858384")
+  tertiary String @default("#858384")
+  quaternary String @default("#858384")
+  active    Boolean    @default(true)
 
   // Common address fields
   street    String @default("123 Main St")

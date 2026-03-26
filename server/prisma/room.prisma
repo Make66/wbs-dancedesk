@@ -3,6 +3,7 @@ model Room {
   imageUrl String   @default("./assets/images/no-profile-picture")
   capacity Int      @default(20)
   courses  Course[] @ignore
+  active    Boolean    @default(true)
 
   // Common fields
   id        String   @id @default(cuid())

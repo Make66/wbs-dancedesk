@@ -9,6 +9,11 @@ generator client {
   seed            = "node prisma/seed.ts"
 }
 
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "./generated/zod"
+}
+
 datasource db {
   provider = "postgresql"
 }

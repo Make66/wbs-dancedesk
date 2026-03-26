@@ -1,5 +1,15 @@
 model Registration {
-  name String? @default("Room 1")
+  firstName String? @default("Room 1")
+  lastName String? @default("Room 1")
+  email String? @default("Room 1")
+  phone String? @default("Room 1")
+
+  // Common address fields
+  street    String @default("123 Main St")
+  city      String @default("Anytown")
+  zipCode   String @default("12345")
+  longitude Float  @default(0.0)
+  latitude  Float  @default(0.0)
 
   // Common fields
   id        String   @id @default(cuid())

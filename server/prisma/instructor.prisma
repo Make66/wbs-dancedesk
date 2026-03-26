@@ -1,6 +1,7 @@
 model Instructor {
   name     String? @default("John Doe Instructor")
   imageUrl String  @default("./assets/images/no-profile-picture")
+  active    Boolean    @default(true)
   courses  Course[]
 
   // Common fields

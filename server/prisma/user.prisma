@@ -1,8 +1,11 @@
-model Admin {
-  name     String? @default("John Doe")
+model User {
+  firstName     String? @default("John Doe")
+  lastName      String? @default("Doe")
   email    String  @unique @default("admin@test.de")
   password String  @default("Test123!")
   imageUrl String  @default("./assets/images/no-profile-picture")
+  modules    String[]  @default(["ALL"]) // Array of modules, e.g., ["COURSE", "SETTINGS", "ALL"]
+  active    Boolean    @default(true)
 
   // Common fields
   id        String   @id @default(cuid())

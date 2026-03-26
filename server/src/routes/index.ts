@@ -1,1 +1,1 @@
-export { default as postsRouter } from './postsRouter.ts';
+export { default as postsRouter } from './targetRouter.ts';
