@@ -10,10 +10,12 @@ import {
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useCourseTargetsStore } from "../stores/useCourseTargetsStore";
 import { useEffect } from "react";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
 const CoursesPage = () => {
   const courseTargets = useCourseTargetsStore((state) => state.courseTargets);
   const reorderCourses = useCourseTargetsStore((state) => state.reorderCourseTargets);
+  const addCourseTarget = useCourseTargetsStore((state) => state.addCourseTarget);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -37,7 +39,21 @@ const CoursesPage = () => {
 
   return (
     <div className="p-6 overflow-hidden">
-      <h1 className="mb-10 text-3xl font-semibold">Zielgruppen</h1>
+      <div className="flex items-start justify-between">
+        <h1 className="mb-10 text-3xl font-semibold">Zielgruppen</h1>
+        <button
+          type="button"
+          className="cursor-pointer mt-2 mr-6"
+          onClick={() =>
+            addCourseTarget({
+              name: "Neue Zielgruppe",
+              color: "#9ca3af",
+            })
+          }
+        >
+          <IoMdAddCircleOutline className="text-3xl" />
+        </button>
+      </div>
       <div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext

@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
+import { MdInsertEmoticon } from "react-icons/md";
 import { CSS } from "@dnd-kit/utilities";
 import type { CourseTarget } from "../../types";
 import { Switch } from "../ui/switch";
@@ -20,6 +21,7 @@ type CourseTargetItemProps = {
 const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
   const [isEditable, setIsEditable] = useState(false);
   const toggleCourseTargetActive = useCourseTargetsStore((state) => state.toggleCourseTargetActive);
+  const deleteCourseTarget = useCourseTargetsStore((state) => state.deleteCourseTarget);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: courseTarget.id,
@@ -60,7 +62,10 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
                 <FiEdit />
               </button>
             ) : (
-              <button className="cursor-pointer text-2xl">
+              <button
+                className="cursor-pointer text-2xl"
+                onClick={() => deleteCourseTarget(courseTarget.id)}
+              >
                 <MdDelete />
               </button>
             )}
@@ -81,6 +86,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
             <div className="flex items-center gap-6">
               <Input type="text" className="w-100" label="Name" defaultValue={courseTarget.name} />
               <ColorPicker initialColor={courseTarget.color} />
+              <MdInsertEmoticon className="text-5xl cursor-pointer text-gray-600" />
             </div>
             <Button type="submit" size="lg">
               Speichern
