@@ -58,7 +58,12 @@ const MainLayout = () => {
             </NavLink>
             <div>
               {activeCourses.map((course) => (
-                <div key={course.id}>{course.name}</div>
+                <div
+                  className="pl-10 py-2 rounded-xl hover:bg-emerald-950 text-[#5FFDDE] cursor-pointer"
+                  key={course.id}
+                >
+                  {course.name}
+                </div>
               ))}
             </div>
             <NavLink to="/users" className="flex gap-3">

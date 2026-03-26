@@ -37,18 +37,21 @@ const CoursesPage = () => {
 
   return (
     <div className="p-6 overflow-hidden">
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={courseTargets.map((course) => course.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="flex flex-col gap-2">
-            {courseTargets.map((courseTarget) => (
-              <CourseTargetItem key={courseTarget.id} courseTarget={courseTarget} />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      <h1 className="mb-10 text-3xl font-semibold">Zielgruppen</h1>
+      <div>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={courseTargets.map((course) => course.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex flex-col gap-2">
+              {courseTargets.map((courseTarget) => (
+                <CourseTargetItem key={courseTarget.id} courseTarget={courseTarget} />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
     </div>
   );
 };
