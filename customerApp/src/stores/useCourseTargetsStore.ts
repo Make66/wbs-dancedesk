@@ -81,6 +81,8 @@ type CourseTargetsStore = {
   reorderCourseTargets: (activeId: string, overId: string) => void;
   addCourseTarget: (input?: CreateCourseTargetInput) => void;
   deleteCourseTarget: (id: string) => void;
+  updateCourseTarget: (id: string, data: { name: string; color: string }) => void;
+  updateColor: (id: string, color: string) => void;
 };
 
 export const useCourseTargetsStore = create<CourseTargetsStore>()(
@@ -121,6 +123,20 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
             courseTargets: withUpdatedSeq([newCourseTarget, ...activeCourses, ...inactiveCourses]),
           };
         }),
+
+      updateCourseTarget: (id, data) =>
+        set((state) => ({
+          courseTargets: state.courseTargets.map((item) =>
+            item.id === id ? { ...item, ...data } : item,
+          ),
+        })),
+
+      updateColor: (id, color) =>
+        set((state) => ({
+          courseTargets: state.courseTargets.map((item) =>
+            item.id === id ? { ...item, color } : item,
+          ),
+        })),
 
       deleteCourseTarget: (id) =>
         set((state) => ({
