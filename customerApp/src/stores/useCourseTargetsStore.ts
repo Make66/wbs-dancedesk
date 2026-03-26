@@ -76,6 +76,8 @@ const sortCourseTargetsByActive = (courseTargets: CourseTarget[]) => {
 
 type CourseTargetsStore = {
   courseTargets: CourseTarget[];
+  isInactiveVisible: boolean;
+  toggleInactiveVisibility: () => void;
   setCourseTargets: (updater: (prev: CourseTarget[]) => CourseTarget[]) => void;
   toggleCourseTargetActive: (id: string, isActive: boolean) => void;
   reorderCourseTargets: (activeId: string, overId: string) => void;
@@ -89,6 +91,12 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
   persist(
     (set) => ({
       courseTargets: withUpdatedSeq(sortCourseTargetsByActive(initialCourseTargets)),
+      isInactiveVisible: false,
+
+      toggleInactiveVisibility: () =>
+        set((state) => ({
+          isInactiveVisible: !state.isInactiveVisible,
+        })),
 
       setCourseTargets: (updater) =>
         set((state) => ({

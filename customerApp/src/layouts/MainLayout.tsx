@@ -14,11 +14,11 @@ const MainLayout = () => {
   const activeCoursesTargets = courseTargets.filter((course) => course.isActive);
 
   return (
-    <div className="h-screen flex mx-auto">
+    <div className="h-screen flex mx-auto overflow-hidden">
       <aside
         className={cn(
-          isMenuOpen ? "w-64 px-5" : "w-12 px-2",
-          "h-screen flex flex-col bg-gray-800 transition-all duration-200",
+          isMenuOpen ? "min-w-64 px-5" : "w-12 px-2",
+          "h-screen flex flex-col bg-gray-800 transition-all duration-200 overflow-y-scroll scrollbar",
         )}
       >
         <div className="flex py-4 items-center justify-between">
@@ -54,7 +54,7 @@ const MainLayout = () => {
             </NavLink>
             <NavLink to="/courses" className="flex gap-3">
               <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
-              <span className="text-gray-300">Courses</span>
+              <span className="text-gray-300">Kurse</span>
             </NavLink>
             <div>
               {activeCoursesTargets.map((course) => (
@@ -67,7 +67,7 @@ const MainLayout = () => {
             </div>
             <NavLink to="/users" className="flex gap-3">
               <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
-              <span className="text-gray-300">Users</span>
+              <span className="text-gray-300">Schüler</span>
             </NavLink>
           </div>
         )}
@@ -84,7 +84,7 @@ const MainLayout = () => {
             <FaRegCircleUser className="text-2xl cursor-pointer fill-gray-700" />
           </div>
         </nav>
-        <div className="flex-1 overflow-y-auto scrollbar">
+        <div className="flex-1 overflow-y-scroll scrollbar">
           <Outlet />
         </div>
       </div>
