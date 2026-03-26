@@ -8,6 +8,7 @@ import { Switch } from "../ui/switch";
 import { cn } from "../../lib/utils";
 import { useCourseTargetsStore } from "../../stores/useCourseTargetsStore";
 import { useState } from "react";
+import { Link } from "react-router";
 
 type CourseTargetItemProps = {
   courseTarget: CourseTarget;
@@ -38,7 +39,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
       )}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 text-white">
+        <div className="flex items-center gap-5 text-white">
           <button
             type="button"
             {...attributes}
@@ -51,7 +52,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
           >
             <RxHamburgerMenu />
           </button>
-          <span>{courseTarget.name}</span>
+          <Link to={`/courses/${courseTarget.id}`}>{courseTarget.name}</Link>
         </div>
 
         <div className="flex items-center gap-5">

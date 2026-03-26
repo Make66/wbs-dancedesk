@@ -11,7 +11,7 @@ import { useCourseTargetsStore } from "../stores/useCourseTargetsStore";
 const MainLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const courseTargets = useCourseTargetsStore((state) => state.courseTargets);
-  const activeCourses = courseTargets.filter((course) => course.isActive);
+  const activeCoursesTargets = courseTargets.filter((course) => course.isActive);
 
   return (
     <div className="h-screen flex mx-auto">
@@ -57,7 +57,7 @@ const MainLayout = () => {
               <span className="text-[#5FFDDE]">Courses</span>
             </NavLink>
             <div>
-              {activeCourses.map((course) => (
+              {activeCoursesTargets.map((course) => (
                 <div
                   className="pl-10 py-2 rounded-xl hover:bg-emerald-950 text-[#5FFDDE] cursor-pointer"
                   key={course.id}
