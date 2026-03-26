@@ -67,12 +67,12 @@ const MainLayout = () => {
             </div>
             <NavLink to="/users" className="flex gap-3">
               <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
-              <span className="text-gray-300">Schüler</span>
+              <span className="text-gray-300">Tanzschüler</span>
             </NavLink>
           </div>
         )}
       </aside>
-      <div className="flex-1 h-screen w-full">
+      <div className="flex-1 h-screen w-full flex flex-col">
         <nav className="w-full h-16 border-b border-gray-200 flex items-center justify-end px-6">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -84,7 +84,7 @@ const MainLayout = () => {
             <FaRegCircleUser className="text-2xl cursor-pointer fill-gray-700" />
           </div>
         </nav>
-        <div className="flex-1 overflow-y-scroll scrollbar">
+        <div className="flex-1 min-h-0 overflow-y-auto scrollbar">
           <Outlet />
         </div>
       </div>

@@ -20,6 +20,8 @@ const CoursesPage = () => {
   const reorderCourses = useCourseTargetsStore((state) => state.reorderCourseTargets);
   const addCourseTarget = useCourseTargetsStore((state) => state.addCourseTarget);
 
+  const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.isActive);
+
   const visibleCourseTargets = isInactiveVisible
     ? courseTargets
     : courseTargets.filter((courseTarget) => courseTarget.isActive);
@@ -50,14 +52,15 @@ const CoursesPage = () => {
         <h1 className="mb-10 text-3xl font-semibold">Zielgruppen</h1>
 
         <div className="flex items-center gap-4">
-          <button type="button" className="cursor-pointer" onClick={toggleInactiveVisibility}>
-            {isInactiveVisible ? (
-              <IoMdEyeOff className="text-3xl mt-2" />
-            ) : (
-              <IoMdEye className="text-3xl mt-2" />
-            )}
-          </button>
-
+          {hasInactiveItems && (
+            <button type="button" className="cursor-pointer" onClick={toggleInactiveVisibility}>
+              {isInactiveVisible ? (
+                <IoMdEyeOff className="text-3xl mt-2" />
+              ) : (
+                <IoMdEye className="text-3xl mt-2" />
+              )}
+            </button>
+          )}
           <button
             type="button"
             className="cursor-pointer mt-2 mr-6"
