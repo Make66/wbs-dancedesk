@@ -1,5 +1,5 @@
 import HomePage from "./HomePage";
 import CoursesPage from "./CoursesPage";
-import CourseCategoryPage from "./CourseCategoryPage";
+import CourseCategoriesPage from "./CourseCategoriesPage";
 
-export { HomePage, CoursesPage, CourseCategoryPage };
+export { HomePage, CoursesPage, CourseCategoriesPage };

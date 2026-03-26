@@ -34,7 +34,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
       style={style}
       className={cn(
         courseTarget.isActive ? courseTarget.color : "bg-gray-400",
-        "p-5 w-80 rounded-2xl",
+        "p-5 w-200 rounded-2xl",
         isDragging && "opacity-60 z-20",
       )}
     >

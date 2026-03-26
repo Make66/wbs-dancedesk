@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router";
+import { Link, NavLink, Outlet } from "react-router";
 import { cn } from "../lib/utils";
 import { LuArrowLeftToLine, LuArrowRightToLine } from "react-icons/lu";
 import { FaRegCircleUser, FaEnvelope } from "react-icons/fa6";
@@ -18,57 +18,56 @@ const MainLayout = () => {
       <aside
         className={cn(
           isMenuOpen ? "w-64 px-5" : "w-12 px-2",
-          "h-screen flex flex-col bg-linear-to-r from-[#133830] to-[#185548] transition-all duration-200",
+          "h-screen flex flex-col bg-gray-800 transition-all duration-200",
         )}
       >
         <div className="flex py-4 items-center justify-between">
-          {isMenuOpen && <div className="text-[#5FFDDE] font-bold">TakeTool</div>}
+          {isMenuOpen && <div className="text-gray-300 font-bold">TakeTool</div>}
           <button
             className="p-2 bg-[#284A41] hover:bg-[#1a5d4f] rounded-xl cursor-pointer"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
-              <LuArrowLeftToLine className="stroke-[#5FFDDE]" />
+              <LuArrowLeftToLine className="stroke-gray-300" />
             ) : (
-              <LuArrowRightToLine className="stroke-[#5FFDDE]" />
+              <LuArrowRightToLine className="stroke-gray-300" />
             )}
           </button>
         </div>
         {!isMenuOpen ? (
           <div className="flex flex-col items-center gap-6 mt-6">
             <NavLink to="/">
-              <MdDashboard className="text-2xl cursor-pointer fill-[#5FFDDE]" />
+              <MdDashboard className="text-2xl cursor-pointer fill-gray-300" />
             </NavLink>
             <NavLink to="/courses">
-              <IoSchool className="text-2xl cursor-pointer fill-[#5FFDDE]" />
+              <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
             </NavLink>
             <NavLink to="/users">
-              <ImUsers className="text-2xl cursor-pointer fill-[#5FFDDE]" />
+              <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
             </NavLink>
           </div>
         ) : (
           <div className="flex flex-col gap-6 mt-6">
             <NavLink to="/" className="flex gap-3">
-              <MdDashboard className="text-2xl cursor-pointer fill-[#5FFDDE]" />
-              <span className="text-[#5FFDDE]">Dashboard</span>
+              <MdDashboard className="text-2xl cursor-pointer fill-gray-300" />
+              <span className="text-gray-300">Dashboard</span>
             </NavLink>
             <NavLink to="/courses" className="flex gap-3">
-              <IoSchool className="text-2xl cursor-pointer fill-[#5FFDDE]" />
-              <span className="text-[#5FFDDE]">Courses</span>
+              <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
+              <span className="text-gray-300">Courses</span>
             </NavLink>
             <div>
               {activeCoursesTargets.map((course) => (
-                <div
-                  className="pl-10 py-2 rounded-xl hover:bg-emerald-950 text-[#5FFDDE] cursor-pointer"
-                  key={course.id}
-                >
-                  {course.name}
-                </div>
+                <Link to={`/courses/${course.id}`} key={course.id}>
+                  <div className="pl-10 py-2 rounded-xl hover:bg-emerald-950 text-gray-300 cursor-pointer">
+                    {course.name}
+                  </div>
+                </Link>
               ))}
             </div>
             <NavLink to="/users" className="flex gap-3">
-              <ImUsers className="text-2xl cursor-pointer fill-[#5FFDDE]" />
-              <span className="text-[#5FFDDE]">Users</span>
+              <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
+              <span className="text-gray-300">Users</span>
             </NavLink>
           </div>
         )}
