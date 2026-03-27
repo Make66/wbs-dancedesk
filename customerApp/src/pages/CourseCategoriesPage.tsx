@@ -7,6 +7,7 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useCourseCategoriesStore } from "../stores/useCourseCategoriesStore";
@@ -18,6 +19,7 @@ const CourseCategoriesPage = () => {
   const courseTargetDetail = useCourseCategoriesStore((state) => state.courseTargetDetail);
   const loadCourseTargetDetail = useCourseCategoriesStore((state) => state.loadCourseTargetDetail);
   const reorderCategories = useCourseCategoriesStore((state) => state.reorderCategories);
+  const collapseAllCategories = useCourseCategoriesStore((state) => state.collapseAllCategories);
   const toggleEditMode = useCourseCategoriesStore((state) => state.toggleEditMode);
   const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
 
@@ -33,6 +35,11 @@ const CourseCategoriesPage = () => {
     }),
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleDragStart = (_event: DragStartEvent) => {
+    collapseAllCategories();
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -47,19 +54,26 @@ const CourseCategoriesPage = () => {
     <div className="p-6">
       <div className="flex items-center justify-between">
         <h1 className="mb-10 text-3xl font-semibold">{courseTargetDetail?.name ?? "Kategorien"}</h1>
+
         <div className="flex gap-3 items-center">
           {isEditMode && (
-            <button>
+            <button type="button">
               <IoMdAddCircleOutline className="text-xl mr-4 mb-7 cursor-pointer" />
             </button>
           )}
-          <button onClick={toggleEditMode}>
+
+          <button type="button" onClick={toggleEditMode}>
             <FaPenNib className="text-xl mr-4 mb-7 cursor-pointer" />
           </button>
         </div>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
         <SortableContext
           items={categories.map((item) => item.id)}
           strategy={verticalListSortingStrategy}

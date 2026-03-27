@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { arrayMove } from "@dnd-kit/sortable";
-import type { Course, CourseCategory, CourseTargetDetail } from "../types";
+import type { Course, CourseCategory, CourseTargetDetail } from "../types/course.ts";
 
 type CreateCategoryInput = {
   name?: string;
@@ -24,14 +24,23 @@ type CourseCategoriesStore = {
   error: string | null;
   isEditMode: boolean;
 
-  toggleEditMode: () => void;
-  setEditMode: (value: boolean) => void;
+  expandedCategoryIds: string[];
 
   setSelectedCourseTargetId: (id: string | null) => void;
   setSelectedCategoryId: (id: string | null) => void;
 
   setLoading: (value: boolean) => void;
   setError: (message: string | null) => void;
+
+  toggleEditMode: () => void;
+  setEditMode: (value: boolean) => void;
+
+  isCategoryExpanded: (categoryId: string) => boolean;
+  toggleCategoryExpanded: (categoryId: string) => void;
+  expandCategory: (categoryId: string) => void;
+  collapseCategory: (categoryId: string) => void;
+  collapseAllCategories: () => void;
+  expandAllCategories: () => void;
 
   loadCourseTargetDetail: (data: CourseTargetDetail) => void;
   resetCourseTargetDetail: () => void;
@@ -90,13 +99,15 @@ const defaultCourseValues = (): Omit<Course, "id" | "seq"> => ({
   duration: 60,
 });
 
-export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => ({
+export const useCourseCategoriesStore = create<CourseCategoriesStore>((set, get) => ({
   selectedCourseTargetId: null,
   selectedCategoryId: null,
   courseTargetDetail: null,
   isLoading: false,
   error: null,
   isEditMode: false,
+  expandedCategoryIds: [],
+
   setSelectedCourseTargetId: (id) =>
     set({
       selectedCourseTargetId: id,
@@ -117,6 +128,50 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
       error: message,
     }),
 
+  toggleEditMode: () =>
+    set((state) => ({
+      isEditMode: !state.isEditMode,
+    })),
+
+  setEditMode: (value) =>
+    set({
+      isEditMode: value,
+    }),
+
+  isCategoryExpanded: (categoryId) => {
+    return get().expandedCategoryIds.includes(categoryId);
+  },
+
+  toggleCategoryExpanded: (categoryId) =>
+    set((state) => ({
+      expandedCategoryIds: state.expandedCategoryIds.includes(categoryId)
+        ? state.expandedCategoryIds.filter((id) => id !== categoryId)
+        : [...state.expandedCategoryIds, categoryId],
+    })),
+
+  expandCategory: (categoryId) =>
+    set((state) => ({
+      expandedCategoryIds: state.expandedCategoryIds.includes(categoryId)
+        ? state.expandedCategoryIds
+        : [...state.expandedCategoryIds, categoryId],
+    })),
+
+  collapseCategory: (categoryId) =>
+    set((state) => ({
+      expandedCategoryIds: state.expandedCategoryIds.filter((id) => id !== categoryId),
+    })),
+
+  collapseAllCategories: () =>
+    set({
+      expandedCategoryIds: [],
+    }),
+
+  expandAllCategories: () =>
+    set((state) => ({
+      expandedCategoryIds:
+        state.courseTargetDetail?.categories.map((category) => category.id) ?? [],
+    })),
+
   loadCourseTargetDetail: (data) =>
     set({
       selectedCourseTargetId: data.id,
@@ -125,6 +180,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
         ...data,
         categories: normalizeCategories(data.categories),
       },
+      expandedCategoryIds: [],
       isLoading: false,
       error: null,
     }),
@@ -136,6 +192,8 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
       courseTargetDetail: null,
       isLoading: false,
       error: null,
+      isEditMode: false,
+      expandedCategoryIds: [],
     }),
 
   setCategories: (categories) =>
@@ -143,6 +201,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
       if (!state.courseTargetDetail) return state;
 
       const normalizedCategories = normalizeCategories(categories);
+      const validCategoryIds = new Set(normalizedCategories.map((category) => category.id));
 
       return {
         courseTargetDetail: {
@@ -153,6 +212,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
           normalizedCategories.find((category) => category.id === state.selectedCategoryId)?.id ??
           normalizedCategories[0]?.id ??
           null,
+        expandedCategoryIds: state.expandedCategoryIds.filter((id) => validCategoryIds.has(id)),
       };
     }),
 
@@ -164,6 +224,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
         id: crypto.randomUUID(),
         seq: state.courseTargetDetail.categories.length + 1,
         name: input?.name?.trim() || "Neue Kategorie",
+        color: "#000000",
         courses: [],
       };
 
@@ -178,6 +239,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
           categories: updatedCategories,
         },
         selectedCategoryId: newCategory.id,
+        expandedCategoryIds: [...state.expandedCategoryIds, newCategory.id],
       };
     }),
 
@@ -219,6 +281,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
           categories: updatedCategories,
         },
         selectedCategoryId: nextSelectedCategoryId,
+        expandedCategoryIds: state.expandedCategoryIds.filter((id) => id !== categoryId),
       };
     }),
 
@@ -349,14 +412,4 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => (
         },
       };
     }),
-
-  toggleEditMode: () =>
-    set((state) => ({
-      isEditMode: !state.isEditMode,
-    })),
-
-  setEditMode: (value) =>
-    set(() => ({
-      isEditMode: value,
-    })),
 }));

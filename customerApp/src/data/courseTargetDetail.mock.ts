@@ -1,4 +1,4 @@
-import type { CourseTargetDetail } from "../types";
+import type { CourseTargetDetail } from "../types/course";
 
 export const courseTargetDetailMock: CourseTargetDetail = {
   id: "a366b74b-9665-439e-92cf-5919d79a8ec0",
