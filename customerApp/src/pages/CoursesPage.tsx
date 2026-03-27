@@ -9,7 +9,6 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useCourseTargetsStore } from "../stores/useCourseTargetsStore";
-import { useEffect } from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
@@ -42,12 +41,8 @@ const CoursesPage = () => {
     reorderCourses(String(active.id), String(over.id));
   };
 
-  useEffect(() => {
-    console.log("Course Targets:", courseTargets);
-  }, [courseTargets]);
-
   return (
-    <div className="p-6 overflow-hidden">
+    <div className="p-6 w-full">
       <div className="flex items-start justify-between">
         <h1 className="mb-10 text-3xl font-semibold">Zielgruppen</h1>
 

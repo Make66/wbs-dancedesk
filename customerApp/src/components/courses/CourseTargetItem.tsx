@@ -44,7 +44,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
   };
 
   return (
-    <div className="w-full max-w-300">
+    <div className="w-full max-w-200">
       <div
         ref={setNodeRef}
         style={{
