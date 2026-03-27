@@ -25,7 +25,7 @@ const CourseItem = ({ course }: CourseItemProps) => {
     <div className="p-4 bg-white rounded-xl shadow">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <RxHamburgerMenu className="inline-block mr-2" />
+          {isEditMode && <RxHamburgerMenu className="inline-block mr-2" />}
           <h3 className="font-semibold">{course.name}</h3>
         </div>
         {isEditMode && <Switch />}

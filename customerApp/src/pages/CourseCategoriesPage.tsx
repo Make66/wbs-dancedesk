@@ -12,7 +12,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useCourseCategoriesStore } from "../stores/useCourseCategoriesStore";
 import { FaPenNib } from "react-icons/fa";
 import { IoMdAddCircleOutline } from "react-icons/io";
-import { courseTargetDetailMock } from "../mocks/courseTargetDetail.mock";
+import { courseTargetDetailMock } from "../data/courseTargetDetail.mock";
 
 const CourseCategoriesPage = () => {
   const courseTargetDetail = useCourseCategoriesStore((state) => state.courseTargetDetail);

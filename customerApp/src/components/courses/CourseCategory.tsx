@@ -61,7 +61,7 @@ const CourseCategory = ({ category }: CourseCategoryProps) => {
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isEditMode ? setNodeRef : null}
       style={{ ...style, backgroundColor: category.color }}
       {...attributes}
       {...listeners}
