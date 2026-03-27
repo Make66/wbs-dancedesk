@@ -126,13 +126,33 @@ Handle separately with dedicated endpoints rather than generic CRUD:
 ## Current state
 
 - [x] Target — done (`/targets`)
-- [ ] Category
-- [ ] Course
-- [ ] Customer
-- [ ] Instructor
-- [ ] Location
-- [ ] Module
-- [ ] Registration
-- [ ] Room
-- [ ] Text
-- [ ] User / Auth
+- [x] Category — done (`/categories`)
+- [x] Course — done (`/courses`)
+- [x] Customer — done (`/customers`)
+- [x] Instructor — done (`/instructors`)
+- [x] Location — done (`/locations`)
+- [x] Module — done (`/modules`)
+- [x] Registration — done (`/registrations`)
+- [x] Room — done (`/rooms`)
+- [x] Text — done (`/texts`)
+- [x] User / Auth — done (`/auth`)
+
+---
+
+## Implementation summary
+_Completed: 2026-03-27_
+
+All 10 resources implemented. Notable decisions:
+
+**Naming collision fix** — All controller functions use resource-specific names (`getAllTargets`, `createCategory`, etc.) to allow a single barrel export from `src/controllers/index.ts` without conflicts. `target.ts` was updated to match and `targetRouter.ts` updated accordingly.
+
+**FK mapping** — Handled in the controller, not the router:
+- `category.ts`: `{ target, ...rest }` → `{ ...rest, targetId: target }`
+- `course.ts`: `mapCourseBody()` helper maps all 5 FK fields; optional FKs only included when defined
+- All other resources: direct `...req.body` spread
+
+**orderBy** — Resources without `seq` (`customer`, `instructor`) order by `name: 'asc'` instead.
+
+**Files created:** 9 controllers + 9 routers
+
+**Files updated:** `target.ts`, `targetRouter.ts`, `controllers/index.ts`, `routes/index.ts`, `src/index.ts`

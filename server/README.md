@@ -81,3 +81,36 @@ POST   /auth/refresh    (reads refreshToken cookie)
 DELETE /auth/logout     (reads refreshToken cookie)
 
 GET    /auth/me         (requires accessToken cookie)
+
+
+## CRUD for models
+
+/auth           POST register, login, refresh  |  DELETE logout  |  GET me
+
+/targets        GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/categories     GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/courses        GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/customers      GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/instructors    GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/locations      GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/modules        GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/registrations  GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/rooms          GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/texts          GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+## Nested routes
+
+GET /locations/:id/targets     — targets belonging to a location
+
+GET /targets/:id/categories    — categories belonging to a target
+
+GET /categories/:id/courses    — courses belonging to a category

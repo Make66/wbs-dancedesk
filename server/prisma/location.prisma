@@ -11,6 +11,8 @@ model Location {
   longitude Float  @default(0.0)
   latitude  Float  @default(0.0)
 
+  targets   Target[] @ignore
+
   // Common fields
   id        String   @id @default(cuid())
   tenantId  String
