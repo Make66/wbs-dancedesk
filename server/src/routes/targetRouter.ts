@@ -1,17 +1,23 @@
 import { Router } from 'express';
-import { validateZod } from '#middlewares';
-import { createTarget, deletePost, getAllPosts, getSinglePost, updatePost } from '#controllers';
-import { postSchema } from '#schemas';
-import { authenticate, hasRole } from '#middlewares';
+import { authenticate, validateZod } from '#middlewares';
+import { getAllTargets, getOneTarget, createTarget, updateTarget, removeTarget, getCategoriesByTarget } from '#controllers';
+import { targetSchema } from '#schemas';
 
-const postsRouter = Router();
+const targetInputSchema = targetSchema.omit({ categories: true });
 
-postsRouter.route('/').get(getAllPosts).post(authenticate, hasRole('user'), validateZod(postSchema), createPost);
+const targetsRouter = Router();
 
-postsRouter
+targetsRouter
+  .route('/')
+  .get(authenticate, getAllTargets)
+  .post(authenticate, validateZod(targetInputSchema), createTarget);
+
+targetsRouter
   .route('/:id')
-  .get(getSinglePost)
-  .put(authenticate, hasRole('self'), validateZod(postSchema), updatePost)
-  .delete(authenticate, hasRole('self'), deletePost);
+  .get(authenticate, getOneTarget)
+  .put(authenticate, validateZod(targetInputSchema), updateTarget)
+  .delete(authenticate, removeTarget);
 
-export default postsRouter;
+targetsRouter.get('/:id/categories', authenticate, getCategoriesByTarget);
+
+export default targetsRouter;

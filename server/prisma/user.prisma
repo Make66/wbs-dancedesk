@@ -5,7 +5,8 @@ model User {
   password String  @default("Test123!")
   imageUrl String  @default("./assets/images/no-profile-picture")
   modules    String[]  @default(["ALL"]) // Array of modules, e.g., ["COURSE", "SETTINGS", "ALL"]
-  active    Boolean    @default(true)
+  active        Boolean  @default(true)
+  refreshToken  String?  // bcrypt hash of current refresh token; null = logged out
 
   // Common fields
   id        String   @id @default(cuid())

@@ -7,22 +7,22 @@
 - authentication/authorization
 
 ## API endpoints (WIP)
-- modules
 - course tree
-- Defining schemas:
+- modules
+- registration
 
 
-## tables
+## tables & schemas
 - customer => Tanzschule
 - user => Clerks that administer data; role based on modules
-- modules
-- instructor
-- participant (from registrations)
+- modules => areas in which clerks have access
 - registrations
+- participant (from registrations)
 - location => course venue
 - target
 - category
 - course
+- instructor
 - text
 - settings
 
@@ -49,3 +49,68 @@ this generated client API
 npx prisma generate
 npx prisma init --datasource-provider postgresql --output ../generated/prisma
 ```
+
+# Database
+
+## Accessing the database
+```
+npx prisma studio --config prisma.config.ts
+´´´
+
+## Create the first user
+POST http://localhost:8000/auth/register
+````
+{
+  "firstName": "Max",
+  "lastName": "Mustermann",
+  "email": "max@test.de",
+  "password": "Test1234!",
+  "tenantId": "seed"
+}
+
+# Endpoints
+
+## Auth
+
+POST   /auth/register   body: { firstName, lastName, email, password, tenantId }
+
+POST   /auth/login      body: { email, password }
+
+POST   /auth/refresh    (reads refreshToken cookie)
+
+DELETE /auth/logout     (reads refreshToken cookie)
+
+GET    /auth/me         (requires accessToken cookie)
+
+
+## CRUD for models
+
+/auth           POST register, login, refresh  |  DELETE logout  |  GET me
+
+/targets        GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/categories     GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/courses        GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/customers      GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/instructors    GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/locations      GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/modules        GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/registrations  GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/rooms          GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+/texts          GET, POST, GET/:id, PUT/:id, DELETE/:id
+
+## Nested routes
+
+GET /locations/:id/targets     — targets belonging to a location
+
+GET /targets/:id/categories    — categories belonging to a target
+
+GET /categories/:id/courses    — courses belonging to a category

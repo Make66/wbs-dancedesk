@@ -1,0 +1,15 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { CourseWhereInputObjectSchema as CourseWhereInputObjectSchema } from './objects/CourseWhereInput.schema';
+import { CourseOrderByWithAggregationInputObjectSchema as CourseOrderByWithAggregationInputObjectSchema } from './objects/CourseOrderByWithAggregationInput.schema';
+import { CourseScalarWhereWithAggregatesInputObjectSchema as CourseScalarWhereWithAggregatesInputObjectSchema } from './objects/CourseScalarWhereWithAggregatesInput.schema';
+import { CourseScalarFieldEnumSchema } from './enums/CourseScalarFieldEnum.schema';
+import { CourseCountAggregateInputObjectSchema as CourseCountAggregateInputObjectSchema } from './objects/CourseCountAggregateInput.schema';
+import { CourseMinAggregateInputObjectSchema as CourseMinAggregateInputObjectSchema } from './objects/CourseMinAggregateInput.schema';
+import { CourseMaxAggregateInputObjectSchema as CourseMaxAggregateInputObjectSchema } from './objects/CourseMaxAggregateInput.schema';
+import { CourseAvgAggregateInputObjectSchema as CourseAvgAggregateInputObjectSchema } from './objects/CourseAvgAggregateInput.schema';
+import { CourseSumAggregateInputObjectSchema as CourseSumAggregateInputObjectSchema } from './objects/CourseSumAggregateInput.schema';
+
+export const CourseGroupBySchema: z.ZodType<Prisma.CourseGroupByArgs> = z.object({ where: CourseWhereInputObjectSchema.optional(), orderBy: z.union([CourseOrderByWithAggregationInputObjectSchema, CourseOrderByWithAggregationInputObjectSchema.array()]).optional(), having: CourseScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(CourseScalarFieldEnumSchema), _count: z.union([ z.literal(true), CourseCountAggregateInputObjectSchema ]).optional(), _min: CourseMinAggregateInputObjectSchema.optional(), _max: CourseMaxAggregateInputObjectSchema.optional(), _avg: CourseAvgAggregateInputObjectSchema.optional(), _sum: CourseSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.CourseGroupByArgs>;
+
+export const CourseGroupByZodSchema = z.object({ where: CourseWhereInputObjectSchema.optional(), orderBy: z.union([CourseOrderByWithAggregationInputObjectSchema, CourseOrderByWithAggregationInputObjectSchema.array()]).optional(), having: CourseScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(CourseScalarFieldEnumSchema), _count: z.union([ z.literal(true), CourseCountAggregateInputObjectSchema ]).optional(), _min: CourseMinAggregateInputObjectSchema.optional(), _max: CourseMaxAggregateInputObjectSchema.optional(), _avg: CourseAvgAggregateInputObjectSchema.optional(), _sum: CourseSumAggregateInputObjectSchema.optional() }).strict();

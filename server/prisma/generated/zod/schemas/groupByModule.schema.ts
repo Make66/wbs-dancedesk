@@ -1,0 +1,15 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { ModuleWhereInputObjectSchema as ModuleWhereInputObjectSchema } from './objects/ModuleWhereInput.schema';
+import { ModuleOrderByWithAggregationInputObjectSchema as ModuleOrderByWithAggregationInputObjectSchema } from './objects/ModuleOrderByWithAggregationInput.schema';
+import { ModuleScalarWhereWithAggregatesInputObjectSchema as ModuleScalarWhereWithAggregatesInputObjectSchema } from './objects/ModuleScalarWhereWithAggregatesInput.schema';
+import { ModuleScalarFieldEnumSchema } from './enums/ModuleScalarFieldEnum.schema';
+import { ModuleCountAggregateInputObjectSchema as ModuleCountAggregateInputObjectSchema } from './objects/ModuleCountAggregateInput.schema';
+import { ModuleMinAggregateInputObjectSchema as ModuleMinAggregateInputObjectSchema } from './objects/ModuleMinAggregateInput.schema';
+import { ModuleMaxAggregateInputObjectSchema as ModuleMaxAggregateInputObjectSchema } from './objects/ModuleMaxAggregateInput.schema';
+import { ModuleAvgAggregateInputObjectSchema as ModuleAvgAggregateInputObjectSchema } from './objects/ModuleAvgAggregateInput.schema';
+import { ModuleSumAggregateInputObjectSchema as ModuleSumAggregateInputObjectSchema } from './objects/ModuleSumAggregateInput.schema';
+
+export const ModuleGroupBySchema: z.ZodType<Prisma.ModuleGroupByArgs> = z.object({ where: ModuleWhereInputObjectSchema.optional(), orderBy: z.union([ModuleOrderByWithAggregationInputObjectSchema, ModuleOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ModuleScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ModuleScalarFieldEnumSchema), _count: z.union([ z.literal(true), ModuleCountAggregateInputObjectSchema ]).optional(), _min: ModuleMinAggregateInputObjectSchema.optional(), _max: ModuleMaxAggregateInputObjectSchema.optional(), _avg: ModuleAvgAggregateInputObjectSchema.optional(), _sum: ModuleSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.ModuleGroupByArgs>;
+
+export const ModuleGroupByZodSchema = z.object({ where: ModuleWhereInputObjectSchema.optional(), orderBy: z.union([ModuleOrderByWithAggregationInputObjectSchema, ModuleOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ModuleScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ModuleScalarFieldEnumSchema), _count: z.union([ z.literal(true), ModuleCountAggregateInputObjectSchema ]).optional(), _min: ModuleMinAggregateInputObjectSchema.optional(), _max: ModuleMaxAggregateInputObjectSchema.optional(), _avg: ModuleAvgAggregateInputObjectSchema.optional(), _sum: ModuleSumAggregateInputObjectSchema.optional() }).strict();

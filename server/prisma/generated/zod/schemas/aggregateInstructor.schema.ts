@@ -1,0 +1,12 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { InstructorOrderByWithRelationInputObjectSchema as InstructorOrderByWithRelationInputObjectSchema } from './objects/InstructorOrderByWithRelationInput.schema';
+import { InstructorWhereInputObjectSchema as InstructorWhereInputObjectSchema } from './objects/InstructorWhereInput.schema';
+import { InstructorWhereUniqueInputObjectSchema as InstructorWhereUniqueInputObjectSchema } from './objects/InstructorWhereUniqueInput.schema';
+import { InstructorCountAggregateInputObjectSchema as InstructorCountAggregateInputObjectSchema } from './objects/InstructorCountAggregateInput.schema';
+import { InstructorMinAggregateInputObjectSchema as InstructorMinAggregateInputObjectSchema } from './objects/InstructorMinAggregateInput.schema';
+import { InstructorMaxAggregateInputObjectSchema as InstructorMaxAggregateInputObjectSchema } from './objects/InstructorMaxAggregateInput.schema';
+
+export const InstructorAggregateSchema: z.ZodType<Prisma.InstructorAggregateArgs> = z.object({ orderBy: z.union([InstructorOrderByWithRelationInputObjectSchema, InstructorOrderByWithRelationInputObjectSchema.array()]).optional(), where: InstructorWhereInputObjectSchema.optional(), cursor: InstructorWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), InstructorCountAggregateInputObjectSchema ]).optional(), _min: InstructorMinAggregateInputObjectSchema.optional(), _max: InstructorMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.InstructorAggregateArgs>;
+
+export const InstructorAggregateZodSchema = z.object({ orderBy: z.union([InstructorOrderByWithRelationInputObjectSchema, InstructorOrderByWithRelationInputObjectSchema.array()]).optional(), where: InstructorWhereInputObjectSchema.optional(), cursor: InstructorWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), InstructorCountAggregateInputObjectSchema ]).optional(), _min: InstructorMinAggregateInputObjectSchema.optional(), _max: InstructorMaxAggregateInputObjectSchema.optional() }).strict();

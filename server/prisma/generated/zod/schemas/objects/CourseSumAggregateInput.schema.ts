@@ -1,0 +1,12 @@
+import * as z from 'zod';
+import type { Prisma } from '../../../../../generated/prisma/client';
+
+
+const makeSchema = () => z.object({
+  seq: z.literal(true).optional(),
+  repeat: z.literal(true).optional(),
+  seatsCurrent: z.literal(true).optional(),
+  seatsMax: z.literal(true).optional()
+}).strict();
+export const CourseSumAggregateInputObjectSchema: z.ZodType<Prisma.CourseSumAggregateInputType> = makeSchema() as unknown as z.ZodType<Prisma.CourseSumAggregateInputType>;
+export const CourseSumAggregateInputObjectZodSchema = makeSchema();

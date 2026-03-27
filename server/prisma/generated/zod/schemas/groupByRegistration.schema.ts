@@ -1,0 +1,15 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { RegistrationWhereInputObjectSchema as RegistrationWhereInputObjectSchema } from './objects/RegistrationWhereInput.schema';
+import { RegistrationOrderByWithAggregationInputObjectSchema as RegistrationOrderByWithAggregationInputObjectSchema } from './objects/RegistrationOrderByWithAggregationInput.schema';
+import { RegistrationScalarWhereWithAggregatesInputObjectSchema as RegistrationScalarWhereWithAggregatesInputObjectSchema } from './objects/RegistrationScalarWhereWithAggregatesInput.schema';
+import { RegistrationScalarFieldEnumSchema } from './enums/RegistrationScalarFieldEnum.schema';
+import { RegistrationCountAggregateInputObjectSchema as RegistrationCountAggregateInputObjectSchema } from './objects/RegistrationCountAggregateInput.schema';
+import { RegistrationMinAggregateInputObjectSchema as RegistrationMinAggregateInputObjectSchema } from './objects/RegistrationMinAggregateInput.schema';
+import { RegistrationMaxAggregateInputObjectSchema as RegistrationMaxAggregateInputObjectSchema } from './objects/RegistrationMaxAggregateInput.schema';
+import { RegistrationAvgAggregateInputObjectSchema as RegistrationAvgAggregateInputObjectSchema } from './objects/RegistrationAvgAggregateInput.schema';
+import { RegistrationSumAggregateInputObjectSchema as RegistrationSumAggregateInputObjectSchema } from './objects/RegistrationSumAggregateInput.schema';
+
+export const RegistrationGroupBySchema: z.ZodType<Prisma.RegistrationGroupByArgs> = z.object({ where: RegistrationWhereInputObjectSchema.optional(), orderBy: z.union([RegistrationOrderByWithAggregationInputObjectSchema, RegistrationOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RegistrationScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RegistrationScalarFieldEnumSchema), _count: z.union([ z.literal(true), RegistrationCountAggregateInputObjectSchema ]).optional(), _min: RegistrationMinAggregateInputObjectSchema.optional(), _max: RegistrationMaxAggregateInputObjectSchema.optional(), _avg: RegistrationAvgAggregateInputObjectSchema.optional(), _sum: RegistrationSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RegistrationGroupByArgs>;
+
+export const RegistrationGroupByZodSchema = z.object({ where: RegistrationWhereInputObjectSchema.optional(), orderBy: z.union([RegistrationOrderByWithAggregationInputObjectSchema, RegistrationOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RegistrationScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RegistrationScalarFieldEnumSchema), _count: z.union([ z.literal(true), RegistrationCountAggregateInputObjectSchema ]).optional(), _min: RegistrationMinAggregateInputObjectSchema.optional(), _max: RegistrationMaxAggregateInputObjectSchema.optional(), _avg: RegistrationAvgAggregateInputObjectSchema.optional(), _sum: RegistrationSumAggregateInputObjectSchema.optional() }).strict();

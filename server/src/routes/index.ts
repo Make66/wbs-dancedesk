@@ -1,1 +1,11 @@
-export { default as postsRouter } from './targetRouter.ts';
+export { default as authRouter }          from './auth.route.ts';
+export { default as targetsRouter }       from './targetRouter.ts';
+export { default as categoriesRouter }    from './categoryRouter.ts';
+export { default as coursesRouter }       from './courseRouter.ts';
+export { default as customersRouter }     from './customerRouter.ts';
+export { default as instructorsRouter }   from './instructorRouter.ts';
+export { default as locationsRouter }     from './locationRouter.ts';
+export { default as modulesRouter }       from './moduleRouter.ts';
+export { default as registrationsRouter } from './registrationRouter.ts';
+export { default as roomsRouter }         from './roomRouter.ts';
+export { default as textsRouter }         from './textRouter.ts';
