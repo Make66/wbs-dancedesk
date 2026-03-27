@@ -6,8 +6,15 @@ export const userSchema = z.object({
   email: z.email(),
   password: z.string().min(8),
   imageUrl: z.string().optional(),
-  modules: z.array(z.string()).default(["ALL"]), // Array of modules, e.g., ["COURSE", "SETTINGS", "ALL"]
+  modules: z.array(z.string()).default(['ALL']),
   active: z.boolean().default(true),
 });
 
-export const signInSchema = userSchema.omit({ firstName: true, lastName: true });
+export const registerSchema = userSchema
+  .pick({ firstName: true, lastName: true, email: true, password: true })
+  .extend({ tenantId: z.string().min(1) });
+
+export const loginSchema = userSchema.pick({ email: true, password: true });
+
+// kept for backward compatibility
+export const signInSchema = loginSchema;

@@ -1,0 +1,176 @@
+Rewrite `prisma/seed.ts` to seed the database from `citi.json`.
+
+Read these files before starting:
+- prisma/seed.ts              — existing skeleton (keep the deleteMany block and PrismaClient setup)
+- citi.json                   — source data (~1.3MB, read in chunks if needed)
+- prisma/location.prisma      — Location model fields
+- prisma/target.prisma        — Target model fields
+- prisma/category.prisma      — Category model fields
+- prisma/course.prisma        — Course model fields
+
+---
+
+## JSON structure
+
+citi.json is an array of locations. Each location has nested zielgruppen → zielseiten → kurse → termine:
+
+```
+[                                          ← array of locations
+  {
+    "id": 213,
+    "title": "Buehl",                      ← location name
+    "is_visible": 1,
+    "sequence": 1,
+    "zielgruppen": [                       ← targets
+      {
+        "headline": "Ferienworkshops",     ← target name
+        "is_visible": 1,
+        "sequence": 1,
+        "zielseiten": [                    ← categories
+          {
+            "id": 10508,
+            "headline": "Kinderballett ab 6 Jahren",  ← category name
+            "is_visible": "0",
+            "sequence": "1",
+            "kurse": [                     ← courses
+              {
+                "id": 143862,
+                "kursbezeichnung": "Grundkurs 1",   ← course name
+                "is_visible": 0,
+                "startdatum": "19.09.2018",          ← DD.MM.YYYY
+                "anfangszeit": "18:00",              ← start time HH:MM
+                "endezeit":   "19:30",              ← end time HH:MM
+                "anz_unterrichtsstunden": "8",
+                "frequenz": 1,
+                "kalenderignorieren": 0,
+                "seats_cur": -1,
+                "termine": [               ← dates (may be empty [])
+                  {
+                    "datum_ts": 1537308000, ← Unix timestamp (seconds)
+                    "datum": "19.09.2018",
+                    "is_start": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
+---
+
+## Prisma model mapping
+
+### Location  (one per top-level array entry)
+| JSON field   | Prisma field | Notes                    |
+|--------------|--------------|--------------------------|
+| title        | name         |                          |
+| is_visible   | active       | 1 → true, 0 → false      |
+| sequence     | seq          | parse as Int             |
+| tenantId     | tenantId     | hardcode 'seed'          |
+
+Skip: id (use cuid default), zielgruppen (handled separately)
+
+---
+
+### Target  (deduplicated by headline across all locations)
+| JSON field   | Prisma field | Notes                    |
+|--------------|--------------|--------------------------|
+| headline     | name         |                          |
+| is_visible   | active       | 1 → true, 0 → false      |
+| sequence     | seq          | parse as Int             |
+| tenantId     | tenantId     | hardcode 'seed'          |
+
+Deduplication: same headline = same Target record. Collect all unique headlines
+across all locations before inserting. Build a Map<headline, createdTarget> for
+use when inserting categories.
+
+Skip: cotas_schluessel, standort, warning, zielseiten (handled separately)
+
+---
+
+### Category  (deduplicated by headline + targetId)
+| JSON field   | Prisma field | Notes                           |
+|--------------|--------------|----------------------------------|
+| headline     | name         |                                  |
+| is_visible   | active       | parse to boolean (may be string) |
+| sequence     | seq          | parse as Int                     |
+| (parent)     | targetId     | id from the deduplicated Target  |
+| tenantId     | tenantId     | hardcode 'seed'                  |
+
+Deduplication: same headline under the same targetId = same Category. Use a
+Map<`${targetId}:${headline}`, createdCategory> to avoid duplicates.
+
+Skip: id, cotas_schluessel, zielgruppe, anm_gutschein, anm_fbConversionPixelId,
+      subheadline, kurse (handled separately)
+
+---
+
+### Course  (one per kurs entry — no deduplication)
+| JSON field            | Prisma field      | Notes                                        |
+|-----------------------|-------------------|----------------------------------------------|
+| kursbezeichnung       | name              |                                              |
+| is_visible            | active            | 1 → true, 0 → false                          |
+| startdatum+anfangszeit| startsAt          | parse "DD.MM.YYYY" + "HH:MM" → DateTime      |
+| startdatum+endezeit   | endsAt            | same date, end time                          |
+| frequenz              | frequency         | 1 → 'weekly' (all values in data are 1)      |
+| kalenderignorieren    | isIgnoreCalendar  | 1 → true, 0 → false                          |
+| seats_cur             | seatsCurrent      | -1 means unlimited → store as 0             |
+| termine               | dates             | JSON array (see below)                       |
+| (parent)              | categoryId        | id from deduplicated Category                |
+| tenantId              | tenantId          | hardcode 'seed'                              |
+
+Skip: id, standort, wochentag, honorar, infotext, zielseite1/2/3,
+      zielseite1/2/3_reihenfolge, buchbar, folgekurs, umsatzsteuerfrei,
+      Starttermine_neu, zielgruppennr, zs_headline1, anz_unterrichtsstunden
+
+Dates JSON field format (stored as Json in Prisma):
+```ts
+// termine[] → Course.dates
+termine.map(t => ({
+  date: new Date(t.datum_ts * 1000).toISOString(),
+  isStart: t.is_start === 1
+}))
+```
+
+Date parsing helper for startdatum + time:
+```ts
+function parseDate(datumDDMMYYYY: string, time: string): Date {
+  const [day, month, year] = datumDDMMYYYY.split('.');
+  return new Date(`${year}-${month}-${day}T${time}:00`);
+}
+```
+
+---
+
+## Seed execution order
+
+1. deleteMany in reverse dependency order (already in seed.ts — keep it)
+2. Create customer (already in seed.ts — keep it)
+3. Collect + deduplicate Targets → createMany (or sequential creates) → build targetMap
+4. Collect + deduplicate Categories (using targetMap) → createMany → build categoryMap
+5. Collect all Locations → createMany
+6. For each course in the JSON (nested under location → target → category):
+   - Look up categoryId from categoryMap
+   - Parse dates, parse startsAt/endsAt
+   - prisma.course.create({ data: { ... } })
+   - Use createMany if possible, or batched creates for performance
+
+---
+
+## Important notes
+
+- when creating a python script for execution write it out to ./claude/seedDBconversion.py
+- tenantId = 'seed' for all records
+- Parse is_visible carefully — in kurse it is a number, in zielseiten it may be a string ("0", "1")
+- startdatum format is "D.M.YYYY" or "DD.MM.YYYY" — the split('.') approach handles both
+- If startdatum is empty string "", set startsAt and endsAt to new Date()
+- seats_cur = -1 means not tracked → seatsCurrent = 0, seatsMax = 0
+- Use console.log to report counts: how many locations, targets, categories, courses were inserted
+- Do NOT use upsert — deleteMany at the start guarantees clean slate
+- Keep the existing PrismaClient + PrismaPg setup from the current seed.ts
+- The seed script is run with: npx prisma db seed

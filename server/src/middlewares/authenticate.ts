@@ -17,11 +17,10 @@ const authenticate: RequestHandler = (req, _res, next) => {
     // if there is now decoded.sub if false, throw a 403 error and indicate Invalid or expired token
     if (!decoded.sub) throw new Error('Invalid or expired access token.', { cause: { status: 403 } });
 
-    const user = {
-      id: decoded.sub,
-      roles: decoded.roles
+    req.user = {
+      id: decoded.sub as string,
+      tenantId: decoded.tenantId as string
     };
-    req.user = user;
 
     next();
   } catch (error) {

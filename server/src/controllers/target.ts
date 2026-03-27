@@ -1,53 +1,57 @@
 import type { RequestHandler } from 'express';
-import { TargetModel } from '@prisma/client';
+import prisma from '#db';
 
-export const getAllPosts: RequestHandler = async (_req, res) => {
-  const posts = await Post.find().lean();
-  res.json(posts);
+export const getAll: RequestHandler = async (req, res) => {
+  const { tenantId } = req.user!;
+  const targets = await prisma.target.findMany({
+    where: { tenantId, isDeleted: false },
+    orderBy: { seq: 'asc' }
+  });
+  res.json(targets);
 };
 
-export const createPost: RequestHandler = async (req, res) => {
-  const newPost = await Post.create(req.body);
-  res.status(201).json(newPost);
+export const getOne: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  const target = await prisma.target.findFirst({
+    where: { id, tenantId, isDeleted: false }
+  });
+  if (!target) throw new Error('Target not found', { cause: { status: 404 } });
+  res.json(target);
 };
 
-export const getSinglePost: RequestHandler = async (req, res) => {
-  const {
-    params: { id }
-  } = req;
-  if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: { status: 400 } });
-  const post = await Post.findById(id).lean();
-  if (!post) throw new Error(`Post with id of ${id} doesn't exist`, { cause: { status: 404 } });
-  res.send(post);
+export const create: RequestHandler = async (req, res) => {
+  const { tenantId } = req.user!;
+  const target = await prisma.target.create({
+    data: { ...req.body, tenantId }
+  });
+  res.status(201).json(target);
 };
 
-export const updatePost: RequestHandler = async (req, res) => {
-  const {
-    params: { id },
-    body: { title, content, image },
-    post
-  } = req;
-
-  if (!post) throw new Error(`Post with id of ${id} doesn't exist`, { cause: { status: 404 } });
-
-  post.title = title;
-  post.content = content;
-  post.image = image;
-
-  await post.save();
-
-  res.json(post);
+export const update: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  const exists = await prisma.target.findFirst({
+    where: { id, tenantId, isDeleted: false }
+  });
+  if (!exists) throw new Error('Target not found', { cause: { status: 404 } });
+  const target = await prisma.target.update({
+    where: { id },
+    data: req.body
+  });
+  res.json(target);
 };
 
-export const deletePost: RequestHandler = async (req, res) => {
-  const {
-    params: { id },
-    post
-  } = req;
-
-  if (!post) throw new Error(`Post with id of ${id} doesn't exist`, { cause: { status: 404 } });
-
-  await Post.findByIdAndDelete(id);
-
-  res.json({ success: `Post with id of ${id} was deleted` });
+export const remove: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  const exists = await prisma.target.findFirst({
+    where: { id, tenantId, isDeleted: false }
+  });
+  if (!exists) throw new Error('Target not found', { cause: { status: 404 } });
+  await prisma.target.update({
+    where: { id },
+    data: { isDeleted: true }
+  });
+  res.status(204).send();
 };

@@ -49,3 +49,35 @@ this generated client API
 npx prisma generate
 npx prisma init --datasource-provider postgresql --output ../generated/prisma
 ```
+
+# Database
+
+## Accessing the database
+```
+npx prisma studio --config prisma.config.ts
+´´´
+
+## Create the first user
+POST http://localhost:8000/auth/register
+````
+{
+  "firstName": "Max",
+  "lastName": "Mustermann",
+  "email": "max@test.de",
+  "password": "Test1234!",
+  "tenantId": "seed"
+}
+
+# Endpoints
+
+## Auth
+
+POST   /auth/register   body: { firstName, lastName, email, password, tenantId }
+
+POST   /auth/login      body: { email, password }
+
+POST   /auth/refresh    (reads refreshToken cookie)
+
+DELETE /auth/logout     (reads refreshToken cookie)
+
+GET    /auth/me         (requires accessToken cookie)
