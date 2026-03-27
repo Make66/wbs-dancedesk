@@ -11,7 +11,9 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:courseId" element={<CourseCategoriesPage />} />
+          <Route path="/course/:courseId" element={<div className="p-6">CourseDetailPage</div>} />
           <Route path="/users" element={<div className="p-6">UsersPage</div>} />
+          <Route path="/settings" element={<div className="p-6">SettingsPage</div>} />
         </Route>
       </Routes>
     </BrowserRouter>

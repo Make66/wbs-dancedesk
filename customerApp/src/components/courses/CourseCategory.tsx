@@ -6,6 +6,7 @@ import { MdEdit } from "react-icons/md";
 import CourseItem from "./CourseItem";
 import { Switch } from "../ui/switch";
 import { useState } from "react";
+import { Link } from "react-router";
 
 type Course = {
   id: string;
@@ -55,9 +56,15 @@ const CourseCategory = ({ category }: CourseCategoryProps) => {
         </div>
       </div>
       {isOpened && (
-        <div className="py-4 flex flex-col gap-3">
-          <CourseItem course={category.courses[0]} />
+        <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 gap-3">
+          <Link to={`/course/${category.courses[0].id}`}>
+            <CourseItem course={category.courses[0]} />
+          </Link>
+          <Link to={`/course/${category.courses[1].id}`}>
+            <CourseItem course={category.courses[1]} />
+          </Link>
           <CourseItem course={category.courses[1]} />
+          <CourseItem course={category.courses[0]} />
         </div>
       )}
     </div>
