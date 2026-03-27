@@ -89,6 +89,7 @@ async function main() {
   await prisma.registration.deleteMany();
   await prisma.user.deleteMany();
   await prisma.customer.deleteMany();
+  await prisma.module.deleteMany();
 
   // 2. customer
   await prisma.customer.create({
@@ -195,6 +196,36 @@ async function main() {
       }
     }
   }
+
+    // 7. modules
+    await prisma.module.create({
+        data: { name: "Kurse", seq: 1, color: '#66ff33', active: true, tenantId: 'seed' },
+    });
+    await prisma.module.create({
+        data: { name: "Räume", seq: 2, color: '#338fff', active: true, tenantId: 'seed' },
+    });
+    await prisma.module.create({
+        data: { name: "Lehrer", seq: 3, color: '#e733ff', active: true, tenantId: 'seed' },
+    });
+    await prisma.module.create({
+        data: { name: "Anmeldungen", seq: 4, color: '#FFCC33', active: true, tenantId: 'seed' },
+    });
+    await prisma.module.create({
+        data: { name: "Teilnehmer", seq: 5, color: '#ff3385', active: true, tenantId: 'seed' },
+    });
+    await prisma.module.create({
+        data: { name: "Einstellungen", seq: 6, color: '#CCCCCC', active: true, tenantId: 'seed' },
+    });
+
+
+    // // 8. user (for auth testing)
+    // await prisma.module.create({
+    //     data: {
+    //         firstName: "John",
+    //            lastName: "Doe",
+    //         email: "john.doe@email.com",
+    //         password: "verysecret", active: true, tenantId: 'seed' },
+    // });
 
   console.log('Seeded:');
   console.log(`  ${uniqueTargets.size} targets`);
