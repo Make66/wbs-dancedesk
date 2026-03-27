@@ -2,11 +2,16 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { RiArrowDownSLine } from "react-icons/ri";
 import { RiArrowUpSLine } from "react-icons/ri";
 import { IoMdAddCircleOutline } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
+import { FaPenNib } from "react-icons/fa";
 import CourseItem from "./CourseItem";
 import { Switch } from "../ui/switch";
 import { useState } from "react";
 import { Link } from "react-router";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { cn } from "../../lib/utils";
+import { useDndMonitor } from "@dnd-kit/core";
+import { useCourseCategoriesStore } from "../../stores/useCourseCategoriesStore";
 
 type Course = {
   id: string;
@@ -23,7 +28,7 @@ type Course = {
   imageUrl?: string;
 };
 
-type Category = {
+export type Category = {
   id: string;
   name: string;
   color?: string;
@@ -35,24 +40,57 @@ type CourseCategoryProps = {
 };
 const CourseCategory = ({ category }: CourseCategoryProps) => {
   const [isOpened, setIsOpened] = useState(false);
+  const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: category.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  useDndMonitor({
+    onDragStart(event) {
+      if (event.active.id === category.id && isOpened) {
+        setIsOpened(false);
+      }
+    },
+  });
+
   return (
-    <div className="p-4 bg-gray-300 rounded-xl" style={{ backgroundColor: category.color }}>
-      <div className="flex items-center justify-between">
+    <div
+      ref={setNodeRef}
+      style={{ ...style, backgroundColor: category.color }}
+      {...attributes}
+      {...listeners}
+      className={cn(
+        "p-4 bg-gray-300 rounded-xl cursor-grab active:cursor-grabbing touch-none",
+        isDragging && "opacity-60 z-20",
+      )}
+    >
+      <div
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setIsOpened(!isOpened)}
+      >
         <div className="flex items-center gap-3">
           <RxHamburgerMenu className="inline-block mr-2" />
           <h2 className="font-semibold">{category.name}</h2>
         </div>
         <div className="flex gap-5 items-center">
-          <MdEdit className="text-xl inline-block cursor-pointer" />
-          <IoMdAddCircleOutline className="text-xl inline-block cursor-pointer" />
-          <Switch />
-          <button onClick={() => setIsOpened(!isOpened)}>
-            {isOpened ? (
-              <RiArrowUpSLine className="text-xl inline-block cursor-pointer mr-2" />
-            ) : (
-              <RiArrowDownSLine className="text-xl inline-block cursor-pointer mr-2" />
-            )}
-          </button>
+          {isEditMode && (
+            <>
+              <FaPenNib className="text-lg inline-block cursor-pointer" />
+              <IoMdAddCircleOutline className="text-xl inline-block cursor-pointer" />
+              <Switch />
+            </>
+          )}
+          {isOpened ? (
+            <RiArrowUpSLine className="text-xl inline-block cursor-pointer mr-2" />
+          ) : (
+            <RiArrowDownSLine className="text-xl inline-block cursor-pointer mr-2" />
+          )}
         </div>
       </div>
       {isOpened && (
