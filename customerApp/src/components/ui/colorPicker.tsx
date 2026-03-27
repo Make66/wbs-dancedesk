@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
 
 type ColorPickerProps = {
-  initialColor?: string;
-  onChange?: (color: string) => void;
+  color: string;
+  onChange: (color: string) => void;
 };
 
 const PRESET_COLORS = [
@@ -17,37 +16,28 @@ const PRESET_COLORS = [
   ["#d4d4d8", "#a1a1aa", "#71717a", "#52525b", "#3f3f46"],
 ];
 
-export function ColorPicker({ initialColor, onChange }: ColorPickerProps) {
-  const [color, setColor] = useState(initialColor || "#ef4444");
-
-  const handleChange = (newColor: string) => {
-    setColor(newColor);
-    onChange?.(newColor);
-  };
-
+export function ColorPicker({ color, onChange }: ColorPickerProps) {
   return (
     <Popover>
-      {/* Trigger (dein Kreis) */}
       <PopoverTrigger asChild>
         <button
+          type="button"
           className="w-10 h-10 rounded-full border shadow cursor-pointer"
           style={{ backgroundColor: color }}
         />
       </PopoverTrigger>
 
-      {/* Inhalt */}
       <PopoverContent className="w-56 p-4 space-y-4">
         <div className="text-sm font-medium">Farbe wählen</div>
 
-        {/* Presets */}
         <div className="flex flex-wrap gap-2">
           {PRESET_COLORS.map((preset) =>
             preset.map((pre) => {
-              const isActive = color.toLowerCase() === pre.toLowerCase();
+              const isActive = color?.toLowerCase() === pre.toLowerCase();
               return (
                 <button
                   key={pre}
-                  onClick={() => handleChange(pre)}
+                  onClick={() => onChange(pre)}
                   className={`w-8 h-8 rounded-full border-2 transition ${
                     isActive ? "border-black scale-110" : "border-transparent"
                   }`}
@@ -57,12 +47,10 @@ export function ColorPicker({ initialColor, onChange }: ColorPickerProps) {
             }),
           )}
         </div>
-
-        {/* HEX Input */}
         <input
           type="text"
           value={color}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => onChange(e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm"
         />
       </PopoverContent>

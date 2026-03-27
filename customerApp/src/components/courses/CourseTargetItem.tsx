@@ -1,7 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { FiEdit } from "react-icons/fi";
+import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import { MdInsertEmoticon } from "react-icons/md";
 import { CSS } from "@dnd-kit/utilities";
 import type { CourseTarget } from "../../types";
 import { Switch } from "../ui/switch";
@@ -19,7 +20,12 @@ type CourseTargetItemProps = {
 
 const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
   const [isEditable, setIsEditable] = useState(false);
+  const [color, setColor] = useState(courseTarget.color);
+  const [name, setName] = useState(courseTarget.name);
   const toggleCourseTargetActive = useCourseTargetsStore((state) => state.toggleCourseTargetActive);
+  const deleteCourseTarget = useCourseTargetsStore((state) => state.deleteCourseTarget);
+  const updateCourseTarget = useCourseTargetsStore((state) => state.updateCourseTarget);
+  const updateColor = useCourseTargetsStore((state) => state.updateColor);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: courseTarget.id,
@@ -31,8 +37,14 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
     transition,
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateCourseTarget(courseTarget.id, { name: name, color: color });
+    setIsEditable(false);
+  };
+
   return (
-    <div className="w-200">
+    <div className="w-full max-w-200">
       <div
         ref={setNodeRef}
         style={{
@@ -54,13 +66,18 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
             <Link to={`/courses/${courseTarget.id}`}>{courseTarget.name}</Link>
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-7">
             {courseTarget.isActive ? (
               <button className="cursor-pointer" onClick={() => setIsEditable(!isEditable)}>
-                <FiEdit />
+                <div className="bg-white p-2 rounded-full opacity-70">
+                  <MdEdit className="fill-gray-600" />
+                </div>
               </button>
             ) : (
-              <button className="cursor-pointer text-2xl">
+              <button
+                className="cursor-pointer text-2xl"
+                onClick={() => deleteCourseTarget(courseTarget.id)}
+              >
                 <MdDelete />
               </button>
             )}
@@ -77,10 +94,23 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
       </div>
       {isEditable && (
         <div className="h-28">
-          <form action="" className="px-5 py-7 flex justify-between items-center">
+          <form onSubmit={handleSubmit} className="px-5 py-7 flex justify-between items-center">
             <div className="flex items-center gap-6">
-              <Input type="text" className="w-100" label="Name" defaultValue={courseTarget.name} />
-              <ColorPicker initialColor={courseTarget.color} />
+              <Input
+                type="text"
+                className="w-100"
+                label="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <ColorPicker
+                color={color}
+                onChange={(newColor) => {
+                  setColor(newColor);
+                  updateColor(courseTarget.id, newColor);
+                }}
+              />
+              <MdInsertEmoticon className="text-5xl cursor-pointer text-gray-600" />
             </div>
             <Button type="submit" size="lg">
               Speichern
