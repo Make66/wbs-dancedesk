@@ -1,8 +1,9 @@
 model Target {
   name       String?    @default("Erwachsene")
-  imageUrl   String     @default("./assets/images/no-profile-picture")
+  icon   String     @default("")
   seq        Int        @default(0)
   categories Category[] @ignore
+  color      String[]   @default(["#000000", "#FFFFFF"])
   active    Boolean    @default(true)
 
   // Common fields

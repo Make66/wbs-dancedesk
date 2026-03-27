@@ -1,0 +1,13 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { InstructorWhereInputObjectSchema as InstructorWhereInputObjectSchema } from './objects/InstructorWhereInput.schema';
+import { InstructorOrderByWithAggregationInputObjectSchema as InstructorOrderByWithAggregationInputObjectSchema } from './objects/InstructorOrderByWithAggregationInput.schema';
+import { InstructorScalarWhereWithAggregatesInputObjectSchema as InstructorScalarWhereWithAggregatesInputObjectSchema } from './objects/InstructorScalarWhereWithAggregatesInput.schema';
+import { InstructorScalarFieldEnumSchema } from './enums/InstructorScalarFieldEnum.schema';
+import { InstructorCountAggregateInputObjectSchema as InstructorCountAggregateInputObjectSchema } from './objects/InstructorCountAggregateInput.schema';
+import { InstructorMinAggregateInputObjectSchema as InstructorMinAggregateInputObjectSchema } from './objects/InstructorMinAggregateInput.schema';
+import { InstructorMaxAggregateInputObjectSchema as InstructorMaxAggregateInputObjectSchema } from './objects/InstructorMaxAggregateInput.schema';
+
+export const InstructorGroupBySchema: z.ZodType<Prisma.InstructorGroupByArgs> = z.object({ where: InstructorWhereInputObjectSchema.optional(), orderBy: z.union([InstructorOrderByWithAggregationInputObjectSchema, InstructorOrderByWithAggregationInputObjectSchema.array()]).optional(), having: InstructorScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(InstructorScalarFieldEnumSchema), _count: z.union([ z.literal(true), InstructorCountAggregateInputObjectSchema ]).optional(), _min: InstructorMinAggregateInputObjectSchema.optional(), _max: InstructorMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.InstructorGroupByArgs>;
+
+export const InstructorGroupByZodSchema = z.object({ where: InstructorWhereInputObjectSchema.optional(), orderBy: z.union([InstructorOrderByWithAggregationInputObjectSchema, InstructorOrderByWithAggregationInputObjectSchema.array()]).optional(), having: InstructorScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(InstructorScalarFieldEnumSchema), _count: z.union([ z.literal(true), InstructorCountAggregateInputObjectSchema ]).optional(), _min: InstructorMinAggregateInputObjectSchema.optional(), _max: InstructorMaxAggregateInputObjectSchema.optional() }).strict();

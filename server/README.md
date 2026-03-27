@@ -7,22 +7,22 @@
 - authentication/authorization
 
 ## API endpoints (WIP)
-- modules
 - course tree
-- Defining schemas:
+- modules
+- registration
 
 
-## tables
+## tables & schemas
 - customer => Tanzschule
 - user => Clerks that administer data; role based on modules
-- modules
-- instructor
-- participant (from registrations)
+- modules => areas in which clerks have access
 - registrations
+- participant (from registrations)
 - location => course venue
 - target
 - category
 - course
+- instructor
 - text
 - settings
 

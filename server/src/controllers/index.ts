@@ -1,1 +1,1 @@
-export * from './posts.ts';
+export * from './target.ts';

@@ -1,0 +1,43 @@
+import * as z from 'zod';
+export const CourseFindManyResultSchema = z.object({
+  data: z.array(z.object({
+  name: z.string().optional(),
+  category: z.unknown(),
+  categoryId: z.string(),
+  seq: z.number().int(),
+  active: z.boolean(),
+  startsAt: z.date(),
+  endsAt: z.date(),
+  repeat: z.number().int(),
+  frequency: z.string(),
+  room: z.unknown().optional(),
+  roomId: z.string().optional(),
+  isIgnoreCalendar: z.boolean(),
+  dates: z.unknown(),
+  seatsCurrent: z.number().int(),
+  seatsMax: z.number().int(),
+  paymentTypes: z.array(z.string()),
+  contractTypes: z.array(z.string()),
+  instructor: z.unknown().optional(),
+  instructorId: z.string().optional(),
+  textTerms: z.unknown().optional(),
+  textTermsId: z.string().optional(),
+  textInfo: z.unknown().optional(),
+  textInfoId: z.string().optional(),
+  id: z.string(),
+  tenantId: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  isDeleted: z.boolean(),
+  text: z.unknown().optional(),
+  textId: z.string().optional()
+})),
+  pagination: z.object({
+  page: z.number().int().min(1),
+  pageSize: z.number().int().min(1),
+  total: z.number().int().min(0),
+  totalPages: z.number().int().min(0),
+  hasNext: z.boolean(),
+  hasPrev: z.boolean()
+})
+});

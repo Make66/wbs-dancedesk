@@ -1,0 +1,15 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { TargetWhereInputObjectSchema as TargetWhereInputObjectSchema } from './objects/TargetWhereInput.schema';
+import { TargetOrderByWithAggregationInputObjectSchema as TargetOrderByWithAggregationInputObjectSchema } from './objects/TargetOrderByWithAggregationInput.schema';
+import { TargetScalarWhereWithAggregatesInputObjectSchema as TargetScalarWhereWithAggregatesInputObjectSchema } from './objects/TargetScalarWhereWithAggregatesInput.schema';
+import { TargetScalarFieldEnumSchema } from './enums/TargetScalarFieldEnum.schema';
+import { TargetCountAggregateInputObjectSchema as TargetCountAggregateInputObjectSchema } from './objects/TargetCountAggregateInput.schema';
+import { TargetMinAggregateInputObjectSchema as TargetMinAggregateInputObjectSchema } from './objects/TargetMinAggregateInput.schema';
+import { TargetMaxAggregateInputObjectSchema as TargetMaxAggregateInputObjectSchema } from './objects/TargetMaxAggregateInput.schema';
+import { TargetAvgAggregateInputObjectSchema as TargetAvgAggregateInputObjectSchema } from './objects/TargetAvgAggregateInput.schema';
+import { TargetSumAggregateInputObjectSchema as TargetSumAggregateInputObjectSchema } from './objects/TargetSumAggregateInput.schema';
+
+export const TargetGroupBySchema: z.ZodType<Prisma.TargetGroupByArgs> = z.object({ where: TargetWhereInputObjectSchema.optional(), orderBy: z.union([TargetOrderByWithAggregationInputObjectSchema, TargetOrderByWithAggregationInputObjectSchema.array()]).optional(), having: TargetScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(TargetScalarFieldEnumSchema), _count: z.union([ z.literal(true), TargetCountAggregateInputObjectSchema ]).optional(), _min: TargetMinAggregateInputObjectSchema.optional(), _max: TargetMaxAggregateInputObjectSchema.optional(), _avg: TargetAvgAggregateInputObjectSchema.optional(), _sum: TargetSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.TargetGroupByArgs>;
+
+export const TargetGroupByZodSchema = z.object({ where: TargetWhereInputObjectSchema.optional(), orderBy: z.union([TargetOrderByWithAggregationInputObjectSchema, TargetOrderByWithAggregationInputObjectSchema.array()]).optional(), having: TargetScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(TargetScalarFieldEnumSchema), _count: z.union([ z.literal(true), TargetCountAggregateInputObjectSchema ]).optional(), _min: TargetMinAggregateInputObjectSchema.optional(), _max: TargetMaxAggregateInputObjectSchema.optional(), _avg: TargetAvgAggregateInputObjectSchema.optional(), _sum: TargetSumAggregateInputObjectSchema.optional() }).strict();

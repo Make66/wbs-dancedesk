@@ -44,12 +44,8 @@
       "default": "./dist/middlewares/index.js"
     },
     "#models": {
-      "development": "./src/models/index.ts",
-      "default": "./dist/models/index.js"
-    },
-    "#prisma": {
-      "development": "./generated/prisma",
-      "default": "./generated/prisma"
+      "development": "./prisma",
+      "default": "./prisma"
     },
     "#routes": {
       "development": "./src/routes/index.ts",

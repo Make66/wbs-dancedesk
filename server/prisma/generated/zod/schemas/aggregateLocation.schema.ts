@@ -1,0 +1,14 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { LocationOrderByWithRelationInputObjectSchema as LocationOrderByWithRelationInputObjectSchema } from './objects/LocationOrderByWithRelationInput.schema';
+import { LocationWhereInputObjectSchema as LocationWhereInputObjectSchema } from './objects/LocationWhereInput.schema';
+import { LocationWhereUniqueInputObjectSchema as LocationWhereUniqueInputObjectSchema } from './objects/LocationWhereUniqueInput.schema';
+import { LocationCountAggregateInputObjectSchema as LocationCountAggregateInputObjectSchema } from './objects/LocationCountAggregateInput.schema';
+import { LocationMinAggregateInputObjectSchema as LocationMinAggregateInputObjectSchema } from './objects/LocationMinAggregateInput.schema';
+import { LocationMaxAggregateInputObjectSchema as LocationMaxAggregateInputObjectSchema } from './objects/LocationMaxAggregateInput.schema';
+import { LocationAvgAggregateInputObjectSchema as LocationAvgAggregateInputObjectSchema } from './objects/LocationAvgAggregateInput.schema';
+import { LocationSumAggregateInputObjectSchema as LocationSumAggregateInputObjectSchema } from './objects/LocationSumAggregateInput.schema';
+
+export const LocationAggregateSchema: z.ZodType<Prisma.LocationAggregateArgs> = z.object({ orderBy: z.union([LocationOrderByWithRelationInputObjectSchema, LocationOrderByWithRelationInputObjectSchema.array()]).optional(), where: LocationWhereInputObjectSchema.optional(), cursor: LocationWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), LocationCountAggregateInputObjectSchema ]).optional(), _min: LocationMinAggregateInputObjectSchema.optional(), _max: LocationMaxAggregateInputObjectSchema.optional(), _avg: LocationAvgAggregateInputObjectSchema.optional(), _sum: LocationSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.LocationAggregateArgs>;
+
+export const LocationAggregateZodSchema = z.object({ orderBy: z.union([LocationOrderByWithRelationInputObjectSchema, LocationOrderByWithRelationInputObjectSchema.array()]).optional(), where: LocationWhereInputObjectSchema.optional(), cursor: LocationWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), LocationCountAggregateInputObjectSchema ]).optional(), _min: LocationMinAggregateInputObjectSchema.optional(), _max: LocationMaxAggregateInputObjectSchema.optional(), _avg: LocationAvgAggregateInputObjectSchema.optional(), _sum: LocationSumAggregateInputObjectSchema.optional() }).strict();

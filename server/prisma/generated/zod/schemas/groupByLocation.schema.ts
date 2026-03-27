@@ -1,0 +1,15 @@
+import type { Prisma } from '../../../../generated/prisma/client';
+import * as z from 'zod';
+import { LocationWhereInputObjectSchema as LocationWhereInputObjectSchema } from './objects/LocationWhereInput.schema';
+import { LocationOrderByWithAggregationInputObjectSchema as LocationOrderByWithAggregationInputObjectSchema } from './objects/LocationOrderByWithAggregationInput.schema';
+import { LocationScalarWhereWithAggregatesInputObjectSchema as LocationScalarWhereWithAggregatesInputObjectSchema } from './objects/LocationScalarWhereWithAggregatesInput.schema';
+import { LocationScalarFieldEnumSchema } from './enums/LocationScalarFieldEnum.schema';
+import { LocationCountAggregateInputObjectSchema as LocationCountAggregateInputObjectSchema } from './objects/LocationCountAggregateInput.schema';
+import { LocationMinAggregateInputObjectSchema as LocationMinAggregateInputObjectSchema } from './objects/LocationMinAggregateInput.schema';
+import { LocationMaxAggregateInputObjectSchema as LocationMaxAggregateInputObjectSchema } from './objects/LocationMaxAggregateInput.schema';
+import { LocationAvgAggregateInputObjectSchema as LocationAvgAggregateInputObjectSchema } from './objects/LocationAvgAggregateInput.schema';
+import { LocationSumAggregateInputObjectSchema as LocationSumAggregateInputObjectSchema } from './objects/LocationSumAggregateInput.schema';
+
+export const LocationGroupBySchema: z.ZodType<Prisma.LocationGroupByArgs> = z.object({ where: LocationWhereInputObjectSchema.optional(), orderBy: z.union([LocationOrderByWithAggregationInputObjectSchema, LocationOrderByWithAggregationInputObjectSchema.array()]).optional(), having: LocationScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(LocationScalarFieldEnumSchema), _count: z.union([ z.literal(true), LocationCountAggregateInputObjectSchema ]).optional(), _min: LocationMinAggregateInputObjectSchema.optional(), _max: LocationMaxAggregateInputObjectSchema.optional(), _avg: LocationAvgAggregateInputObjectSchema.optional(), _sum: LocationSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.LocationGroupByArgs>;
+
+export const LocationGroupByZodSchema = z.object({ where: LocationWhereInputObjectSchema.optional(), orderBy: z.union([LocationOrderByWithAggregationInputObjectSchema, LocationOrderByWithAggregationInputObjectSchema.array()]).optional(), having: LocationScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(LocationScalarFieldEnumSchema), _count: z.union([ z.literal(true), LocationCountAggregateInputObjectSchema ]).optional(), _min: LocationMinAggregateInputObjectSchema.optional(), _max: LocationMaxAggregateInputObjectSchema.optional(), _avg: LocationAvgAggregateInputObjectSchema.optional(), _sum: LocationSumAggregateInputObjectSchema.optional() }).strict();
