@@ -33,6 +33,7 @@ export type CourseCategory = {
   seq: number;
   name: string;
   courses: Course[];
+  color: string;
 };
 
 export type CourseTargetDetail = {

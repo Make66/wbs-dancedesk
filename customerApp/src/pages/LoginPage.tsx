@@ -3,6 +3,7 @@ import { Input } from "../components/ui/input";
 import { useAuth } from "../context";
 import { Button } from "../components/ui/button";
 import { Navigate } from "react-router";
+import { toast } from "react-toastify";
 
 type LoginFormState = {
   email: string;
@@ -24,9 +25,10 @@ const LoginPage = () => {
       if (!email || !password) throw new Error("Email and password are required");
       setLoading(true);
       await handleSignIn({ email, password });
+      toast.success("Logged in successfully!");
     } catch (error) {
       const message = (error as { message: string }).message;
-      console.error(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -4,7 +4,7 @@ import { FaPenNib } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { MdInsertEmoticon } from "react-icons/md";
 import { CSS } from "@dnd-kit/utilities";
-import type { CourseTarget } from "../../types";
+import type { CourseTarget } from "../../types/course";
 import { Switch } from "../ui/switch";
 import { cn } from "../../lib/utils";
 import { useCourseTargetsStore } from "../../stores/useCourseTargetsStore";

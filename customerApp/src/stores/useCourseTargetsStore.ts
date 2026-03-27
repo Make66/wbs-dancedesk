@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
-import type { CourseTarget } from "../types";
+import type { CourseTarget } from "../types/course";
 
 const initialCourseTargets: CourseTarget[] = [
   {
