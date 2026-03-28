@@ -6,10 +6,16 @@ export type CourseFrequency = "daily" | "weekly" | "monthly";
 
 export type CourseTarget = {
   id: string;
-  seq: number;
   name: string;
-  color: string;
-  isActive: boolean;
+  icon: string;
+  seq: number;
+  color: string[];
+  active: boolean;
+  locationId: string;
+  tenantId: string;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
 };
 
 export type Course = {

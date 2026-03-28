@@ -58,7 +58,7 @@ type CourseCategoriesStore = {
   reorderCourses: (categoryId: string, activeId: string, overId: string) => void;
 };
 
-const sortBySeq = <T extends { seq: number }>(items: T[]): T[] => {
+const sortBySeq = <T extends { seq: number }>(items: T[] = []): T[] => {
   return [...items].sort((a, b) => a.seq - b.seq);
 };
 
@@ -77,9 +77,9 @@ const withUpdatedCategorySeq = (categories: CourseCategory[]): CourseCategory[] 
 };
 
 const normalizeCategories = (categories: CourseCategory[]): CourseCategory[] => {
-  const sortedCategories = sortBySeq(categories).map((category) => ({
+  const sortedCategories = sortBySeq(categories ?? []).map((category) => ({
     ...category,
-    courses: withUpdatedCourseSeq(sortBySeq(category.courses)),
+    courses: withUpdatedCourseSeq(sortBySeq(category.courses ?? [])),
   }));
 
   return withUpdatedCategorySeq(sortedCategories);
@@ -175,10 +175,10 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set, get)
   loadCourseTargetDetail: (data) =>
     set({
       selectedCourseTargetId: data.id,
-      selectedCategoryId: data.categories[0]?.id ?? null,
+      selectedCategoryId: data.categories?.[0]?.id ?? null,
       courseTargetDetail: {
         ...data,
-        categories: normalizeCategories(data.categories),
+        categories: normalizeCategories(data.categories ?? []),
       },
       expandedCategoryIds: [],
       isLoading: false,
@@ -198,14 +198,14 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set, get)
 
   setCategories: (categories) =>
     set((state) => {
-      if (!state.courseTargetDetail) return state;
-
       const normalizedCategories = normalizeCategories(categories);
       const validCategoryIds = new Set(normalizedCategories.map((category) => category.id));
 
       return {
         courseTargetDetail: {
-          ...state.courseTargetDetail,
+          id: state.courseTargetDetail?.id ?? state.selectedCourseTargetId ?? "",
+          name: state.courseTargetDetail?.name ?? "Kategorien",
+          color: state.courseTargetDetail?.color ?? "#000000",
           categories: normalizedCategories,
         },
         selectedCategoryId:

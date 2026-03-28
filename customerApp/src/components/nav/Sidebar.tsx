@@ -8,11 +8,14 @@ import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
 import SidebarMin from "./SidebarMin";
+import LocationPicker from "./LocationPicker";
+import CourseTargetsLoader from "./CourseTargetsLoader";
 
 const Sidebar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const courseTargets = useCourseTargetsStore((state) => state.courseTargets);
-  const activeCoursesTargets = courseTargets.filter((course) => course.isActive);
+  const activeCoursesTargets = courseTargets.filter((course) => course.active);
+
   return (
     <aside
       className={cn(
@@ -33,6 +36,8 @@ const Sidebar = () => {
           )}
         </button>
       </div>
+      <LocationPicker />
+      <CourseTargetsLoader />
       {!isMenuOpen ? (
         <SidebarMin />
       ) : (

@@ -14,6 +14,8 @@ import { Input } from "../ui/input";
 import { ColorPicker } from "../ui/colorPicker";
 import { Button } from "../ui/button";
 import { useDndMonitor } from "@dnd-kit/core";
+import { updateCourseTargetDB } from "../../data/courseTarget";
+import { toast } from "react-toastify";
 
 type CourseTargetItemProps = {
   courseTarget: CourseTarget;
@@ -21,7 +23,8 @@ type CourseTargetItemProps = {
 
 const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
   const [isEditable, setIsEditable] = useState(false);
-  const [color, setColor] = useState(courseTarget.color);
+  const [color, setColor] = useState(courseTarget.color[0]);
+  const [fontColor, setFontColor] = useState(courseTarget.color[1]);
   const [name, setName] = useState(courseTarget.name);
   const toggleCourseTargetActive = useCourseTargetsStore((state) => state.toggleCourseTargetActive);
   const deleteCourseTarget = useCourseTargetsStore((state) => state.deleteCourseTarget);
@@ -30,7 +33,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: courseTarget.id,
-    disabled: !courseTarget.isActive,
+    disabled: !courseTarget.active,
   });
 
   const style = {
@@ -38,10 +41,49 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
     transition,
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateCourseTarget(courseTarget.id, { name: name, color: color });
-    setIsEditable(false);
+    try {
+      await updateCourseTargetDB(courseTarget.id, {
+        name,
+        color: [color, fontColor],
+      });
+      updateCourseTarget(courseTarget.id, {
+        name,
+        color: [color, fontColor],
+      });
+      setIsEditable(false);
+      toast.success("Kursziel erfolgreich aktualisiert!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Fehler beim Aktualisieren des Kursziels. Bitte versuche es erneut.");
+    }
+  };
+
+  const handleToggleActive = async (checked: boolean) => {
+    toggleCourseTargetActive(courseTarget.id, checked);
+    console.log(`Toggling course target ${courseTarget.id} active status to:`, checked);
+    try {
+      await updateCourseTargetDB(courseTarget.id, {
+        name: courseTarget.name,
+        active: checked,
+      });
+    } catch (error) {
+      toggleCourseTargetActive(courseTarget.id, !checked);
+      toast.error("Status konnte nicht gespeichert werden.");
+      console.error("Error updating course target active status:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await updateCourseTargetDB(courseTarget.id, { name: courseTarget.name, isDeleted: true });
+      deleteCourseTarget(courseTarget.id);
+      toast.success("Kursziel gelöscht.");
+    } catch (error) {
+      toast.error("Löschen fehlgeschlagen.");
+      console.error("Error deleting course target:", error);
+    }
   };
 
   useDndMonitor({
@@ -58,7 +100,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
         ref={setNodeRef}
         style={{
           ...style,
-          backgroundColor: courseTarget.isActive ? courseTarget.color : "rgba(0,0,0,0.2)",
+          backgroundColor: courseTarget.active ? courseTarget.color[0] : "rgba(0,0,0,0.2)",
         }}
         {...attributes}
         {...listeners}
@@ -66,34 +108,34 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
           "p-5 rounded-2xl",
           isDragging && "opacity-60 z-20",
           "cursor-grab active:cursor-grabbing touch-none",
-          !courseTarget.isActive && "cursor-not-allowed opacity-50",
+          !courseTarget.active && "cursor-not-allowed opacity-50",
         )}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5 text-white">
             <RxHamburgerMenu />
-            <Link to={`/courses/${courseTarget.id}`}>{courseTarget.name}</Link>
+            <Link to={`/courses/${courseTarget.id}`} style={{ color: courseTarget.color[1] }}>
+              {courseTarget.name}
+            </Link>
           </div>
 
           <div className="flex items-center gap-7">
-            {courseTarget.isActive ? (
+            {courseTarget.active ? (
               <button className="cursor-pointer" onClick={() => setIsEditable(!isEditable)}>
                 <div className="bg-transparent p-2 rounded-full">
                   <FaPenNib />
                 </div>
               </button>
             ) : (
-              <button
-                className="cursor-pointer text-2xl"
-                onClick={() => deleteCourseTarget(courseTarget.id)}
-              >
+              <button className="cursor-pointer text-2xl" onClick={() => handleDelete()}>
                 <MdDelete />
               </button>
             )}
             <Switch
               className="cursor-pointer"
-              checked={courseTarget.isActive}
+              checked={courseTarget.active}
               onCheckedChange={(checked) => {
+                handleToggleActive(checked);
                 toggleCourseTargetActive(courseTarget.id, checked);
                 setIsEditable(false);
               }}
@@ -116,7 +158,14 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
                 color={color}
                 onChange={(newColor) => {
                   setColor(newColor);
-                  updateColor(courseTarget.id, newColor);
+                  updateColor(courseTarget.id, [newColor, fontColor]);
+                }}
+              />
+              <ColorPicker
+                color={fontColor}
+                onChange={(newColor) => {
+                  setFontColor(newColor);
+                  updateColor(courseTarget.id, [color, newColor]);
                 }}
               />
               <MdInsertEmoticon className="text-5xl cursor-pointer text-gray-600" />
