@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet } from "react-router";
 import { cn } from "../lib/utils";
 import { LuArrowLeftToLine, LuArrowRightToLine } from "react-icons/lu";
 import { FaRegCircleUser, FaEnvelope } from "react-icons/fa6";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
@@ -68,6 +69,10 @@ const MainLayout = () => {
             <NavLink to="/users" className="flex gap-3">
               <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
               <span className="text-gray-300">Tanzschüler</span>
+            </NavLink>
+            <NavLink to="/instructors" className="flex gap-3">
+              <FaChalkboardTeacher className="text-2xl cursor-pointer fill-gray-300" />
+              <span className="text-gray-300">Tanzlehrer</span>
             </NavLink>
           </div>
         )}

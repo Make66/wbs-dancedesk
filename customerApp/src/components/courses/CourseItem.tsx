@@ -1,6 +1,7 @@
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaUsers } from "react-icons/fa";
 import { Switch } from "../ui/switch";
+import { useCourseCategoriesStore } from "../../stores/useCourseCategoriesStore";
 
 type Course = {
   id: string;
@@ -19,6 +20,7 @@ type CourseItemProps = {
 };
 
 const CourseItem = ({ course }: CourseItemProps) => {
+  const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
   return (
     <div className="p-4 bg-white rounded-xl shadow">
       <div className="flex items-center justify-between">
@@ -26,7 +28,7 @@ const CourseItem = ({ course }: CourseItemProps) => {
           <RxHamburgerMenu className="inline-block mr-2" />
           <h3 className="font-semibold">{course.name}</h3>
         </div>
-        <Switch />
+        {isEditMode && <Switch />}
       </div>
       <div className="pl-9">
         <p className="text-xs text-gray-500 mt-1">

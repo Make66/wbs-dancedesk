@@ -1,0 +1,362 @@
+import { create } from "zustand";
+import { arrayMove } from "@dnd-kit/sortable";
+import type { Course, CourseCategory, CourseTargetDetail } from "../types";
+
+type CreateCategoryInput = {
+  name?: string;
+};
+
+type UpdateCategoryInput = {
+  name?: string;
+};
+
+type CreateCourseInput = Partial<Omit<Course, "id" | "seq">> & {
+  name?: string;
+};
+
+type UpdateCourseInput = Partial<Omit<Course, "id" | "seq">>;
+
+type CourseCategoriesStore = {
+  selectedCourseTargetId: string | null;
+  selectedCategoryId: string | null;
+  courseTargetDetail: CourseTargetDetail | null;
+  isLoading: boolean;
+  error: string | null;
+  isEditMode: boolean;
+
+  toggleEditMode: () => void;
+  setEditMode: (value: boolean) => void;
+
+  setSelectedCourseTargetId: (id: string | null) => void;
+  setSelectedCategoryId: (id: string | null) => void;
+
+  setLoading: (value: boolean) => void;
+  setError: (message: string | null) => void;
+
+  loadCourseTargetDetail: (data: CourseTargetDetail) => void;
+  resetCourseTargetDetail: () => void;
+
+  setCategories: (categories: CourseCategory[]) => void;
+
+  addCategory: (input?: CreateCategoryInput) => void;
+  updateCategory: (categoryId: string, data: UpdateCategoryInput) => void;
+  deleteCategory: (categoryId: string) => void;
+  reorderCategories: (activeId: string, overId: string) => void;
+
+  addCourse: (categoryId: string, input?: CreateCourseInput) => void;
+  updateCourse: (categoryId: string, courseId: string, data: UpdateCourseInput) => void;
+  deleteCourse: (categoryId: string, courseId: string) => void;
+  reorderCourses: (categoryId: string, activeId: string, overId: string) => void;
+};
+
+const sortBySeq = <T extends { seq: number }>(items: T[]): T[] => {
+  return [...items].sort((a, b) => a.seq - b.seq);
+};
+
+const withUpdatedCourseSeq = (courses: Course[]): Course[] => {
+  return courses.map((course, index) => ({
+    ...course,
+    seq: index + 1,
+  }));
+};
+
+const withUpdatedCategorySeq = (categories: CourseCategory[]): CourseCategory[] => {
+  return categories.map((category, index) => ({
+    ...category,
+    seq: index + 1,
+  }));
+};
+
+const normalizeCategories = (categories: CourseCategory[]): CourseCategory[] => {
+  const sortedCategories = sortBySeq(categories).map((category) => ({
+    ...category,
+    courses: withUpdatedCourseSeq(sortBySeq(category.courses)),
+  }));
+
+  return withUpdatedCategorySeq(sortedCategories);
+};
+
+const defaultCourseValues = (): Omit<Course, "id" | "seq"> => ({
+  name: "Neuer Kurs",
+  description: "",
+  startsAt: new Date().toISOString(),
+  repeat: 1,
+  frequency: "weekly",
+  seatsCurrent: 0,
+  seatsMax: 10,
+  paymentTypes: ["cash"],
+  contractTypes: ["one-time"],
+  price: 0,
+  duration: 60,
+});
+
+export const useCourseCategoriesStore = create<CourseCategoriesStore>((set) => ({
+  selectedCourseTargetId: null,
+  selectedCategoryId: null,
+  courseTargetDetail: null,
+  isLoading: false,
+  error: null,
+  isEditMode: false,
+  setSelectedCourseTargetId: (id) =>
+    set({
+      selectedCourseTargetId: id,
+    }),
+
+  setSelectedCategoryId: (id) =>
+    set({
+      selectedCategoryId: id,
+    }),
+
+  setLoading: (value) =>
+    set({
+      isLoading: value,
+    }),
+
+  setError: (message) =>
+    set({
+      error: message,
+    }),
+
+  loadCourseTargetDetail: (data) =>
+    set({
+      selectedCourseTargetId: data.id,
+      selectedCategoryId: data.categories[0]?.id ?? null,
+      courseTargetDetail: {
+        ...data,
+        categories: normalizeCategories(data.categories),
+      },
+      isLoading: false,
+      error: null,
+    }),
+
+  resetCourseTargetDetail: () =>
+    set({
+      selectedCourseTargetId: null,
+      selectedCategoryId: null,
+      courseTargetDetail: null,
+      isLoading: false,
+      error: null,
+    }),
+
+  setCategories: (categories) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      const normalizedCategories = normalizeCategories(categories);
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: normalizedCategories,
+        },
+        selectedCategoryId:
+          normalizedCategories.find((category) => category.id === state.selectedCategoryId)?.id ??
+          normalizedCategories[0]?.id ??
+          null,
+      };
+    }),
+
+  addCategory: (input) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      const newCategory: CourseCategory = {
+        id: crypto.randomUUID(),
+        seq: state.courseTargetDetail.categories.length + 1,
+        name: input?.name?.trim() || "Neue Kategorie",
+        courses: [],
+      };
+
+      const updatedCategories = withUpdatedCategorySeq([
+        ...state.courseTargetDetail.categories,
+        newCategory,
+      ]);
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: updatedCategories,
+        },
+        selectedCategoryId: newCategory.id,
+      };
+    }),
+
+  updateCategory: (categoryId, data) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: state.courseTargetDetail.categories.map((category) =>
+            category.id === categoryId
+              ? {
+                  ...category,
+                  ...data,
+                }
+              : category,
+          ),
+        },
+      };
+    }),
+
+  deleteCategory: (categoryId) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      const updatedCategories = withUpdatedCategorySeq(
+        state.courseTargetDetail.categories.filter((category) => category.id !== categoryId),
+      );
+
+      const nextSelectedCategoryId =
+        state.selectedCategoryId === categoryId
+          ? (updatedCategories[0]?.id ?? null)
+          : state.selectedCategoryId;
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: updatedCategories,
+        },
+        selectedCategoryId: nextSelectedCategoryId,
+      };
+    }),
+
+  reorderCategories: (activeId, overId) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+      if (activeId === overId) return state;
+
+      const categories = state.courseTargetDetail.categories;
+      const oldIndex = categories.findIndex((category) => category.id === activeId);
+      const newIndex = categories.findIndex((category) => category.id === overId);
+
+      if (oldIndex === -1 || newIndex === -1) return state;
+
+      const reorderedCategories = arrayMove(categories, oldIndex, newIndex);
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: withUpdatedCategorySeq(reorderedCategories),
+        },
+      };
+    }),
+
+  addCourse: (categoryId, input) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      const updatedCategories = state.courseTargetDetail.categories.map((category) => {
+        if (category.id !== categoryId) return category;
+
+        const newCourse: Course = {
+          id: crypto.randomUUID(),
+          seq: category.courses.length + 1,
+          ...defaultCourseValues(),
+          ...input,
+          name: input?.name?.trim() || "Neuer Kurs",
+        };
+
+        return {
+          ...category,
+          courses: withUpdatedCourseSeq([...category.courses, newCourse]),
+        };
+      });
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: updatedCategories,
+        },
+      };
+    }),
+
+  updateCourse: (categoryId, courseId, data) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      const updatedCategories = state.courseTargetDetail.categories.map((category) => {
+        if (category.id !== categoryId) return category;
+
+        return {
+          ...category,
+          courses: category.courses.map((course) =>
+            course.id === courseId
+              ? {
+                  ...course,
+                  ...data,
+                }
+              : course,
+          ),
+        };
+      });
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: updatedCategories,
+        },
+      };
+    }),
+
+  deleteCourse: (categoryId, courseId) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      const updatedCategories = state.courseTargetDetail.categories.map((category) => {
+        if (category.id !== categoryId) return category;
+
+        return {
+          ...category,
+          courses: withUpdatedCourseSeq(
+            category.courses.filter((course) => course.id !== courseId),
+          ),
+        };
+      });
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: updatedCategories,
+        },
+      };
+    }),
+
+  reorderCourses: (categoryId, activeId, overId) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+      if (activeId === overId) return state;
+
+      const updatedCategories = state.courseTargetDetail.categories.map((category) => {
+        if (category.id !== categoryId) return category;
+
+        const oldIndex = category.courses.findIndex((course) => course.id === activeId);
+        const newIndex = category.courses.findIndex((course) => course.id === overId);
+
+        if (oldIndex === -1 || newIndex === -1) return category;
+
+        return {
+          ...category,
+          courses: withUpdatedCourseSeq(arrayMove(category.courses, oldIndex, newIndex)),
+        };
+      });
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: updatedCategories,
+        },
+      };
+    }),
+
+  toggleEditMode: () =>
+    set((state) => ({
+      isEditMode: !state.isEditMode,
+    })),
+
+  setEditMode: (value) =>
+    set(() => ({
+      isEditMode: value,
+    })),
+}));

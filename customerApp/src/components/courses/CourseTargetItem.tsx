@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { MdEdit } from "react-icons/md";
+import { FaPenNib } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { MdInsertEmoticon } from "react-icons/md";
 import { CSS } from "@dnd-kit/utilities";
@@ -13,6 +13,7 @@ import { Link } from "react-router";
 import { Input } from "../ui/input";
 import { ColorPicker } from "../ui/colorPicker";
 import { Button } from "../ui/button";
+import { useDndMonitor } from "@dnd-kit/core";
 
 type CourseTargetItemProps = {
   courseTarget: CourseTarget;
@@ -43,8 +44,16 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
     setIsEditable(false);
   };
 
+  useDndMonitor({
+    onDragStart(event) {
+      if (event.active.id === courseTarget.id && isEditable) {
+        setIsEditable(false);
+      }
+    },
+  });
+
   return (
-    <div className="w-full max-w-200">
+    <div className={cn(isDragging && "opacity-60 z-50", "w-full max-w-200 z-0")}>
       <div
         ref={setNodeRef}
         style={{
@@ -69,8 +78,8 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
           <div className="flex items-center gap-7">
             {courseTarget.isActive ? (
               <button className="cursor-pointer" onClick={() => setIsEditable(!isEditable)}>
-                <div className="bg-white p-2 rounded-full opacity-70">
-                  <MdEdit className="fill-gray-600" />
+                <div className="bg-transparent p-2 rounded-full">
+                  <FaPenNib />
                 </div>
               </button>
             ) : (
