@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type LocationsStore = {
+type LocationStore = {
   selectedLocationId: string | null;
   setSelectedLocationId: (id: string) => void;
 };
 
-export const useLocationsStore = create<LocationsStore>()(
+export const locationStore = create<LocationStore>()(
   persist(
     (set) => ({
       selectedLocationId: null,

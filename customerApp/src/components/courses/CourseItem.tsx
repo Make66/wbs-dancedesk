@@ -1,7 +1,7 @@
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaUsers } from "react-icons/fa";
 import { Switch } from "../ui/switch";
-import { useCourseCategoriesStore } from "../../stores/useCourseCategoriesStore";
+import { categoryStore } from "../../stores/categoryStore";
 
 type Course = {
   id: string;
@@ -20,7 +20,7 @@ type CourseItemProps = {
 };
 
 const CourseItem = ({ course }: CourseItemProps) => {
-  const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
+  const isEditMode = categoryStore((state) => state.isEditMode);
   return (
     <div className="p-4 bg-white rounded-xl shadow h-full">
       <div className="flex items-center justify-between">

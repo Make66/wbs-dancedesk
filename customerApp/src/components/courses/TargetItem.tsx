@@ -4,43 +4,43 @@ import { FaPenNib } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { MdInsertEmoticon } from "react-icons/md";
 import { CSS } from "@dnd-kit/utilities";
-import type { CourseTarget } from "../../types/course";
+import type { Target } from "../../types/course-types";
 import { Switch } from "../ui/switch";
 import { cn } from "../../lib/utils";
-import { useCourseTargetsStore } from "../../stores/useCourseTargetsStore";
+import { targetStore } from "../../stores/targetStore";
 import { useState } from "react";
 import { Link } from "react-router";
 import { Input } from "../ui/input";
 import { ColorPicker } from "../ui/colorPicker";
 import { Button } from "../ui/button";
 import { useDndMonitor } from "@dnd-kit/core";
-import { createCourseTargetDB, updateCourseTargetDB } from "../../data/courseTarget";
+import { createCourseTargetDB, updateCourseTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
+import { locationStore } from "../../stores/locationStore";
 
-type CourseTargetItemProps = {
-  courseTarget: CourseTarget & { isNew?: boolean };
+type TargetItemProps = {
+  target: Target & { isNew?: boolean };
 };
 
-const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
+const TargetItem = ({ target }: TargetItemProps) => {
   const [isEditable, setIsEditable] = useState(false);
   const [formData, setFormData] = useState({
-    id: courseTarget.id,
-    name: courseTarget.name ?? "",
-    color: courseTarget.color?.[0] ?? "#000000",
-    fontColor: courseTarget.color?.[1] ?? "#FFFFFF",
+    id: target.id,
+    name: target.name ?? "",
+    color: target.color?.[0] ?? "#000000",
+    fontColor: target.color?.[1] ?? "#FFFFFF",
   });
 
-  const toggleCourseTargetActive = useCourseTargetsStore((state) => state.toggleCourseTargetActive);
-  const deleteCourseTarget = useCourseTargetsStore((state) => state.deleteCourseTarget);
-  const updateCourseTarget = useCourseTargetsStore((state) => state.updateCourseTarget);
-  const updateColor = useCourseTargetsStore((state) => state.updateColor);
-  const replaceTemporaryCourseTarget = useCourseTargetsStore(
-    (state) => state.replaceTemporaryCourseTarget,
-  );
+  const toggleTargetActive = targetStore((state) => state.toggleTargetActive);
+  const deleteTarget = targetStore((state) => state.deleteTarget);
+  const updateTarget = targetStore((state) => state.updateTarget);
+  const updateColor = targetStore((state) => state.updateColor);
+  const replaceTemporaryTarget = targetStore((state) => state.replaceTemporaryTarget);
+  const selectedLocationId = locationStore((state) => state.selectedLocationId);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: courseTarget.id,
-    disabled: !courseTarget.active,
+    id: target.id,
+    disabled: !target.active,
   });
 
   const style = {
@@ -56,24 +56,31 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
       return;
     }
 
+    const locationId = selectedLocationId ?? target.locationId;
+
+    if (target.isNew && !locationId) {
+      toast.error("Bitte wähle zuerst einen Standort aus.");
+      return;
+    }
+
     try {
-      if (courseTarget.isNew) {
+      if (target.isNew) {
         const createdTarget = await createCourseTargetDB({
           name: formData.name,
           color: [formData.color, formData.fontColor],
           active: true,
-          seq: courseTarget.seq,
+          seq: target.seq,
+          locationId: selectedLocationId!,
         });
-
-        replaceTemporaryCourseTarget(courseTarget.id, createdTarget);
+        replaceTemporaryTarget(target.id, createdTarget);
         toast.success("Kursziel erfolgreich erstellt!");
       } else {
-        const updatedTarget = await updateCourseTargetDB(courseTarget.id, {
+        const updatedTarget = await updateCourseTargetDB(target.id, {
           name: formData.name,
           color: [formData.color, formData.fontColor],
         });
 
-        updateCourseTarget(courseTarget.id, updatedTarget);
+        updateTarget(target.id, updatedTarget);
         toast.success("Kursziel erfolgreich aktualisiert!");
       }
 
@@ -85,28 +92,30 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
   };
 
   const handleToggleActive = async (checked: boolean) => {
-    toggleCourseTargetActive(courseTarget.id, checked);
+    toggleTargetActive(target.id, checked);
+
+    if (target.isNew) return;
 
     try {
-      await updateCourseTargetDB(courseTarget.id, {
+      await updateCourseTargetDB(target.id, {
         active: checked,
       });
     } catch (error) {
-      toggleCourseTargetActive(courseTarget.id, !checked);
+      toggleTargetActive(target.id, !checked);
       toast.error("Status konnte nicht gespeichert werden.");
       console.error("Error updating course target active status:", error);
     }
   };
 
   const handleDelete = async () => {
-    if (courseTarget.isNew) {
-      deleteCourseTarget(courseTarget.id);
+    if (target.isNew) {
+      deleteTarget(target.id);
       return;
     }
 
     try {
-      await updateCourseTargetDB(courseTarget.id, { isDeleted: true });
-      deleteCourseTarget(courseTarget.id);
+      await updateCourseTargetDB(target.id, { isDeleted: true });
+      deleteTarget(target.id);
       toast.success("Kursziel gelöscht.");
     } catch (error) {
       toast.error("Löschen fehlgeschlagen.");
@@ -116,7 +125,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
 
   useDndMonitor({
     onDragStart(event) {
-      if (event.active.id === courseTarget.id && isEditable) {
+      if (event.active.id === target.id && isEditable) {
         setIsEditable(false);
       }
     },
@@ -128,7 +137,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
         ref={setNodeRef}
         style={{
           ...style,
-          backgroundColor: courseTarget.active ? formData.color : "rgba(0,0,0,0.2)",
+          backgroundColor: target.active ? formData.color : "rgba(0,0,0,0.2)",
         }}
         {...attributes}
         {...listeners}
@@ -136,25 +145,25 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
           "rounded-2xl p-5",
           isDragging && "z-20 opacity-60",
           "cursor-grab touch-none active:cursor-grabbing",
-          !courseTarget.active && "cursor-not-allowed opacity-50",
+          !target.active && "cursor-not-allowed opacity-50",
         )}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5 text-white">
             <RxHamburgerMenu />
-            {courseTarget.isNew ? (
+            {target.isNew ? (
               <span style={{ color: formData.fontColor }}>
                 {formData.name || "Neue Zielgruppe"}
               </span>
             ) : (
-              <Link to={`/courses/${courseTarget.id}`} style={{ color: formData.fontColor }}>
+              <Link to={`/courses/${target.id}`} style={{ color: formData.fontColor }}>
                 {formData.name}
               </Link>
             )}
           </div>
 
           <div className="flex items-center gap-7">
-            {courseTarget.active ? (
+            {target.active ? (
               <button
                 type="button"
                 className="cursor-pointer"
@@ -171,7 +180,7 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
             )}
             <Switch
               className="cursor-pointer"
-              checked={courseTarget.active}
+              checked={target.active}
               onCheckedChange={(checked) => {
                 handleToggleActive(checked);
                 setIsEditable(false);
@@ -197,14 +206,14 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
                 color={formData.color}
                 onChange={(newColor) => {
                   setFormData((prev) => ({ ...prev, color: newColor }));
-                  updateColor(courseTarget.id, [newColor, formData.fontColor]);
+                  updateColor(target.id, [newColor, formData.fontColor]);
                 }}
               />
               <ColorPicker
                 color={formData.fontColor}
                 onChange={(newColor) => {
                   setFormData((prev) => ({ ...prev, fontColor: newColor }));
-                  updateColor(courseTarget.id, [formData.color, newColor]);
+                  updateColor(target.id, [formData.color, newColor]);
                 }}
               />
               <MdInsertEmoticon className="cursor-pointer text-5xl text-gray-600" />
@@ -219,4 +228,4 @@ const CourseTargetItem = ({ courseTarget }: CourseTargetItemProps) => {
   );
 };
 
-export default CourseTargetItem;
+export default TargetItem;

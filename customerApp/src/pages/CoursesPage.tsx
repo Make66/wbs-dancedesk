@@ -1,4 +1,4 @@
-import CourseTargetItem from "../components/courses/CourseTargetItem";
+import TargetItem from "../components/courses/TargetItem";
 import {
   DndContext,
   closestCenter,
@@ -8,22 +8,22 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useCourseTargetsStore } from "../stores/useCourseTargetsStore";
+import { targetStore } from "../stores/targetStore";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { useLocationsStore } from "../stores/useLocationsStore";
+import { locationStore } from "../stores/locationStore";
 
 const CoursesPage = () => {
-  const courseTargets = useCourseTargetsStore((state) => state.courseTargets);
-  const isInactiveVisible = useCourseTargetsStore((state) => state.isInactiveVisible);
-  const toggleInactiveVisibility = useCourseTargetsStore((state) => state.toggleInactiveVisibility);
-  const reorderCourses = useCourseTargetsStore((state) => state.reorderCourseTargets);
-  const addCourseTarget = useCourseTargetsStore((state) => state.addCourseTarget);
-  const selectedLocationId = useLocationsStore((state) => state.selectedLocationId);
+  const courseTargets = targetStore((state) => state.courseTargets);
+  const isInactiveVisible = targetStore((state) => state.isInactiveVisible);
+  const toggleInactiveVisibility = targetStore((state) => state.toggleInactiveVisibility);
+  const reorderCourses = targetStore((state) => state.reorderTargets);
+  const addTarget = targetStore((state) => state.addTarget);
+  const selectedLocationId = locationStore((state) => state.selectedLocationId);
 
   const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.active);
 
-  const visibleCourseTargets = isInactiveVisible
+  const visibleTargets = isInactiveVisible
     ? courseTargets
     : courseTargets.filter((courseTarget) => courseTarget.active);
 
@@ -63,7 +63,7 @@ const CoursesPage = () => {
             className="cursor-pointer mt-2 mr-6"
             onClick={() => {
               if (selectedLocationId) {
-                addCourseTarget({
+                addTarget({
                   name: "Neue Zielgruppe",
                   color: ["#DDDDDD", "#000000"],
                   locationId: selectedLocationId,
@@ -79,12 +79,12 @@ const CoursesPage = () => {
       <div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext
-            items={visibleCourseTargets.map((course) => course.id)}
+            items={visibleTargets.map((target) => target.id)}
             strategy={verticalListSortingStrategy}
           >
             <div className="flex flex-col gap-2">
-              {visibleCourseTargets.map((courseTarget) => (
-                <CourseTargetItem key={courseTarget.id} courseTarget={courseTarget} />
+              {visibleTargets.map((target) => (
+                <TargetItem key={target.id} target={target} />
               ))}
             </div>
           </SortableContext>

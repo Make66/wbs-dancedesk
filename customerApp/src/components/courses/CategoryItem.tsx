@@ -8,17 +8,17 @@ import { Link } from "react-router";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "../../lib/utils";
-import { useCourseCategoriesStore } from "../../stores/useCourseCategoriesStore";
-import type { CourseCategory as CourseCategoryType } from "../../types/course";
+import { categoryStore } from "../../stores/categoryStore";
+import type { Category as CourseCategoryType } from "../../types/course-types";
 
-type CourseCategoryProps = {
+type CategoryProps = {
   category: CourseCategoryType;
 };
 
-const CourseCategory = ({ category }: CourseCategoryProps) => {
-  const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
-  const isOpened = useCourseCategoriesStore((state) => state.isCategoryExpanded(category.id));
-  const toggleCategoryExpanded = useCourseCategoriesStore((state) => state.toggleCategoryExpanded);
+const CategoryItem = ({ category }: CategoryProps) => {
+  const isEditMode = categoryStore((state) => state.isEditMode);
+  const isOpened = categoryStore((state) => state.isCategoryExpanded(category.id));
+  const toggleCategoryExpanded = categoryStore((state) => state.toggleCategoryExpanded);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
@@ -105,4 +105,4 @@ const CourseCategory = ({ category }: CourseCategoryProps) => {
   );
 };
 
-export default CourseCategory;
+export default CategoryItem;

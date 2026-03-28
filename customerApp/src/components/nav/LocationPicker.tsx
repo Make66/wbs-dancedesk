@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocationsStore } from "../../stores/useLocationsStore";
+import { locationStore } from "../../stores/locationStore";
 import { useNavigate } from "react-router";
 
 const locationOptions = [
@@ -9,8 +9,8 @@ const locationOptions = [
 
 const LocationPicker = () => {
   const navigate = useNavigate();
-  const selectedLocationId = useLocationsStore((state) => state.selectedLocationId);
-  const setSelectedLocationId = useLocationsStore((state) => state.setSelectedLocationId);
+  const selectedLocationId = locationStore((state) => state.selectedLocationId);
+  const setSelectedLocationId = locationStore((state) => state.setSelectedLocationId);
 
   useEffect(() => {
     if (!selectedLocationId) {

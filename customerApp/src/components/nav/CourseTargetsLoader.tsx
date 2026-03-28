@@ -1,29 +1,29 @@
 import { useEffect } from "react";
-import { useLocationsStore } from "../../stores/useLocationsStore";
-import { useCourseTargetsStore } from "../../stores/useCourseTargetsStore";
+import { locationStore } from "../../stores/locationStore";
+import { targetStore } from "../../stores/targetStore";
 
 const CourseTargetsLoader = () => {
-  const selectedLocationId = useLocationsStore((state) => state.selectedLocationId);
+  const selectedLocationId = locationStore((state) => state.selectedLocationId);
 
-  const replaceCourseTargets = useCourseTargetsStore((state) => state.replaceCourseTargets);
-  const clearCourseTargets = useCourseTargetsStore((state) => state.clearCourseTargets);
-  const setLoading = useCourseTargetsStore((state) => state.setLoading);
-  const setError = useCourseTargetsStore((state) => state.setError);
+  const replaceTargets = targetStore((state) => state.replaceTargets);
+  const clearTargets = targetStore((state) => state.clearTargets);
+  const setLoading = targetStore((state) => state.setLoading);
+  const setError = targetStore((state) => state.setError);
 
   useEffect(() => {
     if (!selectedLocationId) {
       console.log("No selectedLocationId -> clearing targets");
-      clearCourseTargets();
+      clearTargets();
       return;
     }
 
-    const loadCourseTargets = async () => {
+    const loadTargets = async () => {
       console.log("Starting fetch...");
 
       try {
         setLoading(true);
         setError(null);
-        clearCourseTargets();
+        clearTargets();
 
         const response = await fetch(
           `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/locations/${selectedLocationId}/targets`,
@@ -35,7 +35,7 @@ const CourseTargetsLoader = () => {
 
         const data = await response.json();
 
-        replaceCourseTargets(data);
+        replaceTargets(data);
       } catch (error) {
         console.error("Fetch error:", error);
         setError(error instanceof Error ? error.message : "Fehler beim Laden der Zielgruppen.");
@@ -44,8 +44,8 @@ const CourseTargetsLoader = () => {
       }
     };
 
-    loadCourseTargets();
-  }, [selectedLocationId, replaceCourseTargets, clearCourseTargets, setLoading, setError]);
+    loadTargets();
+  }, [selectedLocationId, replaceTargets, clearTargets, setLoading, setError]);
 
   return null;
 };

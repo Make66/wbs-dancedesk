@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
-import type { CourseTarget } from "../types/course";
-import { useLocationsStore } from "./useLocationsStore";
+import type { Target } from "../types/course-types";
+import { locationStore } from "./locationStore";
 
-type CreateCourseTargetInput = {
+type CreateTargetInput = {
   locationId: string;
   tenantId?: string;
   name?: string;
@@ -12,7 +12,7 @@ type CreateCourseTargetInput = {
   icon?: string;
 };
 
-type UpdateCourseTargetInput = {
+type UpdateTargetInput = {
   name?: string;
   color?: string[];
   icon?: string;
@@ -20,30 +20,30 @@ type UpdateCourseTargetInput = {
   isDeleted?: boolean;
 };
 
-type CourseTargetsStore = {
-  courseTargets: CourseTarget[];
+type targetStore = {
+  courseTargets: Target[];
   isInactiveVisible: boolean;
   isLoading: boolean;
   error: string | null;
 
   toggleInactiveVisibility: () => void;
 
-  setCourseTargets: (targets: CourseTarget[]) => void;
-  replaceCourseTargets: (targets: CourseTarget[]) => void;
-  clearCourseTargets: () => void;
+  setTargets: (targets: Target[]) => void;
+  replaceTargets: (targets: Target[]) => void;
+  clearTargets: () => void;
 
   setLoading: (value: boolean) => void;
   setError: (value: string | null) => void;
 
-  getVisibleCourseTargets: () => CourseTarget[];
+  getVisibleTargets: () => Target[];
 
-  toggleCourseTargetActive: (id: string, active: boolean) => void;
-  reorderCourseTargets: (activeId: string, overId: string) => void;
-  addCourseTarget: (input: CreateCourseTargetInput) => void;
-  deleteCourseTarget: (id: string) => void;
-  updateCourseTarget: (id: string, data: UpdateCourseTargetInput) => void;
+  toggleTargetActive: (id: string, active: boolean) => void;
+  reorderTargets: (activeId: string, overId: string) => void;
+  addTarget: (input: CreateTargetInput) => void;
+  deleteTarget: (id: string) => void;
+  updateTarget: (id: string, data: UpdateTargetInput) => void;
   updateColor: (id: string, color: string[]) => void;
-  replaceTemporaryCourseTarget: (tempId: string, createdTarget: CourseTarget) => void;
+  replaceTemporaryTarget: (tempId: string, createdTarget: Target) => void;
 };
 
 const filterNotDeleted = <T extends { isDeleted: boolean }>(items: T[]) => {
@@ -54,14 +54,14 @@ const sortBySeq = <T extends { seq: number }>(items: T[] = []) => {
   return [...items].sort((a, b) => a.seq - b.seq);
 };
 
-const withUpdatedSeq = (courseTargets: CourseTarget[]) => {
+const withUpdatedSeq = (courseTargets: Target[]) => {
   return courseTargets.map((courseTarget, index) => ({
     ...courseTarget,
     seq: index + 1,
   }));
 };
 
-const sortCourseTargetsByActive = (courseTargets: CourseTarget[]) => {
+const sortTargetsByActive = (courseTargets: Target[]) => {
   const sorted = sortBySeq(courseTargets);
   const activeTargets = sorted.filter((target) => target.active);
   const inactiveTargets = sorted.filter((target) => !target.active);
@@ -69,7 +69,7 @@ const sortCourseTargetsByActive = (courseTargets: CourseTarget[]) => {
   return withUpdatedSeq([...activeTargets, ...inactiveTargets]);
 };
 
-export const useCourseTargetsStore = create<CourseTargetsStore>()(
+export const targetStore = create<targetStore>()(
   persist(
     (set, get) => ({
       courseTargets: [],
@@ -82,7 +82,7 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           isInactiveVisible: !state.isInactiveVisible,
         })),
 
-      setCourseTargets: (targets) =>
+      setTargets: (targets) =>
         set((state) => ({
           courseTargets: sortBySeq(
             filterNotDeleted([
@@ -93,13 +93,13 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           error: null,
         })),
 
-      replaceCourseTargets: (targets) =>
+      replaceTargets: (targets) =>
         set({
           courseTargets: sortBySeq(filterNotDeleted(targets)),
           error: null,
         }),
 
-      clearCourseTargets: () =>
+      clearTargets: () =>
         set({
           courseTargets: [],
           isLoading: false,
@@ -116,7 +116,7 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           error: value,
         }),
 
-      getVisibleCourseTargets: () => {
+      getVisibleTargets: () => {
         const { courseTargets, isInactiveVisible } = get();
 
         const visibleTargets = isInactiveVisible
@@ -126,7 +126,7 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
         return sortBySeq(visibleTargets);
       },
 
-      toggleCourseTargetActive: (id, active) =>
+      toggleTargetActive: (id, active) =>
         set((state) => {
           const updatedTargets = state.courseTargets.map((courseTarget) =>
             courseTarget.id === id
@@ -139,11 +139,11 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           );
 
           return {
-            courseTargets: sortCourseTargetsByActive(updatedTargets),
+            courseTargets: sortTargetsByActive(updatedTargets),
           };
         }),
 
-      reorderCourseTargets: (activeId, overId) =>
+      reorderTargets: (activeId, overId) =>
         set((state) => {
           const activeItem = state.courseTargets.find((item) => item.id === activeId);
           const overItem = state.courseTargets.find((item) => item.id === overId);
@@ -171,15 +171,15 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           };
         }),
 
-      addCourseTarget: (input) =>
+      addTarget: (input) =>
         set((state) => {
-          const selectedLocationId = useLocationsStore.getState().selectedLocationId;
+          const selectedLocationId = locationStore.getState().selectedLocationId;
           if (!selectedLocationId) {
             return state;
           }
           const nextSeq = state.courseTargets.length + 1;
 
-          const newCourseTarget: CourseTarget = {
+          const newTarget: Target = {
             id: crypto.randomUUID(),
             seq: nextSeq,
             name: input.name?.trim() || "Neue Zielgruppe",
@@ -199,14 +199,14 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
 
           return {
             courseTargets: withUpdatedSeq([
-              newCourseTarget,
+              newTarget,
               ...sortBySeq(activeTargets),
               ...sortBySeq(inactiveTargets),
             ]),
           };
         }),
 
-      updateCourseTarget: (id, data) =>
+      updateTarget: (id, data) =>
         set((state) => ({
           courseTargets: state.courseTargets.map((item) =>
             item.id === id
@@ -232,9 +232,9 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           ),
         })),
 
-      replaceTemporaryCourseTarget: (tempId, createdTarget) =>
+      replaceTemporaryTarget: (tempId, createdTarget) =>
         set((state) => ({
-          courseTargets: sortCourseTargetsByActive(
+          courseTargets: sortTargetsByActive(
             state.courseTargets.map((item) =>
               item.id === tempId
                 ? {
@@ -246,7 +246,7 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           ),
         })),
 
-      deleteCourseTarget: (id) =>
+      deleteTarget: (id) =>
         set((state) => ({
           courseTargets: withUpdatedSeq(
             state.courseTargets.filter((courseTarget) => courseTarget.id !== id),

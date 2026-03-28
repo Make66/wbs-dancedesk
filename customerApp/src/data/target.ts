@@ -6,6 +6,34 @@ type UpdateCourseTargetInput = {
   isDeleted?: boolean;
 };
 
+type CreateCourseTargetPayload = {
+  name: string;
+  color: string[];
+  active?: boolean;
+  seq?: number;
+  locationId: string;
+  icon?: string;
+};
+
+export const createCourseTargetDB = async (data: CreateCourseTargetPayload) => {
+  console.log("createCourseTargetDB payload", data.locationId);
+
+  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Zielgruppe konnte nicht erstellt werden.");
+  }
+
+  return response.json();
+};
+
 export const updateCourseTargetDB = async (id: string, data: UpdateCourseTargetInput) => {
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${id}`, {
     method: "PUT",
@@ -24,28 +52,4 @@ export const updateCourseTargetDB = async (id: string, data: UpdateCourseTargetI
   }
 
   return null;
-};
-
-export const createCourseTargetDB = async (data: {
-  name: string;
-  color: string[];
-  active?: boolean;
-  seq?: number;
-  icon?: string;
-  locationId?: string;
-}) => {
-  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    throw new Error("Kursziel konnte nicht erstellt werden.");
-  }
-
-  return response.json();
 };

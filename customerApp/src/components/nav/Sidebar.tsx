@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router";
-import { useCourseTargetsStore } from "../../stores/useCourseTargetsStore";
+import { targetStore } from "../../stores/targetStore";
 import { cn } from "../../lib/utils";
 import { LuArrowLeftToLine, LuArrowRightToLine } from "react-icons/lu";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -13,8 +13,8 @@ import CourseTargetsLoader from "./CourseTargetsLoader";
 
 const Sidebar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const courseTargets = useCourseTargetsStore((state) => state.courseTargets);
-  const activeCoursesTargets = courseTargets.filter((course) => course.active);
+  const courseTargets = targetStore((state) => state.courseTargets);
+  const activeTargets = courseTargets.filter((course) => course.active);
 
   return (
     <aside
@@ -26,7 +26,7 @@ const Sidebar = () => {
       <div className="flex py-4 items-center justify-between">
         {isMenuOpen && <div className="text-gray-300 font-bold">TakeTool</div>}
         <button
-          className="p-2 bg-[#284A41] hover:bg-[#1a5d4f] rounded-xl cursor-pointer"
+          className="p-2 bg-gray-600 hover:bg-gray-500 rounded-xl cursor-pointer"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? (
@@ -51,10 +51,12 @@ const Sidebar = () => {
             <span className="text-gray-300">Kurse</span>
           </NavLink>
           <div>
-            {activeCoursesTargets.map((course) => (
-              <Link to={`/courses/${course.id}`} key={course.id}>
-                <div className="pl-10 py-2 rounded-xl hover:bg-emerald-950 text-gray-300 cursor-pointer">
-                  {course.name}
+            {activeTargets.map((target) => (
+              <Link to={`/courses/${target.id}`} key={target.id}>
+                <div
+                  className={`pl-10 py-2 rounded-xl text-gray-300 hover:bg-[${target.color[0]}] cursor-pointer`}
+                >
+                  {target.name}
                 </div>
               </Link>
             ))}
