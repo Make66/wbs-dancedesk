@@ -65,7 +65,7 @@ const CoursesPage = () => {
               if (selectedLocationId) {
                 addCourseTarget({
                   name: "Neue Zielgruppe",
-                  color: ["#9ca3af", "#6b7280"],
+                  color: ["#DDDDDD", "#000000"],
                   locationId: selectedLocationId,
                 });
               }

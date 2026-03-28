@@ -6,10 +6,11 @@ import prisma from '#db';
 
 const ACCESS_SECRET  = process.env.ACCESS_JWT_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_JWT_SECRET;
+const REFRESH_TOKEN_TTL = process.env.REFRESH_TOKEN_TTL;
 const SALT_ROUNDS    = Number(process.env.SALT_ROUNDS ?? 10);
 
-if (!ACCESS_SECRET || !REFRESH_SECRET) {
-  console.error('Missing ACCESS_JWT_SECRET or REFRESH_JWT_SECRET');
+if (!ACCESS_SECRET || !REFRESH_SECRET || !REFRESH_TOKEN_TTL || !SALT_ROUNDS) {
+  console.error('Missing ACCESS_JWT_SECRET, REFRESH_JWT_SECRET, REFRESH_TOKEN_TTL, or SALT_ROUNDS in environment variables');
   process.exit(1);
 }
 
@@ -23,7 +24,7 @@ const COOKIE_OPTS = {
 const DUMMY_HASH = '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012345';
 
 async function issueTokens(user: { id: string; tenantId: string }, res: Response) {
-  const accessToken  = jwt.sign({ sub: user.id, tenantId: user.tenantId }, ACCESS_SECRET!,  { expiresIn: '15m' });
+  const accessToken = jwt.sign({ sub: user.id, tenantId: user.tenantId }, ACCESS_SECRET!, { expiresIn: REFRESH_TOKEN_TTL });
   const refreshToken = jwt.sign({ sub: user.id },                          REFRESH_SECRET!, { expiresIn: '7d'  });
   const hash = await bcrypt.hash(refreshToken, SALT_ROUNDS);
   await prisma.user.update({ where: { id: user.id }, data: { refreshToken: hash } });
