@@ -11,6 +11,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useCourseTargetsStore } from "../stores/useCourseTargetsStore";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { useLocationsStore } from "../stores/useLocationsStore";
 
 const CoursesPage = () => {
   const courseTargets = useCourseTargetsStore((state) => state.courseTargets);
@@ -18,12 +19,13 @@ const CoursesPage = () => {
   const toggleInactiveVisibility = useCourseTargetsStore((state) => state.toggleInactiveVisibility);
   const reorderCourses = useCourseTargetsStore((state) => state.reorderCourseTargets);
   const addCourseTarget = useCourseTargetsStore((state) => state.addCourseTarget);
+  const selectedLocationId = useLocationsStore((state) => state.selectedLocationId);
 
-  const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.isActive);
+  const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.active);
 
   const visibleCourseTargets = isInactiveVisible
     ? courseTargets
-    : courseTargets.filter((courseTarget) => courseTarget.isActive);
+    : courseTargets.filter((courseTarget) => courseTarget.active);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -59,12 +61,15 @@ const CoursesPage = () => {
           <button
             type="button"
             className="cursor-pointer mt-2 mr-6"
-            onClick={() =>
-              addCourseTarget({
-                name: "Neue Zielgruppe",
-                color: "#9ca3af",
-              })
-            }
+            onClick={() => {
+              if (selectedLocationId) {
+                addCourseTarget({
+                  name: "Neue Zielgruppe",
+                  color: ["#9ca3af", "#6b7280"],
+                  locationId: selectedLocationId,
+                });
+              }
+            }}
           >
             <IoMdAddCircleOutline className="text-3xl" />
           </button>
