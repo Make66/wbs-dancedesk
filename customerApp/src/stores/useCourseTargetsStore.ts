@@ -15,6 +15,8 @@ type UpdateCourseTargetInput = {
   name?: string;
   color?: string[];
   icon?: string;
+  active?: boolean;
+  isDeleted?: boolean;
 };
 
 type CourseTargetsStore = {
@@ -40,13 +42,14 @@ type CourseTargetsStore = {
   deleteCourseTarget: (id: string) => void;
   updateCourseTarget: (id: string, data: UpdateCourseTargetInput) => void;
   updateColor: (id: string, color: string[]) => void;
+  replaceTemporaryCourseTarget: (tempId: string, createdTarget: CourseTarget) => void;
 };
 
 const filterNotDeleted = <T extends { isDeleted: boolean }>(items: T[]) => {
   return items.filter((item) => !item.isDeleted);
 };
 
-const sortBySeq = <T extends { seq: number }>(items: T[]) => {
+const sortBySeq = <T extends { seq: number }>(items: T[] = []) => {
   return [...items].sort((a, b) => a.seq - b.seq);
 };
 
@@ -59,10 +62,10 @@ const withUpdatedSeq = (courseTargets: CourseTarget[]) => {
 
 const sortCourseTargetsByActive = (courseTargets: CourseTarget[]) => {
   const sorted = sortBySeq(courseTargets);
-  const activeCourses = sorted.filter((course) => course.active);
-  const inactiveCourses = sorted.filter((course) => !course.active);
+  const activeTargets = sorted.filter((target) => target.active);
+  const inactiveTargets = sorted.filter((target) => !target.active);
 
-  return withUpdatedSeq([...activeCourses, ...inactiveCourses]);
+  return withUpdatedSeq([...activeTargets, ...inactiveTargets]);
 };
 
 export const useCourseTargetsStore = create<CourseTargetsStore>()(
@@ -124,7 +127,7 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
 
       toggleCourseTargetActive: (id, active) =>
         set((state) => {
-          const updated = state.courseTargets.map((courseTarget) =>
+          const updatedTargets = state.courseTargets.map((courseTarget) =>
             courseTarget.id === id
               ? {
                   ...courseTarget,
@@ -135,7 +138,7 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           );
 
           return {
-            courseTargets: sortCourseTargetsByActive(updated),
+            courseTargets: sortCourseTargetsByActive(updatedTargets),
           };
         }),
 
@@ -147,18 +150,18 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
           if (!activeItem || !overItem) return state;
           if (!activeItem.active || !overItem.active) return state;
 
-          const activeCourses = sortBySeq(state.courseTargets.filter((item) => item.active));
-          const inactiveCourses = sortBySeq(state.courseTargets.filter((item) => !item.active));
+          const activeTargets = sortBySeq(state.courseTargets.filter((item) => item.active));
+          const inactiveTargets = sortBySeq(state.courseTargets.filter((item) => !item.active));
 
-          const oldIndex = activeCourses.findIndex((item) => item.id === activeId);
-          const newIndex = activeCourses.findIndex((item) => item.id === overId);
+          const oldIndex = activeTargets.findIndex((item) => item.id === activeId);
+          const newIndex = activeTargets.findIndex((item) => item.id === overId);
 
           if (oldIndex === -1 || newIndex === -1) return state;
 
-          const reorderedActiveCourses = arrayMove(activeCourses, oldIndex, newIndex);
+          const reorderedActiveTargets = arrayMove(activeTargets, oldIndex, newIndex);
 
           return {
-            courseTargets: withUpdatedSeq([...reorderedActiveCourses, ...inactiveCourses]).map(
+            courseTargets: withUpdatedSeq([...reorderedActiveTargets, ...inactiveTargets]).map(
               (item) =>
                 item.id === activeId || item.id === overId
                   ? { ...item, updatedAt: new Date().toISOString() }
@@ -175,7 +178,7 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
             id: crypto.randomUUID(),
             seq: nextSeq,
             name: input.name?.trim() || "Neue Zielgruppe",
-            color: input.color || ["#9ca3af", "#9ca3af"],
+            color: input.color || ["#9ca3af", "#ffffff"],
             icon: input.icon || "",
             active: true,
             locationId: input.locationId,
@@ -183,16 +186,17 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             isDeleted: false,
+            isNew: true,
           };
 
-          const activeCourses = state.courseTargets.filter((item) => item.active);
-          const inactiveCourses = state.courseTargets.filter((item) => !item.active);
+          const activeTargets = state.courseTargets.filter((item) => item.active);
+          const inactiveTargets = state.courseTargets.filter((item) => !item.active);
 
           return {
             courseTargets: withUpdatedSeq([
               newCourseTarget,
-              ...sortBySeq(activeCourses),
-              ...sortBySeq(inactiveCourses),
+              ...sortBySeq(activeTargets),
+              ...sortBySeq(inactiveTargets),
             ]),
           };
         }),
@@ -220,6 +224,20 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
                   updatedAt: new Date().toISOString(),
                 }
               : item,
+          ),
+        })),
+
+      replaceTemporaryCourseTarget: (tempId, createdTarget) =>
+        set((state) => ({
+          courseTargets: sortCourseTargetsByActive(
+            state.courseTargets.map((item) =>
+              item.id === tempId
+                ? {
+                    ...createdTarget,
+                    isNew: false,
+                  }
+                : item,
+            ),
           ),
         })),
 
