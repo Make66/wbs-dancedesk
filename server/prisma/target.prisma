@@ -1,12 +1,13 @@
 model Target {
-  name       String?    @default("Erwachsene")
-  icon   String     @default("")
-  seq        Int        @default(0)
+  name String? @default("Erwachsene")
+  icon String  @default("")
+  seq  Int     @default(0)
+
   categories Category[] @ignore
   color      String[]   @default(["#000000", "#FFFFFF"])
-  active      Boolean   @default(true)
-  location    Location? @relation(fields: [locationId], references: [id])
-  locationId  String?
+  active     Boolean    @default(true)
+  location   Location?  @relation(fields: [locationId], references: [id])
+  locationId String?
 
   // Common fields
   id        String   @id @default(cuid())
