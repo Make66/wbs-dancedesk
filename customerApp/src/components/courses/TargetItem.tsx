@@ -18,6 +18,7 @@ import { useDndMonitor } from "@dnd-kit/core";
 import { createTargetDB, updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
 import { locationStore } from "../../stores/locationStore";
+import { IconPicker } from "../ui/iconPicker";
 
 type TargetItemProps = {
   target: Target & { isNew?: boolean };
@@ -30,6 +31,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
     name: target.name ?? "",
     color: target.color?.[0],
     fontColor: target.color?.[1],
+    icon: target.icon ?? "",
   });
 
   const toggleTargetActive = targetStore((state) => state.toggleTargetActive);
@@ -69,6 +71,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
         const createdTarget = await createTargetDB({
           name: formData.name,
           color: [formData.color, formData.fontColor],
+          icon: formData.icon,
           active: true,
           seq: target.seq,
           locationId: selectedLocationId!,
@@ -233,7 +236,14 @@ const TargetItem = ({ target }: TargetItemProps) => {
                   <ImFont className="text-2xl" style={{ color: formData.fontColor }} />
                 </button>
               </ColorPicker>
-              <MdInsertEmoticon className="cursor-pointer text-5xl text-gray-600" />
+              <IconPicker
+                icon={formData.icon}
+                onChange={(newIcon) => {
+                  setFormData((prev) => ({ ...prev, icon: newIcon }));
+                }}
+              >
+                <MdInsertEmoticon className="cursor-pointer text-5xl text-gray-600" />
+              </IconPicker>
             </div>
             <Button type="submit" size="lg">
               Speichern
