@@ -6,19 +6,37 @@ import CourseItem from "./CourseItem";
 import { Switch } from "../ui/switch";
 import { Link } from "react-router";
 import { useSortable } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  type DragEndEvent,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "../../lib/utils";
-import { useCourseCategoriesStore } from "../../stores/useCourseCategoriesStore";
-import type { CourseCategory as CourseCategoryType } from "../../types/course";
+import { categoryStore } from "../../stores/categoryStore";
+import type { Category as CourseCategoryType } from "../../types/course-types";
 
-type CourseCategoryProps = {
+type CategoryProps = {
   category: CourseCategoryType;
 };
 
-const CourseCategory = ({ category }: CourseCategoryProps) => {
-  const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
-  const isOpened = useCourseCategoriesStore((state) => state.isCategoryExpanded(category.id));
-  const toggleCategoryExpanded = useCourseCategoriesStore((state) => state.toggleCategoryExpanded);
+const CategoryItem = ({ category }: CategoryProps) => {
+  const isEditMode = categoryStore((state) => state.isEditMode);
+  const isOpened = categoryStore((state) => state.isCategoryExpanded(category.id));
+  const toggleCategoryExpanded = categoryStore((state) => state.toggleCategoryExpanded);
+  const reorderCourses = categoryStore((state) => state.reorderCourses);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
@@ -29,6 +47,14 @@ const CourseCategory = ({ category }: CourseCategoryProps) => {
     transform: CSS.Transform.toString(transform),
     transition,
     backgroundColor: category.color,
+  };
+
+  const handleCourseDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    reorderCourses(category.id, String(active.id), String(over.id));
   };
 
   return (
@@ -93,16 +119,31 @@ const CourseCategory = ({ category }: CourseCategoryProps) => {
       </div>
 
       {isOpened && (
-        <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {category.courses.map((course) => (
-            <Link key={course.id} to={`/course/${course.id}`}>
-              <CourseItem course={course} />
-            </Link>
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleCourseDragEnd}
+        >
+          <SortableContext
+            items={category.courses.map((course) => course.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 5xl:grid-cols-6 gap-3">
+              {category.courses.map((course) =>
+                isEditMode ? (
+                  <CourseItem key={course.id} course={course} />
+                ) : (
+                  <Link key={course.id} to={`/course/${course.id}`}>
+                    <CourseItem course={course} />
+                  </Link>
+                ),
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   );
 };
 
-export default CourseCategory;
+export default CategoryItem;

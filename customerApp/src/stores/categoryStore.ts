@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { arrayMove } from "@dnd-kit/sortable";
-import type { Course, CourseCategory, CourseTargetDetail } from "../types/course.ts";
+import type { Course, Category, TargetDetail } from "../types/course-types.ts";
 
 type CreateCategoryInput = {
   name?: string;
@@ -16,17 +16,17 @@ type CreateCourseInput = Partial<Omit<Course, "id" | "seq">> & {
 
 type UpdateCourseInput = Partial<Omit<Course, "id" | "seq">>;
 
-type CourseCategoriesStore = {
+type CategoryStore = {
   selectedCourseTargetId: string | null;
   selectedCategoryId: string | null;
-  courseTargetDetail: CourseTargetDetail | null;
+  courseTargetDetail: TargetDetail | null;
   isLoading: boolean;
   error: string | null;
   isEditMode: boolean;
 
   expandedCategoryIds: string[];
 
-  setSelectedCourseTargetId: (id: string | null) => void;
+  setSelectedTargetId: (id: string | null) => void;
   setSelectedCategoryId: (id: string | null) => void;
 
   setLoading: (value: boolean) => void;
@@ -42,10 +42,10 @@ type CourseCategoriesStore = {
   collapseAllCategories: () => void;
   expandAllCategories: () => void;
 
-  loadCourseTargetDetail: (data: CourseTargetDetail) => void;
+  loadCourseTargetDetail: (data: TargetDetail) => void;
   resetCourseTargetDetail: () => void;
 
-  setCategories: (categories: CourseCategory[]) => void;
+  setCategories: (categories: Category[]) => void;
 
   addCategory: (input?: CreateCategoryInput) => void;
   updateCategory: (categoryId: string, data: UpdateCategoryInput) => void;
@@ -69,14 +69,14 @@ const withUpdatedCourseSeq = (courses: Course[]): Course[] => {
   }));
 };
 
-const withUpdatedCategorySeq = (categories: CourseCategory[]): CourseCategory[] => {
+const withUpdatedCategorySeq = (categories: Category[]): Category[] => {
   return categories.map((category, index) => ({
     ...category,
     seq: index + 1,
   }));
 };
 
-const normalizeCategories = (categories: CourseCategory[]): CourseCategory[] => {
+const normalizeCategories = (categories: Category[]): Category[] => {
   const sortedCategories = sortBySeq(categories ?? []).map((category) => ({
     ...category,
     courses: withUpdatedCourseSeq(sortBySeq(category.courses ?? [])),
@@ -99,7 +99,7 @@ const defaultCourseValues = (): Omit<Course, "id" | "seq"> => ({
   duration: 60,
 });
 
-export const useCourseCategoriesStore = create<CourseCategoriesStore>((set, get) => ({
+export const categoryStore = create<CategoryStore>((set, get) => ({
   selectedCourseTargetId: null,
   selectedCategoryId: null,
   courseTargetDetail: null,
@@ -108,7 +108,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set, get)
   isEditMode: false,
   expandedCategoryIds: [],
 
-  setSelectedCourseTargetId: (id) =>
+  setSelectedTargetId: (id) =>
     set({
       selectedCourseTargetId: id,
     }),
@@ -220,7 +220,7 @@ export const useCourseCategoriesStore = create<CourseCategoriesStore>((set, get)
     set((state) => {
       if (!state.courseTargetDetail) return state;
 
-      const newCategory: CourseCategory = {
+      const newCategory: Category = {
         id: crypto.randomUUID(),
         seq: state.courseTargetDetail.categories.length + 1,
         name: input?.name?.trim() || "Neue Kategorie",

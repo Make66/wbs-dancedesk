@@ -4,7 +4,7 @@ export type ContractType = "monthly" | "one-time" | "subscription";
 
 export type CourseFrequency = "daily" | "weekly" | "monthly";
 
-export type CourseTarget = {
+export type Target = {
   id: string;
   name: string;
   seq: number;
@@ -35,7 +35,7 @@ export type Course = {
   duration: number;
 };
 
-export type CourseCategory = {
+export type Category = {
   id: string;
   seq: number;
   name: string;
@@ -43,9 +43,9 @@ export type CourseCategory = {
   color: string;
 };
 
-export type CourseTargetDetail = {
+export type TargetDetail = {
   id: string;
   name: string;
   color: string;
-  categories: CourseCategory[];
+  categories: Category[];
 };

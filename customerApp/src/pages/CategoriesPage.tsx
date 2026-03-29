@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import CourseCategory from "../components/courses/CourseCategory";
+import CategoryItem from "../components/courses/CategoryItem";
 import {
   DndContext,
   closestCenter,
@@ -10,28 +10,26 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useCourseCategoriesStore } from "../stores/useCourseCategoriesStore";
+import { categoryStore } from "../stores/categoryStore";
 import { FaPenNib } from "react-icons/fa";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { useParams } from "react-router";
 
-const CourseCategoriesPage = () => {
+const CategoriesPage = () => {
   const { categoryId } = useParams();
 
-  const error = useCourseCategoriesStore((state) => state.error);
-  const isLoading = useCourseCategoriesStore((state) => state.isLoading);
-  const courseTargetDetail = useCourseCategoriesStore((state) => state.courseTargetDetail);
-  const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
+  const error = categoryStore((state) => state.error);
+  const isLoading = categoryStore((state) => state.isLoading);
+  const courseTargetDetail = categoryStore((state) => state.courseTargetDetail);
+  const isEditMode = categoryStore((state) => state.isEditMode);
 
-  const setError = useCourseCategoriesStore((state) => state.setError);
-  const setLoading = useCourseCategoriesStore((state) => state.setLoading);
-  const loadCourseTargetDetail = useCourseCategoriesStore((state) => state.loadCourseTargetDetail);
-  const resetCourseTargetDetail = useCourseCategoriesStore(
-    (state) => state.resetCourseTargetDetail,
-  );
-  const reorderCategories = useCourseCategoriesStore((state) => state.reorderCategories);
-  const collapseAllCategories = useCourseCategoriesStore((state) => state.collapseAllCategories);
-  const toggleEditMode = useCourseCategoriesStore((state) => state.toggleEditMode);
+  const setError = categoryStore((state) => state.setError);
+  const setLoading = categoryStore((state) => state.setLoading);
+  const loadCourseTargetDetail = categoryStore((state) => state.loadCourseTargetDetail);
+  const resetCourseTargetDetail = categoryStore((state) => state.resetCourseTargetDetail);
+  const reorderCategories = categoryStore((state) => state.reorderCategories);
+  const collapseAllCategories = categoryStore((state) => state.collapseAllCategories);
+  const toggleEditMode = categoryStore((state) => state.toggleEditMode);
 
   const categories = courseTargetDetail?.categories ?? [];
 
@@ -127,7 +125,7 @@ const CourseCategoriesPage = () => {
         >
           <div className="flex flex-col gap-4">
             {categories.map((item) => (
-              <CourseCategory key={item.id} category={item} />
+              <CategoryItem key={item.id} category={item} />
             ))}
           </div>
         </SortableContext>
@@ -136,4 +134,4 @@ const CourseCategoriesPage = () => {
   );
 };
 
-export default CourseCategoriesPage;
+export default CategoriesPage;
