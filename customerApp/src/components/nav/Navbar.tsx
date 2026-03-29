@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../context";
 
 const Navbar = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { handleSignOut, signedIn, user } = useAuth();
 
   const handleLogout = async () => {
@@ -16,8 +17,6 @@ const Navbar = () => {
       }
     }
   };
-
-  console.log("Navbar render - signedIn:", signedIn, "user:", user);
 
   return (
     <nav className="w-full h-16 border-b border-gray-200 flex items-center justify-end px-6">
