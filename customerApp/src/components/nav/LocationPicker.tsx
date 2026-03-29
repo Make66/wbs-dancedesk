@@ -5,12 +5,12 @@ import { locationStore } from "../../stores/locationStore";
 
 const locationOptions = [
   {
-    id: "cmn96gjn6001tirnp0kmvd84s",
+    id: "cmn957d4v001tnxpo4c8wwpc5",
     label: "Buehl",
     description: "",
   },
   {
-    id: "cmn96gjnc001virnp0egrsn9u",
+    id: "cmn957d4w001unxpofebmqo6l",
     label: "Achern",
     description: "",
   },
