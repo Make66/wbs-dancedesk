@@ -36,7 +36,7 @@ export const createTargetDB = async (data: CreateCourseTargetPayload) => {
 
 export const updateTargetDB = async (id: string, data: UpdateCourseTargetInput) => {
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
