@@ -128,7 +128,7 @@ const CategoryItem = ({ category }: CategoryProps) => {
             items={category.courses.map((course) => course.id)}
             strategy={rectSortingStrategy}
           >
-            <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 gap-3">
+            <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 5xl:grid-cols-6 gap-3">
               {category.courses.map((course) =>
                 isEditMode ? (
                   <CourseItem key={course.id} course={course} />

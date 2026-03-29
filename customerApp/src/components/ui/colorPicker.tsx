@@ -3,6 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/pop
 type ColorPickerProps = {
   color: string;
   onChange: (color: string) => void;
+  children?: React.ReactNode;
 };
 
 const PRESET_COLORS = [
@@ -16,16 +17,10 @@ const PRESET_COLORS = [
   ["#d4d4d8", "#a1a1aa", "#71717a", "#52525b", "#3f3f46"],
 ];
 
-export function ColorPicker({ color, onChange }: ColorPickerProps) {
+export function ColorPicker({ color, onChange, children }: ColorPickerProps) {
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="w-10 h-10 rounded-full border shadow cursor-pointer"
-          style={{ backgroundColor: color }}
-        />
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
 
       <PopoverContent className="w-56 p-4 space-y-4">
         <div className="text-sm font-medium">Farbe wählen</div>

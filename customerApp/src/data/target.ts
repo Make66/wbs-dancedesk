@@ -15,8 +15,8 @@ type CreateCourseTargetPayload = {
   icon?: string;
 };
 
-export const createCourseTargetDB = async (data: CreateCourseTargetPayload) => {
-  console.log("createCourseTargetDB payload", data.locationId);
+export const createTargetDB = async (data: CreateCourseTargetPayload) => {
+  console.log("createTargetDB payload", data.locationId);
 
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets`, {
     method: "POST",
@@ -34,7 +34,7 @@ export const createCourseTargetDB = async (data: CreateCourseTargetPayload) => {
   return response.json();
 };
 
-export const updateCourseTargetDB = async (id: string, data: UpdateCourseTargetInput) => {
+export const updateTargetDB = async (id: string, data: UpdateCourseTargetInput) => {
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -42,7 +42,7 @@ export const updateCourseTargetDB = async (id: string, data: UpdateCourseTargetI
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to update course target: ${response.status}`);
+    throw new Error(`Failed to update target: ${response.status}`);
   }
 
   const contentType = response.headers.get("content-type");

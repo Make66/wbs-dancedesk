@@ -24,7 +24,7 @@ const Sidebar = () => {
       )}
     >
       <div className="flex py-4 items-center justify-between">
-        <div className="text-gray-300 font-bold pt-1">DanceDesk II</div>
+        {isMenuOpen && <div className="text-gray-300 font-bold pt-1">DanceDesk II</div>}
         <button
           className="p-2 bg-gray-600 hover:bg-gray-500 rounded-xl cursor-pointer"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -36,7 +36,7 @@ const Sidebar = () => {
           )}
         </button>
       </div>
-      <LocationPicker />
+      {isMenuOpen && <LocationPicker />}
       <CourseTargetsLoader />
       {!isMenuOpen ? (
         <SidebarMin />
@@ -54,7 +54,13 @@ const Sidebar = () => {
             {activeTargets.map((target) => (
               <Link to={`/courses/${target.id}`} key={target.id}>
                 <div
-                  className={`pl-10 py-2 rounded-xl text-gray-300 hover:bg-[${target.color[0]}] cursor-pointer`}
+                  style={
+                    {
+                      "--hover-color-back": target.color[0],
+                      "--hover-color-text": target.color[1],
+                    } as React.CSSProperties
+                  }
+                  className={`pl-10 py-2 rounded-xl text-gray-300 hover:bg-[var(--hover-color-back)] hover:text-[var(--hover-color-text)] cursor-pointer`}
                 >
                   {target.name}
                 </div>

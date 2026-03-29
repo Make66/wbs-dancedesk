@@ -3,6 +3,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { FaPenNib } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { MdInsertEmoticon } from "react-icons/md";
+import { ImFont } from "react-icons/im";
 import { CSS } from "@dnd-kit/utilities";
 import type { Target } from "../../types/course-types";
 import { Switch } from "../ui/switch";
@@ -14,7 +15,7 @@ import { Input } from "../ui/input";
 import { ColorPicker } from "../ui/colorPicker";
 import { Button } from "../ui/button";
 import { useDndMonitor } from "@dnd-kit/core";
-import { createCourseTargetDB, updateCourseTargetDB } from "../../data/target";
+import { createTargetDB, updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
 import { locationStore } from "../../stores/locationStore";
 
@@ -27,8 +28,8 @@ const TargetItem = ({ target }: TargetItemProps) => {
   const [formData, setFormData] = useState({
     id: target.id,
     name: target.name ?? "",
-    color: target.color?.[0] ?? "#000000",
-    fontColor: target.color?.[1] ?? "#FFFFFF",
+    color: target.color?.[0],
+    fontColor: target.color?.[1],
   });
 
   const toggleTargetActive = targetStore((state) => state.toggleTargetActive);
@@ -65,7 +66,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
 
     try {
       if (target.isNew) {
-        const createdTarget = await createCourseTargetDB({
+        const createdTarget = await createTargetDB({
           name: formData.name,
           color: [formData.color, formData.fontColor],
           active: true,
@@ -75,7 +76,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
         replaceTemporaryTarget(target.id, createdTarget);
         toast.success("Kursziel erfolgreich erstellt!");
       } else {
-        const updatedTarget = await updateCourseTargetDB(target.id, {
+        const updatedTarget = await updateTargetDB(target.id, {
           name: formData.name,
           color: [formData.color, formData.fontColor],
         });
@@ -97,7 +98,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
     if (target.isNew) return;
 
     try {
-      await updateCourseTargetDB(target.id, {
+      await updateTargetDB(target.id, {
         active: checked,
       });
     } catch (error) {
@@ -114,7 +115,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
     }
 
     try {
-      await updateCourseTargetDB(target.id, { isDeleted: true });
+      await updateTargetDB(target.id, { isDeleted: true });
       deleteTarget(target.id);
       toast.success("Kursziel gelöscht.");
     } catch (error) {
@@ -137,7 +138,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
         ref={setNodeRef}
         style={{
           ...style,
-          backgroundColor: target.active ? formData.color : "rgba(0,0,0,0.2)",
+          backgroundColor: target.active ? target.color[0] : target.color[0] + "80",
         }}
         {...attributes}
         {...listeners}
@@ -149,8 +150,8 @@ const TargetItem = ({ target }: TargetItemProps) => {
         )}
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-5 text-white">
-            <RxHamburgerMenu />
+          <div className="flex items-center gap-5">
+            <RxHamburgerMenu style={{ color: target.color[1] }} />
             {target.isNew ? (
               <span style={{ color: formData.fontColor }}>
                 {formData.name || "Neue Zielgruppe"}
@@ -170,7 +171,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
                 onClick={() => setIsEditable(!isEditable)}
               >
                 <div className="rounded-full bg-transparent p-2">
-                  <FaPenNib />
+                  <FaPenNib style={{ color: target.color[1] }} />
                 </div>
               </button>
             ) : (
@@ -185,6 +186,8 @@ const TargetItem = ({ target }: TargetItemProps) => {
                 handleToggleActive(checked);
                 setIsEditable(false);
               }}
+              color={target.color[1]}
+              color2={target.color[0]}
             />
           </div>
         </div>
@@ -208,14 +211,27 @@ const TargetItem = ({ target }: TargetItemProps) => {
                   setFormData((prev) => ({ ...prev, color: newColor }));
                   updateColor(target.id, [newColor, formData.fontColor]);
                 }}
-              />
+              >
+                <button
+                  type="button"
+                  className="w-10 h-10 rounded-full border shadow cursor-pointer"
+                  style={{ backgroundColor: formData.color }}
+                />
+              </ColorPicker>
               <ColorPicker
                 color={formData.fontColor}
                 onChange={(newColor) => {
                   setFormData((prev) => ({ ...prev, fontColor: newColor }));
                   updateColor(target.id, [formData.color, newColor]);
                 }}
-              />
+              >
+                <button
+                  type="button"
+                  className="w-10 h-10 rounded-full border border-gray-200 cursor-pointer flex items-center justify-center"
+                >
+                  <ImFont className="text-2xl" style={{ color: formData.fontColor }} />
+                </button>
+              </ColorPicker>
               <MdInsertEmoticon className="cursor-pointer text-5xl text-gray-600" />
             </div>
             <Button type="submit" size="lg">
