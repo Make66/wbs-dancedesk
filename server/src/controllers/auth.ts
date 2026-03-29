@@ -24,7 +24,7 @@ const COOKIE_OPTS = {
 const DUMMY_HASH = '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012345';
 
 async function issueTokens(user: { id: string; tenantId: string }, res: Response) {
-  const accessToken = jwt.sign({ sub: user.id, tenantId: user.tenantId }, ACCESS_SECRET!, { expiresIn: REFRESH_TOKEN_TTL });
+  const accessToken = jwt.sign({ sub: user.id, tenantId: user.tenantId }, ACCESS_SECRET!, { expiresIn: REFRESH_TOKEN_TTL as import('ms').StringValue });
   const refreshToken = jwt.sign({ sub: user.id },                          REFRESH_SECRET!, { expiresIn: '7d'  });
   const hash = await bcrypt.hash(refreshToken, SALT_ROUNDS);
   await prisma.user.update({ where: { id: user.id }, data: { refreshToken: hash } });

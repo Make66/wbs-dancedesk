@@ -3,9 +3,9 @@ model Category {
   target   Target   @relation(fields: [targetId], references: [id])
   targetId String
   seq      Int      @default(0)
-  color      String[]   @default(["#000000", "#FFFFFF"])
-  active    Boolean    @default(true)
-  courses  Course[] @ignore
+  color    String[] @default(["#000000", "#FFFFFF"])
+  active   Boolean  @default(true)
+  courses  Course[]
 
   // Common fields
   id        String   @id @default(cuid())

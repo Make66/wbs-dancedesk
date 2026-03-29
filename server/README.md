@@ -127,8 +127,8 @@ GET /locations/:id/targets     — targets belonging to a location
 
 GET /targets/:id/categories    — categories belonging to a target
 
+GET /targets/:id/courses       — returns target + categories + their courses (nested)
+
 GET /categories/:id/courses    — courses belonging to a category
 
 GET /users/:id                 — returns user with included locations and modules
-
-GET /targets/:id/courses       — returns target + categories + their courses (nested)

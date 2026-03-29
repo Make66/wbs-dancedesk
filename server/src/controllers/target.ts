@@ -24,7 +24,7 @@ export const getOneTarget: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;
   const target = await prisma.target.findFirst({
-    where: { id, tenantId, isDeleted: false }
+    where: { id, tenantId, isDeleted: false },
   });
   if (!target) throw new Error('Target not found', { cause: { status: 404 } });
   res.json(target);

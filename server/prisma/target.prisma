@@ -3,7 +3,7 @@ model Target {
   icon String  @default("")
   seq  Int     @default(0)
 
-  categories Category[] @ignore
+  categories Category[]
   color      String[]   @default(["#000000", "#FFFFFF"])
   active     Boolean    @default(true)
   location   Location?  @relation(fields: [locationId], references: [id])
