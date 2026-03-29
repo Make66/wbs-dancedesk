@@ -1,63 +1,57 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
-import type { CourseTarget } from "../types";
-
-const initialCourseTargets: CourseTarget[] = [
-  {
-    id: "895aa302-63d8-4af2-b97f-b0dde91375bf",
-    seq: 1,
-    name: "Hip Hop",
-    color: "#f472b6",
-    isActive: true,
-  },
-  {
-    id: "a366b74b-9665-439e-92cf-5919d79a8ec0",
-    seq: 2,
-    name: "Salsa",
-    color: "#60a5fa",
-    isActive: true,
-  },
-  {
-    id: "f32bc2e9-5c8f-4047-9a22-4b168298d1d4",
-    seq: 3,
-    name: "Ballet",
-    color: "#c084fc",
-    isActive: true,
-  },
-  {
-    id: "0e1d5c18-32aa-4c20-97fb-b15141767ab3",
-    seq: 4,
-    name: "Contemporary",
-    color: "#4ade80",
-    isActive: true,
-  },
-  {
-    id: "5cf7e48b-d0d0-4d37-9c03-42ebcd1ac2f3",
-    seq: 5,
-    name: "Jazz",
-    color: "#facc15",
-    isActive: true,
-  },
-  {
-    id: "3eb39bcb-d89d-4725-b259-7fbd80e317af",
-    seq: 6,
-    name: "Tango",
-    color: "#f87171",
-    isActive: true,
-  },
-  {
-    id: "44c5b27c-d9aa-4a80-b0ef-6f72a3711cb5",
-    seq: 7,
-    name: "Breakdance",
-    color: "#2dd4bf",
-    isActive: true,
-  },
-];
+import type { CourseTarget } from "../types/course";
+import { useLocationsStore } from "./useLocationsStore";
 
 type CreateCourseTargetInput = {
+  locationId: string;
+  tenantId?: string;
   name?: string;
-  color?: string;
+  color?: string[];
+  icon?: string;
+};
+
+type UpdateCourseTargetInput = {
+  name?: string;
+  color?: string[];
+  icon?: string;
+  active?: boolean;
+  isDeleted?: boolean;
+};
+
+type CourseTargetsStore = {
+  courseTargets: CourseTarget[];
+  isInactiveVisible: boolean;
+  isLoading: boolean;
+  error: string | null;
+
+  toggleInactiveVisibility: () => void;
+
+  setCourseTargets: (targets: CourseTarget[]) => void;
+  replaceCourseTargets: (targets: CourseTarget[]) => void;
+  clearCourseTargets: () => void;
+
+  setLoading: (value: boolean) => void;
+  setError: (value: string | null) => void;
+
+  getVisibleCourseTargets: () => CourseTarget[];
+
+  toggleCourseTargetActive: (id: string, active: boolean) => void;
+  reorderCourseTargets: (activeId: string, overId: string) => void;
+  addCourseTarget: (input: CreateCourseTargetInput) => void;
+  deleteCourseTarget: (id: string) => void;
+  updateCourseTarget: (id: string, data: UpdateCourseTargetInput) => void;
+  updateColor: (id: string, color: string[]) => void;
+  replaceTemporaryCourseTarget: (tempId: string, createdTarget: CourseTarget) => void;
+};
+
+const filterNotDeleted = <T extends { isDeleted: boolean }>(items: T[]) => {
+  return items.filter((item) => !item.isDeleted);
+};
+
+const sortBySeq = <T extends { seq: number }>(items: T[] = []) => {
+  return [...items].sort((a, b) => a.seq - b.seq);
 };
 
 const withUpdatedSeq = (courseTargets: CourseTarget[]) => {
@@ -68,81 +62,187 @@ const withUpdatedSeq = (courseTargets: CourseTarget[]) => {
 };
 
 const sortCourseTargetsByActive = (courseTargets: CourseTarget[]) => {
-  const activeCourses = courseTargets.filter((course) => course.isActive);
-  const inactiveCourses = courseTargets.filter((course) => !course.isActive);
+  const sorted = sortBySeq(courseTargets);
+  const activeTargets = sorted.filter((target) => target.active);
+  const inactiveTargets = sorted.filter((target) => !target.active);
 
-  return withUpdatedSeq([...activeCourses, ...inactiveCourses]);
-};
-
-type CourseTargetsStore = {
-  courseTargets: CourseTarget[];
-  isInactiveVisible: boolean;
-  toggleInactiveVisibility: () => void;
-  setCourseTargets: (updater: (prev: CourseTarget[]) => CourseTarget[]) => void;
-  toggleCourseTargetActive: (id: string, isActive: boolean) => void;
-  reorderCourseTargets: (activeId: string, overId: string) => void;
-  addCourseTarget: (input?: CreateCourseTargetInput) => void;
-  deleteCourseTarget: (id: string) => void;
-  updateCourseTarget: (id: string, data: { name: string; color: string }) => void;
-  updateColor: (id: string, color: string) => void;
+  return withUpdatedSeq([...activeTargets, ...inactiveTargets]);
 };
 
 export const useCourseTargetsStore = create<CourseTargetsStore>()(
   persist(
-    (set) => ({
-      courseTargets: withUpdatedSeq(sortCourseTargetsByActive(initialCourseTargets)),
+    (set, get) => ({
+      courseTargets: [],
       isInactiveVisible: false,
+      isLoading: false,
+      error: null,
 
       toggleInactiveVisibility: () =>
         set((state) => ({
           isInactiveVisible: !state.isInactiveVisible,
         })),
 
-      setCourseTargets: (updater) =>
+      setCourseTargets: (targets) =>
         set((state) => ({
-          courseTargets: withUpdatedSeq(updater(state.courseTargets)),
+          courseTargets: sortBySeq(
+            filterNotDeleted([
+              ...state.courseTargets.filter((item) => !targets.some((t) => t.id === item.id)),
+              ...targets,
+            ]),
+          ),
+          error: null,
         })),
 
-      toggleCourseTargetActive: (id, isActive) =>
+      replaceCourseTargets: (targets) =>
+        set({
+          courseTargets: sortBySeq(filterNotDeleted(targets)),
+          error: null,
+        }),
+
+      clearCourseTargets: () =>
+        set({
+          courseTargets: [],
+          isLoading: false,
+          error: null,
+        }),
+
+      setLoading: (value) =>
+        set({
+          isLoading: value,
+        }),
+
+      setError: (value) =>
+        set({
+          error: value,
+        }),
+
+      getVisibleCourseTargets: () => {
+        const { courseTargets, isInactiveVisible } = get();
+
+        const visibleTargets = isInactiveVisible
+          ? courseTargets
+          : courseTargets.filter((item) => item.active);
+
+        return sortBySeq(visibleTargets);
+      },
+
+      toggleCourseTargetActive: (id, active) =>
         set((state) => {
-          const updated = state.courseTargets.map((course) =>
-            course.id === id ? { ...course, isActive } : course,
+          const updatedTargets = state.courseTargets.map((courseTarget) =>
+            courseTarget.id === id
+              ? {
+                  ...courseTarget,
+                  active,
+                  updatedAt: new Date().toISOString(),
+                }
+              : courseTarget,
           );
 
           return {
-            courseTargets: sortCourseTargetsByActive(updated),
+            courseTargets: sortCourseTargetsByActive(updatedTargets),
+          };
+        }),
+
+      reorderCourseTargets: (activeId, overId) =>
+        set((state) => {
+          const activeItem = state.courseTargets.find((item) => item.id === activeId);
+          const overItem = state.courseTargets.find((item) => item.id === overId);
+
+          if (!activeItem || !overItem) return state;
+          if (!activeItem.active || !overItem.active) return state;
+
+          const activeTargets = sortBySeq(state.courseTargets.filter((item) => item.active));
+          const inactiveTargets = sortBySeq(state.courseTargets.filter((item) => !item.active));
+
+          const oldIndex = activeTargets.findIndex((item) => item.id === activeId);
+          const newIndex = activeTargets.findIndex((item) => item.id === overId);
+
+          if (oldIndex === -1 || newIndex === -1) return state;
+
+          const reorderedActiveTargets = arrayMove(activeTargets, oldIndex, newIndex);
+
+          return {
+            courseTargets: withUpdatedSeq([...reorderedActiveTargets, ...inactiveTargets]).map(
+              (item) =>
+                item.id === activeId || item.id === overId
+                  ? { ...item, updatedAt: new Date().toISOString() }
+                  : item,
+            ),
           };
         }),
 
       addCourseTarget: (input) =>
         set((state) => {
+          const selectedLocationId = useLocationsStore.getState().selectedLocationId;
+          if (!selectedLocationId) {
+            return state;
+          }
+          const nextSeq = state.courseTargets.length + 1;
+
           const newCourseTarget: CourseTarget = {
             id: crypto.randomUUID(),
-            seq: state.courseTargets.length + 1,
-            name: input?.name?.trim() || "Neue Zielgruppe",
-            color: input?.color || "#9ca3af",
-            isActive: true,
+            seq: nextSeq,
+            name: input.name?.trim() || "Neue Zielgruppe",
+            color: input.color || ["#9ca3af", "#ffffff"],
+            icon: input.icon || "",
+            active: true,
+            locationId: input.locationId || selectedLocationId,
+            tenantId: input.tenantId || "seed",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isDeleted: false,
+            isNew: true,
           };
 
-          const activeCourses = state.courseTargets.filter((item) => item.isActive);
-          const inactiveCourses = state.courseTargets.filter((item) => !item.isActive);
+          const activeTargets = state.courseTargets.filter((item) => item.active);
+          const inactiveTargets = state.courseTargets.filter((item) => !item.active);
 
           return {
-            courseTargets: withUpdatedSeq([newCourseTarget, ...activeCourses, ...inactiveCourses]),
+            courseTargets: withUpdatedSeq([
+              newCourseTarget,
+              ...sortBySeq(activeTargets),
+              ...sortBySeq(inactiveTargets),
+            ]),
           };
         }),
 
       updateCourseTarget: (id, data) =>
         set((state) => ({
           courseTargets: state.courseTargets.map((item) =>
-            item.id === id ? { ...item, ...data } : item,
+            item.id === id
+              ? {
+                  ...item,
+                  ...data,
+                  updatedAt: new Date().toISOString(),
+                }
+              : item,
           ),
         })),
 
       updateColor: (id, color) =>
         set((state) => ({
           courseTargets: state.courseTargets.map((item) =>
-            item.id === id ? { ...item, color } : item,
+            item.id === id
+              ? {
+                  ...item,
+                  color,
+                  updatedAt: new Date().toISOString(),
+                }
+              : item,
+          ),
+        })),
+
+      replaceTemporaryCourseTarget: (tempId, createdTarget) =>
+        set((state) => ({
+          courseTargets: sortCourseTargetsByActive(
+            state.courseTargets.map((item) =>
+              item.id === tempId
+                ? {
+                    ...createdTarget,
+                    isNew: false,
+                  }
+                : item,
+            ),
           ),
         })),
 
@@ -152,30 +252,12 @@ export const useCourseTargetsStore = create<CourseTargetsStore>()(
             state.courseTargets.filter((courseTarget) => courseTarget.id !== id),
           ),
         })),
-
-      reorderCourseTargets: (activeId, overId) =>
-        set((state) => {
-          const activeItem = state.courseTargets.find((item) => item.id === activeId);
-          const overItem = state.courseTargets.find((item) => item.id === overId);
-
-          if (!activeItem || !overItem) return state;
-          if (!activeItem.isActive || !overItem.isActive) return state;
-
-          const activeCourses = state.courseTargets.filter((item) => item.isActive);
-          const inactiveCourses = state.courseTargets.filter((item) => !item.isActive);
-
-          const oldIndex = activeCourses.findIndex((item) => item.id === activeId);
-          const newIndex = activeCourses.findIndex((item) => item.id === overId);
-
-          const reorderedActiveCourses = arrayMove(activeCourses, oldIndex, newIndex);
-
-          return {
-            courseTargets: withUpdatedSeq([...reorderedActiveCourses, ...inactiveCourses]),
-          };
-        }),
     }),
     {
-      name: "courseTargets-storage",
+      name: "courseTargets-ui-storage",
+      partialize: (state) => ({
+        isInactiveVisible: state.isInactiveVisible,
+      }),
     },
   ),
 );

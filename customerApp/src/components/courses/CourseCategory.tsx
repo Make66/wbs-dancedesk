@@ -1,108 +1,104 @@
 import { RxHamburgerMenu } from "react-icons/rx";
-import { RiArrowDownSLine } from "react-icons/ri";
-import { RiArrowUpSLine } from "react-icons/ri";
+import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { FaPenNib } from "react-icons/fa";
 import CourseItem from "./CourseItem";
 import { Switch } from "../ui/switch";
-import { useState } from "react";
 import { Link } from "react-router";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "../../lib/utils";
-import { useDndMonitor } from "@dnd-kit/core";
 import { useCourseCategoriesStore } from "../../stores/useCourseCategoriesStore";
-
-type Course = {
-  id: string;
-  name: string;
-  description: string;
-  startsAt: string;
-  repeat: number;
-  frequency: string;
-  seatsCurrent: number;
-  seatsMax: number;
-  paymentTypes: string[];
-  contractTypes: string[];
-  price: number;
-  imageUrl?: string;
-};
-
-export type Category = {
-  id: string;
-  name: string;
-  color?: string;
-  courses: Course[];
-};
+import type { CourseCategory as CourseCategoryType } from "../../types/course";
 
 type CourseCategoryProps = {
-  category: Category;
+  category: CourseCategoryType;
 };
+
 const CourseCategory = ({ category }: CourseCategoryProps) => {
-  const [isOpened, setIsOpened] = useState(false);
   const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
+  const isOpened = useCourseCategoriesStore((state) => state.isCategoryExpanded(category.id));
+  const toggleCategoryExpanded = useCourseCategoriesStore((state) => state.toggleCategoryExpanded);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
+    disabled: !isEditMode,
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    backgroundColor: category.color,
   };
-
-  useDndMonitor({
-    onDragStart(event) {
-      if (event.active.id === category.id && isOpened) {
-        setIsOpened(false);
-      }
-    },
-  });
 
   return (
     <div
       ref={setNodeRef}
-      style={{ ...style, backgroundColor: category.color }}
-      {...attributes}
-      {...listeners}
-      className={cn(
-        "p-4 bg-gray-300 rounded-xl cursor-grab active:cursor-grabbing touch-none",
-        isDragging && "opacity-60 z-20",
-      )}
+      style={style}
+      className={cn("p-4 bg-gray-300 rounded-xl", isDragging && "opacity-60 z-20")}
     >
       <div
-        className="flex items-center justify-between cursor-pointer"
-        onClick={() => setIsOpened(!isOpened)}
+        {...(isEditMode ? attributes : {})}
+        {...(isEditMode ? listeners : {})}
+        className={cn(
+          "flex items-center justify-between",
+          isEditMode ? "cursor-pointer active:cursor-grabbing touch-none" : "cursor-pointer",
+        )}
+        onClick={() => toggleCategoryExpanded(category.id)}
       >
-        <div className="flex items-center gap-3">
-          <RxHamburgerMenu className="inline-block mr-2" />
-          <h2 className="font-semibold">{category.name}</h2>
+        <div className="flex items-center">
+          {isEditMode && <RxHamburgerMenu className="inline-block mr-2" />}
+          <h2 className="ml-3 font-semibold">{category.name}</h2>
         </div>
+
         <div className="flex gap-5 items-center">
           {isEditMode && (
             <>
-              <FaPenNib className="text-lg inline-block cursor-pointer" />
-              <IoMdAddCircleOutline className="text-xl inline-block cursor-pointer" />
-              <Switch />
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+                className="cursor-pointer"
+              >
+                <FaPenNib className="text-lg inline-block" />
+              </button>
+
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+                className="cursor-pointer"
+              >
+                <IoMdAddCircleOutline className="text-xl inline-block" />
+              </button>
+
+              <div
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+              >
+                <Switch />
+              </div>
             </>
           )}
+
           {isOpened ? (
-            <RiArrowUpSLine className="text-xl inline-block cursor-pointer mr-2" />
+            <RiArrowUpSLine className="text-xl inline-block mr-2" />
           ) : (
-            <RiArrowDownSLine className="text-xl inline-block cursor-pointer mr-2" />
+            <RiArrowDownSLine className="text-xl inline-block mr-2" />
           )}
         </div>
       </div>
+
       {isOpened && (
         <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-          <Link to={`/course/${category.courses[0].id}`}>
-            <CourseItem course={category.courses[0]} />
-          </Link>
-          <Link to={`/course/${category.courses[1].id}`}>
-            <CourseItem course={category.courses[1]} />
-          </Link>
-          <CourseItem course={category.courses[1]} />
-          <CourseItem course={category.courses[0]} />
+          {category.courses.map((course) => (
+            <Link key={course.id} to={`/course/${course.id}`}>
+              <CourseItem course={course} />
+            </Link>
+          ))}
         </div>
       )}
     </div>

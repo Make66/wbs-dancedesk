@@ -22,11 +22,11 @@ type CourseItemProps = {
 const CourseItem = ({ course }: CourseItemProps) => {
   const isEditMode = useCourseCategoriesStore((state) => state.isEditMode);
   return (
-    <div className="p-4 bg-white rounded-xl shadow">
+    <div className="p-4 bg-white rounded-xl shadow h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <RxHamburgerMenu className="inline-block mr-2" />
-          <h3 className="font-semibold">{course.name}</h3>
+          {isEditMode && <RxHamburgerMenu className="inline-block mr-2" />}
+          <h3 className="font-semibold line-clamp-1 pr-2">{course.name}</h3>
         </div>
         {isEditMode && <Switch />}
       </div>
