@@ -7,7 +7,6 @@
     "zielgruppen": [
       {
         "headline": "Ferienworkshops",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 1,
@@ -15,7 +14,6 @@
         "zielseiten": [
           {
             "id": 10508,
-            "cotas_schluessel": "0",
             "zielgruppe": "2362",
             "sequence": "1",
             "is_visible": "0",
@@ -195,7 +193,6 @@
           },
           {
             "id": 10509,
-            "cotas_schluessel": "0",
             "zielgruppe": "2362",
             "sequence": "2",
             "is_visible": "0",
@@ -485,7 +482,6 @@
           },
           {
             "id": 10510,
-            "cotas_schluessel": "0",
             "zielgruppe": "2362",
             "sequence": "3",
             "is_visible": "0",
@@ -775,7 +771,6 @@
           },
           {
             "id": 10511,
-            "cotas_schluessel": "0",
             "zielgruppe": "2362",
             "sequence": "4",
             "is_visible": "0",
@@ -1067,7 +1062,6 @@
       },
       {
         "headline": "Kinder",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 2,
@@ -1075,7 +1069,6 @@
         "zielseiten": [
           {
             "id": 11991,
-            "cotas_schluessel": "0",
             "zielgruppe": "1797",
             "sequence": "1",
             "is_visible": "0",
@@ -1152,7 +1145,6 @@
           },
           {
             "id": 10512,
-            "cotas_schluessel": "0",
             "zielgruppe": "1797",
             "sequence": "2",
             "is_visible": "1",
@@ -1783,7 +1775,6 @@
           },
           {
             "id": 7946,
-            "cotas_schluessel": "0",
             "zielgruppe": "1797",
             "sequence": "3",
             "is_visible": "1",
@@ -3229,7 +3220,6 @@
           },
           {
             "id": 8762,
-            "cotas_schluessel": "0",
             "zielgruppe": "1797",
             "sequence": "4",
             "is_visible": "1",
@@ -4141,7 +4131,6 @@
           },
           {
             "id": 10138,
-            "cotas_schluessel": "0",
             "zielgruppe": "1797",
             "sequence": "6",
             "is_visible": "1",
@@ -5055,7 +5044,6 @@
           },
           {
             "id": 10139,
-            "cotas_schluessel": "0",
             "zielgruppe": "1797",
             "sequence": "8",
             "is_visible": "0",
@@ -5349,7 +5337,6 @@
       },
       {
         "headline": "Jugend",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 3,
@@ -5357,7 +5344,6 @@
         "zielseiten": [
           {
             "id": 7948,
-            "cotas_schluessel": "0",
             "zielgruppe": "1798",
             "sequence": "1",
             "is_visible": "1",
@@ -5806,7 +5792,6 @@
           },
           {
             "id": 10519,
-            "cotas_schluessel": "0",
             "zielgruppe": "1798",
             "sequence": "2",
             "is_visible": "0",
@@ -5848,7 +5833,6 @@
           },
           {
             "id": 7949,
-            "cotas_schluessel": "0",
             "zielgruppe": "1798",
             "sequence": "3",
             "is_visible": "1",
@@ -7025,7 +7009,6 @@
           },
           {
             "id": 9911,
-            "cotas_schluessel": "0",
             "zielgruppe": "1798",
             "sequence": "4",
             "is_visible": "0",
@@ -7067,7 +7050,6 @@
           },
           {
             "id": 8561,
-            "cotas_schluessel": "0",
             "zielgruppe": "1798",
             "sequence": "5",
             "is_visible": "0",
@@ -7081,7 +7063,6 @@
       },
       {
         "headline": "HipHop",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 4,
@@ -7089,7 +7070,6 @@
         "zielseiten": [
           {
             "id": 10720,
-            "cotas_schluessel": "0",
             "zielgruppe": "2432",
             "sequence": "1",
             "is_visible": "1",
@@ -8028,7 +8008,6 @@
           },
           {
             "id": 10721,
-            "cotas_schluessel": "0",
             "zielgruppe": "2432",
             "sequence": "2",
             "is_visible": "0",
@@ -8319,7 +8298,6 @@
           },
           {
             "id": 11959,
-            "cotas_schluessel": "0",
             "zielgruppe": "2432",
             "sequence": "3",
             "is_visible": "0",
@@ -8612,7 +8590,6 @@
       },
       {
         "headline": "Paare und Singles",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 9,
@@ -8620,7 +8597,6 @@
         "zielseiten": [
           {
             "id": 7951,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "1",
             "is_visible": "1",
@@ -8781,7 +8757,6 @@
           },
           {
             "id": 10152,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "2",
             "is_visible": "1",
@@ -10219,7 +10194,6 @@
           },
           {
             "id": 7952,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "3",
             "is_visible": "1",
@@ -12304,7 +12278,6 @@
           },
           {
             "id": 11339,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "4",
             "is_visible": "1",
@@ -20316,7 +20289,6 @@
           },
           {
             "id": 7953,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "5",
             "is_visible": "1",
@@ -21477,7 +21449,6 @@
           },
           {
             "id": 7954,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "6",
             "is_visible": "1",
@@ -24954,7 +24925,6 @@
           },
           {
             "id": 12001,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "7",
             "is_visible": "0",
@@ -25525,7 +25495,6 @@
           },
           {
             "id": 10564,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "8",
             "is_visible": "0",
@@ -25650,7 +25619,6 @@
           },
           {
             "id": 12123,
-            "cotas_schluessel": "0",
             "zielgruppe": "1799",
             "sequence": "9",
             "is_visible": "1",
@@ -25969,7 +25937,6 @@
       },
       {
         "headline": "Specials",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 10,
@@ -25977,7 +25944,6 @@
         "zielseiten": [
           {
             "id": 10606,
-            "cotas_schluessel": "0",
             "zielgruppe": "1800",
             "sequence": "1",
             "is_visible": "1",
@@ -26588,7 +26554,6 @@
           },
           {
             "id": 10597,
-            "cotas_schluessel": "0",
             "zielgruppe": "1800",
             "sequence": "2",
             "is_visible": "1",
@@ -28327,7 +28292,6 @@
           },
           {
             "id": 8562,
-            "cotas_schluessel": "0",
             "zielgruppe": "1800",
             "sequence": "3",
             "is_visible": "0",
@@ -29475,7 +29439,6 @@
           },
           {
             "id": 7955,
-            "cotas_schluessel": "0",
             "zielgruppe": "1800",
             "sequence": "4",
             "is_visible": "1",
@@ -29938,7 +29901,6 @@
           },
           {
             "id": 7956,
-            "cotas_schluessel": "0",
             "zielgruppe": "1800",
             "sequence": "5",
             "is_visible": "1",
@@ -31578,7 +31540,6 @@
           },
           {
             "id": 7957,
-            "cotas_schluessel": "0",
             "zielgruppe": "1800",
             "sequence": "6",
             "is_visible": "0",
@@ -31672,7 +31633,6 @@
           },
           {
             "id": 9510,
-            "cotas_schluessel": "0",
             "zielgruppe": "1800",
             "sequence": "7",
             "is_visible": "0",
@@ -31929,7 +31889,6 @@
       },
       {
         "headline": "Fitness",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 11,
@@ -31937,7 +31896,6 @@
         "zielseiten": [
           {
             "id": 10737,
-            "cotas_schluessel": "0",
             "zielgruppe": "1801",
             "sequence": "1",
             "is_visible": "0",
@@ -32228,7 +32186,6 @@
           },
           {
             "id": 11569,
-            "cotas_schluessel": "0",
             "zielgruppe": "1801",
             "sequence": "2",
             "is_visible": "0",
@@ -32305,7 +32262,6 @@
           },
           {
             "id": 7958,
-            "cotas_schluessel": "0",
             "zielgruppe": "1801",
             "sequence": "3",
             "is_visible": "1",
@@ -32714,7 +32670,6 @@
           },
           {
             "id": 9481,
-            "cotas_schluessel": "0",
             "zielgruppe": "1801",
             "sequence": "4",
             "is_visible": "0",
@@ -32726,7 +32681,6 @@
           },
           {
             "id": 10514,
-            "cotas_schluessel": "0",
             "zielgruppe": "1801",
             "sequence": "5",
             "is_visible": "0",
@@ -33046,7 +33000,6 @@
       },
       {
         "headline": "Generation+",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 12,
@@ -33054,7 +33007,6 @@
         "zielseiten": [
           {
             "id": 10581,
-            "cotas_schluessel": "0",
             "zielgruppe": "2391",
             "sequence": "1",
             "is_visible": "1",
@@ -34609,7 +34561,6 @@
           },
           {
             "id": 12002,
-            "cotas_schluessel": "0",
             "zielgruppe": "2391",
             "sequence": "2",
             "is_visible": "1",
@@ -34935,7 +34886,6 @@
       },
       {
         "headline": "Privatstunden",
-        "cotas_schluessel": "0",
         "standort": 213,
         "is_visible": 1,
         "sequence": 13,
@@ -34943,7 +34893,6 @@
         "zielseiten": [
           {
             "id": 10682,
-            "cotas_schluessel": "0",
             "zielgruppe": "2426",
             "sequence": "0",
             "is_visible": "1",
@@ -35234,13 +35183,6 @@
     ]
   },
   {
-    "id": 214,
-    "title": "Default",
-    "is_visible": 0,
-    "sequence": 1,
-    "zielgruppen": []
-  },
-  {
     "id": 215,
     "title": "Achern",
     "is_visible": 1,
@@ -35248,7 +35190,6 @@
     "zielgruppen": [
       {
         "headline": "Kinder",
-        "cotas_schluessel": "0",
         "standort": 215,
         "is_visible": 1,
         "sequence": 5,
@@ -35256,7 +35197,6 @@
         "zielseiten": [
           {
             "id": 13102,
-            "cotas_schluessel": "0",
             "zielgruppe": "1802",
             "sequence": "1",
             "is_visible": "1",
@@ -35911,7 +35851,6 @@
           },
           {
             "id": 13103,
-            "cotas_schluessel": "0",
             "zielgruppe": "1802",
             "sequence": "2",
             "is_visible": "1",
@@ -36241,7 +36180,6 @@
           },
           {
             "id": 13104,
-            "cotas_schluessel": "0",
             "zielgruppe": "1802",
             "sequence": "3",
             "is_visible": "1",
@@ -36575,7 +36513,6 @@
           },
           {
             "id": 13105,
-            "cotas_schluessel": "0",
             "zielgruppe": "1802",
             "sequence": "4",
             "is_visible": "1",
@@ -36911,7 +36848,6 @@
       },
       {
         "headline": "Jugend",
-        "cotas_schluessel": "0",
         "standort": 215,
         "is_visible": 1,
         "sequence": 6,
@@ -36919,7 +36855,6 @@
         "zielseiten": [
           {
             "id": 13106,
-            "cotas_schluessel": "0",
             "zielgruppe": "1804",
             "sequence": "0",
             "is_visible": "1",
@@ -37134,7 +37069,6 @@
       },
       {
         "headline": "Paare und Singles",
-        "cotas_schluessel": "0",
         "standort": 215,
         "is_visible": 1,
         "sequence": 7,
@@ -37142,7 +37076,6 @@
         "zielseiten": [
           {
             "id": 13107,
-            "cotas_schluessel": "0",
             "zielgruppe": "1803",
             "sequence": "1",
             "is_visible": "1",
@@ -37473,7 +37406,6 @@
           },
           {
             "id": 13108,
-            "cotas_schluessel": "0",
             "zielgruppe": "1803",
             "sequence": "2",
             "is_visible": "0",
@@ -37602,7 +37534,6 @@
           },
           {
             "id": 13109,
-            "cotas_schluessel": "0",
             "zielgruppe": "1803",
             "sequence": "3",
             "is_visible": "1",
@@ -38259,7 +38190,6 @@
       },
       {
         "headline": "Alles weitere (Einzelne Tanzarten und Fitness)",
-        "cotas_schluessel": "0",
         "standort": 215,
         "is_visible": 1,
         "sequence": 8,
@@ -38267,7 +38197,6 @@
         "zielseiten": [
           {
             "id": 13110,
-            "cotas_schluessel": "0",
             "zielgruppe": "1805",
             "sequence": "1",
             "is_visible": "1",
@@ -38918,7 +38847,6 @@
           },
           {
             "id": 13111,
-            "cotas_schluessel": "0",
             "zielgruppe": "1805",
             "sequence": "2",
             "is_visible": "1",
@@ -39017,7 +38945,6 @@
           },
           {
             "id": 13115,
-            "cotas_schluessel": "0",
             "zielgruppe": "1805",
             "sequence": "3",
             "is_visible": "0",
@@ -39136,7 +39063,6 @@
           },
           {
             "id": 13112,
-            "cotas_schluessel": "0",
             "zielgruppe": "1805",
             "sequence": "4",
             "is_visible": "1",
@@ -39319,7 +39245,6 @@
           },
           {
             "id": 13114,
-            "cotas_schluessel": "0",
             "zielgruppe": "1805",
             "sequence": "5",
             "is_visible": "1",
@@ -39666,7 +39591,6 @@
           },
           {
             "id": 13113,
-            "cotas_schluessel": "0",
             "zielgruppe": "1805",
             "sequence": "6",
             "is_visible": "1",

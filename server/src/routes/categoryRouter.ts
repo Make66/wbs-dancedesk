@@ -14,6 +14,7 @@ categoriesRouter
   .route('/:id')
   .get(authenticate, getOneCategory)
   .put(authenticate, validateZod(categorySchema), updateCategory)
+  .patch(authenticate, validateZod(categorySchema.partial()), updateCategory)
   .delete(authenticate, removeCategory);
 
 categoriesRouter.get('/:id/courses', authenticate, getCoursesByCategory);

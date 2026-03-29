@@ -14,6 +14,7 @@ modulesRouter
   .route('/:id')
   .get(authenticate, getOneModule)
   .put(authenticate, validateZod(moduleSchema), updateModule)
+  .patch(authenticate, validateZod(moduleSchema.partial()), updateModule)
   .delete(authenticate, removeModule);
 
 export default modulesRouter;

@@ -11,7 +11,9 @@ model Location {
   longitude Float  @default(0.0)
   latitude  Float  @default(0.0)
 
-  targets Target[] @ignore
+  // relations
+  targets Target[]
+  users   User[]   @relation("UserLocations") // Many-to-many relation with User
 
   // Common fields
   id        String   @id @default(cuid())

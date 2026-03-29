@@ -14,6 +14,7 @@ customersRouter
   .route('/:id')
   .get(authenticate, getOneCustomer)
   .put(authenticate, validateZod(customerSchema), updateCustomer)
+  .patch(authenticate, validateZod(customerSchema.partial()), updateCustomer)
   .delete(authenticate, removeCustomer);
 
 export default customersRouter;

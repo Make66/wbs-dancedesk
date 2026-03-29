@@ -14,6 +14,7 @@ textsRouter
   .route('/:id')
   .get(authenticate, getOneText)
   .put(authenticate, validateZod(textSchema), updateText)
+  .patch(authenticate, validateZod(textSchema.partial()), updateText)
   .delete(authenticate, removeText);
 
 export default textsRouter;

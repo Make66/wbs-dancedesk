@@ -14,6 +14,7 @@ instructorsRouter
   .route('/:id')
   .get(authenticate, getOneInstructor)
   .put(authenticate, validateZod(instructorSchema), updateInstructor)
+  .patch(authenticate, validateZod(instructorSchema.partial()), updateInstructor)
   .delete(authenticate, removeInstructor);
 
 export default instructorsRouter;

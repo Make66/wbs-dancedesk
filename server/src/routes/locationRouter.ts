@@ -14,6 +14,7 @@ locationsRouter
   .route('/:id')
   .get(authenticate, getOneLocation)
   .put(authenticate, validateZod(locationSchema), updateLocation)
+  .patch(authenticate, validateZod(locationSchema.partial()), updateLocation)
   .delete(authenticate, removeLocation);
 
 locationsRouter.get('/:id/targets', authenticate, getTargetsByLocation);

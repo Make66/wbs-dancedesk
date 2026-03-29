@@ -47,6 +47,27 @@ export const updateTarget: RequestHandler = async (req, res) => {
   res.json(target);
 };
 
+export const getTargetWithCourses: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  const target = await prisma.target.findFirst({ where: { id, tenantId, isDeleted: false } });
+  if (!target) throw new Error('Target not found', { cause: { status: 404 } });
+  const categories = await prisma.category.findMany({
+    where: { targetId: id, tenantId, isDeleted: false },
+    orderBy: { seq: 'asc' },
+  });
+  const categoriesWithCourses = await Promise.all(
+    categories.map(async (category) => {
+      const courses = await prisma.course.findMany({
+        where: { categoryId: category.id, tenantId, isDeleted: false },
+        orderBy: { seq: 'asc' },
+      });
+      return { ...category, courses };
+    })
+  );
+  res.json({ ...target, categories: categoriesWithCourses });
+};
+
 export const removeTarget: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;

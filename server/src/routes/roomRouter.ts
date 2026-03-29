@@ -14,6 +14,7 @@ roomsRouter
   .route('/:id')
   .get(authenticate, getOneRoom)
   .put(authenticate, validateZod(roomSchema), updateRoom)
+  .patch(authenticate, validateZod(roomSchema.partial()), updateRoom)
   .delete(authenticate, removeRoom);
 
 export default roomsRouter;

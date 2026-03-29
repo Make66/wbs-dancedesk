@@ -59,7 +59,7 @@ npx prisma studio --config prisma.config.ts
 
 ## Create the first user
 POST http://localhost:8000/auth/register
-````
+```
 {
   "firstName": "Max",
   "lastName": "Mustermann",
@@ -67,6 +67,20 @@ POST http://localhost:8000/auth/register
   "password": "Test1234!",
   "tenantId": "seed"
 }
+´´´
+
+## Procedure after changing schema
+```
+# generate the client from new schema
+npx prisma generate
+
+# create a migration and apply the new schema to the db
+npx prisma migrate dev --name <description>
+
+# populate db with data from ./prisma/seed.ts
+npx prisma db seed
+# user / pass is now admin@test.de/test123
+```
 
 # Endpoints
 
@@ -87,25 +101,25 @@ GET    /auth/me         (requires accessToken cookie)
 
 /auth           POST register, login, refresh  |  DELETE logout  |  GET me
 
-/targets        GET, POST, GET/:id, PUT/:id, DELETE/:id
+/targets        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/categories     GET, POST, GET/:id, PUT/:id, DELETE/:id
+/categories     GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/courses        GET, POST, GET/:id, PUT/:id, DELETE/:id
+/courses        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/customers      GET, POST, GET/:id, PUT/:id, DELETE/:id
+/customers      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/instructors    GET, POST, GET/:id, PUT/:id, DELETE/:id
+/instructors    GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/locations      GET, POST, GET/:id, PUT/:id, DELETE/:id
+/locations      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/modules        GET, POST, GET/:id, PUT/:id, DELETE/:id
+/modules        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/registrations  GET, POST, GET/:id, PUT/:id, DELETE/:id
+/registrations  GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/rooms          GET, POST, GET/:id, PUT/:id, DELETE/:id
+/rooms          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/texts          GET, POST, GET/:id, PUT/:id, DELETE/:id
+/texts          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
 ## Nested routes
 
@@ -114,3 +128,7 @@ GET /locations/:id/targets     — targets belonging to a location
 GET /targets/:id/categories    — categories belonging to a target
 
 GET /categories/:id/courses    — courses belonging to a category
+
+GET /users/:id                 — returns user with included locations and modules
+
+GET /targets/:id/courses       — returns target + categories + their courses (nested)

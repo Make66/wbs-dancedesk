@@ -1,4 +1,5 @@
 export * from './auth.ts';
+export * from './user.ts';
 export * from './target.ts';
 export * from './category.ts';
 export * from './course.ts';

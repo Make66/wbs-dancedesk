@@ -14,6 +14,7 @@ registrationsRouter
   .route('/:id')
   .get(authenticate, getOneRegistration)
   .put(authenticate, validateZod(registrationSchema), updateRegistration)
+  .patch(authenticate, validateZod(registrationSchema.partial()), updateRegistration)
   .delete(authenticate, removeRegistration);
 
 export default registrationsRouter;

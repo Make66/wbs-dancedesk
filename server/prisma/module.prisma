@@ -1,8 +1,11 @@
 model Module {
-  name     String @default("Module 1")
-  seq Int    @default(0)
-  color    String @default("#B5252B")
-  active    Boolean    @default(true)
+  name   String  @default("Standard Modul")
+  seq    Int     @default(0)
+  color  String  @default("#B5252B")
+  active Boolean @default(true)
+
+  // relations
+  users User[] @relation("UserModules") // Many-to-many relation with User
 
   // Common fields
   id        String   @id @default(cuid())

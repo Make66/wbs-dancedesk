@@ -1,12 +1,16 @@
 model User {
-  firstName     String? @default("John Doe")
-  lastName      String? @default("Doe")
-  email    String  @unique @default("admin@test.de")
-  password String  @default("Test123!")
-  imageUrl String  @default("./assets/images/no-profile-picture")
-  modules    String[]  @default(["ALL"]) // Array of modules, e.g., ["COURSE", "SETTINGS", "ALL"]
-  active        Boolean  @default(true)
-  refreshToken  String?  // bcrypt hash of current refresh token; null = logged out
+  firstName    String? @default("John Doe")
+  lastName     String? @default("Doe")
+  email        String  @unique @default("admin@test.de")
+  password     String  @default("Test123!")
+  imageUrl     String  @default("./assets/images/no-profile-picture")
+  active       Boolean @default(true)
+  refreshToken String? // bcrypt hash of current refresh token; null = logged out
+  settings     Json?   @default("{}") // JSON field for user-specific settings/preferences
+
+  // relations from here
+  locations Location[] @relation("UserLocations") // Many-to-many relation with Location
+  modules   Module[]   @relation("UserModules") // Many-to-many relation with Module
 
   // Common fields
   id        String   @id @default(cuid())

@@ -1,7 +1,9 @@
 model Text {
-  name        String? @default("Erwachsene")
-  type        Int     @default(0) // 0 = terms, 1 = info
-  text        String  @default("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+  name String? @default("Erwachsene")
+  type Int     @default(0) // 0 = terms, 1 = info
+  text String  @default("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+
+  // relations
   courseTerms Course[] @relation("CourseTerms")
   courseInfo  Course[] @relation("CourseInfo")
   courses     Course[]

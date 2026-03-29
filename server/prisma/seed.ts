@@ -1,5 +1,6 @@
 import { PrismaClient } from '../generated/prisma/client.ts';
 import { PrismaPg } from '@prisma/adapter-pg';
+import bcrypt from 'bcrypt';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -96,34 +97,48 @@ async function main() {
     data: { name: "DanceSchool Flip'n Bit", email: 'info@dancedesk.de', tenantId: 'seed' },
   });
 
-  // 3. targets — deduplicated by headline
-  const targetMap = new Map<string, string>(); // headline → prisma id
-
-  const uniqueTargets = new Map<string, { name: string; active: boolean; seq: number }>();
+  // 3. locations
+  const locationMap = new Map<number, string>(); // citi id → prisma id
   for (const loc of citiData) {
+    const location = await prisma.location.create({
+      data: {
+        name: loc.title,
+        active: toBool(loc.is_visible),
+        seq: Number(loc.sequence),
+        tenantId: 'seed',
+      },
+    });
+    locationMap.set(loc.id, location.id);
+  }
+
+  // 4. targets — one per location × headline
+  const targetMap = new Map<string, string>(); // `${citiLocId}:${headline}` → prisma id
+  for (const loc of citiData) {
+    const locationId = locationMap.get(loc.id);
+    if (!locationId) continue;
     for (const zg of loc.zielgruppen ?? []) {
-      if (zg.headline && !uniqueTargets.has(zg.headline)) {
-        uniqueTargets.set(zg.headline, {
+      if (!zg.headline) continue;
+      const key = `${loc.id}:${zg.headline}`;
+      const target = await prisma.target.create({
+        data: {
           name: zg.headline,
           active: toBool(zg.is_visible),
           seq: Number(zg.sequence),
-        });
-      }
+          locationId,
+          tenantId: 'seed',
+        },
+      });
+      targetMap.set(key, target.id);
     }
   }
 
-  for (const [headline, data] of uniqueTargets) {
-    const target = await prisma.target.create({ data: { ...data, tenantId: 'seed' } });
-    targetMap.set(headline, target.id);
-  }
-
-  // 4. categories — deduplicated by targetId + headline
+  // 5. categories — deduplicated by targetId + headline
   const categoryMap = new Map<string, string>(); // `${targetId}:${headline}` → prisma id
 
   const uniqueCategories = new Map<string, { name: string; active: boolean; seq: number; targetId: string }>();
   for (const loc of citiData) {
     for (const zg of loc.zielgruppen ?? []) {
-      const targetId = targetMap.get(zg.headline);
+      const targetId = targetMap.get(`${loc.id}:${zg.headline}`);
       if (!targetId) continue;
       for (const zs of zg.zielseiten ?? []) {
         if (!zs.headline) continue;
@@ -145,23 +160,11 @@ async function main() {
     categoryMap.set(key, category.id);
   }
 
-  // 5. locations
-  for (const loc of citiData) {
-    await prisma.location.create({
-      data: {
-        name: loc.title,
-        active: toBool(loc.is_visible),
-        seq: Number(loc.sequence),
-        tenantId: 'seed',
-      },
-    });
-  }
-
   // 6. courses
   let courseCount = 0;
   for (const loc of citiData) {
     for (const zg of loc.zielgruppen ?? []) {
-      const targetId = targetMap.get(zg.headline);
+      const targetId = targetMap.get(`${loc.id}:${zg.headline}`);
       if (!targetId) continue;
       for (const zs of zg.zielseiten ?? []) {
         const key = `${targetId}:${zs.headline}`;
@@ -197,40 +200,38 @@ async function main() {
     }
   }
 
-    // 7. modules
-    await prisma.module.create({
-        data: { name: "Kurse", seq: 1, color: '#66ff33', active: true, tenantId: 'seed' },
-    });
-    await prisma.module.create({
-        data: { name: "Räume", seq: 2, color: '#338fff', active: true, tenantId: 'seed' },
-    });
-    await prisma.module.create({
-        data: { name: "Lehrer", seq: 3, color: '#e733ff', active: true, tenantId: 'seed' },
-    });
-    await prisma.module.create({
-        data: { name: "Anmeldungen", seq: 4, color: '#FFCC33', active: true, tenantId: 'seed' },
-    });
-    await prisma.module.create({
-        data: { name: "Teilnehmer", seq: 5, color: '#ff3385', active: true, tenantId: 'seed' },
-    });
-    await prisma.module.create({
-        data: { name: "Einstellungen", seq: 6, color: '#CCCCCC', active: true, tenantId: 'seed' },
-    });
+  // 7. modules
+  const moduleIds: string[] = [];
+  for (const data of [
+    { name: 'Kurse',         seq: 1, color: '#66ff33', active: true },
+    { name: 'Räume',         seq: 2, color: '#338fff', active: true },
+    { name: 'Lehrer',        seq: 3, color: '#e733ff', active: true },
+    { name: 'Anmeldungen',   seq: 4, color: '#FFCC33', active: true },
+    { name: 'Teilnehmer',    seq: 5, color: '#ff3385', active: true },
+    { name: 'Einstellungen', seq: 6, color: '#CCCCCC', active: true },
+  ]) {
+    const m = await prisma.module.create({ data: { ...data, tenantId: 'seed' } });
+    moduleIds.push(m.id);
+  }
 
-
-    // // 8. user (for auth testing)
-    // await prisma.module.create({
-    //     data: {
-    //         firstName: "John",
-    //            lastName: "Doe",
-    //         email: "john.doe@email.com",
-    //         password: "verysecret", active: true, tenantId: 'seed' },
-    // });
+  // 8. user — connected to all locations and modules
+  await prisma.user.create({
+    data: {
+      firstName: 'Admin',
+      lastName: 'User',
+      email: 'admin@test.de',
+      password: await bcrypt.hash('test123', 10),
+      active: true,
+      tenantId: 'seed',
+      modules:   { connect: moduleIds.map(id => ({ id })) },
+      locations: { connect: [...locationMap.values()].map(id => ({ id })) },
+    },
+  });
 
   console.log('Seeded:');
-  console.log(`  ${uniqueTargets.size} targets`);
+  console.log(`  ${targetMap.size} targets`);
   console.log(`  ${uniqueCategories.size} categories`);
-  console.log(`  ${citiData.length} locations`);
+  console.log(`  ${locationMap.size} locations`);
   console.log(`  ${courseCount} courses`);
 }
 

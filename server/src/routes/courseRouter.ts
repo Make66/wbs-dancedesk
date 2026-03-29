@@ -14,6 +14,7 @@ coursesRouter
   .route('/:id')
   .get(authenticate, getOneCourse)
   .put(authenticate, validateZod(courseSchema), updateCourse)
+  .patch(authenticate, validateZod(courseSchema.partial()), updateCourse)
   .delete(authenticate, removeCourse);
 
 export default coursesRouter;
