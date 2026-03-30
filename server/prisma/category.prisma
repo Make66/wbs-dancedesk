@@ -1,11 +1,13 @@
 model Category {
-  name     String?  @default("Paare Grundkurs")
-  target   Target   @relation(fields: [targetId], references: [id])
-  targetId String
-  seq      Int      @default(0)
-  color    String[] @default(["#000000", "#FFFFFF"])
-  active   Boolean  @default(true)
-  courses  Course[]
+  name   String?  @default("Paare Grundkurs")
+  color  String[] @default(["#000000", "#FFFFFF"])
+  active Boolean  @default(true)
+
+  // relations
+  target       Target   @relation(fields: [targetId], references: [id])
+  targetId     String
+  setSeqCourse Json?    @default("{}") // { parent: UUID, course: UUID[] }
+  courses      Course[]
 
   // Common fields
   id        String   @id @default(cuid())

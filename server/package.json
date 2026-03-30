@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",
-    "@prisma/client": "^7.5.0",
+    "@prisma/client": "^7.6.0",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -33,7 +33,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.1.0",
     "@types/pg": "^8.20.0",
-    "prisma": "^7.5.0",
+    "prisma": "^7.6.0",
     "typescript": "^5.8.3"
   },
   "imports": {
@@ -56,6 +56,10 @@
     "#schemas": {
       "development": "./src/schemas/index.ts",
       "default": "./dist/schemas/index.js"
+    },
+    "#schemas/*": {
+      "development": "./src/schemas/*.ts",
+      "default": "./dist/schemas/*.js"
     },
     "#db": {
       "development": "./src/db/index.ts",

@@ -12,7 +12,6 @@ export const registrationSchema = z.object({
   longitude: z.number().optional(),
   latitude: z.number().optional(),
 
-  seq: z.number().default(0),
   active: z.boolean().default(true)
 });
 

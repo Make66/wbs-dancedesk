@@ -114,3 +114,39 @@ npx prisma generate
 Both the Prisma client (`generated/prisma/`) and the Zod schemas (`src/schemas/zod/`)
 are regenerated together.
 
+---
+
+## What are the reasons for `GET http://localhost:8000/auth/me 401 (Unauthorized)`?
+
+### Most likely causes
+
+**1. No `accessToken` cookie present**
+The middleware checks `req.cookies.accessToken` first. If the cookie is missing (user never logged in, or cookie was cleared), you get an immediate 401.
+
+**2. Access token is expired**
+The access token has a 15-minute lifetime. When it expires, the middleware throws `ACCESS_TOKEN_EXPIRED`. The client should catch this and call `POST /auth/refresh` first — if it's not doing that, the `/auth/me` call will always 401.
+
+**3. Invalid token signature**
+The cookie exists but the JWT can't be verified against `ACCESS_JWT_SECRET` — could happen if the env var changed or the token was tampered with.
+
+### Cross-origin / cookie issues (common in dev)
+
+**4. `credentials: true` not set on the client fetch**
+Since cookies are `httpOnly` and `sameSite: strict`, the client must include credentials in every request:
+```js
+fetch('http://localhost:8000/auth/me', { credentials: 'include' })
+// or in axios: axios.defaults.withCredentials = true
+```
+Without this, the browser won't send the cookie at all.
+
+**5. `sameSite: strict` blocking the cookie**
+In development, if the client (`localhost:3000`) and server (`localhost:8000`) are on different ports, some browser/cookie configurations can still block `strict` cookies in certain navigation contexts.
+
+### Less likely
+
+**6. Token has no `sub` claim** → returns 403, not 401.
+
+**7. User was soft-deleted** → the `/auth/me` handler returns 404 if `isDeleted: true`, not 401.
+
+The most common culprit in a dev environment is **#4** (missing `credentials: 'include'`) or **#2** (expired token with no refresh logic running).
+

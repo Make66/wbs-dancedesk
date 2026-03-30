@@ -1,8 +1,13 @@
 model Instructor {
-  name     String? @default("John Doe Instructor")
-  imageUrl String  @default("./assets/images/no-profile-picture")
-  active    Boolean    @default(true)
+  name     String?  @default("John Doe Instructor")
+  imageUrl String   @default("./assets/images/no-profile-picture")
+  active   Boolean  @default(true)
+  skills   String[] @default(["Salsa", "WTP", "HipHop"])
   courses  Course[]
+
+  // relations
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
 
   // Common fields
   id        String   @id @default(cuid())

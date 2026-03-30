@@ -104,7 +104,6 @@ async function main() {
       data: {
         name: loc.title,
         active: toBool(loc.is_visible),
-        seq: Number(loc.sequence),
         tenantId: 'seed',
       },
     });
@@ -123,7 +122,6 @@ async function main() {
         data: {
           name: zg.headline,
           active: toBool(zg.is_visible),
-          seq: Number(zg.sequence),
           locationId,
           tenantId: 'seed',
         },
@@ -135,7 +133,7 @@ async function main() {
   // 5. categories — deduplicated by targetId + headline
   const categoryMap = new Map<string, string>(); // `${targetId}:${headline}` → prisma id
 
-  const uniqueCategories = new Map<string, { name: string; active: boolean; seq: number; targetId: string }>();
+  const uniqueCategories = new Map<string, { name: string; active: boolean; targetId: string }>();
   for (const loc of citiData) {
     for (const zg of loc.zielgruppen ?? []) {
       const targetId = targetMap.get(`${loc.id}:${zg.headline}`);
@@ -147,7 +145,6 @@ async function main() {
           uniqueCategories.set(key, {
             name: zs.headline,
             active: toBool(zs.is_visible),
-            seq: Number(zs.sequence),
             targetId,
           });
         }

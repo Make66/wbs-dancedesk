@@ -1,13 +1,19 @@
 model Customer {
-  name      String @default("DanceSchool Flip'n Bit")
-  email     String @unique @default("noreply@email.de")
-  website   String @default("https://www.wbscodingschool.com")
-  logoUrl   String @default("./assets/images/logo.webp")
-  primary   String @default("#B5252B")
-  secondary String @default("#858384")
-  tertiary String @default("#858384")
-  quaternary String @default("#858384")
-  active    Boolean    @default(true)
+  name       String  @default("DanceSchool Flip'n Bit")
+  email      String  @unique @default("noreply@email.de")
+  website    String  @default("https://www.wbscodingschool.com")
+  logoUrl    String  @default("./assets/images/logo.webp")
+  primary    String  @default("#B5252B")
+  secondary  String  @default("#858384")
+  tertiary   String  @default("#858384")
+  quaternary String  @default("#858384")
+  active     Boolean @default(true)
+
+  // relations
+  setSeqInstructor Json?        @default("{}") // { parent: UUID, instructors: UUID[] }
+  setSeqTarget     Json?        @default("{}") // { parent: UUID, targets: UUID[] }
+  instructors      Instructor[]
+  locations        Location[]
 
   // Common address fields
   street    String @default("123 Main St")

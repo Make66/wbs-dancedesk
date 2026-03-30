@@ -1,6 +1,13 @@
 import { start } from 'repl';
 import { z } from 'zod/v4';
 
+const uuidSchema = z.string().uuid();
+
+export const setSeqCourseSchema = z.object({
+  parent: uuidSchema,
+  course: z.array(uuidSchema),
+});
+
 export const courseDateSchema = z.object({
   date: z.date(),
   isStart: z.boolean().default(false)

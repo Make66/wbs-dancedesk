@@ -1,5 +1,6 @@
 import type { RequestHandler } from 'express';
 import prisma from '#db';
+import { setSeqLocationSchema } from '#schemas/location';
 
 export const getAllCustomers: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
@@ -33,7 +34,8 @@ export const updateCustomer: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const exists = await prisma.customer.findFirst({ where: { id, tenantId, isDeleted: false } });
   if (!exists) throw new Error('Customer not found', { cause: { status: 404 } });
-  const customer = await prisma.customer.update({ where: { id }, data: req.body });
+  const parsed = setSeqLocationSchema.parse(req.body.setSeqLocation);
+  const customer = await prisma.customer.update({ where: { id }, data: { ...req.body, setSeqLocation: parsed } });
   res.json(customer);
 };
 

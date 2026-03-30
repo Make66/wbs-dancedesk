@@ -1,7 +1,6 @@
 model Location {
   name     String? @default("John Doe Instructor")
   imageUrl String  @default("./assets/images/no-profile-picture")
-  seq      Int     @default(0)
   active   Boolean @default(true)
 
   // Common address fields
@@ -12,8 +11,11 @@ model Location {
   latitude  Float  @default(0.0)
 
   // relations
-  targets Target[]
-  users   User[]   @relation("UserLocations") // Many-to-many relation with User
+  customer     Customer? @relation(fields: [customerId], references: [id])
+  customerId   String?
+  setSeqTarget Json?     @default("{}") // { parent: UUID, targets: UUID[] }
+  targets      Target[]
+  users        User[]    @relation("UserLocations") // Many-to-many relation with User
 
   // Common fields
   id        String   @id @default(cuid())

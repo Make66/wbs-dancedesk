@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import json; d=json.load\\(open\\(''''node_modules/@prisma/client/package.json''''\\)\\); exports = d.get\\(''''exports'''', {}\\); [print\\(k\\) for k in exports.keys\\(\\)]\")",
+      "Bash(node --experimental-transform-types -e \"import\\(''@prisma/client/runtime/client''\\).then\\(m => console.log\\(''OK'', Object.keys\\(m\\).slice\\(0,3\\)\\)\\).catch\\(e => console.error\\(''ERR'', e.message\\)\\)\")",
+      "Bash(node --experimental-transform-types --conditions development -e \"import\\(''@prisma/client/runtime/client''\\).then\\(m => console.log\\(''OK''\\)\\).catch\\(e => console.error\\(''ERR:'', e.message\\)\\)\")",
+      "Bash(node --experimental-transform-types --conditions development -e \"import\\(''../../generated/prisma/client.ts''\\).catch\\(e => console.error\\(''ERR:'', e.message\\)\\)\")",
+      "Bash(node --conditions development --experimental-transform-types --disable-warning=ExperimentalWarning --env-file=.env src/index.ts)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\(''package.json''\\)\\); print\\(json.dumps\\(d.get\\(''imports'', {}\\), indent=2\\)\\)\")",
+      "Bash(grep -n \"seq\" /Users/martin/dev/wbs/wbs-dancedesk/server/prisma/*.prisma)",
+      "Bash(grep -rn \"seq\" /Users/martin/dev/wbs/wbs-dancedesk/server/prisma/*.prisma)"
+    ]
+  }
+}
