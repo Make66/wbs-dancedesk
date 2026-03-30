@@ -50,7 +50,7 @@ All fetches go through the interceptor in src/lib/fetchInterceptor.ts, which ove
 ## Do I have to create my Prisma schemas again as Zod schemas manually?
 
 **No.** Use the `zod-prisma-types` generator — it reads your Prisma schema and auto-generates
-Zod schemas for every model.
+Zod schemas for every model. Unfortunately, this packet is only available for older releases of prisma. so **Yes.** 
 
 ---
 
