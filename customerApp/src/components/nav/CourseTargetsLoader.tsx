@@ -35,6 +35,8 @@ const CourseTargetsLoader = () => {
 
         const data = await response.json();
 
+        console.log("targets loaded:", data);
+
         replaceTargets(data);
       } catch (error) {
         console.error("Fetch error with targets:", error);

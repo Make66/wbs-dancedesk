@@ -1,34 +1,46 @@
+import * as React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
+import { appIcons, type AppIconName } from "../icons";
 
 type IconPickerProps = {
   icon: string;
-  onChange: (icon: string) => void;
+  onChange: (icon: AppIconName) => void;
   children?: React.ReactNode;
 };
 
-const ICONS = ["bongo", "drum", "rattle", "saxophone", "tambourine", "trumpet"];
+const ICONS = Object.entries(appIcons) as [AppIconName, React.FC<React.SVGProps<SVGSVGElement>>][];
 
 export function IconPicker({ icon, onChange, children }: IconPickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="w-100 space-y-4 p-4">
+
+      <PopoverContent className="w-64 space-y-4 p-4">
         <div className="text-sm font-medium">Icon wählen</div>
 
         <div className="flex flex-wrap gap-2">
-          {ICONS.map((item) => {
-            const isActive = icon?.toLowerCase() === item.toLowerCase();
+          {ICONS.map(([name, Icon]) => {
+            const isActive = icon?.toLowerCase() === name.toLowerCase();
 
             return (
               <button
-                key={item}
+                key={name}
                 type="button"
-                onClick={() => onChange(item)}
-                className={`h-10 w-10 rounded-full ${
-                  isActive ? "scale-110" : "border-transparent"
-                }`}
+                onClick={() => onChange(name)}
+                className={[
+                  "flex h-10 w-10 items-center justify-center rounded-full border transition-all",
+                  isActive
+                    ? "scale-110 border-primary bg-primary/10"
+                    : "border-border hover:border-primary/50 hover:bg-muted",
+                ].join(" ")}
+                aria-label={`Wähle ${name} Icon`}
               >
-                <img src={`/icons/${item}.svg`} alt={item} className="cursor-pointer" />
+                <Icon
+                  className={[
+                    "h-6 w-6 transition-colors",
+                    isActive ? "text-primary" : "text-muted-foreground",
+                  ].join(" ")}
+                />
               </button>
             );
           })}

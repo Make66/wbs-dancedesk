@@ -65,7 +65,7 @@ const CategoriesPage = () => {
         setError(null);
 
         const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${categoryId}`,
+          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${categoryId}/courses`,
         );
 
         if (!response.ok) {
