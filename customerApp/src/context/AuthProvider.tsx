@@ -15,7 +15,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(data);
         setSignedIn(true);
       } catch (error) {
-        console.error(error);
+        if (!(error instanceof Error && error.message.startsWith("401"))) {
+          console.error(error);
+        }
       } finally {
         setCheckSession(false);
       }

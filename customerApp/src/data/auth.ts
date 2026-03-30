@@ -33,14 +33,9 @@ const me = async (): Promise<User> => {
   return user;
 };
 
-const logout = async (): Promise<SuccessRes> => {
+const logout = async (): Promise<void> => {
   const res = await fetch(`${authServiceURL}/auth/logout`, { method: "DELETE" });
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
-
-  const data = (await res.json()) as SuccessRes;
-  // console.log("LOGOUT:", data);
-
-  return data;
 };
 
 const register = async (formData: RegisterFormState): Promise<SuccessRes> => {
