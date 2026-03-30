@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "../components/ui/input";
 import { useAuth } from "../context";
 import { Button } from "../components/ui/button";
@@ -10,13 +10,30 @@ type LoginFormState = {
   password: string;
 };
 
+const STORAGE_KEY = "loginFormData";
+
 const LoginPage = () => {
   const { signedIn, handleSignIn } = useAuth();
   const [{ email, password }, setForm] = useState<LoginFormState>({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
+  // Load form data from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setForm(JSON.parse(saved));
+      } catch (error) {
+        console.error("Failed to load saved form data:", error);
+      }
+    }
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const newForm = { ...{ email, password }, [e.target.name]: e.target.value };
+    setForm(newForm);
+    // Save to localStorage on every change
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newForm));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -25,6 +42,8 @@ const LoginPage = () => {
       if (!email || !password) throw new Error("Email and password are required");
       setLoading(true);
       await handleSignIn({ email, password });
+      // Clear saved form data after successful login
+      localStorage.removeItem(STORAGE_KEY);
       toast.success("Logged in successfully!");
     } catch (error) {
       const message = (error as { message: string }).message;
@@ -41,10 +60,15 @@ const LoginPage = () => {
       <div className="flex items-center justify-center">
         <div className="flex flex-col gap-5 w-100 p-5 rounded-2xl bg-white">
           <h1 className="text-2xl font-bold">DanceDesk Login</h1>
-          <form className="mt-4 flex flex-col gap-3" onSubmit={handleSubmit}>
+          <form
+            className="mt-4 flex flex-col gap-3"
+            onSubmit={handleSubmit}
+            autoComplete="on"
+            action="/"
+          >
             <Input
-              autoComplete="username"
-              type="text"
+              autoComplete="email"
+              type="email"
               label="email"
               name="email"
               value={email}
@@ -52,7 +76,7 @@ const LoginPage = () => {
               required
             />
             <Input
-              autoComplete="current-password"
+              autoComplete="password"
               type="password"
               label="password"
               name="password"
