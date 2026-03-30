@@ -49,6 +49,7 @@ const LoginPage = () => {
               name="email"
               value={email}
               onChange={handleChange}
+              required
             />
             <Input
               autoComplete="current-password"
@@ -57,8 +58,10 @@ const LoginPage = () => {
               name="password"
               value={password}
               onChange={handleChange}
+              required
             />
             <Button
+              type="submit"
               className="btn btn-primary self-center w-full mt-3"
               size="lg"
               disabled={loading}
