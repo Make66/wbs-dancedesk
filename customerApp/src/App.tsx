@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import MainLayout from "./layouts/MainLayout";
-import { HomePage, CoursesPage, CourseCategoriesPage, LoginPage, InstructorsPage } from "./pages";
+import { HomePage, CoursesPage, CategoriesPage, LoginPage, InstructorsPage } from "./pages";
 import "./App.css";
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="/courses" element={<CoursesPage />} />
-          <Route path="/courses/:categoryId" element={<CourseCategoriesPage />} />
+          <Route path="/courses/:targetId" element={<CategoriesPage />} />
           <Route path="/course/:categoryId" element={<div className="p-6">CourseDetailPage</div>} />
           <Route path="/users" element={<div className="p-6">UsersPage</div>} />
           <Route path="/instructors" element={<InstructorsPage />} />

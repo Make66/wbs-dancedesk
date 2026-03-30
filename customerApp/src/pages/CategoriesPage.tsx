@@ -16,7 +16,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { useParams } from "react-router";
 
 const CategoriesPage = () => {
-  const { categoryId } = useParams();
+  const { targetId } = useParams();
 
   const error = categoryStore((state) => state.error);
   const isLoading = categoryStore((state) => state.isLoading);
@@ -54,7 +54,7 @@ const CategoriesPage = () => {
   };
 
   useEffect(() => {
-    if (!categoryId) {
+    if (!targetId) {
       resetCourseTargetDetail();
       return;
     }
@@ -65,7 +65,7 @@ const CategoriesPage = () => {
         setError(null);
 
         const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${categoryId}/courses`,
+          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${targetId}/courses`,
         );
 
         if (!response.ok) {
@@ -85,7 +85,7 @@ const CategoriesPage = () => {
     };
 
     loadData();
-  }, [categoryId, loadCourseTargetDetail, resetCourseTargetDetail, setError, setLoading]);
+  }, [targetId, loadCourseTargetDetail, resetCourseTargetDetail, setError, setLoading]);
 
   if (isLoading) {
     return <div className="p-6">Kategorien werden geladen...</div>;
