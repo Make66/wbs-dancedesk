@@ -18,7 +18,6 @@ const DataLoader = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!authUser) {
-        console.log("No user -> clearing user + targets");
         clearUser();
         clearTargets();
         return;
@@ -34,7 +33,6 @@ const DataLoader = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched user data:", data);
 
         setUser(data);
       } catch (error) {
@@ -48,7 +46,6 @@ const DataLoader = () => {
 
   useEffect(() => {
     if (!selectedLocationId) {
-      console.log("No selectedLocationId -> clearing targets");
       clearTargets();
       return;
     }
@@ -74,7 +71,6 @@ const DataLoader = () => {
         setError(error instanceof Error ? error.message : "Fehler beim Laden der Zielgruppen.");
       } finally {
         setLoading(false);
-        console.log("Finished fetch targets...");
       }
     };
 
