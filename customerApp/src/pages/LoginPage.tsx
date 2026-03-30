@@ -40,17 +40,29 @@ const LoginPage = () => {
     <div className="h-screen w-full grid grid-cols-1 items-center justify-center">
       <div className="flex items-center justify-center">
         <div className="flex flex-col gap-5 w-100 p-5 rounded-2xl bg-white">
-          <h1 className="text-2xl font-bold">Login</h1>
+          <h1 className="text-2xl font-bold">DanceDesk Login</h1>
           <form className="mt-4 flex flex-col gap-3" onSubmit={handleSubmit}>
-            <Input type="text" label="email" name="email" value={email} onChange={handleChange} />
             <Input
+              autoComplete="username"
+              type="text"
+              label="email"
+              name="email"
+              value={email}
+              onChange={handleChange}
+            />
+            <Input
+              autoComplete="current-password"
               type="password"
               label="password"
               name="password"
               value={password}
               onChange={handleChange}
             />
-            <Button className="btn btn-primary self-center" disabled={loading}>
+            <Button
+              className="btn btn-primary self-center w-full mt-3"
+              size="lg"
+              disabled={loading}
+            >
               Login
             </Button>
           </form>
