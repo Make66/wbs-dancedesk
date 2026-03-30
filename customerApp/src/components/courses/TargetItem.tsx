@@ -19,6 +19,7 @@ import { createTargetDB, updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
 import { locationStore } from "../../stores/locationStore";
 import { IconPicker } from "../ui/iconPicker";
+import { appIcons, type AppIconName } from "../icons";
 
 type TargetItemProps = {
   target: Target & { isNew?: boolean };
@@ -38,8 +39,12 @@ const TargetItem = ({ target }: TargetItemProps) => {
   const deleteTarget = targetStore((state) => state.deleteTarget);
   const updateTarget = targetStore((state) => state.updateTarget);
   const updateColor = targetStore((state) => state.updateColor);
+  const updateIcon = targetStore((state) => state.updateIcon);
   const replaceTemporaryTarget = targetStore((state) => state.replaceTemporaryTarget);
   const selectedLocationId = locationStore((state) => state.selectedLocationId);
+
+  const iconName = formData.icon || target.icon;
+  const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: target.id,
@@ -161,8 +166,11 @@ const TargetItem = ({ target }: TargetItemProps) => {
                 {formData.name || "Neue Zielgruppe"}
               </span>
             ) : (
-              <Link to={`/courses/${target.id}`} style={{ color: formData.fontColor }}>
-                {formData.name}
+              <Link to={`/courses/${target.id}`} className="flex items-center">
+                {iconName && IconComponent && (
+                  <IconComponent fill={formData.fontColor} width={20} className="-ml-2 mr-3" />
+                )}
+                <span style={{ color: formData.fontColor }}>{formData.name}</span>
               </Link>
             )}
           </div>
@@ -240,6 +248,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
                 icon={formData.icon}
                 onChange={(newIcon) => {
                   setFormData((prev) => ({ ...prev, icon: newIcon }));
+                  updateIcon(target.id, newIcon);
                 }}
               >
                 <MdInsertEmoticon className="cursor-pointer text-5xl text-gray-600" />

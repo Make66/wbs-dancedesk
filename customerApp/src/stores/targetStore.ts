@@ -43,6 +43,7 @@ type targetStore = {
   deleteTarget: (id: string) => void;
   updateTarget: (id: string, data: UpdateTargetInput) => void;
   updateColor: (id: string, color: string[]) => void;
+  updateIcon: (id: string, icon: string) => void;
   replaceTemporaryTarget: (tempId: string, createdTarget: Target) => void;
 };
 
@@ -226,6 +227,19 @@ export const targetStore = create<targetStore>()(
               ? {
                   ...item,
                   color,
+                  updatedAt: new Date().toISOString(),
+                }
+              : item,
+          ),
+        })),
+
+      updateIcon: (id, icon) =>
+        set((state) => ({
+          courseTargets: state.courseTargets.map((item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  icon,
                   updatedAt: new Date().toISOString(),
                 }
               : item,
