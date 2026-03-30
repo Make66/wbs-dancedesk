@@ -1,14 +1,50 @@
 import { useEffect } from "react";
-import { locationStore } from "../../stores/locationStore";
+import { userStore } from "../../stores/userStore";
 import { targetStore } from "../../stores/targetStore";
+import { useAuth } from "../../context";
 
-const CourseTargetsLoader = () => {
-  const selectedLocationId = locationStore((state) => state.selectedLocationId);
+const DataLoader = () => {
+  const authUser = useAuth().user;
+
+  const selectedLocationId = userStore((state) => state.selectedLocationId);
+  const setUser = userStore((state) => state.setUser);
+  const clearUser = userStore((state) => state.clearUser);
 
   const replaceTargets = targetStore((state) => state.replaceTargets);
   const clearTargets = targetStore((state) => state.clearTargets);
   const setLoading = targetStore((state) => state.setLoading);
   const setError = targetStore((state) => state.setError);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!authUser) {
+        console.log("No user -> clearing user + targets");
+        clearUser();
+        clearTargets();
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/users/${authUser.id}`,
+        );
+
+        if (!response.ok) {
+          throw new Error(`${response.status}. Something went wrong!`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched user data:", data);
+
+        setUser(data);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        setError(error instanceof Error ? error.message : "Fehler beim Laden der Benutzerdaten.");
+      }
+    };
+
+    fetchUserData();
+  }, [authUser, setUser, clearUser, clearTargets, setError]);
 
   useEffect(() => {
     if (!selectedLocationId) {
@@ -18,8 +54,6 @@ const CourseTargetsLoader = () => {
     }
 
     const loadTargets = async () => {
-      console.log("Starting fetch...");
-
       try {
         setLoading(true);
         setError(null);
@@ -34,9 +68,6 @@ const CourseTargetsLoader = () => {
         }
 
         const data = await response.json();
-
-        console.log("targets loaded:", data);
-
         replaceTargets(data);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -52,4 +83,4 @@ const CourseTargetsLoader = () => {
   return null;
 };
 
-export default CourseTargetsLoader;
+export default DataLoader;

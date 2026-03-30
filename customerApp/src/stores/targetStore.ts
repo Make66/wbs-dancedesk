@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { Target } from "../types/course-types";
-import { locationStore } from "./locationStore";
+import { userStore } from "./userStore";
 
 type CreateTargetInput = {
   locationId: string;
@@ -174,7 +174,7 @@ export const targetStore = create<targetStore>()(
 
       addTarget: (input) =>
         set((state) => {
-          const selectedLocationId = locationStore.getState().selectedLocationId;
+          const selectedLocationId = userStore.getState().selectedLocationId;
           if (!selectedLocationId) {
             return state;
           }

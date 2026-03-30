@@ -11,7 +11,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { targetStore } from "../stores/targetStore";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { locationStore } from "../stores/locationStore";
+import { userStore } from "../stores/userStore";
 
 const CoursesPage = () => {
   const courseTargets = targetStore((state) => state.courseTargets);
@@ -19,7 +19,7 @@ const CoursesPage = () => {
   const toggleInactiveVisibility = targetStore((state) => state.toggleInactiveVisibility);
   const reorderCourses = targetStore((state) => state.reorderTargets);
   const addTarget = targetStore((state) => state.addTarget);
-  const selectedLocationId = locationStore((state) => state.selectedLocationId);
+  const selectedLocationId = userStore((state) => state.selectedLocationId);
 
   const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.active);
 

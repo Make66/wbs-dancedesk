@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { AuthContext } from "./index";
+import { AuthContext } from ".";
 import { login, me, logout, register } from "../data/auth";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
