@@ -23,8 +23,8 @@ const Sidebar = () => {
         "h-screen flex flex-col bg-gray-800 transition-all duration-200 overflow-y-scroll scrollbar",
       )}
     >
-      <div className="flex py-4 items-center justify-between">
-        {isSidebarOpen && <div className="text-gray-300 font-bold pt-1">DanceDesk</div>}
+      <div className="flex py-4 items-center justify-between mb-6">
+        {isSidebarOpen && <div className="text-gray-300 font-bold text-2xl pt-1">DanceDesk</div>}
         <button
           className="p-2 bg-gray-600 hover:bg-gray-500 rounded-xl cursor-pointer"
           onClick={() => userStore.setState({ isSidebarOpen: !isSidebarOpen })}
@@ -69,11 +69,11 @@ const Sidebar = () => {
           </div>
           <NavLink to="/users" className="flex gap-3">
             <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
-            <span className="text-gray-300">Tanzschüler</span>
+            <span className="text-gray-300">Teilnehmer</span>
           </NavLink>
           <NavLink to="/instructors" className="flex gap-3">
             <FaChalkboardTeacher className="text-2xl cursor-pointer fill-gray-300" />
-            <span className="text-gray-300">Tanzlehrer</span>
+            <span className="text-gray-300">Instruktoren</span>
           </NavLink>
         </div>
       )}
