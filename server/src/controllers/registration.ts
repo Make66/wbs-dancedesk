@@ -5,7 +5,6 @@ export const getAllRegistrations: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const registrations = await prisma.registration.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(registrations);
 };

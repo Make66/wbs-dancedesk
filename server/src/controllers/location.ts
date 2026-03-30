@@ -6,7 +6,6 @@ export const getAllLocations: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const locations = await prisma.location.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(locations);
 };

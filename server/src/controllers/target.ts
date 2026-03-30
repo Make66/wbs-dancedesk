@@ -7,7 +7,6 @@ export const getTargetsByLocation: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const targets = await prisma.target.findMany({
     where: { locationId, tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(targets);
 };
@@ -16,7 +15,6 @@ export const getAllTargets: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const targets = await prisma.target.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(targets);
 };
@@ -56,13 +54,11 @@ export const getTargetWithCourses: RequestHandler = async (req, res) => {
   if (!target) throw new Error('Target not found', { cause: { status: 404 } });
   const categories = await prisma.category.findMany({
     where: { targetId: id, tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' },
   });
   const categoriesWithCourses = await Promise.all(
     categories.map(async (category) => {
       const courses = await prisma.course.findMany({
         where: { categoryId: category.id, tenantId, isDeleted: false },
-        orderBy: { seq: 'asc' },
       });
       return { ...category, courses };
     })

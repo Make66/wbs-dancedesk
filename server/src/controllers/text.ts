@@ -5,7 +5,6 @@ export const getAllTexts: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const texts = await prisma.text.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(texts);
 };

@@ -18,7 +18,6 @@ export const getCoursesByCategory: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const courses = await prisma.course.findMany({
     where: { categoryId, tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(courses);
 };
@@ -27,7 +26,6 @@ export const getAllCourses: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const courses = await prisma.course.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(courses);
 };

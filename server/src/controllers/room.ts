@@ -5,7 +5,6 @@ export const getAllRooms: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const rooms = await prisma.room.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(rooms);
 };

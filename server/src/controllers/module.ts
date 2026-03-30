@@ -5,7 +5,6 @@ export const getAllModules: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const modules = await prisma.module.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(modules);
 };

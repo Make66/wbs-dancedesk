@@ -6,7 +6,6 @@ export const getAllCategories: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const categories = await prisma.category.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(categories);
 };
@@ -16,7 +15,6 @@ export const getCategoriesByTarget: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const categories = await prisma.category.findMany({
     where: { targetId, tenantId, isDeleted: false },
-    orderBy: { seq: 'asc' }
   });
   res.json(categories);
 };
