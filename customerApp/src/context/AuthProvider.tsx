@@ -5,7 +5,7 @@ import { login, me, logout, register } from "../data/auth";
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [signedIn, setSignedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [checkSession, setCheckSession] = useState(true);
+  const [checkSession, setCheckSession] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
