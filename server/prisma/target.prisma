@@ -5,10 +5,10 @@ model Target {
   active Boolean  @default(true)
 
   // relations
-  setSeqCat  Json?      @default("{}") // { parent: UUID, categories: UUID[] }
-  categories Category[]
-  location   Location?  @relation(fields: [locationId], references: [id])
-  locationId String?
+  setSeqCategory Json?      @default("{}") // { parent: UUID, categories: UUID[] }
+  categories     Category[]
+  location       Location?  @relation(fields: [locationId], references: [id])
+  locationId     String?
 
   // Common fields
   id        String   @id @default(cuid())
