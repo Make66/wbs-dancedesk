@@ -18,7 +18,7 @@ const CourseTargetsLoader = () => {
     }
 
     const loadTargets = async () => {
-      console.log("Starting fetch...");
+      console.log("Starting fetch targets...");
 
       try {
         setLoading(true);
@@ -37,10 +37,11 @@ const CourseTargetsLoader = () => {
 
         replaceTargets(data);
       } catch (error) {
-        console.error("Fetch error:", error);
+        console.error("Fetch error with targets:", error);
         setError(error instanceof Error ? error.message : "Fehler beim Laden der Zielgruppen.");
       } finally {
         setLoading(false);
+        console.log("Finished fetch targets...");
       }
     };
 
