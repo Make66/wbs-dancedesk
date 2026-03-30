@@ -17,7 +17,7 @@ import { Button } from "../ui/button";
 import { useDndMonitor } from "@dnd-kit/core";
 import { createTargetDB, updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
-import { locationStore } from "../../stores/locationStore";
+import { userStore } from "../../stores/userStore";
 import { IconPicker } from "../ui/iconPicker";
 import { appIcons, type AppIconName } from "../icons";
 
@@ -41,7 +41,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
   const updateColor = targetStore((state) => state.updateColor);
   const updateIcon = targetStore((state) => state.updateIcon);
   const replaceTemporaryTarget = targetStore((state) => state.replaceTemporaryTarget);
-  const selectedLocationId = locationStore((state) => state.selectedLocationId);
+  const selectedLocationId = userStore((state) => state.selectedLocationId);
 
   const iconName = formData.icon || target.icon;
   const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;

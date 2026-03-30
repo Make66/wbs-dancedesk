@@ -12,6 +12,7 @@ const Navbar = () => {
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
+        console.error(error);
       } else {
         toast.error("Error logging out");
       }

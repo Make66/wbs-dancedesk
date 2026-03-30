@@ -9,7 +9,7 @@ import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
 import SidebarMin from "./SidebarMin";
 import LocationPicker from "./LocationPicker";
-import CourseTargetsLoader from "./CourseTargetsLoader";
+import CourseTargetsLoader from "./DataLoader";
 
 const Sidebar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);

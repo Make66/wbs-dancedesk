@@ -1,44 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { Check, ChevronDown, MapPin } from "lucide-react";
-import { locationStore } from "../../stores/locationStore";
-
-const locationOptions = [
-  {
-    id: "cmn96gjn6001tirnp0kmvd84s",
-    label: "Buehl",
-    description: "",
-  },
-  {
-    id: "cmn96gjnc001virnp0egrsn9u",
-    label: "Achern",
-    description: "",
-  },
-];
+import { userStore } from "../../stores/userStore";
 
 const LocationPicker = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
-  const selectedLocationId = locationStore((state) => state.selectedLocationId);
-  const setSelectedLocationId = locationStore((state) => state.setSelectedLocationId);
+  const user = userStore((state) => state.user);
+  const selectedLocationId = userStore((state) => state.selectedLocationId);
+  const setSelectedLocationId = userStore((state) => state.setSelectedLocationId);
+
+  const locations = useMemo(() => {
+    if (!user) return [];
+
+    return [...user.locations]
+      .filter((location) => !location.isDeleted && location.active)
+      .sort((a, b) => a.seq - b.seq);
+  }, [user]);
 
   useEffect(() => {
-    if (!selectedLocationId) {
-      setSelectedLocationId(locationOptions[0].id);
+    if (!selectedLocationId && locations.length > 0) {
+      setSelectedLocationId(locations[0].id);
     }
-  }, [selectedLocationId, setSelectedLocationId]);
+  }, [selectedLocationId, locations, setSelectedLocationId]);
 
-  const selectedLocation = locationOptions.find((location) => location.id === selectedLocationId);
+  const selectedLocation = useMemo(() => {
+    return locations.find((location) => location.id === selectedLocationId) ?? null;
+  }, [locations, selectedLocationId]);
 
   const handleSelect = (locationId: string) => {
+    if (locationId === selectedLocationId) {
+      setOpen(false);
+      return;
+    }
+
     setSelectedLocationId(locationId);
     setOpen(false);
     navigate("/");
   };
 
   return (
-    <div className="relative mt-4 mb-5 w-full">
+    <div className="relative mb-5 mt-4 w-full">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
@@ -48,10 +51,10 @@ const LocationPicker = () => {
           <MapPin className="h-5 w-5 shrink-0" />
           <div className="flex flex-col">
             <span className="text-sm font-medium">
-              {selectedLocation?.label ?? "Standort wählen"}
+              {selectedLocation?.name ?? "Standort wählen"}
             </span>
-            {selectedLocation?.description && (
-              <span className="text-xs text-gray-400">{selectedLocation.description}</span>
+            {selectedLocation?.city && (
+              <span className="text-xs text-gray-400">{selectedLocation.city}</span>
             )}
           </div>
         </div>
@@ -61,7 +64,7 @@ const LocationPicker = () => {
 
       {open && (
         <div className="absolute z-50 mt-2 w-full rounded-xl border border-gray-600 bg-gray-800 p-2 shadow-lg">
-          {locationOptions.map((location) => {
+          {locations.map((location) => {
             const isSelected = location.id === selectedLocationId;
 
             return (
@@ -76,8 +79,8 @@ const LocationPicker = () => {
                 <div className="flex items-center gap-3">
                   <MapPin className="h-4 w-4 shrink-0" />
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium">{location.label}</span>
-                    <span className="text-xs text-gray-400">{location.description}</span>
+                    <span className="text-sm font-medium">{location.name}</span>
+                    <span className="text-xs text-gray-400">{location.city}</span>
                   </div>
                 </div>
 

@@ -73,7 +73,6 @@ const CategoriesPage = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched target detail:", data);
 
         loadCourseTargetDetail(data);
       } catch (err) {
