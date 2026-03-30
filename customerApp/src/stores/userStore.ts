@@ -62,6 +62,7 @@ type UserStore = {
   user: User | null;
   selectedLocationId: string | null;
   isLoading: boolean;
+  isSidebarOpen: boolean;
   error: string | null;
 
   setUser: (user: User) => void;
@@ -99,7 +100,7 @@ export const userStore = create<UserStore>()(
       selectedLocationId: null,
       isLoading: false,
       error: null,
-
+      isSidebarOpen: false,
       setUser: (user) =>
         set(() => {
           const validLocations = [...user.locations]

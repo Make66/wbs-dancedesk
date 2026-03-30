@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, NavLink } from "react-router";
 import { targetStore } from "../../stores/targetStore";
 import { cn } from "../../lib/utils";
@@ -10,35 +9,36 @@ import { ImUsers } from "react-icons/im";
 import SidebarMin from "./SidebarMin";
 import LocationPicker from "./LocationPicker";
 import CourseTargetsLoader from "./DataLoader";
+import { userStore } from "../../stores/userStore";
 
 const Sidebar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const isSidebarOpen = userStore((state) => state.isSidebarOpen);
   const courseTargets = targetStore((state) => state.courseTargets);
   const activeTargets = courseTargets.filter((course) => course.active);
 
   return (
     <aside
       className={cn(
-        isMenuOpen ? "min-w-64 px-5" : "w-12 px-2",
+        isSidebarOpen ? "min-w-64 px-5" : "w-12 px-2",
         "h-screen flex flex-col bg-gray-800 transition-all duration-200 overflow-y-scroll scrollbar",
       )}
     >
       <div className="flex py-4 items-center justify-between">
-        {isMenuOpen && <div className="text-gray-300 font-bold pt-1">DanceDesk</div>}
+        {isSidebarOpen && <div className="text-gray-300 font-bold pt-1">DanceDesk</div>}
         <button
           className="p-2 bg-gray-600 hover:bg-gray-500 rounded-xl cursor-pointer"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onClick={() => userStore.setState({ isSidebarOpen: !isSidebarOpen })}
         >
-          {isMenuOpen ? (
+          {isSidebarOpen ? (
             <LuArrowLeftToLine className="stroke-gray-300" />
           ) : (
             <LuArrowRightToLine className="stroke-gray-300" />
           )}
         </button>
       </div>
-      {isMenuOpen && <LocationPicker />}
+      {isSidebarOpen && <LocationPicker />}
       <CourseTargetsLoader />
-      {!isMenuOpen ? (
+      {!isSidebarOpen ? (
         <SidebarMin />
       ) : (
         <div className="flex flex-col gap-6 mt-6">

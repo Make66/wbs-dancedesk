@@ -3,7 +3,11 @@ import { useNavigate } from "react-router";
 import { Check, ChevronDown, MapPin } from "lucide-react";
 import { userStore } from "../../stores/userStore";
 
-const LocationPicker = () => {
+type LocationPickerProps = {
+  className?: string;
+};
+
+const LocationPicker = ({ className }: LocationPickerProps) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -41,7 +45,7 @@ const LocationPicker = () => {
   };
 
   return (
-    <div className="relative mb-5 mt-4 w-full">
+    <div className={`relative mb-5 mt-4 w-full ${className}`}>
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
