@@ -44,23 +44,13 @@ const CoursesPage = () => {
   };
 
   return (
-    <div className="p-6 w-full">
-      <div className="flex items-start justify-between">
-        <h1 className="mb-10 text-3xl font-semibold">Zielgruppen</h1>
-
-        <div className="flex items-center gap-4">
-          {hasInactiveItems && (
-            <button type="button" className="cursor-pointer" onClick={toggleInactiveVisibility}>
-              {isInactiveVisible ? (
-                <IoMdEyeOff className="text-3xl mt-2" />
-              ) : (
-                <IoMdEye className="text-3xl mt-2" />
-              )}
-            </button>
-          )}
+    <div className="w-full bg-white">
+      <div className="pl-6 h-20 border-b border-gray-400 flex items-center gap-9">
+        <h1 className="text-3xl font-semibold">Zielgruppen</h1>
+        <div className="flex items-center gap-6">
           <button
             type="button"
-            className="cursor-pointer mt-2 mr-6"
+            className="cursor-pointer"
             onClick={() => {
               if (selectedLocationId) {
                 addTarget({
@@ -73,10 +63,19 @@ const CoursesPage = () => {
           >
             <IoMdAddCircleOutline className="text-3xl" />
           </button>
+          {hasInactiveItems && (
+            <button type="button" className="cursor-pointer" onClick={toggleInactiveVisibility}>
+              {isInactiveVisible ? (
+                <IoMdEyeOff className="text-3xl" />
+              ) : (
+                <IoMdEye className="text-3xl" />
+              )}
+            </button>
+          )}
         </div>
       </div>
 
-      <div>
+      <div className="p-6 mt-3">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext
             items={visibleTargets.map((target) => target.id)}
