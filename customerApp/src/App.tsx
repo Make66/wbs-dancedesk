@@ -7,6 +7,8 @@ import {
   LoginPage,
   InstructorsPage,
   UsersPage,
+  TargetsPage,
+  CourseDetailPage,
 } from "./pages";
 import "./App.css";
 
@@ -17,9 +19,10 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="/targets" element={<TargetsPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:targetId" element={<CategoriesPage />} />
-          <Route path="/course/:categoryId" element={<div className="p-6">CourseDetailPage</div>} />
+          <Route path="/course/:courseId" element={<CourseDetailPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/instructors" element={<InstructorsPage />} />
           <Route path="/settings" element={<div className="p-6">SettingsPage</div>} />
