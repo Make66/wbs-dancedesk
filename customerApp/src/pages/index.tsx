@@ -6,6 +6,7 @@ import InstructorsPage from "./InstructorsPage";
 import UsersPage from "./UsersPage";
 import TargetsPage from "./TargetsPage";
 import CourseDetailPage from "./CourseDetailPage";
+import RoomsPage from "./RoomsPage";
 
 export {
   HomePage,
@@ -16,4 +17,5 @@ export {
   UsersPage,
   TargetsPage,
   CourseDetailPage,
+  RoomsPage,
 };
