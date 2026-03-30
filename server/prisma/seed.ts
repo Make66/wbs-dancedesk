@@ -200,12 +200,12 @@ async function main() {
   // 7. modules
   const moduleIds: string[] = [];
   for (const data of [
-    { name: 'Kurse',         seq: 1, color: '#66ff33', active: true },
-    { name: 'Räume',         seq: 2, color: '#338fff', active: true },
-    { name: 'Lehrer',        seq: 3, color: '#e733ff', active: true },
-    { name: 'Anmeldungen',   seq: 4, color: '#FFCC33', active: true },
-    { name: 'Teilnehmer',    seq: 5, color: '#ff3385', active: true },
-    { name: 'Einstellungen', seq: 6, color: '#CCCCCC', active: true },
+    { name: 'Kurse',         color: '#66ff33', active: true },
+    { name: 'Räume',         color: '#338fff', active: true },
+    { name: 'Lehrer',        color: '#e733ff', active: true },
+    { name: 'Anmeldungen',   color: '#FFCC33', active: true },
+    { name: 'Teilnehmer',    color: '#ff3385', active: true },
+    { name: 'Einstellungen', color: '#CCCCCC', active: true },
   ]) {
     const m = await prisma.module.create({ data: { ...data, tenantId: 'seed' } });
     moduleIds.push(m.id);
