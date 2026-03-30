@@ -15,7 +15,7 @@ export function IconPicker({ icon, onChange, children }: IconPickerProps) {
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
 
-      <PopoverContent className="w-[260px] space-y-4 p-4">
+      <PopoverContent className="w-64 space-y-4 p-4">
         <div className="text-sm font-medium">Icon wählen</div>
 
         <div className="flex flex-wrap gap-2">
