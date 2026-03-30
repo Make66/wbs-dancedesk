@@ -32,7 +32,6 @@ const LoginPage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newForm = { ...{ email, password }, [e.target.name]: e.target.value };
     setForm(newForm);
-    // Save to localStorage on every change
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newForm));
   };
 
@@ -42,8 +41,6 @@ const LoginPage = () => {
       if (!email || !password) throw new Error("Email and password are required");
       setLoading(true);
       await handleSignIn({ email, password });
-      // Clear saved form data after successful login
-      localStorage.removeItem(STORAGE_KEY);
       toast.success("Logged in successfully!");
     } catch (error) {
       const message = (error as { message: string }).message;
