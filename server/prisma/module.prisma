@@ -1,6 +1,5 @@
 model Module {
   name   String  @default("Standard Modul")
-  seq    Int     @default(0)
   color  String  @default("#B5252B")
   active Boolean @default(true)
 
