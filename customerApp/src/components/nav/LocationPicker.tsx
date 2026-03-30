@@ -53,9 +53,6 @@ const LocationPicker = () => {
             <span className="text-sm font-medium">
               {selectedLocation?.name ?? "Standort wählen"}
             </span>
-            {selectedLocation?.city && (
-              <span className="text-xs text-gray-400">{selectedLocation.city}</span>
-            )}
           </div>
         </div>
 
@@ -80,7 +77,6 @@ const LocationPicker = () => {
                   <MapPin className="h-4 w-4 shrink-0" />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{location.name}</span>
-                    <span className="text-xs text-gray-400">{location.city}</span>
                   </div>
                 </div>
 

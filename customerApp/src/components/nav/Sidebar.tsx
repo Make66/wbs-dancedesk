@@ -24,7 +24,7 @@ const Sidebar = () => {
       )}
     >
       <div className="flex py-4 items-center justify-between">
-        {isMenuOpen && <div className="text-gray-300 font-bold pt-1">DanceDesk II</div>}
+        {isMenuOpen && <div className="text-gray-300 font-bold pt-1">DanceDesk</div>}
         <button
           className="p-2 bg-gray-600 hover:bg-gray-500 rounded-xl cursor-pointer"
           onClick={() => setIsMenuOpen(!isMenuOpen)}

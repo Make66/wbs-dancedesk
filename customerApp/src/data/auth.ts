@@ -16,7 +16,7 @@ const login = async (formData: LoginInput): Promise<SuccessRes> => {
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
 
   const data = (await res.json()) as SuccessRes;
-  // console.log("LOGIN:", data);
+  console.log("LOGIN:", data, "Cookies:", document.cookie);
 
   return data;
 };
@@ -34,8 +34,9 @@ const me = async (): Promise<User> => {
 };
 
 const logout = async (): Promise<void> => {
-  const res = await fetch(`${authServiceURL}/auth/logout`, { method: "DELETE" });
+  const res = await fetch(`${authServiceURL}/auth/logout`, { method: "DELETE", credentials: "include" });
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
+  console.log("LOGOUT: Success, Cookies cleared");
 };
 
 const register = async (formData: RegisterFormState): Promise<SuccessRes> => {
@@ -44,12 +45,13 @@ const register = async (formData: RegisterFormState): Promise<SuccessRes> => {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(formData),
   });
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
 
   const data = (await res.json()) as SuccessRes;
-  // console.log("REGISTER:", data);
+  console.log("REGISTER:", data, "Cookies:", document.cookie);
 
   return data;
 };
