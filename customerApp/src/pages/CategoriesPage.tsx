@@ -95,40 +95,39 @@ const CategoriesPage = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="mb-10 text-3xl font-semibold">{courseTargetDetail?.name ?? "Kategorien"}</h1>
+    <div className="w-full">
+      <div className="bg-white sticky top-0 pl-6 h-20 border-b border-gray-400 flex items-center gap-9">
+        <h1 className="text-3xl font-semibold">{courseTargetDetail?.name ?? "Kategorien"}</h1>
+        <button type="button" onClick={toggleEditMode} aria-label="Bearbeitungsmodus umschalten">
+          <FaPenNib className="cursor-pointer text-xl" />
+        </button>
 
-        <div className="flex items-center gap-3">
-          {isEditMode && (
-            <button type="button" aria-label="Kategorie hinzufügen">
-              <IoMdAddCircleOutline className="mr-4 mb-7 cursor-pointer text-xl" />
-            </button>
-          )}
-
-          <button type="button" onClick={toggleEditMode} aria-label="Bearbeitungsmodus umschalten">
-            <FaPenNib className="mr-4 mb-7 cursor-pointer text-xl" />
+        {isEditMode && (
+          <button type="button" aria-label="Kategorie hinzufügen">
+            <IoMdAddCircleOutline className="cursor-pointer text-xl" />
           </button>
-        </div>
+        )}
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={categories.map((item) => item.id)}
-          strategy={verticalListSortingStrategy}
+      <div className="p-6 mt-3">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
         >
-          <div className="flex flex-col gap-4">
-            {categories.map((item) => (
-              <CategoryItem key={item.id} category={item} />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={categories.map((item) => item.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex flex-col gap-4">
+              {categories.map((item) => (
+                <CategoryItem key={item.id} category={item} />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
     </div>
   );
 };

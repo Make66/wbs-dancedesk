@@ -1,4 +1,5 @@
 import { FaEnvelope, FaRegCircleUser } from "react-icons/fa6";
+import { IoSettingsSharp } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context";
 
@@ -20,15 +21,16 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full h-16 border-b border-gray-200 flex items-center justify-end px-6">
-      <div className="flex items-center gap-4">
+    <nav className="h-20 flex items-center px-6 absolute top-0 right-6 z-50">
+      <div className="flex items-center gap-7">
         <div className="relative">
           <span className="absolute -top-1.5 -right-2 px-1.5 py-0.5 text-[8px] text-white font-bold bg-red-500 rounded-full">
             1
           </span>
-          <FaEnvelope className="text-2xl cursor-pointer fill-gray-700" />
+          <FaEnvelope className="text-2xl cursor-pointer" />
         </div>
-        <FaRegCircleUser className="text-2xl cursor-pointer fill-gray-700" onClick={handleLogout} />
+        <IoSettingsSharp className="text-2xl cursor-pointer" />
+        <FaRegCircleUser className="text-2xl cursor-pointer" onClick={handleLogout} />
       </div>
     </nav>
   );

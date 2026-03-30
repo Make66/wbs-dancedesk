@@ -5,7 +5,7 @@ const InstructorItem = () => {
     <div className="p-4 bg-gray-300 rounded-2xl">
       <div className="flex">
         <div>
-          <ProfileImageUploader />
+          <ProfileImageUploader schema="instructor" uuid="instructor-1" />
         </div>
         <div className="ml-6">
           <h2 className="text-xl font-semibold">Max Mustermann</h2>

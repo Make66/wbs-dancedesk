@@ -1,7 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 import ImageCropperModal from "./ImageCropperModal";
 
-const ProfileImageUploader = () => {
+type ImageUploaderProps = {
+  schema:
+    | "user"
+    | "location"
+    | "event"
+    | "other"
+    | "instructor"
+    | "room"
+    | "instructor"
+    | "customer";
+  uuid: string;
+  aspect?: number;
+  cropShape?: "rect" | "round";
+};
+
+const ProfileImageUploader = ({
+  schema,
+  uuid,
+  aspect = 1,
+  cropShape = "round",
+}: ImageUploaderProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -37,8 +57,8 @@ const ProfileImageUploader = () => {
   };
 
   const handleSaveCroppedImage = async (blob: Blob) => {
-    const file = new File([blob], "profile.jpg", {
-      type: "image/jpeg",
+    const file = new File([blob], `${schema}-${uuid}.webp`, {
+      type: "image/webp",
     });
 
     const preview = URL.createObjectURL(file);
@@ -75,9 +95,9 @@ const ProfileImageUploader = () => {
         imageSrc={previewUrl}
         onClose={handleCloseModal}
         onSave={handleSaveCroppedImage}
-        aspect={1}
+        aspect={aspect}
         title="Profilbild zuschneiden"
-        cropShape="round"
+        cropShape={cropShape}
       />
     </div>
   );

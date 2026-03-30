@@ -2,8 +2,6 @@ import { useSortable } from "@dnd-kit/sortable";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaPenNib } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { MdInsertEmoticon } from "react-icons/md";
-import { ImFont } from "react-icons/im";
 import { CSS } from "@dnd-kit/utilities";
 import type { Target } from "../../types/course-types";
 import { Switch } from "../ui/switch";
@@ -11,15 +9,11 @@ import { cn } from "../../lib/utils";
 import { targetStore } from "../../stores/targetStore";
 import { useState } from "react";
 import { Link } from "react-router";
-import { Input } from "../ui/input";
-import { ColorPicker } from "../ui/colorPicker";
-import { Button } from "../ui/button";
 import { useDndMonitor } from "@dnd-kit/core";
-import { createTargetDB, updateTargetDB } from "../../data/target";
+import { updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
-import { userStore } from "../../stores/userStore";
-import { IconPicker } from "../ui/iconPicker";
 import { appIcons, type AppIconName } from "../icons";
+import TargetItemEdit from "./TargetItemEdit";
 
 type TargetItemProps = {
   target: Target & { isNew?: boolean };
@@ -37,11 +31,6 @@ const TargetItem = ({ target }: TargetItemProps) => {
 
   const toggleTargetActive = targetStore((state) => state.toggleTargetActive);
   const deleteTarget = targetStore((state) => state.deleteTarget);
-  const updateTarget = targetStore((state) => state.updateTarget);
-  const updateColor = targetStore((state) => state.updateColor);
-  const updateIcon = targetStore((state) => state.updateIcon);
-  const replaceTemporaryTarget = targetStore((state) => state.replaceTemporaryTarget);
-  const selectedLocationId = userStore((state) => state.selectedLocationId);
 
   const iconName = formData.icon || target.icon;
   const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;
@@ -54,50 +43,6 @@ const TargetItem = ({ target }: TargetItemProps) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.name.trim()) {
-      toast.error("Bitte gib der Zielgruppe einen Namen.");
-      return;
-    }
-
-    const locationId = selectedLocationId ?? target.locationId;
-
-    if (target.isNew && !locationId) {
-      toast.error("Bitte wähle zuerst einen Standort aus.");
-      return;
-    }
-
-    try {
-      if (target.isNew) {
-        const createdTarget = await createTargetDB({
-          name: formData.name,
-          color: [formData.color, formData.fontColor],
-          icon: formData.icon,
-          active: true,
-          seq: target.seq,
-          locationId: selectedLocationId!,
-        });
-        replaceTemporaryTarget(target.id, createdTarget);
-        toast.success("Kursziel erfolgreich erstellt!");
-      } else {
-        const updatedTarget = await updateTargetDB(target.id, {
-          name: formData.name,
-          color: [formData.color, formData.fontColor],
-        });
-
-        updateTarget(target.id, updatedTarget);
-        toast.success("Kursziel erfolgreich aktualisiert!");
-      }
-
-      setIsEditable(false);
-    } catch (error) {
-      console.error(error);
-      toast.error("Speichern fehlgeschlagen.");
-    }
   };
 
   const handleToggleActive = async (checked: boolean) => {
@@ -206,59 +151,12 @@ const TargetItem = ({ target }: TargetItemProps) => {
       </div>
 
       {isEditable && (
-        <div className="h-28">
-          <form onSubmit={handleSubmit} className="flex items-center justify-between px-5 py-7">
-            <div className="flex items-center gap-6">
-              <input type="hidden" value={formData.id} name="id" />
-              <Input
-                type="text"
-                className="w-100"
-                label="Name"
-                value={formData.name}
-                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              />
-              <ColorPicker
-                color={formData.color}
-                onChange={(newColor) => {
-                  setFormData((prev) => ({ ...prev, color: newColor }));
-                  updateColor(target.id, [newColor, formData.fontColor]);
-                }}
-              >
-                <button
-                  type="button"
-                  className="w-10 h-10 rounded-full border shadow cursor-pointer"
-                  style={{ backgroundColor: formData.color }}
-                />
-              </ColorPicker>
-              <ColorPicker
-                color={formData.fontColor}
-                onChange={(newColor) => {
-                  setFormData((prev) => ({ ...prev, fontColor: newColor }));
-                  updateColor(target.id, [formData.color, newColor]);
-                }}
-              >
-                <button
-                  type="button"
-                  className="w-10 h-10 rounded-full border border-gray-200 cursor-pointer flex items-center justify-center"
-                >
-                  <ImFont className="text-2xl" style={{ color: formData.fontColor }} />
-                </button>
-              </ColorPicker>
-              <IconPicker
-                icon={formData.icon}
-                onChange={(newIcon) => {
-                  setFormData((prev) => ({ ...prev, icon: newIcon }));
-                  updateIcon(target.id, newIcon);
-                }}
-              >
-                <MdInsertEmoticon className="cursor-pointer text-5xl text-gray-600" />
-              </IconPicker>
-            </div>
-            <Button type="submit" size="lg">
-              Speichern
-            </Button>
-          </form>
-        </div>
+        <TargetItemEdit
+          target={target}
+          formData={formData}
+          setFormData={setFormData}
+          setIsEditable={setIsEditable}
+        />
       )}
     </div>
   );

@@ -3,5 +3,17 @@ import CoursesPage from "./CoursesPage";
 import CategoriesPage from "./CategoriesPage";
 import LoginPage from "./LoginPage";
 import InstructorsPage from "./InstructorsPage";
+import UsersPage from "./UsersPage";
+import TargetsPage from "./TargetsPage";
+import CourseDetailPage from "./CourseDetailPage";
 
-export { HomePage, CoursesPage, CategoriesPage, LoginPage, InstructorsPage };
+export {
+  HomePage,
+  CoursesPage,
+  CategoriesPage,
+  LoginPage,
+  InstructorsPage,
+  UsersPage,
+  TargetsPage,
+  CourseDetailPage,
+};
