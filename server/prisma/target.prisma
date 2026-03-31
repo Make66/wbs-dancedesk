@@ -5,7 +5,7 @@ model Target {
   active Boolean  @default(true)
 
   // relations
-  setSeqCategory Json?      @default("{}") // { parent: UUID, categories: UUID[] }
+  setSeqCategory String[]   @default([]) // [UUID]
   categories     Category[]
   location       Location?  @relation(fields: [locationId], references: [id])
   locationId     String?

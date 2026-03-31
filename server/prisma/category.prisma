@@ -4,9 +4,9 @@ model Category {
   active Boolean  @default(true)
 
   // relations
+  setSeqCourse String[] @default([]) // [UUID]
   target       Target   @relation(fields: [targetId], references: [id])
   targetId     String
-  setSeqCourse Json?    @default("{}") // { parent: UUID, course: UUID[] }
   courses      Course[]
 
   // Common fields

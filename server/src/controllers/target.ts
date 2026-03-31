@@ -1,6 +1,5 @@
 import type { RequestHandler } from 'express';
 import prisma from '#db';
-import { setSeqCategorySchema } from '#schemas/category';
 
 export const getTargetsByLocation: RequestHandler = async (req, res) => {
   const { id: locationId } = req.params;
@@ -42,8 +41,8 @@ export const updateTarget: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const exists = await prisma.target.findFirst({ where: { id, tenantId, isDeleted: false } });
   if (!exists) throw new Error('Target not found', { cause: { status: 404 } });
-  const parsed = setSeqCategorySchema.parse(req.body.setSeqCategory);
-  const target = await prisma.target.update({ where: { id }, data: { ...req.body, setSeqCategory: parsed } });
+  const sequences = req.body.setSeqCategory;
+  const target = await prisma.target.update({ where: { id }, data: { ...req.body, setSeqCategory: sequences } });
   res.json(target);
 };
 

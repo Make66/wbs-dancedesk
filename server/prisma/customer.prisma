@@ -10,8 +10,8 @@ model Customer {
   active     Boolean @default(true)
 
   // relations
-  setSeqInstructor Json?        @default("{}") // { parent: UUID, instructors: UUID[] }
-  setSeqTarget     Json?        @default("{}") // { parent: UUID, targets: UUID[] }
+  setSeqInstructor String[]     @default([]) // [UUID]
+  setSeqTarget     String[]     @default([]) // [UUID]
   instructors      Instructor[]
   locations        Location[]
 

@@ -1,6 +1,5 @@
 import type { RequestHandler } from 'express';
 import prisma from '#db';
-import { setSeqCourseSchema } from '#schemas/course';
 
 export const getAllCategories: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
@@ -44,10 +43,10 @@ export const updateCategory: RequestHandler = async (req, res) => {
   const exists = await prisma.category.findFirst({ where: { id, tenantId, isDeleted: false } });
   if (!exists) throw new Error('Category not found', { cause: { status: 404 } });
   const { target, ...rest } = req.body;
-  const parsed = setSeqCourseSchema.parse(req.body.setSeqCourse);
+  const sequences = req.body.setSeqCourse;
   const category = await prisma.category.update({
     where: { id },
-    data: { ...rest, ...(target !== undefined && { targetId: target }), setSeqCourse: parsed }
+    data: { ...rest, ...(target !== undefined && { targetId: target }), setSeqCourse: sequences }
   });
   res.json(category);
 };

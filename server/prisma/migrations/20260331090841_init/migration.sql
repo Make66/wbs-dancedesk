@@ -1,10 +1,10 @@
 -- CreateTable
 CREATE TABLE "Category" (
     "name" TEXT DEFAULT 'Paare Grundkurs',
-    "targetId" TEXT NOT NULL,
-    "seq" INTEGER NOT NULL DEFAULT 0,
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "setSeqCourse" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "targetId" TEXT NOT NULL,
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -17,29 +17,29 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Course" (
     "name" TEXT DEFAULT 'Grundkurs 1',
-    "categoryId" TEXT NOT NULL,
     "seq" INTEGER NOT NULL DEFAULT 0,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "repeat" INTEGER NOT NULL DEFAULT 0,
     "frequency" TEXT NOT NULL DEFAULT 'weekly',
-    "roomId" TEXT,
     "isIgnoreCalendar" BOOLEAN NOT NULL DEFAULT false,
     "dates" JSONB NOT NULL DEFAULT '[]',
     "seatsCurrent" INTEGER NOT NULL DEFAULT 20,
     "seatsMax" INTEGER NOT NULL DEFAULT 20,
     "paymentTypes" TEXT[] DEFAULT ARRAY['bar', 'paypal', 'bank']::TEXT[],
     "contractTypes" TEXT[] DEFAULT ARRAY['standard', 'trial']::TEXT[],
-    "instructorId" TEXT,
+    "categoryId" TEXT NOT NULL,
+    "roomId" TEXT,
+    "textId" TEXT,
     "textTermsId" TEXT,
     "textInfoId" TEXT,
+    "instructorId" TEXT,
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
-    "textId" TEXT,
 
     CONSTRAINT "Course_pkey" PRIMARY KEY ("id")
 );
@@ -55,6 +55,8 @@ CREATE TABLE "Customer" (
     "tertiary" TEXT NOT NULL DEFAULT '#858384',
     "quaternary" TEXT NOT NULL DEFAULT '#858384',
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "setSeqInstructor" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "setSeqTarget" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Any town',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
@@ -74,6 +76,8 @@ CREATE TABLE "Instructor" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "skills" TEXT[] DEFAULT ARRAY['Salsa', 'WTP', 'HipHop']::TEXT[],
+    "customerId" TEXT,
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -87,13 +91,14 @@ CREATE TABLE "Instructor" (
 CREATE TABLE "Location" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
-    "seq" INTEGER NOT NULL DEFAULT 0,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
     "longitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "latitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "setSeqTarget" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "customerId" TEXT,
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -105,7 +110,7 @@ CREATE TABLE "Location" (
 
 -- CreateTable
 CREATE TABLE "Module" (
-    "name" TEXT NOT NULL DEFAULT 'Module 1',
+    "name" TEXT NOT NULL DEFAULT 'Standard Modul',
     "seq" INTEGER NOT NULL DEFAULT 0,
     "color" TEXT NOT NULL DEFAULT '#B5252B',
     "active" BOOLEAN NOT NULL DEFAULT true,
@@ -157,9 +162,10 @@ CREATE TABLE "Room" (
 CREATE TABLE "Target" (
     "name" TEXT DEFAULT 'Erwachsene',
     "icon" TEXT NOT NULL DEFAULT '',
-    "seq" INTEGER NOT NULL DEFAULT 0,
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "setSeqCategory" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "locationId" TEXT,
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -190,8 +196,8 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL DEFAULT 'admin@test.de',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
-    "modules" TEXT[] DEFAULT ARRAY['ALL']::TEXT[],
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "refreshToken" TEXT,
     "id" TEXT NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -201,11 +207,33 @@ CREATE TABLE "User" (
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_UserLocations" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserLocations_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_UserModules" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserModules_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer_email_key" ON "Customer"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "_UserLocations_B_index" ON "_UserLocations"("B");
+
+-- CreateIndex
+CREATE INDEX "_UserModules_B_index" ON "_UserModules"("B");
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_targetId_fkey" FOREIGN KEY ("targetId") REFERENCES "Target"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -217,7 +245,7 @@ ALTER TABLE "Course" ADD CONSTRAINT "Course_categoryId_fkey" FOREIGN KEY ("categ
 ALTER TABLE "Course" ADD CONSTRAINT "Course_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Course" ADD CONSTRAINT "Course_textId_fkey" FOREIGN KEY ("textId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_textTermsId_fkey" FOREIGN KEY ("textTermsId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -226,4 +254,25 @@ ALTER TABLE "Course" ADD CONSTRAINT "Course_textTermsId_fkey" FOREIGN KEY ("text
 ALTER TABLE "Course" ADD CONSTRAINT "Course_textInfoId_fkey" FOREIGN KEY ("textInfoId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_textId_fkey" FOREIGN KEY ("textId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Course" ADD CONSTRAINT "Course_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Location" ADD CONSTRAINT "Location_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Target" ADD CONSTRAINT "Target_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserLocations" ADD CONSTRAINT "_UserLocations_A_fkey" FOREIGN KEY ("A") REFERENCES "Location"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserLocations" ADD CONSTRAINT "_UserLocations_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserModules" ADD CONSTRAINT "_UserModules_A_fkey" FOREIGN KEY ("A") REFERENCES "Module"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserModules" ADD CONSTRAINT "_UserModules_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

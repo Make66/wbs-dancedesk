@@ -1,14 +1,11 @@
 model User {
-  firstName      String? @default("John Doe")
-  lastName       String? @default("Doe")
-  email          String  @unique @default("admin@test.de")
-  password       String  @default("Test123!")
-  imageUrl       String  @default("./assets/images/no-profile-picture")
-  active         Boolean @default(true)
-  refreshToken   String? // bcrypt hash of current refresh token; null = logged out
-  setSeqTarget   Json?   @default("{}") // { parent: UUID, targets: UUID[] }
-  setSeqCategory Json?   @default("{}") // { parent: UUID, categories: UUID[] }
-  setSeqCourse   Json?   @default("{}") // { parent: UUID, course: UUID[] }
+  firstName    String? @default("John Doe")
+  lastName     String? @default("Doe")
+  email        String  @unique @default("admin@test.de")
+  password     String  @default("Test123!")
+  imageUrl     String  @default("./assets/images/no-profile-picture")
+  active       Boolean @default(true)
+  refreshToken String? // bcrypt hash of current refresh token; null = logged out
 
   // relations from here
   locations Location[] @relation("UserLocations") // Many-to-many relation with Location

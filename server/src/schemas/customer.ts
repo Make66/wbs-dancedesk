@@ -1,6 +1,4 @@
 import { z } from 'zod/v4';
-import { setSeqLocationSchema } from './location.ts';
-import { setSeqInstructorSchema } from './instructor.ts';
 
 export const customerSchema = z.object({
   name: z.string().min(1),
@@ -13,8 +11,8 @@ export const customerSchema = z.object({
   quaternary: z.string().default("#858384"),
   active: z.boolean().default(true),
 
-  setSeqLocation: z.object({setSeqLocationSchema}).optional(),
-  setSeqInstructor: z.object({setSeqInstructorSchema}).optional(),
+  setSeqLocation: z.array(z.uuid()).optional(),
+  setSeqInstructor: z.array(z.uuid()).optional(),
 
   street: z.string().optional(),
   city: z.string().optional(),

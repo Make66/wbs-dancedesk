@@ -1,17 +1,12 @@
 import { z } from 'zod/v4';
-import { categorySchema, setSeqCategorySchema } from './category.ts';
-
-export const setSeqTargetSchema = z.object({
-  parent: z.uuid(),
-  targets: z.array(z.uuid()),
-});
+import { categorySchema } from './category.ts';
 
 export const targetSchema = z.object({
   name: z.string().min(1),
   icon: z.string().optional(),
   categories: z.array(categorySchema).optional(),
-  color: z.array(z.string()).default(['#000000', '#FFFFFF']),
+  color: z.array(z.string()).default(['#D1D5DC', '#000000']),
   active: z.boolean().default(true),
   
-  setSeqCategory: z.object({ setSeqCategorySchema }).optional(),
+  setSeqCategory: z.array(z.uuid()).optional(),
 });

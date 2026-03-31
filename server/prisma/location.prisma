@@ -11,9 +11,9 @@ model Location {
   latitude  Float  @default(0.0)
 
   // relations
+  setSeqTarget String[]  @default([]) // [UUID]
   customer     Customer? @relation(fields: [customerId], references: [id])
   customerId   String?
-  setSeqTarget Json?     @default("{}") // { parent: UUID, targets: UUID[] }
   targets      Target[]
   users        User[]    @relation("UserLocations") // Many-to-many relation with User
 
