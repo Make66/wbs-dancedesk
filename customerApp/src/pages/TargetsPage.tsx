@@ -40,6 +40,7 @@ const TargetsPage = () => {
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {
+    if (isLoading) return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     try {
