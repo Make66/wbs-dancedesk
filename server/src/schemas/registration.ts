@@ -15,8 +15,12 @@ export const registrationSchema = z.object({
   active: z.boolean().default(true),
 
   id: z.uuid().optional(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
 
+registrationSchema.partial({
+  isDeleted: true,
+});
 
-
+export type Registration = z.infer<typeof registrationSchema>;

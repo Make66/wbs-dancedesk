@@ -14,8 +14,23 @@ export const locationSchema = z.object({
   latitude: z.number().optional(),
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
 
+locationSchema.partial({
+  name: true,
+  imageUrl: true,
+  active: true,
+  setSeqTarget: true,
 
+  street: true,
+  city: true,
+  zipCode: true,
+  longitude: true,
+  latitude: true,
 
+  isDeleted: true
+});
+
+export type Location = z.infer<typeof locationSchema>;
