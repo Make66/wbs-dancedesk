@@ -5,11 +5,11 @@ function mapCourseBody(body: Record<string, unknown>) {
   const { category, room, instructor, textTerms, textInfo, ...rest } = body;
   return {
     ...rest,
-    categoryId: category,
-    ...(room !== undefined      && { roomId: room }),
-    ...(instructor !== undefined && { instructorId: instructor }),
-    ...(textTerms !== undefined  && { textTermsId: textTerms }),
-    ...(textInfo !== undefined   && { textInfoId: textInfo }),
+    categoryId: category as string,
+    ...(room !== undefined      && { roomId: room as string }),
+    ...(instructor !== undefined && { instructorId: instructor as string }),
+    ...(textTerms !== undefined  && { textTermsId: textTerms as string }),
+    ...(textInfo !== undefined   && { textInfoId: textInfo as string }),
   };
 }
 
