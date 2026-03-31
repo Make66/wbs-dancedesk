@@ -17,7 +17,7 @@ const DataLoader = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!authUser) {
+      if (!authUser?.id) {
         clearUser();
         clearTargets();
         return;

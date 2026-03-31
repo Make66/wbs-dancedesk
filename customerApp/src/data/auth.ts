@@ -3,6 +3,7 @@ import { authServiceURL } from "../lib/fetchInterceptor";
 type LoginInput = { email: string; password: string };
 
 type SuccessRes = { message: string };
+type MeResponse = { user: User } | User;
 
 const login = async (formData: LoginInput): Promise<SuccessRes> => {
   const res = await fetch(`${authServiceURL}/auth/login`, {
@@ -25,7 +26,8 @@ const me = async (): Promise<User> => {
   });
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
 
-  const user = (await res.json()) as User;
+  const payload = (await res.json()) as MeResponse;
+  const user = "user" in payload ? payload.user : payload;
 
   return user;
 };
