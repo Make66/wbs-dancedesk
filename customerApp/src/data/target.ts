@@ -38,6 +38,7 @@ export const updateTargetDB = async (id: string, data: UpdateCourseTargetInput) 
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(data),
   });
 

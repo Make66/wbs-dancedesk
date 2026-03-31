@@ -14,10 +14,8 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { userStore } from "../stores/userStore";
 import { updateLocationDB } from "../data/location";
 import { toast } from "react-toastify";
-import { useState } from "react";
 
 const TargetsPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const courseTargets = targetStore((state) => state.courseTargets);
   const isInactiveVisible = targetStore((state) => state.isInactiveVisible);
   const toggleInactiveVisibility = targetStore((state) => state.toggleInactiveVisibility);
@@ -40,24 +38,22 @@ const TargetsPage = () => {
   );
 
   const handleDragEnd = async (event: DragEndEvent) => {
-    if (isLoading) return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    try {
-      setIsLoading(true);
-      reorderTargets(String(active.id), String(over.id));
-      const locationId = selectedLocationId;
-      const orderedIds = getOrderedTargetIds();
-      const payload = {
-        setSeqTarget: orderedIds,
-      };
+    if (!selectedLocationId) return;
 
-      await updateLocationDB(locationId!, payload);
+    const prevOrderedIds = getOrderedTargetIds();
+    try {
+      reorderTargets(String(active.id), String(over.id));
+      const newOrderedIds = targetStore.getState().getOrderedTargetIds();
+      await updateLocationDB(selectedLocationId, {
+        setSeqTarget: newOrderedIds,
+      });
     } catch (error) {
       console.log("Error reordering targets:", error);
-      toast.error("Fehler beim Aktualisieren der Zielgruppenreihenfolge.");
-    } finally {
-      setIsLoading(false);
+      toast.error("Fehler beim Aktualisieren der Reihenfolge.");
+      userStore.getState().updateLocationTargetOrder(selectedLocationId, prevOrderedIds);
+      targetStore.getState().replaceTargets(targetStore.getState().courseTargets);
     }
   };
 
