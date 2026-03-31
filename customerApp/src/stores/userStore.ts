@@ -1,28 +1,23 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type UserSettings = {
-  targetStylesById?: Record<
-    string,
-    {
-      color?: string;
-      fontColor?: string;
-      icon?: string;
-    }
-  >;
-  targetOrderByLocation?: Record<string, string[]>;
+type SetSeqTargetPayload = {
+  tenantId: string;
+  locationId: string;
+  setSeqTarget: string[];
 };
 
 export type UserLocation = {
   name: string;
   imageUrl: string;
-  seq: number;
   active: boolean;
   street: string;
   city: string;
   zipCode: string;
   longitude: number;
   latitude: number;
+  customerId: string | null;
+  setSeqTarget?: SetSeqTargetPayload | null;
   id: string;
   tenantId: string;
   createdAt: string;
@@ -32,7 +27,6 @@ export type UserLocation = {
 
 export type UserModule = {
   name: string;
-  seq: number;
   color: string;
   active: boolean;
   id: string;
@@ -48,12 +42,17 @@ export type User = {
   email: string;
   imageUrl: string;
   active: boolean;
-  settings: UserSettings;
+
+  setSeqTarget?: SetSeqTargetPayload | null;
+  setSeqCategory?: unknown;
+  setSeqCourse?: unknown;
+
   id: string;
   tenantId: string;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
+
   locations: UserLocation[];
   modules: UserModule[];
 };
@@ -74,7 +73,7 @@ type UserStore = {
   setSelectedLocationId: (locationId: string | null) => void;
   initializeSelectedLocationId: () => void;
 
-  updateUserSettings: (settingsPatch: Partial<UserSettings>) => void;
+  updateLocationTargetOrder: (locationId: string, orderedIds: string[]) => void;
 
   getActiveLocation: () => UserLocation | null;
   getLocations: () => UserLocation[];
@@ -89,10 +88,6 @@ const filterActive = <T extends { active: boolean }>(items: T[]) => {
   return items.filter((item) => item.active);
 };
 
-const sortBySeq = <T extends { seq: number }>(items: T[]) => {
-  return [...items].sort((a, b) => a.seq - b.seq);
-};
-
 export const userStore = create<UserStore>()(
   persist(
     (set, get) => ({
@@ -101,11 +96,13 @@ export const userStore = create<UserStore>()(
       isLoading: false,
       error: null,
       isSidebarOpen: false,
+
+      // -------------------------
+      // SET USER
+      // -------------------------
       setUser: (user) =>
         set(() => {
-          const validLocations = [...user.locations]
-            .filter((location) => !location.isDeleted && location.active)
-            .sort((a, b) => a.seq - b.seq);
+          const validLocations = filterActive(filterNotDeleted(user.locations));
 
           return {
             user,
@@ -132,24 +129,20 @@ export const userStore = create<UserStore>()(
           error: value,
         }),
 
+      // -------------------------
+      // LOCATION HANDLING
+      // -------------------------
       setSelectedLocationId: (locationId) =>
         set((state) => {
-          if (state.selectedLocationId === locationId) {
-            return state;
-          }
+          if (state.selectedLocationId === locationId) return state;
+          if (!state.user) return { selectedLocationId: null };
 
-          if (!state.user) {
-            return { selectedLocationId: null };
-          }
+          const validLocations = filterActive(filterNotDeleted(state.user.locations));
 
-          const validLocations = [...state.user.locations]
-            .filter((location) => !location.isDeleted && location.active)
-            .sort((a, b) => a.seq - b.seq);
-
-          const isValidLocation = validLocations.some((location) => location.id === locationId);
+          const isValid = validLocations.some((loc) => loc.id === locationId);
 
           return {
-            selectedLocationId: isValidLocation ? locationId : (validLocations[0]?.id ?? null),
+            selectedLocationId: isValid ? locationId : (validLocations[0]?.id ?? null),
           };
         }),
 
@@ -157,11 +150,11 @@ export const userStore = create<UserStore>()(
         set((state) => {
           if (!state.user) return state;
 
-          const validLocations = sortBySeq(filterActive(filterNotDeleted(state.user.locations)));
+          const validLocations = filterActive(filterNotDeleted(state.user.locations));
 
           if (
             state.selectedLocationId &&
-            validLocations.some((location) => location.id === state.selectedLocationId)
+            validLocations.some((loc) => loc.id === state.selectedLocationId)
           ) {
             return state;
           }
@@ -171,43 +164,60 @@ export const userStore = create<UserStore>()(
           };
         }),
 
-      updateUserSettings: (settingsPatch) =>
+      // -------------------------
+      // UPDATE TARGET ORDER
+      // -------------------------
+      updateLocationTargetOrder: (locationId, orderedIds) =>
         set((state) => {
           if (!state.user) return state;
 
           return {
             user: {
               ...state.user,
-              settings: {
-                ...state.user.settings,
-                ...settingsPatch,
-              },
+              locations: state.user.locations.map((location) =>
+                location.id === locationId
+                  ? {
+                      ...location,
+                      setSeqTarget: {
+                        tenantId: location.tenantId,
+                        locationId,
+                        setSeqTarget: orderedIds,
+                      },
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : location,
+              ),
               updatedAt: new Date().toISOString(),
             },
           };
         }),
 
+      // -------------------------
+      // GETTERS
+      // -------------------------
       getActiveLocation: () => {
         const { user, selectedLocationId } = get();
         if (!user || !selectedLocationId) return null;
 
-        const validLocations = sortBySeq(filterActive(filterNotDeleted(user.locations)));
-
-        return validLocations.find((location) => location.id === selectedLocationId) ?? null;
+        return (
+          filterActive(filterNotDeleted(user.locations)).find(
+            (loc) => loc.id === selectedLocationId,
+          ) ?? null
+        );
       },
 
       getLocations: () => {
         const { user } = get();
         if (!user) return [];
 
-        return sortBySeq(filterActive(filterNotDeleted(user.locations)));
+        return filterActive(filterNotDeleted(user.locations));
       },
 
       getModules: () => {
         const { user } = get();
         if (!user) return [];
 
-        return sortBySeq(filterActive(filterNotDeleted(user.modules)));
+        return filterActive(filterNotDeleted(user.modules));
       },
     }),
     {
