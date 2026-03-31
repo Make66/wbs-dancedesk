@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router";
 import { Check, ChevronDown, MapPin } from "lucide-react";
 import { userStore } from "../../stores/userStore";
 
@@ -8,7 +7,6 @@ type LocationPickerProps = {
 };
 
 const LocationPicker = ({ className }: LocationPickerProps) => {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const user = userStore((state) => state.user);
@@ -18,9 +16,7 @@ const LocationPicker = ({ className }: LocationPickerProps) => {
   const locations = useMemo(() => {
     if (!user) return [];
 
-    return [...user.locations]
-      .filter((location) => !location.isDeleted && location.active)
-      .sort((a, b) => a.seq - b.seq);
+    return [...user.locations].filter((location) => !location.isDeleted && location.active);
   }, [user]);
 
   useEffect(() => {
@@ -41,7 +37,6 @@ const LocationPicker = ({ className }: LocationPickerProps) => {
 
     setSelectedLocationId(locationId);
     setOpen(false);
-    navigate("/");
   };
 
   return (

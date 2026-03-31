@@ -6,14 +6,7 @@ import CourseItem from "./CourseItem";
 import { Switch } from "../ui/switch";
 import { Link } from "react-router";
 import { useSortable } from "@dnd-kit/sortable";
-import {
-  DndContext,
-  PointerSensor,
-  closestCenter,
-  type DragEndEvent,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "../../lib/utils";
@@ -28,7 +21,6 @@ const CategoryItem = ({ category }: CategoryProps) => {
   const isEditMode = categoryStore((state) => state.isEditMode);
   const isOpened = categoryStore((state) => state.isCategoryExpanded(category.id));
   const toggleCategoryExpanded = categoryStore((state) => state.toggleCategoryExpanded);
-  const reorderCourses = categoryStore((state) => state.reorderCourses);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -47,14 +39,6 @@ const CategoryItem = ({ category }: CategoryProps) => {
     transform: CSS.Transform.toString(transform),
     transition,
     backgroundColor: category.color,
-  };
-
-  const handleCourseDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) return;
-
-    reorderCourses(category.id, String(active.id), String(over.id));
   };
 
   return (
@@ -120,11 +104,7 @@ const CategoryItem = ({ category }: CategoryProps) => {
 
       {isOpened && (
         <div>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleCourseDragEnd}
-          >
+          <DndContext sensors={sensors} collisionDetection={closestCenter}>
             <SortableContext
               items={category.courses.map((course) => course.id)}
               strategy={rectSortingStrategy}

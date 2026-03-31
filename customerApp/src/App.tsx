@@ -27,6 +27,7 @@ function App() {
           <Route path="/users" element={<UsersPage />} />
           <Route path="/rooms" element={<RoomsPage />} />
           <Route path="/instructors" element={<InstructorsPage />} />
+          <Route path="*" element={<HomePage />} />
           <Route path="/settings" element={<div className="p-6">SettingsPage</div>} />
         </Route>
       </Routes>

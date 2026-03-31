@@ -118,6 +118,7 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
             icon={formData.icon}
             onChange={(newIcon) => {
               setFormData((prev) => ({ ...prev, icon: newIcon }));
+              console.log("Updating icon to:", newIcon);
               updateIcon(target.id, newIcon);
             }}
           >

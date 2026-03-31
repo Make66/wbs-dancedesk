@@ -14,6 +14,8 @@ import { updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
 import { appIcons, type AppIconName } from "../icons";
 import TargetItemEdit from "./TargetItemEdit";
+import { userStore } from "../../stores/userStore";
+import { updateLocationDB } from "../../data/location";
 
 type TargetItemProps = {
   target: Target & { isNew?: boolean };
@@ -46,17 +48,32 @@ const TargetItem = ({ target }: TargetItemProps) => {
   };
 
   const handleToggleActive = async (checked: boolean) => {
+    const selectedLocationId = userStore.getState().selectedLocationId;
+    if (!selectedLocationId) return;
+
+    const prevOrderedIds = targetStore.getState().getOrderedTargetIds();
+    const prevActive = target.active;
+
     toggleTargetActive(target.id, checked);
 
     if (target.isNew) return;
 
     try {
-      await updateTargetDB(target.id, {
-        active: checked,
-        // color: [target.color[0], target.color[1]],
-      });
+      const newOrderedIds = targetStore.getState().getOrderedTargetIds();
+
+      await Promise.all([
+        updateTargetDB(target.id, {
+          active: checked,
+        }),
+        updateLocationDB(selectedLocationId, {
+          setSeqTarget: newOrderedIds,
+        }),
+      ]);
     } catch (error) {
-      toggleTargetActive(target.id, !checked);
+      toggleTargetActive(target.id, prevActive);
+      userStore.getState().updateLocationTargetOrder(selectedLocationId, prevOrderedIds);
+      targetStore.getState().replaceTargets(targetStore.getState().courseTargets);
+
       toast.error("Status konnte nicht gespeichert werden.");
       console.error("Error updating course target active status:", error);
     }

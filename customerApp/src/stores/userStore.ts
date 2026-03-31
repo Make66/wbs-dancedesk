@@ -86,7 +86,7 @@ export const userStore = create<UserStore>()(
       selectedLocationId: null,
       isLoading: false,
       error: null,
-      isSidebarOpen: false,
+      isSidebarOpen: true,
 
       setUser: (user) =>
         set(() => {
