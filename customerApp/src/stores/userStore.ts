@@ -1,12 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type SetSeqTargetPayload = {
-  tenantId: string;
-  locationId: string;
-  setSeqTarget: string[];
-};
-
 export type UserLocation = {
   name: string;
   imageUrl: string;
@@ -17,7 +11,7 @@ export type UserLocation = {
   longitude: number;
   latitude: number;
   customerId: string | null;
-  setSeqTarget?: SetSeqTargetPayload | null;
+  setSeqTarget?: string[];
   id: string;
   tenantId: string;
   createdAt: string;
@@ -42,17 +36,14 @@ export type User = {
   email: string;
   imageUrl: string;
   active: boolean;
-
-  setSeqTarget?: SetSeqTargetPayload | null;
+  setSeqTarget?: string[];
   setSeqCategory?: unknown;
   setSeqCourse?: unknown;
-
   id: string;
   tenantId: string;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
-
   locations: UserLocation[];
   modules: UserModule[];
 };
@@ -97,9 +88,6 @@ export const userStore = create<UserStore>()(
       error: null,
       isSidebarOpen: false,
 
-      // -------------------------
-      // SET USER
-      // -------------------------
       setUser: (user) =>
         set(() => {
           const validLocations = filterActive(filterNotDeleted(user.locations));
@@ -129,16 +117,12 @@ export const userStore = create<UserStore>()(
           error: value,
         }),
 
-      // -------------------------
-      // LOCATION HANDLING
-      // -------------------------
       setSelectedLocationId: (locationId) =>
         set((state) => {
           if (state.selectedLocationId === locationId) return state;
           if (!state.user) return { selectedLocationId: null };
 
           const validLocations = filterActive(filterNotDeleted(state.user.locations));
-
           const isValid = validLocations.some((loc) => loc.id === locationId);
 
           return {
@@ -164,9 +148,6 @@ export const userStore = create<UserStore>()(
           };
         }),
 
-      // -------------------------
-      // UPDATE TARGET ORDER
-      // -------------------------
       updateLocationTargetOrder: (locationId, orderedIds) =>
         set((state) => {
           if (!state.user) return state;
@@ -178,11 +159,7 @@ export const userStore = create<UserStore>()(
                 location.id === locationId
                   ? {
                       ...location,
-                      setSeqTarget: {
-                        tenantId: location.tenantId,
-                        locationId,
-                        setSeqTarget: orderedIds,
-                      },
+                      setSeqTarget: orderedIds,
                       updatedAt: new Date().toISOString(),
                     }
                   : location,
@@ -192,9 +169,6 @@ export const userStore = create<UserStore>()(
           };
         }),
 
-      // -------------------------
-      // GETTERS
-      // -------------------------
       getActiveLocation: () => {
         const { user, selectedLocationId } = get();
         if (!user || !selectedLocationId) return null;
@@ -209,14 +183,12 @@ export const userStore = create<UserStore>()(
       getLocations: () => {
         const { user } = get();
         if (!user) return [];
-
         return filterActive(filterNotDeleted(user.locations));
       },
 
       getModules: () => {
         const { user } = get();
         if (!user) return [];
-
         return filterActive(filterNotDeleted(user.modules));
       },
     }),

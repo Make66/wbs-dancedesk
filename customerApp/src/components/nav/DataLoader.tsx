@@ -65,6 +65,7 @@ const DataLoader = () => {
         }
 
         const data = await response.json();
+
         replaceTargets(data);
       } catch (error) {
         console.error("Fetch error with targets:", error);

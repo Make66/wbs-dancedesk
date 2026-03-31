@@ -86,6 +86,10 @@ const mergeOrderedIds = <T extends { id: string }>(items: T[], orderedIds: strin
 
 const getSelectedLocation = () => userStore.getState().getActiveLocation();
 
+const getTargetsForLocation = (targets: Target[], locationId: string) => {
+  return filterNotDeleted(targets.filter((item) => item.locationId === locationId));
+};
+
 export const targetStore = create<TargetStore>()(
   persist(
     (set, get) => ({
@@ -109,9 +113,46 @@ export const targetStore = create<TargetStore>()(
         })),
 
       replaceTargets: (targets) =>
-        set({
-          courseTargets: filterNotDeleted(targets),
-          error: null,
+        set(() => {
+          const selectedLocation = userStore.getState().getActiveLocation();
+
+          const filteredTargets = filterNotDeleted(targets);
+
+          if (!selectedLocation) {
+            return {
+              courseTargets: filteredTargets,
+              error: null,
+            };
+          }
+
+          const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
+          const orderMap = new Map(storedOrderedIds.map((id, index) => [id, index]));
+
+          const sortedTargets = [...filteredTargets].sort((a, b) => {
+            const aIsCurrentLocation = a.locationId === selectedLocation.id;
+            const bIsCurrentLocation = b.locationId === selectedLocation.id;
+
+            if (aIsCurrentLocation && bIsCurrentLocation) {
+              const aIndex = orderMap.get(a.id);
+              const bIndex = orderMap.get(b.id);
+
+              const aHasOrder = aIndex !== undefined;
+              const bHasOrder = bIndex !== undefined;
+
+              if (aHasOrder && bHasOrder) return aIndex - bIndex;
+              if (aHasOrder) return -1;
+              if (bHasOrder) return 1;
+
+              return a.createdAt.localeCompare(b.createdAt);
+            }
+
+            return a.createdAt.localeCompare(b.createdAt);
+          });
+
+          return {
+            courseTargets: sortedTargets,
+            error: null,
+          };
         }),
 
       clearTargets: () =>
@@ -137,18 +178,13 @@ export const targetStore = create<TargetStore>()(
 
         if (!selectedLocation) return [];
 
-        const targetsForLocation = filterNotDeleted(
-          courseTargets.filter((item) => item.locationId === selectedLocation.id),
+        const targetsForLocation = courseTargets.filter(
+          (item) => item.locationId === selectedLocation.id && !item.isDeleted,
         );
 
-        const visibleTargets = isInactiveVisible
+        return isInactiveVisible
           ? targetsForLocation
           : targetsForLocation.filter((item) => item.active);
-
-        const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
-        const finalOrderedIds = mergeOrderedIds(visibleTargets, storedOrderedIds);
-
-        return sortTargetsByOrderedIds(visibleTargets, finalOrderedIds);
       },
 
       getOrderedTargetIds: () => {
@@ -157,12 +193,9 @@ export const targetStore = create<TargetStore>()(
 
         if (!selectedLocation) return [];
 
-        const targetsForLocation = filterNotDeleted(
-          courseTargets.filter((item) => item.locationId === selectedLocation.id),
-        );
-
-        const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
-        return mergeOrderedIds(targetsForLocation, storedOrderedIds);
+        return courseTargets
+          .filter((item) => item.locationId === selectedLocation.id && !item.isDeleted)
+          .map((item) => item.id);
       },
 
       toggleTargetActive: (id, active) =>
@@ -183,28 +216,57 @@ export const targetStore = create<TargetStore>()(
           const selectedLocation = getSelectedLocation();
           if (!selectedLocation) return state;
 
-          const visibleTargets = get().getVisibleTargets();
+          const locationTargets = getTargetsForLocation(state.courseTargets, selectedLocation.id);
 
-          const oldIndex = visibleTargets.findIndex((item) => item.id === activeId);
-          const newIndex = visibleTargets.findIndex((item) => item.id === overId);
+          const visibleTargets = state.isInactiveVisible
+            ? locationTargets
+            : locationTargets.filter((item) => item.active);
+
+          const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
+          const orderedVisibleTargets = sortTargetsByOrderedIds(
+            visibleTargets,
+            mergeOrderedIds(visibleTargets, storedOrderedIds),
+          );
+
+          const oldIndex = orderedVisibleTargets.findIndex((item) => item.id === activeId);
+          const newIndex = orderedVisibleTargets.findIndex((item) => item.id === overId);
 
           if (oldIndex === -1 || newIndex === -1) return state;
 
-          const reorderedVisibleTargets = arrayMove(visibleTargets, oldIndex, newIndex);
+          const reorderedVisibleTargets = arrayMove(orderedVisibleTargets, oldIndex, newIndex);
 
-          const allTargetsForLocation = filterNotDeleted(
-            state.courseTargets.filter((item) => item.locationId === selectedLocation.id),
-          );
-
-          const visibleIds = new Set(visibleTargets.map((item) => item.id));
-          const hiddenTargets = allTargetsForLocation.filter((item) => !visibleIds.has(item.id));
+          const visibleIds = new Set(orderedVisibleTargets.map((item) => item.id));
+          const hiddenTargets = locationTargets.filter((item) => !visibleIds.has(item.id));
 
           const orderedIds = [...reorderedVisibleTargets, ...hiddenTargets].map((item) => item.id);
 
           userStore.getState().updateLocationTargetOrder(selectedLocation.id, orderedIds);
 
+          const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
+
+          const reorderedCourseTargets = [...state.courseTargets].sort((a, b) => {
+            const aIsCurrentLocation = a.locationId === selectedLocation.id;
+            const bIsCurrentLocation = b.locationId === selectedLocation.id;
+
+            if (aIsCurrentLocation && bIsCurrentLocation) {
+              const aIndex = orderMap.get(a.id);
+              const bIndex = orderMap.get(b.id);
+
+              const aHasOrder = aIndex !== undefined;
+              const bHasOrder = bIndex !== undefined;
+
+              if (aHasOrder && bHasOrder) return aIndex - bIndex;
+              if (aHasOrder) return -1;
+              if (bHasOrder) return 1;
+
+              return a.createdAt.localeCompare(b.createdAt);
+            }
+
+            return 0;
+          });
+
           return {
-            courseTargets: state.courseTargets.map((item) =>
+            courseTargets: reorderedCourseTargets.map((item) =>
               item.id === activeId || item.id === overId
                 ? {
                     ...item,
@@ -238,17 +300,14 @@ export const targetStore = create<TargetStore>()(
           };
 
           const nextCourseTargets = [newTarget, ...state.courseTargets];
-
           const selectedLocation = userStore
             .getState()
             .user?.locations.find((loc) => loc.id === locationId);
 
           if (selectedLocation) {
-            const locationTargets = filterNotDeleted(
-              nextCourseTargets.filter((item) => item.locationId === locationId),
-            );
+            const locationTargets = getTargetsForLocation(nextCourseTargets, locationId);
+            const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
 
-            const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
             const orderedIds = [
               newTarget.id,
               ...mergeOrderedIds(locationTargets, storedOrderedIds).filter(
@@ -257,6 +316,29 @@ export const targetStore = create<TargetStore>()(
             ];
 
             userStore.getState().updateLocationTargetOrder(locationId, orderedIds);
+
+            const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
+
+            nextCourseTargets.sort((a, b) => {
+              const aIsCurrentLocation = a.locationId === locationId;
+              const bIsCurrentLocation = b.locationId === locationId;
+
+              if (aIsCurrentLocation && bIsCurrentLocation) {
+                const aIndex = orderMap.get(a.id);
+                const bIndex = orderMap.get(b.id);
+
+                const aHasOrder = aIndex !== undefined;
+                const bHasOrder = bIndex !== undefined;
+
+                if (aHasOrder && bHasOrder) return aIndex - bIndex;
+                if (aHasOrder) return -1;
+                if (bHasOrder) return 1;
+
+                return a.createdAt.localeCompare(b.createdAt);
+              }
+
+              return 0;
+            });
           }
 
           return {
@@ -321,23 +403,46 @@ export const targetStore = create<TargetStore>()(
           if (!targetToDelete) return state;
 
           const nextCourseTargets = state.courseTargets.filter((item) => item.id !== id);
-
           const selectedLocation = userStore
             .getState()
             .user?.locations.find((loc) => loc.id === targetToDelete.locationId);
 
           if (selectedLocation) {
-            const remainingTargetsForLocation = filterNotDeleted(
-              nextCourseTargets.filter((item) => item.locationId === targetToDelete.locationId),
+            const remainingTargetsForLocation = getTargetsForLocation(
+              nextCourseTargets,
+              targetToDelete.locationId,
             );
 
-            const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
+            const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
             const orderedIds = mergeOrderedIds(
               remainingTargetsForLocation,
               storedOrderedIds.filter((targetId) => targetId !== id),
             );
 
             userStore.getState().updateLocationTargetOrder(targetToDelete.locationId, orderedIds);
+
+            const orderMap = new Map(orderedIds.map((targetId, index) => [targetId, index]));
+
+            nextCourseTargets.sort((a, b) => {
+              const aIsCurrentLocation = a.locationId === targetToDelete.locationId;
+              const bIsCurrentLocation = b.locationId === targetToDelete.locationId;
+
+              if (aIsCurrentLocation && bIsCurrentLocation) {
+                const aIndex = orderMap.get(a.id);
+                const bIndex = orderMap.get(b.id);
+
+                const aHasOrder = aIndex !== undefined;
+                const bHasOrder = bIndex !== undefined;
+
+                if (aHasOrder && bHasOrder) return aIndex - bIndex;
+                if (aHasOrder) return -1;
+                if (bHasOrder) return 1;
+
+                return a.createdAt.localeCompare(b.createdAt);
+              }
+
+              return 0;
+            });
           }
 
           return {

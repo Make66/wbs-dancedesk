@@ -21,7 +21,7 @@ const TargetsPage = () => {
   const courseTargets = targetStore((state) => state.courseTargets);
   const isInactiveVisible = targetStore((state) => state.isInactiveVisible);
   const toggleInactiveVisibility = targetStore((state) => state.toggleInactiveVisibility);
-  const reorderCourses = targetStore((state) => state.reorderTargets);
+  const reorderTargets = targetStore((state) => state.reorderTargets);
   const addTarget = targetStore((state) => state.addTarget);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
   const getOrderedTargetIds = targetStore((state) => state.getOrderedTargetIds);
@@ -45,6 +45,7 @@ const TargetsPage = () => {
     if (!over || active.id === over.id) return;
     try {
       setIsLoading(true);
+      reorderTargets(String(active.id), String(over.id));
       const locationId = selectedLocationId;
       const orderedIds = getOrderedTargetIds();
       const payload = {
@@ -52,7 +53,6 @@ const TargetsPage = () => {
       };
 
       await updateLocationDB(locationId!, payload);
-      reorderCourses(String(active.id), String(over.id));
     } catch (error) {
       console.log("Error reordering targets:", error);
       toast.error("Fehler beim Aktualisieren der Zielgruppenreihenfolge.");
