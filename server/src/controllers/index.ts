@@ -10,3 +10,4 @@ export * from './module.ts';
 export * from './registration.ts';
 export * from './room.ts';
 export * from './text.ts';
+export * from './settings.ts';

@@ -125,9 +125,13 @@ GET    /auth/me         (requires accessToken cookie)
 
 /registrations  GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
+/settings  GET, PUT, PATCH
+
 /rooms          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
 /texts          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+
+/user          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
 ## Nested routes
 

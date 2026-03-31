@@ -16,6 +16,7 @@ import {
   roomsRouter,
   textsRouter,
   usersRouter,
+  settingsRouter,
 } from "#routes";
 
 const app = express();
@@ -43,6 +44,7 @@ app.use("/registrations", registrationsRouter);
 app.use("/rooms", roomsRouter);
 app.use("/texts", textsRouter);
 app.use("/users", usersRouter);
+app.use("/settings", settingsRouter);
 
 app.use("/*splat", (_req, res) => {
   res.status(404).json({ error: "Not found" });
