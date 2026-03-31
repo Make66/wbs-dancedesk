@@ -24,8 +24,16 @@ const COOKIE_OPTS = {
 const DUMMY_HASH = '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012345';
 
 async function issueTokens(user: { id: string; tenantId: string }, res: Response) {
-  const accessToken = jwt.sign({ sub: user.id, tenantId: user.tenantId }, ACCESS_SECRET!, { expiresIn: REFRESH_TOKEN_TTL as import('ms').StringValue });
-  const refreshToken = jwt.sign({ sub: user.id },                          REFRESH_SECRET!, { expiresIn: '7d'  });
+  const accessToken = jwt.sign(
+    { sub: user.id, tenantId: user.tenantId }, 
+    ACCESS_SECRET!, 
+    { expiresIn: Number(process.env.ACCESS_TOKEN_TTL ?? 900) } // seconds, e.g. 900 = 15 min
+  );
+  const refreshToken = jwt.sign(
+    { sub: user.id },                          
+    REFRESH_SECRET!, 
+    { expiresIn: '7d'  }
+  );
   const hash = await bcrypt.hash(refreshToken, SALT_ROUNDS);
   await prisma.user.update({ where: { id: user.id }, data: { refreshToken: hash } });
   res.cookie('accessToken',  accessToken,  { ...COOKIE_OPTS, maxAge: 15 * 60 * 1000 });
@@ -115,5 +123,5 @@ export const me: RequestHandler = async (req, res) => {
     select: { id: true, email: true, firstName: true, lastName: true, modules: true, imageUrl: true },
   });
   if (!user) throw new Error('User not found', { cause: { status: 404 } });
-  res.json(user);
+  res.json({user});
 };
