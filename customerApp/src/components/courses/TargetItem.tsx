@@ -53,7 +53,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
     try {
       await updateTargetDB(target.id, {
         active: checked,
-        color: [target.color[0], target.color[1]],
+        // color: [target.color[0], target.color[1]],
       });
     } catch (error) {
       toggleTargetActive(target.id, !checked);

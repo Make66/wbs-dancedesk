@@ -42,11 +42,18 @@ const Sidebar = () => {
         <SidebarMin />
       ) : (
         <div className="flex flex-col gap-6 mt-6">
-          <NavLink to="/" className="flex gap-3">
+          <NavLink
+            to="/"
+            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
+          >
             <MdDashboard className="text-2xl cursor-pointer fill-gray-300" />
             <span className="text-gray-300">Dashboard</span>
           </NavLink>
-          <NavLink to="/courses" className="flex gap-3">
+          <div className="border-b border-gray-500" />
+          <NavLink
+            to="/courses"
+            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
+          >
             <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
             <span className="text-gray-300">Kurse</span>
           </NavLink>
@@ -67,11 +74,19 @@ const Sidebar = () => {
               </Link>
             ))}
           </div>
-          <NavLink to="/users" className="flex gap-3">
+          <div className="border-b border-gray-500" />
+          <NavLink
+            to="/users"
+            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
+          >
             <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
             <span className="text-gray-300">Teilnehmer</span>
           </NavLink>
-          <NavLink to="/instructors" className="flex gap-3">
+          <div className="border-b border-gray-500" />
+          <NavLink
+            to="/instructors"
+            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
+          >
             <FaChalkboardTeacher className="text-2xl cursor-pointer fill-gray-300" />
             <span className="text-gray-300">Instruktoren</span>
           </NavLink>
