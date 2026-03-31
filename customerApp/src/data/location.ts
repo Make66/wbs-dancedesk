@@ -8,7 +8,6 @@ type Location = {
 };
 
 export const updateLocationDB = async (locationId: string, data: Partial<Location>) => {
-  console.log("updateLocationDB payload", locationId, data);
   try {
     const response = await fetch(
       `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/locations/${locationId}`,
@@ -30,7 +29,6 @@ export const updateLocationDB = async (locationId: string, data: Partial<Locatio
       return response.json();
     }
 
-    // console.log("Response from updateLocationDB:", response);
     return null;
   } catch (error) {
     console.error("Error updating location:", error);
