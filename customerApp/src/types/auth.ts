@@ -2,7 +2,10 @@ declare global {
   type User = {
     id: string;
     email: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    imageUrl: string;
+    modules: { id: string; name: string; color: string; seq: number; active: boolean }[];
   };
 
   type LoginData = { email: string; password: string };
