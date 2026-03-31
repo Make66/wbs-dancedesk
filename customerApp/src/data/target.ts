@@ -1,12 +1,13 @@
-type UpdateCourseTargetInput = {
+type UpdateTargetInput = {
   name?: string;
+  icon?: string;
   color?: string[];
   seq?: number;
   active?: boolean;
   isDeleted?: boolean;
 };
 
-type CreateCourseTargetPayload = {
+type CreateTargetPayload = {
   name: string;
   color: string[];
   active?: boolean;
@@ -15,7 +16,7 @@ type CreateCourseTargetPayload = {
   icon?: string;
 };
 
-export const createTargetDB = async (data: CreateCourseTargetPayload) => {
+export const createTargetDB = async (data: CreateTargetPayload) => {
   console.log("createTargetDB payload", data.locationId);
 
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets`, {
@@ -34,7 +35,8 @@ export const createTargetDB = async (data: CreateCourseTargetPayload) => {
   return response.json();
 };
 
-export const updateTargetDB = async (id: string, data: UpdateCourseTargetInput) => {
+export const updateTargetDB = async (id: string, data: UpdateTargetInput) => {
+  console.log("updateTargetDB payload", id, data);
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

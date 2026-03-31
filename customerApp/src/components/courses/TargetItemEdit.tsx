@@ -10,7 +10,7 @@ import type { Target } from "../../types/course-types";
 import { MdInsertEmoticon } from "react-icons/md";
 import { Button } from "../ui/button";
 
-type FormDataType = {
+type TargetFormDataType = {
   id: string;
   name: string;
   color: string;
@@ -20,8 +20,8 @@ type FormDataType = {
 
 type TargetItemEditProps = {
   target: Target & { isNew?: boolean };
-  formData: FormDataType;
-  setFormData: React.Dispatch<React.SetStateAction<FormDataType>>;
+  formData: TargetFormDataType;
+  setFormData: React.Dispatch<React.SetStateAction<TargetFormDataType>>;
   setIsEditable: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -62,6 +62,7 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
         const updatedTarget = await updateTargetDB(target.id, {
           name: formData.name,
           color: [formData.color, formData.fontColor],
+          icon: formData.icon,
         });
 
         updateTarget(target.id, updatedTarget);
@@ -118,7 +119,6 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
             icon={formData.icon}
             onChange={(newIcon) => {
               setFormData((prev) => ({ ...prev, icon: newIcon }));
-              console.log("Updating icon to:", newIcon);
               updateIcon(target.id, newIcon);
             }}
           >
