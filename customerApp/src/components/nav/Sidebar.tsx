@@ -50,29 +50,31 @@ const Sidebar = () => {
             <span className="text-gray-300">Dashboard</span>
           </NavLink>
           <div className="border-b border-gray-500" />
-          <NavLink
-            to="/courses"
-            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
-          >
-            <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
-            <span className="text-gray-300">Kurse</span>
-          </NavLink>
           <div>
-            {activeTargets.map((target) => (
-              <Link to={`/courses/${target.id}`} key={target.id}>
-                <div
-                  style={
-                    {
-                      "--hover-color-back": target.color[0],
-                      "--hover-color-text": target.color[1],
-                    } as React.CSSProperties
-                  }
-                  className={`pl-10 py-2 rounded-xl text-gray-300 hover:bg-[var(--hover-color-back)] hover:text-[var(--hover-color-text)] cursor-pointer`}
-                >
-                  {target.name}
-                </div>
-              </Link>
-            ))}
+            <NavLink
+              to="/courses"
+              className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2 mb-3"
+            >
+              <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
+              <span className="text-gray-300">Kurse</span>
+            </NavLink>
+            <div>
+              {activeTargets.map((target) => (
+                <Link to={`/courses/${target.id}`} key={target.id}>
+                  <div
+                    style={
+                      {
+                        "--hover-color-back": target.color[0],
+                        "--hover-color-text": target.color[1],
+                      } as React.CSSProperties
+                    }
+                    className={`pl-10 py-2 rounded-xl text-gray-300 hover:bg-[var(--hover-color-back)] hover:text-[var(--hover-color-text)] cursor-pointer`}
+                  >
+                    {target.name}
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
           <div className="border-b border-gray-500" />
           <NavLink
