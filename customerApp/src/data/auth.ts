@@ -24,8 +24,8 @@ const me = async (): Promise<User> => {
     credentials: "include",
   });
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
-  const user = (await res.json()) as User;
-  console.log("[me] raw response:", user);
+  const raw = await res.json();
+  const { user } = raw as { user: User };
 
   return user;
 };
