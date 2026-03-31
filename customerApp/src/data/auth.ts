@@ -26,6 +26,7 @@ const me = async (): Promise<User> => {
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
 
   const user = (await res.json()) as User;
+  console.log("[me] raw response:", user);
 
   return user;
 };
