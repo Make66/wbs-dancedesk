@@ -54,7 +54,6 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
           color: [formData.color, formData.fontColor],
           icon: formData.icon,
           active: true,
-          seq: target.seq,
           locationId: selectedLocationId!,
         });
         replaceTemporaryTarget(target.id, createdTarget);

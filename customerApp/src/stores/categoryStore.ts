@@ -38,6 +38,7 @@ type CategoryStore = {
   isCategoryExpanded: (categoryId: string) => boolean;
   toggleCategoryExpanded: (categoryId: string) => void;
   expandCategory: (categoryId: string) => void;
+  updateCategoryColor: (id: string, color: string[]) => void;
   collapseCategory: (categoryId: string) => void;
   collapseAllCategories: () => void;
   expandAllCategories: () => void;
@@ -155,6 +156,28 @@ export const categoryStore = create<CategoryStore>((set, get) => ({
         ? state.expandedCategoryIds
         : [...state.expandedCategoryIds, categoryId],
     })),
+
+  updateCategoryColor: (id, color) =>
+    set((state) => {
+      if (!state.courseTargetDetail) return state;
+
+      const updatedCategories = state.courseTargetDetail.categories.map((category) =>
+        category.id === id
+          ? {
+              ...category,
+              color: color[0],
+              fontColor: color[1],
+            }
+          : category,
+      );
+
+      return {
+        courseTargetDetail: {
+          ...state.courseTargetDetail,
+          categories: updatedCategories,
+        },
+      };
+    }),
 
   collapseCategory: (categoryId) =>
     set((state) => ({

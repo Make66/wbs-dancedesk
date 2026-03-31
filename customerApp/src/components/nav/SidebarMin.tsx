@@ -8,21 +8,21 @@ import { FaChalkboardTeacher } from "react-icons/fa";
 
 const SidebarMin = () => {
   return (
-    <div className="flex flex-col items-center gap-12 mt-6">
+    <div className="flex flex-col items-center justify-center gap-12 mt-6">
       <button onClick={() => userStore.setState({ isSidebarOpen: true })}>
         <MapPin className="text-4xl cursor-pointer fill-gray-300 ml-1" />
       </button>
       <NavLink to="/">
-        <MdDashboard className="text-2xl cursor-pointer fill-gray-300" />
+        <MdDashboard className="text-2xl cursor-pointer fill-gray-300 ml-1" />
       </NavLink>
       <NavLink to="/courses">
-        <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
+        <IoSchool className="text-2xl cursor-pointer fill-gray-300 ml-1" />
       </NavLink>
       <NavLink to="/users">
-        <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
+        <ImUsers className="text-2xl cursor-pointer fill-gray-300 ml-1" />
       </NavLink>
       <NavLink to="/instructors">
-        <FaChalkboardTeacher className="text-2xl cursor-pointer fill-gray-300" />
+        <FaChalkboardTeacher className="text-2xl cursor-pointer fill-gray-300 ml-1" />
       </NavLink>
     </div>
   );
