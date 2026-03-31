@@ -20,7 +20,7 @@ type UpdateTargetInput = {
   isDeleted?: boolean;
 };
 
-type targetStore = {
+type TargetStore = {
   courseTargets: Target[];
   isInactiveVisible: boolean;
   isLoading: boolean;
@@ -36,6 +36,7 @@ type targetStore = {
   setError: (value: string | null) => void;
 
   getVisibleTargets: () => Target[];
+  getOrderedTargetIds: () => string[];
 
   toggleTargetActive: (id: string, active: boolean) => void;
   reorderTargets: (activeId: string, overId: string) => void;
@@ -51,26 +52,41 @@ const filterNotDeleted = <T extends { isDeleted: boolean }>(items: T[]) => {
   return items.filter((item) => !item.isDeleted);
 };
 
-const sortBySeq = <T extends { seq: number }>(items: T[] = []) => {
-  return [...items].sort((a, b) => a.seq - b.seq);
+const sortTargetsByOrderedIds = <T extends { id: string; createdAt: string }>(
+  items: T[],
+  orderedIds: string[] = [],
+) => {
+  const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
+
+  return [...items].sort((a, b) => {
+    const aIndex = orderMap.get(a.id);
+    const bIndex = orderMap.get(b.id);
+
+    const aHasOrder = aIndex !== undefined;
+    const bHasOrder = bIndex !== undefined;
+
+    if (aHasOrder && bHasOrder) return aIndex - bIndex;
+    if (aHasOrder) return -1;
+    if (bHasOrder) return 1;
+
+    return a.createdAt.localeCompare(b.createdAt);
+  });
 };
 
-const withUpdatedSeq = (courseTargets: Target[]) => {
-  return courseTargets.map((courseTarget, index) => ({
-    ...courseTarget,
-    seq: index + 1,
-  }));
+const mergeOrderedIds = <T extends { id: string }>(items: T[], orderedIds: string[] = []) => {
+  const validIds = new Set(items.map((item) => item.id));
+
+  const existingOrderedIds = orderedIds.filter((id) => validIds.has(id));
+  const missingIds = items
+    .filter((item) => !existingOrderedIds.includes(item.id))
+    .map((item) => item.id);
+
+  return [...existingOrderedIds, ...missingIds];
 };
 
-const sortTargetsByActive = (courseTargets: Target[]) => {
-  const sorted = sortBySeq(courseTargets);
-  const activeTargets = sorted.filter((target) => target.active);
-  const inactiveTargets = sorted.filter((target) => !target.active);
+const getSelectedLocation = () => userStore.getState().getActiveLocation();
 
-  return withUpdatedSeq([...activeTargets, ...inactiveTargets]);
-};
-
-export const targetStore = create<targetStore>()(
+export const targetStore = create<TargetStore>()(
   persist(
     (set, get) => ({
       courseTargets: [],
@@ -85,18 +101,16 @@ export const targetStore = create<targetStore>()(
 
       setTargets: (targets) =>
         set((state) => ({
-          courseTargets: sortBySeq(
-            filterNotDeleted([
-              ...state.courseTargets.filter((item) => !targets.some((t) => t.id === item.id)),
-              ...targets,
-            ]),
-          ),
+          courseTargets: filterNotDeleted([
+            ...state.courseTargets.filter((item) => !targets.some((t) => t.id === item.id)),
+            ...targets,
+          ]),
           error: null,
         })),
 
       replaceTargets: (targets) =>
         set({
-          courseTargets: sortBySeq(filterNotDeleted(targets)),
+          courseTargets: filterNotDeleted(targets),
           error: null,
         }),
 
@@ -119,55 +133,84 @@ export const targetStore = create<targetStore>()(
 
       getVisibleTargets: () => {
         const { courseTargets, isInactiveVisible } = get();
+        const selectedLocation = getSelectedLocation();
+
+        if (!selectedLocation) return [];
+
+        const targetsForLocation = filterNotDeleted(
+          courseTargets.filter((item) => item.locationId === selectedLocation.id),
+        );
 
         const visibleTargets = isInactiveVisible
-          ? courseTargets
-          : courseTargets.filter((item) => item.active);
+          ? targetsForLocation
+          : targetsForLocation.filter((item) => item.active);
 
-        return sortBySeq(visibleTargets);
+        const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
+        const finalOrderedIds = mergeOrderedIds(visibleTargets, storedOrderedIds);
+
+        return sortTargetsByOrderedIds(visibleTargets, finalOrderedIds);
+      },
+
+      getOrderedTargetIds: () => {
+        const { courseTargets } = get();
+        const selectedLocation = getSelectedLocation();
+
+        if (!selectedLocation) return [];
+
+        const targetsForLocation = filterNotDeleted(
+          courseTargets.filter((item) => item.locationId === selectedLocation.id),
+        );
+
+        const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
+        return mergeOrderedIds(targetsForLocation, storedOrderedIds);
       },
 
       toggleTargetActive: (id, active) =>
-        set((state) => {
-          const updatedTargets = state.courseTargets.map((courseTarget) =>
-            courseTarget.id === id
+        set((state) => ({
+          courseTargets: state.courseTargets.map((item) =>
+            item.id === id
               ? {
-                  ...courseTarget,
+                  ...item,
                   active,
                   updatedAt: new Date().toISOString(),
                 }
-              : courseTarget,
-          );
-
-          return {
-            courseTargets: sortTargetsByActive(updatedTargets),
-          };
-        }),
+              : item,
+          ),
+        })),
 
       reorderTargets: (activeId, overId) =>
         set((state) => {
-          const activeItem = state.courseTargets.find((item) => item.id === activeId);
-          const overItem = state.courseTargets.find((item) => item.id === overId);
+          const selectedLocation = getSelectedLocation();
+          if (!selectedLocation) return state;
 
-          if (!activeItem || !overItem) return state;
-          if (!activeItem.active || !overItem.active) return state;
+          const visibleTargets = get().getVisibleTargets();
 
-          const activeTargets = sortBySeq(state.courseTargets.filter((item) => item.active));
-          const inactiveTargets = sortBySeq(state.courseTargets.filter((item) => !item.active));
-
-          const oldIndex = activeTargets.findIndex((item) => item.id === activeId);
-          const newIndex = activeTargets.findIndex((item) => item.id === overId);
+          const oldIndex = visibleTargets.findIndex((item) => item.id === activeId);
+          const newIndex = visibleTargets.findIndex((item) => item.id === overId);
 
           if (oldIndex === -1 || newIndex === -1) return state;
 
-          const reorderedActiveTargets = arrayMove(activeTargets, oldIndex, newIndex);
+          const reorderedVisibleTargets = arrayMove(visibleTargets, oldIndex, newIndex);
+
+          const allTargetsForLocation = filterNotDeleted(
+            state.courseTargets.filter((item) => item.locationId === selectedLocation.id),
+          );
+
+          const visibleIds = new Set(visibleTargets.map((item) => item.id));
+          const hiddenTargets = allTargetsForLocation.filter((item) => !visibleIds.has(item.id));
+
+          const orderedIds = [...reorderedVisibleTargets, ...hiddenTargets].map((item) => item.id);
+
+          userStore.getState().updateLocationTargetOrder(selectedLocation.id, orderedIds);
 
           return {
-            courseTargets: withUpdatedSeq([...reorderedActiveTargets, ...inactiveTargets]).map(
-              (item) =>
-                item.id === activeId || item.id === overId
-                  ? { ...item, updatedAt: new Date().toISOString() }
-                  : item,
+            courseTargets: state.courseTargets.map((item) =>
+              item.id === activeId || item.id === overId
+                ? {
+                    ...item,
+                    updatedAt: new Date().toISOString(),
+                  }
+                : item,
             ),
           };
         }),
@@ -175,19 +218,18 @@ export const targetStore = create<targetStore>()(
       addTarget: (input) =>
         set((state) => {
           const selectedLocationId = userStore.getState().selectedLocationId;
-          if (!selectedLocationId) {
-            return state;
-          }
-          const nextSeq = state.courseTargets.length + 1;
+          if (!selectedLocationId) return state;
+
+          const locationId = input.locationId || selectedLocationId;
 
           const newTarget: Target = {
             id: crypto.randomUUID(),
-            seq: nextSeq,
             name: input.name?.trim() || "Neue Zielgruppe",
             color: input.color || ["#9ca3af", "#ffffff"],
             icon: input.icon || "",
             active: true,
-            locationId: input.locationId || selectedLocationId,
+            setSeqCategory: {},
+            locationId,
             tenantId: input.tenantId || "seed",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -195,15 +237,30 @@ export const targetStore = create<targetStore>()(
             isNew: true,
           };
 
-          const activeTargets = state.courseTargets.filter((item) => item.active);
-          const inactiveTargets = state.courseTargets.filter((item) => !item.active);
+          const nextCourseTargets = [newTarget, ...state.courseTargets];
+
+          const selectedLocation = userStore
+            .getState()
+            .user?.locations.find((loc) => loc.id === locationId);
+
+          if (selectedLocation) {
+            const locationTargets = filterNotDeleted(
+              nextCourseTargets.filter((item) => item.locationId === locationId),
+            );
+
+            const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
+            const orderedIds = [
+              newTarget.id,
+              ...mergeOrderedIds(locationTargets, storedOrderedIds).filter(
+                (id) => id !== newTarget.id,
+              ),
+            ];
+
+            userStore.getState().updateLocationTargetOrder(locationId, orderedIds);
+          }
 
           return {
-            courseTargets: withUpdatedSeq([
-              newTarget,
-              ...sortBySeq(activeTargets),
-              ...sortBySeq(inactiveTargets),
-            ]),
+            courseTargets: nextCourseTargets,
           };
         }),
 
@@ -248,24 +305,45 @@ export const targetStore = create<targetStore>()(
 
       replaceTemporaryTarget: (tempId, createdTarget) =>
         set((state) => ({
-          courseTargets: sortTargetsByActive(
-            state.courseTargets.map((item) =>
-              item.id === tempId
-                ? {
-                    ...createdTarget,
-                    isNew: false,
-                  }
-                : item,
-            ),
+          courseTargets: state.courseTargets.map((item) =>
+            item.id === tempId
+              ? {
+                  ...createdTarget,
+                  isNew: false,
+                }
+              : item,
           ),
         })),
 
       deleteTarget: (id) =>
-        set((state) => ({
-          courseTargets: withUpdatedSeq(
-            state.courseTargets.filter((courseTarget) => courseTarget.id !== id),
-          ),
-        })),
+        set((state) => {
+          const targetToDelete = state.courseTargets.find((item) => item.id === id);
+          if (!targetToDelete) return state;
+
+          const nextCourseTargets = state.courseTargets.filter((item) => item.id !== id);
+
+          const selectedLocation = userStore
+            .getState()
+            .user?.locations.find((loc) => loc.id === targetToDelete.locationId);
+
+          if (selectedLocation) {
+            const remainingTargetsForLocation = filterNotDeleted(
+              nextCourseTargets.filter((item) => item.locationId === targetToDelete.locationId),
+            );
+
+            const storedOrderedIds = selectedLocation.setSeqTarget?.setSeqTarget ?? [];
+            const orderedIds = mergeOrderedIds(
+              remainingTargetsForLocation,
+              storedOrderedIds.filter((targetId) => targetId !== id),
+            );
+
+            userStore.getState().updateLocationTargetOrder(targetToDelete.locationId, orderedIds);
+          }
+
+          return {
+            courseTargets: nextCourseTargets,
+          };
+        }),
     }),
     {
       name: "courseTargets-ui-storage",

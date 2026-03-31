@@ -321,6 +321,8 @@ export const categoryStore = create<CategoryStore>((set, get) => ({
 
       const reorderedCategories = arrayMove(categories, oldIndex, newIndex);
 
+      console.log("Reordered categories:", reorderedCategories);
+
       return {
         courseTargetDetail: {
           ...state.courseTargetDetail,

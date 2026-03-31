@@ -5,13 +5,13 @@ export type ContractType = "monthly" | "one-time" | "subscription";
 export type CourseFrequency = "daily" | "weekly" | "monthly";
 
 export type Target = {
-  id: string;
   name: string;
-  seq: number;
-  color: string[];
   icon: string;
+  color: string[];
   active: boolean;
+  setSeqCategory: Record<string, unknown>;
   locationId: string;
+  id: string;
   tenantId: string;
   createdAt: string;
   updatedAt: string;

@@ -12,6 +12,7 @@ import { targetStore } from "../stores/targetStore";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { userStore } from "../stores/userStore";
+import { updateLocationDB } from "../data/location";
 
 const TargetsPage = () => {
   const courseTargets = targetStore((state) => state.courseTargets);
@@ -20,7 +21,7 @@ const TargetsPage = () => {
   const reorderCourses = targetStore((state) => state.reorderTargets);
   const addTarget = targetStore((state) => state.addTarget);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
-
+  const getOrderedTargetIds = targetStore((state) => state.getOrderedTargetIds);
   const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.active);
 
   const visibleTargets = isInactiveVisible
@@ -37,10 +38,21 @@ const TargetsPage = () => {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (!over || active.id === over.id) return;
-
-    reorderCourses(String(active.id), String(over.id));
+    try {
+      const tenantId = userStore.getState().user?.tenantId;
+      const locationId = userStore.getState().selectedLocationId;
+      const orderedIds = getOrderedTargetIds();
+      const payload = {
+        tenantId,
+        locationId,
+        setSeqTarget: orderedIds,
+      };
+      updateLocationDB(locationId!, payload);
+      reorderCourses(String(active.id), String(over.id));
+    } catch (error) {
+      console.error("Error reordering targets:", error);
+    }
   };
 
   return (
