@@ -16,8 +16,27 @@ export const userSchema = z.object({
   modules: z.array(z.string()).default([]),
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
+
+userSchema.partial({
+  firstName: true,
+  lastName: true,
+  email: true,
+  password: true,
+  imageUrl: true,
+  active: true,
+  refreshToken: true,
+  settings: true,
+
+  locations : true,
+  modules: true,
+
+  isDeleted: true
+});
+
+export type User = z.infer<typeof userSchema>;
 
 export const registerSchema = userSchema
   .pick({ firstName: true, lastName: true, email: true, password: true })

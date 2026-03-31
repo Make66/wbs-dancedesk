@@ -6,5 +6,15 @@ export const instructorSchema = z.object({
   active: z.boolean().default(true),
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
+
+instructorSchema.partial({
+  name: true,
+  imageUrl: true,
+  active: true,
+  isDeleted: true,
+});
+
+export type Instructor = z.infer<typeof instructorSchema>;

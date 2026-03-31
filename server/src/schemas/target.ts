@@ -6,10 +6,22 @@ export const targetSchema = z.object({
   icon: z.string().optional(),
   categories: z.array(categorySchema).optional(),
   color: z.array(z.string()).optional(),
-  active: z.boolean().default(true),
+  active: z.boolean().optional(),
 
   setSeqCategory: z.array(z.uuid()).optional(),
 
   id: z.uuid(),
   tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false),
 });
+
+targetSchema.partial({
+  name: true,
+  icon: true,
+  color: true,
+  active: true,
+  setSeqCategory: true,
+  isDeleted: true,
+});
+
+export type Target = z.infer<typeof targetSchema>;

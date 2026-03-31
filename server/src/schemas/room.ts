@@ -15,8 +15,24 @@ export const roomSchema = z.object({
   latitude: z.number().optional,
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
 
+roomSchema.partial({
+  name: true,
+  imageUrl: true,
+  capacity: true,
+  active: true,
+  courses: true,
 
+  street: true,
+  city: true,
+  zipCode: true,
+  longitude: true,
+  latitude: true,
 
+  isDeleted: true
+});
+
+export type Room = z.infer<typeof roomSchema>;

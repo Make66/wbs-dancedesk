@@ -9,5 +9,16 @@ export const categorySchema = z.object({
   setSeqCourse: z.array(z.uuid()).optional(),
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
+
+categorySchema.partial({
+  name: true,
+  color: true,
+  active: true,
+  setSeqCourse: true,
+  isDeleted: true,
+});
+
+export type Category = z.infer<typeof categorySchema>;

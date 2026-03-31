@@ -6,5 +6,15 @@ export const moduleSchema = z.object({
   active: z.boolean().default(true),
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
+
+moduleSchema.partial({
+  name: true,
+  color: true,
+  active: true,
+  isDeleted: true,
+});
+
+export type Module = z.infer<typeof moduleSchema>;

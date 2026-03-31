@@ -7,7 +7,6 @@ export const courseDateSchema = z.object({
 
 export const courseSchema = z.object({
   name: z.string().min(1),
-  seq: z.number().default(0),
   active: z.boolean().default(true),
   startsAt: z.date().default(new Date()),
   endsAt: z.date().default(new Date()),
@@ -27,5 +26,29 @@ export const courseSchema = z.object({
   textInfo: z.uuid().optional(),
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
+});
+
+courseSchema.partial({
+  name: true,
+  active: true,
+  startsAt: true,
+  endsAt: true,
+  repeat: true,
+  frequency: true,
+  isIgnoreCalendar: true,
+  dates: true,
+  seatsCurrent: true,
+  seatsMax: true,
+  paymentTypes: true,
+  contractTypes: true,
+
+  category: true,
+  instructor: true,
+  room: true,
+  textTerms: true,
+  textInfo: true,
+
+  isDeleted: true
 });

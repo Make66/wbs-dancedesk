@@ -21,8 +21,32 @@ export const customerSchema = z.object({
   latitude: z.number().optional(),
 
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
 
+customerSchema.partial({
+  name: true,
+  email: true,
+  website: true,
+  logoUrl: true,
+  primary: true,
+  secondary: true,
+  tertiary: true,
+  quaternary: true,
+  active: true,
 
+  setSeqLocation: true,
+  setSeqInstructor: true,
+
+  street: true,
+  city: true,
+  zipCode: true,
+  longitude: true,
+  latitude: true,
+
+  isDeleted: true
+});
+
+export type Customer = z.infer<typeof customerSchema>;
 

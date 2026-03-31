@@ -14,8 +14,8 @@ model Course {
   contractTypes    String[] @default(["standard", "trial"])
 
   // relations from other models
-  category   Category    @relation(fields: [categoryId], references: [id])
-  categoryId String @db.Uuid
+  category     Category    @relation(fields: [categoryId], references: [id])
+  categoryId   String      @db.Uuid
   instructor   Instructor? @relation(fields: [instructorId], references: [id])
   instructorId String?     @db.Uuid
   room         Room?       @relation(fields: [roomId], references: [id])

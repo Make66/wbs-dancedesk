@@ -11,7 +11,18 @@ export const textSchema = z.object({
   courseTerms: z.array(z.uuid()).optional(),
   
   id: z.uuid(),
-  tenantId: z.uuid()
+  tenantId: z.uuid(),
+  isDeleted: z.boolean().default(false)
 });
 
+textSchema.partial({
+  name: true,
+  type: true,
+  text: true,
+  active: true,
+  courseInfo: true,
+  courseTerms: true,
+  isDeleted: true,
+});
 
+export type Text = z.infer<typeof textSchema>;
