@@ -5,13 +5,16 @@ export const locationSchema = z.object({
   imageUrl: z.string().optional(),
   active: z.boolean().default(true),
 
-  setSeqTarget: z.array(z.string()).optional(),
+  setSeqTarget: z.array(z.uuid()).optional(),
 
   street: z.string().optional(),
   city: z.string().optional(),
   zipCode: z.string().optional(),
   longitude: z.number().optional(),
-  latitude: z.number().optional()
+  latitude: z.number().optional(),
+
+  id: z.uuid(),
+  tenantId: z.uuid()
 });
 
 

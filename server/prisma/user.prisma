@@ -6,13 +6,14 @@ model User {
   imageUrl     String  @default("./assets/images/no-profile-picture")
   active       Boolean @default(true)
   refreshToken String? // bcrypt hash of current refresh token; null = logged out
+  settings     Json?   @default("{}") // JSON field for user-specific settings/preferences
 
   // relations from here
   locations Location[] @relation("UserLocations") // Many-to-many relation with Location
   modules   Module[]   @relation("UserModules") // Many-to-many relation with Module
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

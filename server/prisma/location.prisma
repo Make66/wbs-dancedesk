@@ -11,14 +11,14 @@ model Location {
   latitude  Float  @default(0.0)
 
   // relations
-  setSeqTarget String[]  @default([]) // [UUID]
+  setSeqTarget String[]  @db.Uuid
   customer     Customer? @relation(fields: [customerId], references: [id])
-  customerId   String?
+  customerId   String?   @db.Uuid
   targets      Target[]
   users        User[]    @relation("UserLocations") // Many-to-many relation with User
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

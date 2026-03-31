@@ -12,7 +12,10 @@ export const registrationSchema = z.object({
   longitude: z.number().optional(),
   latitude: z.number().optional(),
 
-  active: z.boolean().default(true)
+  active: z.boolean().default(true),
+
+  id: z.uuid().optional(),
+  tenantId: z.uuid()
 });
 
 

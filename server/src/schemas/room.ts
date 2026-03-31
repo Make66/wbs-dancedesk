@@ -5,11 +5,17 @@ export const roomSchema = z.object({
   imageUrl: z.string().optional(),
   capacity: z.number().optional(),
   active: z.boolean().default(true),
+  
+  courses: z.array(z.uuid()).optional(),
+
   street: z.string().optional(),
   city: z.string().optional(),
   zipCode: z.string().optional(),
   longitude: z.number().optional(),
-  latitude: z.number().optional
+  latitude: z.number().optional,
+
+  id: z.uuid(),
+  tenantId: z.uuid()
 });
 
 

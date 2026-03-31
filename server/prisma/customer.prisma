@@ -10,8 +10,8 @@ model Customer {
   active     Boolean @default(true)
 
   // relations
-  setSeqInstructor String[]     @default([]) // [UUID]
-  setSeqTarget     String[]     @default([]) // [UUID]
+  setSeqInstructor String[]     @db.Uuid
+  setSeqTarget     String[]     @db.Uuid
   instructors      Instructor[]
   locations        Location[]
 
@@ -23,7 +23,7 @@ model Customer {
   latitude  Float  @default(0.0)
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

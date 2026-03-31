@@ -1,15 +1,15 @@
 model Text {
-  name String? @default("Erwachsene")
-  type Int     @default(0) // 0 = terms, 1 = info
-  text String  @default("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+  name   String? @default("Erwachsene")
+  type   Int     @default(0) // 0 = terms, 1 = info
+  text   String  @default("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+  active Boolean @default(true)
 
   // relations
-  courseTerms Course[] @relation("CourseTerms")
   courseInfo  Course[] @relation("CourseInfo")
-  courses     Course[]
+  courseTerms Course[] @relation("CourseTerms")
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

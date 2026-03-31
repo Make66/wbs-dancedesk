@@ -7,10 +7,10 @@ model Instructor {
 
   // relations
   customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+  customerId String?   @db.Uuid
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

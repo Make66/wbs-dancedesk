@@ -3,9 +3,9 @@ CREATE TABLE "Category" (
     "name" TEXT DEFAULT 'Paare Grundkurs',
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
     "active" BOOLEAN NOT NULL DEFAULT true,
-    "setSeqCourse" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "targetId" TEXT NOT NULL,
-    "id" TEXT NOT NULL,
+    "setSeqCourse" UUID[],
+    "targetId" UUID NOT NULL,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -29,13 +29,12 @@ CREATE TABLE "Course" (
     "seatsMax" INTEGER NOT NULL DEFAULT 20,
     "paymentTypes" TEXT[] DEFAULT ARRAY['bar', 'paypal', 'bank']::TEXT[],
     "contractTypes" TEXT[] DEFAULT ARRAY['standard', 'trial']::TEXT[],
-    "categoryId" TEXT NOT NULL,
-    "roomId" TEXT,
-    "textId" TEXT,
-    "textTermsId" TEXT,
-    "textInfoId" TEXT,
-    "instructorId" TEXT,
-    "id" TEXT NOT NULL,
+    "categoryId" UUID NOT NULL,
+    "instructorId" UUID,
+    "roomId" UUID,
+    "textTermsId" UUID,
+    "textInfoId" UUID,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -55,14 +54,14 @@ CREATE TABLE "Customer" (
     "tertiary" TEXT NOT NULL DEFAULT '#858384',
     "quaternary" TEXT NOT NULL DEFAULT '#858384',
     "active" BOOLEAN NOT NULL DEFAULT true,
-    "setSeqInstructor" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "setSeqTarget" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "setSeqInstructor" UUID[],
+    "setSeqTarget" UUID[],
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Any town',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
     "longitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "latitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -77,8 +76,8 @@ CREATE TABLE "Instructor" (
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
     "active" BOOLEAN NOT NULL DEFAULT true,
     "skills" TEXT[] DEFAULT ARRAY['Salsa', 'WTP', 'HipHop']::TEXT[],
-    "customerId" TEXT,
-    "id" TEXT NOT NULL,
+    "customerId" UUID,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -97,9 +96,9 @@ CREATE TABLE "Location" (
     "zipCode" TEXT NOT NULL DEFAULT '12345',
     "longitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "latitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "setSeqTarget" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "customerId" TEXT,
-    "id" TEXT NOT NULL,
+    "setSeqTarget" UUID[],
+    "customerId" UUID,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -111,10 +110,9 @@ CREATE TABLE "Location" (
 -- CreateTable
 CREATE TABLE "Module" (
     "name" TEXT NOT NULL DEFAULT 'Standard Modul',
-    "seq" INTEGER NOT NULL DEFAULT 0,
     "color" TEXT NOT NULL DEFAULT '#B5252B',
     "active" BOOLEAN NOT NULL DEFAULT true,
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -129,12 +127,13 @@ CREATE TABLE "Registration" (
     "lastName" TEXT DEFAULT 'Room 1',
     "email" TEXT DEFAULT 'Room 1',
     "phone" TEXT DEFAULT 'Room 1',
+    "active" BOOLEAN NOT NULL DEFAULT true,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
     "longitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "latitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -149,7 +148,12 @@ CREATE TABLE "Room" (
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
     "capacity" INTEGER NOT NULL DEFAULT 20,
     "active" BOOLEAN NOT NULL DEFAULT true,
-    "id" TEXT NOT NULL,
+    "street" TEXT NOT NULL DEFAULT '123 Main St',
+    "city" TEXT NOT NULL DEFAULT 'Anytown',
+    "zipCode" TEXT NOT NULL DEFAULT '12345',
+    "longitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "latitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -164,9 +168,9 @@ CREATE TABLE "Target" (
     "icon" TEXT NOT NULL DEFAULT '',
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
     "active" BOOLEAN NOT NULL DEFAULT true,
-    "setSeqCategory" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "locationId" TEXT,
-    "id" TEXT NOT NULL,
+    "setSeqCategory" UUID[],
+    "locationId" UUID,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -180,7 +184,8 @@ CREATE TABLE "Text" (
     "name" TEXT DEFAULT 'Erwachsene',
     "type" INTEGER NOT NULL DEFAULT 0,
     "text" TEXT NOT NULL DEFAULT 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    "id" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -198,7 +203,8 @@ CREATE TABLE "User" (
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
     "active" BOOLEAN NOT NULL DEFAULT true,
     "refreshToken" TEXT,
-    "id" TEXT NOT NULL,
+    "settings" JSONB DEFAULT '{}',
+    "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -209,16 +215,16 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "_UserLocations" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
+    "A" UUID NOT NULL,
+    "B" UUID NOT NULL,
 
     CONSTRAINT "_UserLocations_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_UserModules" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
+    "A" UUID NOT NULL,
+    "B" UUID NOT NULL,
 
     CONSTRAINT "_UserModules_AB_pkey" PRIMARY KEY ("A","B")
 );
@@ -242,19 +248,16 @@ ALTER TABLE "Category" ADD CONSTRAINT "Category_targetId_fkey" FOREIGN KEY ("tar
 ALTER TABLE "Course" ADD CONSTRAINT "Course_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Course" ADD CONSTRAINT "Course_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_textId_fkey" FOREIGN KEY ("textId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Course" ADD CONSTRAINT "Course_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_textTermsId_fkey" FOREIGN KEY ("textTermsId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_textInfoId_fkey" FOREIGN KEY ("textInfoId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Course" ADD CONSTRAINT "Course_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -3,8 +3,11 @@ import { z } from 'zod/v4';
 export const categorySchema = z.object({
   name: z.string().min(1),
   target: z.uuid(),
-  color: z.array(z.string()).default(['#000000', '#FFFFFF']),
+  color: z.array(z.string()).default(['#D1D5DC', '#000000']),
   active: z.boolean().default(true),
 
   setSeqCourse: z.array(z.uuid()).optional(),
+
+  id: z.uuid(),
+  tenantId: z.uuid()
 });

@@ -9,4 +9,7 @@ export const targetSchema = z.object({
   active: z.boolean().default(true),
   
   setSeqCategory: z.array(z.uuid()).optional(),
+
+  id: z.uuid(),
+  tenantId: z.uuid()
 });

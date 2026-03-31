@@ -14,21 +14,19 @@ model Course {
   contractTypes    String[] @default(["standard", "trial"])
 
   // relations from other models
-  category     Category    @relation(fields: [categoryId], references: [id])
-  categoryId   String
-  room         Room?       @relation(fields: [roomId], references: [id])
-  roomId       String?
-  text         Text?       @relation(fields: [textId], references: [id])
-  textId       String?
-  textTerms    Text?       @relation("CourseTerms", fields: [textTermsId], references: [id])
-  textTermsId  String?
-  textInfo     Text?       @relation("CourseInfo", fields: [textInfoId], references: [id])
-  textInfoId   String?
+  category   Category    @relation(fields: [categoryId], references: [id])
+  categoryId String @db.Uuid
   instructor   Instructor? @relation(fields: [instructorId], references: [id])
-  instructorId String?
+  instructorId String?     @db.Uuid
+  room         Room?       @relation(fields: [roomId], references: [id])
+  roomId       String?     @db.Uuid
+  textTerms    Text?       @relation("CourseTerms", fields: [textTermsId], references: [id])
+  textTermsId  String?     @db.Uuid
+  textInfo     Text?       @relation("CourseInfo", fields: [textInfoId], references: [id])
+  textInfoId   String?     @db.Uuid
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

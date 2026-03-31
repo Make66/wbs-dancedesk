@@ -18,7 +18,10 @@ export const customerSchema = z.object({
   city: z.string().optional(),
   zipCode: z.string().optional(),
   longitude: z.number().optional(),
-  latitude: z.number().optional()
+  latitude: z.number().optional(),
+
+  id: z.uuid(),
+  tenantId: z.uuid()
 });
 
 

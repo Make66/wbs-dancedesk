@@ -1,4 +1,5 @@
 import { refresh } from '#controllers';
+import { id } from 'zod/locales';
 import { z } from 'zod/v4';
 
 export const userSchema = z.object({
@@ -14,7 +15,8 @@ export const userSchema = z.object({
   locations : z.array(z.string()).default([]),
   modules: z.array(z.string()).default([]),
 
-  tenantId: z.cuid()
+  id: z.uuid(),
+  tenantId: z.uuid()
 });
 
 export const registerSchema = userSchema

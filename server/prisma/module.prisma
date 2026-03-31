@@ -1,6 +1,5 @@
 model Module {
   name   String  @default("Standard Modul")
-  seq    Int     @default(0)
   color  String  @default("#B5252B")
   active Boolean @default(true)
 
@@ -8,7 +7,7 @@ model Module {
   users User[] @relation("UserModules") // Many-to-many relation with User
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

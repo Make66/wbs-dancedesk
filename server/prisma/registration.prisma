@@ -1,8 +1,9 @@
 model Registration {
   firstName String? @default("Room 1")
-  lastName String? @default("Room 1")
-  email String? @default("Room 1")
-  phone String? @default("Room 1")
+  lastName  String? @default("Room 1")
+  email     String? @default("Room 1")
+  phone     String? @default("Room 1")
+  active    Boolean @default(true)
 
   // Common address fields
   street    String @default("123 Main St")
@@ -12,7 +13,7 @@ model Registration {
   latitude  Float  @default(0.0)
 
   // Common fields
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
