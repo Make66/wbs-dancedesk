@@ -1,11 +1,4 @@
-type UpdateTargetInput = {
-  name?: string;
-  icon?: string;
-  color?: string[];
-  seq?: number;
-  active?: boolean;
-  isDeleted?: boolean;
-};
+import type { UpdateTargetInput } from "../types/course-types";
 
 type CreateTargetPayload = {
   name: string;

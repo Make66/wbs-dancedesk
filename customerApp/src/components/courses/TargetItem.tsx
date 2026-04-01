@@ -109,7 +109,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
         ref={setNodeRef}
         style={{
           ...style,
-          backgroundColor: target.active ? target.color[0] : target.color[0] + "80",
+          backgroundColor: target.active ? target?.color[0] : target.color[0] + "80",
         }}
         {...attributes}
         {...listeners}

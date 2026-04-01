@@ -68,7 +68,7 @@ const Sidebar = () => {
                 const iconName = target.icon;
                 const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;
                 return (
-                  <Link to={`/courses/${target.id}`} key={target.id}>
+                  <Link to={`/courses/${target.id}`} state={{ target: target }} key={target.id}>
                     <div
                       style={
                         {

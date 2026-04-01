@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useLocation } from "react-router";
 import CategoryItem from "../components/courses/CategoryItem";
 import {
   DndContext,
@@ -12,26 +13,40 @@ import {
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { categoryStore } from "../stores/categoryStore";
 import { FaPenNib } from "react-icons/fa";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { useParams } from "react-router";
+import { toast } from "react-toastify";
+import { updateTargetDB } from "../data/target";
 
 const CategoriesPage = () => {
   const { targetId } = useParams();
+  const location = useLocation();
 
   const error = categoryStore((state) => state.error);
   const isLoading = categoryStore((state) => state.isLoading);
-  const courseTargetDetail = categoryStore((state) => state.courseTargetDetail);
   const isEditMode = categoryStore((state) => state.isEditMode);
+  const courseCategories = categoryStore((state) => state.courseCategories);
+  const isInactiveVisible = categoryStore((state) => state.isInactiveVisible);
+  const toggleInactiveVisibility = categoryStore((state) => state.toggleInactiveVisibility);
+  const hasInactiveItems = categoryStore((state) => state.hasInactiveItems());
 
   const setError = categoryStore((state) => state.setError);
   const setLoading = categoryStore((state) => state.setLoading);
-  const loadCourseTargetDetail = categoryStore((state) => state.loadCourseTargetDetail);
-  const resetCourseTargetDetail = categoryStore((state) => state.resetCourseTargetDetail);
+  const setEditMode = categoryStore((state) => state.setEditMode);
+  const setParentContext = categoryStore((state) => state.setParentContext);
+  const replaceCategories = categoryStore((state) => state.replaceCategories);
+  const clearCategories = categoryStore((state) => state.clearCategories);
   const reorderCategories = categoryStore((state) => state.reorderCategories);
   const collapseAllCategories = categoryStore((state) => state.collapseAllCategories);
-  const toggleEditMode = categoryStore((state) => state.toggleEditMode);
+  const addCategory = categoryStore((state) => state.addCategory);
+  const getOrderedCategoryIds = categoryStore((state) => state.getOrderedCategoryIds);
 
-  const categories = courseTargetDetail?.categories ?? [];
+  const visibleCategories = useMemo(() => {
+    return isInactiveVisible
+      ? courseCategories
+      : courseCategories.filter((category) => category.active);
+  }, [courseCategories, isInactiveVisible]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -40,22 +55,35 @@ const CategoriesPage = () => {
       },
     }),
   );
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDragStart = (_event: DragStartEvent) => {
     collapseAllCategories();
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (!over || active.id === over.id) return;
 
-    reorderCategories(String(active.id), String(over.id));
+    const prevOrderedIds = getOrderedCategoryIds();
+    try {
+      reorderCategories(String(active.id), String(over.id));
+      const newOrderedIds = categoryStore.getState().getOrderedCategoryIds();
+      await updateTargetDB(targetId!, {
+        setSeqCategory: newOrderedIds,
+      });
+    } catch (error) {
+      console.log("Error reordering categories:", error);
+      toast.error("Fehler beim Aktualisieren der Reihenfolge.");
+      setError("Fehler beim Aktualisieren der Reihenfolge.");
+      categoryStore.getState().replaceCategories(courseCategories, prevOrderedIds);
+    }
   };
 
   useEffect(() => {
     if (!targetId) {
-      resetCourseTargetDetail();
+      setParentContext(null);
+      clearCategories();
       return;
     }
 
@@ -73,8 +101,13 @@ const CategoriesPage = () => {
         }
 
         const data = await response.json();
+        console.log("categories page response:", data);
 
-        loadCourseTargetDetail(data);
+        const fetchedCategories = data.categories ?? [];
+        const orderedIds = data.setSeqCategory ?? [];
+
+        setParentContext(targetId, orderedIds);
+        replaceCategories(fetchedCategories, orderedIds);
       } catch (err) {
         console.error("Error loading course target detail:", err);
         setError("Fehler beim Laden der Zielgruppe.");
@@ -84,7 +117,7 @@ const CategoriesPage = () => {
     };
 
     loadData();
-  }, [targetId, loadCourseTargetDetail, resetCourseTargetDetail, setError, setLoading]);
+  }, [targetId, setParentContext, clearCategories, setLoading, setError, replaceCategories]);
 
   if (isLoading) {
     return <div className="p-6">Kategorien werden geladen...</div>;
@@ -96,20 +129,41 @@ const CategoriesPage = () => {
 
   return (
     <div className="w-full">
-      <div className="bg-white sticky top-0 pl-6 h-20 border-b border-gray-400 flex items-center gap-9">
-        <h1 className="text-3xl font-semibold">{courseTargetDetail?.name ?? "Kategorien"}</h1>
-        <button type="button" onClick={toggleEditMode} aria-label="Bearbeitungsmodus umschalten">
+      <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 bg-white pl-6">
+        <h1 className="text-3xl font-semibold">{location.state?.target.name || ""}</h1>
+
+        <button
+          type="button"
+          onClick={() => setEditMode(!isEditMode)}
+          aria-label="Bearbeitungsmodus umschalten"
+        >
           <FaPenNib className="cursor-pointer text-xl" />
         </button>
 
         {isEditMode && (
-          <button type="button" aria-label="Kategorie hinzufügen">
+          <button
+            type="button"
+            aria-label="Kategorie hinzufügen"
+            onClick={() => {
+              if (!targetId) return;
+              addCategory({ targetId });
+            }}
+          >
             <IoMdAddCircleOutline className="cursor-pointer text-xl" />
+          </button>
+        )}
+        {hasInactiveItems && (
+          <button type="button" className="cursor-pointer" onClick={toggleInactiveVisibility}>
+            {isInactiveVisible ? (
+              <IoMdEyeOff className="text-3xl" />
+            ) : (
+              <IoMdEye className="text-3xl" />
+            )}
           </button>
         )}
       </div>
 
-      <div className="p-6 mt-3">
+      <div className="mt-3 p-6">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -117,12 +171,12 @@ const CategoriesPage = () => {
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={categories.map((item) => item.id)}
+            items={visibleCategories.map((item) => item.id)}
             strategy={verticalListSortingStrategy}
           >
             <div className="flex flex-col gap-4">
-              {categories.map((item) => (
-                <CategoryItem key={item.id} category={item} />
+              {visibleCategories.map((item) => (
+                <CategoryItem key={item.id} category={item} targetId={targetId} />
               ))}
             </div>
           </SortableContext>
