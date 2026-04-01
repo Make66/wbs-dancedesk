@@ -18,6 +18,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { useParams } from "react-router";
 import { toast } from "react-toastify";
 import { updateTargetDB } from "../data/target";
+import { appIcons, type AppIconName } from "../components/icons";
 
 const CategoriesPage = () => {
   const { targetId } = useParams();
@@ -26,7 +27,7 @@ const CategoriesPage = () => {
   const error = categoryStore((state) => state.error);
   const isLoading = categoryStore((state) => state.isLoading);
   const isEditMode = categoryStore((state) => state.isEditMode);
-  const courseCategories = categoryStore((state) => state.courseCategories);
+  const courseCategories = categoryStore((state) => state.categories);
   const isInactiveVisible = categoryStore((state) => state.isInactiveVisible);
   const toggleInactiveVisibility = categoryStore((state) => state.toggleInactiveVisibility);
   const hasInactiveItems = categoryStore((state) => state.hasInactiveItems());
@@ -47,6 +48,10 @@ const CategoriesPage = () => {
       ? courseCategories
       : courseCategories.filter((category) => category.active);
   }, [courseCategories, isInactiveVisible]);
+
+  const target = location.state?.target;
+  const iconName = target.icon;
+  const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -101,7 +106,6 @@ const CategoriesPage = () => {
         }
 
         const data = await response.json();
-        console.log("categories page response:", data);
 
         const fetchedCategories = data.categories ?? [];
         const orderedIds = data.setSeqCategory ?? [];
@@ -129,8 +133,11 @@ const CategoriesPage = () => {
 
   return (
     <div className="w-full">
-      <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 bg-white pl-6">
-        <h1 className="text-3xl font-semibold">{location.state?.target.name || ""}</h1>
+      <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 bg-white pl-6 z-20">
+        <div className="flex">
+          {iconName && IconComponent && <IconComponent width={30} className="ml-1 mr-2" />}
+          <h1 className="text-3xl font-semibold">{location.state?.target.name || ""}</h1>
+        </div>
 
         <button
           type="button"

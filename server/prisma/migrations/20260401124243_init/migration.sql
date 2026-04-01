@@ -1,6 +1,8 @@
 -- CreateTable
 CREATE TABLE "Category" (
     "name" TEXT DEFAULT 'Paare Grundkurs',
+    "description" TEXT DEFAULT '',
+    "icon" TEXT NOT NULL DEFAULT '',
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
     "active" BOOLEAN NOT NULL DEFAULT true,
     "setSeqCourse" UUID[],
@@ -17,13 +19,15 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Course" (
     "name" TEXT DEFAULT 'Grundkurs 1',
-    "seq" INTEGER NOT NULL DEFAULT 0,
+    "description" TEXT DEFAULT '',
     "active" BOOLEAN NOT NULL DEFAULT true,
     "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "isClub" BOOLEAN NOT NULL DEFAULT false,
     "repeat" INTEGER NOT NULL DEFAULT 0,
     "frequency" TEXT NOT NULL DEFAULT 'weekly',
     "isIgnoreCalendar" BOOLEAN NOT NULL DEFAULT false,
+    "numberOfDates" INTEGER NOT NULL DEFAULT 1,
     "dates" JSONB NOT NULL DEFAULT '[]',
     "seatsCurrent" INTEGER NOT NULL DEFAULT 20,
     "seatsMax" INTEGER NOT NULL DEFAULT 20,
@@ -163,8 +167,33 @@ CREATE TABLE "Room" (
 );
 
 -- CreateTable
+CREATE TABLE "Settings" (
+    "colTitles" JSONB,
+    "holidays" JSONB,
+    "schoolHolidays" JSONB,
+    "rebates" JSONB,
+    "voucher" JSONB,
+    "calendarPast" BOOLEAN NOT NULL DEFAULT false,
+    "calendarOccurrences" INTEGER NOT NULL DEFAULT 0,
+    "calendarLength" INTEGER NOT NULL DEFAULT 12,
+    "formFields" JSONB,
+    "domain" TEXT,
+    "federalState" TEXT,
+    "legalResources" TEXT NOT NULL DEFAULT 'https://domain/fileadmin/kunden/mandant/rechtstexte/',
+    "contracts" JSONB,
+    "registration" JSONB,
+    "id" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Settings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Target" (
     "name" TEXT DEFAULT 'Erwachsene',
+    "description" TEXT DEFAULT '',
     "icon" TEXT NOT NULL DEFAULT '',
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
     "active" BOOLEAN NOT NULL DEFAULT true,
@@ -231,6 +260,9 @@ CREATE TABLE "_UserModules" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer_email_key" ON "Customer"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Settings_tenantId_key" ON "Settings"("tenantId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

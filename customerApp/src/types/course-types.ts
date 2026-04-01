@@ -35,6 +35,26 @@ export type ActivatableEntity = {
 
 export type Course = {
   id: string;
+  categoryId: string;
+  name: string;
+  description: string;
+  startsAt: string;
+  repeat?: number;
+  frequency?: CourseFrequency;
+  seatsCurrent?: number;
+  seatsMax?: number;
+  paymentTypes?: PaymentType[];
+  contractTypes?: ContractType[];
+  price: number;
+  duration: number;
+  active: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isNew?: boolean;
+};
+
+export type CreateCourseInput = {
   name: string;
   description: string;
   startsAt: string;
@@ -46,11 +66,23 @@ export type Course = {
   contractTypes: ContractType[];
   price: number;
   duration: number;
-  active: boolean;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  isNew?: boolean;
+  categoryId: string;
+};
+
+export type UpdateCourseInput = {
+  name?: string;
+  description?: string;
+  startsAt?: string;
+  repeat?: number;
+  frequency?: CourseFrequency;
+  seatsCurrent?: number;
+  seatsMax?: number;
+  paymentTypes?: PaymentType[];
+  contractTypes?: ContractType[];
+  price?: number;
+  duration?: number;
+  active?: boolean;
+  isDeleted?: boolean;
 };
 
 export type Category = {
@@ -113,5 +145,5 @@ export type UpdateCategoryInput = {
   active?: boolean;
   icon?: string;
   isDeleted?: boolean;
-  setSeqCategory?: string[];
+  setSeqCourse?: string[];
 };
