@@ -11,7 +11,7 @@ import {
   sortByActiveStatus,
   sortEntitiesForContext,
 } from "../lib/courses/sorting-utils";
-import { updateEntityById } from "../lib/courses/collection-utils";
+import { updateEntityById, getItemsForParent } from "../lib/courses/collection-utils";
 
 type TargetStore = {
   targets: Target[];
@@ -38,9 +38,6 @@ type TargetStore = {
 };
 
 const getSelectedLocation = () => userStore.getState().getActiveLocation();
-const getTargetsForLocation = (targets: Target[], locationId: string) => {
-  return filterNotDeleted(targets.filter((item) => item.locationId === locationId));
-};
 
 export const targetStore = create<TargetStore>()(
   persist(
@@ -61,7 +58,6 @@ export const targetStore = create<TargetStore>()(
           const existingIds = new Set(state.targets.map((item) => item.id));
 
           const updatedTargets = state.targets.map((item) => targetMap.get(item.id) ?? item);
-
           const newTargets = targets.filter((t) => !existingIds.has(t.id));
 
           return {
@@ -83,10 +79,12 @@ export const targetStore = create<TargetStore>()(
           }
 
           const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
-          const mergedOrderedIds = mergeOrderedIds(
-            filteredTargets.filter((item) => item.locationId === selectedLocation.id),
-            storedOrderedIds,
+          const targetsForLocation = getItemsForParent(
+            filteredTargets,
+            (item) => item.locationId === selectedLocation.id,
           );
+
+          const mergedOrderedIds = mergeOrderedIds(targetsForLocation, storedOrderedIds);
 
           const sortedTargets = sortEntitiesForContext(
             filteredTargets,
@@ -123,7 +121,10 @@ export const targetStore = create<TargetStore>()(
 
         if (!selectedLocation) return [];
 
-        const targetsForLocation = getTargetsForLocation(targets, selectedLocation.id);
+        const targetsForLocation = getItemsForParent(
+          targets,
+          (item) => item.locationId === selectedLocation.id,
+        );
         const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
 
         const targetsVisible = isInactiveVisible
@@ -161,7 +162,10 @@ export const targetStore = create<TargetStore>()(
             return { targets: updatedTargets };
           }
 
-          const locationTargets = getTargetsForLocation(updatedTargets, selectedLocation.id);
+          const locationTargets = getItemsForParent(
+            updatedTargets,
+            (item) => item.locationId === selectedLocation.id,
+          );
           const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
           const sortedTargets = sortByActiveStatus(locationTargets, storedOrderedIds);
           const orderedIds = sortedTargets.map((item) => item.id);
@@ -184,7 +188,10 @@ export const targetStore = create<TargetStore>()(
           const selectedLocation = getSelectedLocation();
           if (!selectedLocation) return state;
 
-          const locationTargets = getTargetsForLocation(state.targets, selectedLocation.id);
+          const locationTargets = getItemsForParent(
+            state.targets,
+            (item) => item.locationId === selectedLocation.id,
+          );
           const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
 
           const activeTargets = sortEntitiesByOrderedIds(
@@ -251,7 +258,10 @@ export const targetStore = create<TargetStore>()(
             .user?.locations.find((loc) => loc.id === locationId);
 
           if (selectedLocation) {
-            const locationTargets = getTargetsForLocation(nextTargets, locationId);
+            const locationTargets = getItemsForParent(
+              nextTargets,
+              (item) => item.locationId === locationId,
+            );
             const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
 
             const orderedIds = [
@@ -317,9 +327,9 @@ export const targetStore = create<TargetStore>()(
             .user?.locations.find((loc) => loc.id === targetToDelete.locationId);
 
           if (selectedLocation) {
-            const remainingTargetsForLocation = getTargetsForLocation(
+            const remainingTargetsForLocation = getItemsForParent(
               nextTargets,
-              targetToDelete.locationId,
+              (item) => item.locationId === targetToDelete.locationId,
             );
 
             const storedOrderedIds = selectedLocation.setSeqTarget ?? [];

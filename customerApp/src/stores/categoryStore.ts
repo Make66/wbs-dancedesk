@@ -7,10 +7,12 @@ import {
   mergeOrderedIds,
   filterNotDeleted,
   sortByActiveStatus,
+  sortEntitiesForContext,
 } from "../lib/courses/sorting-utils";
+import { updateEntityById, getItemsForParent } from "../lib/courses/collection-utils";
 
 type CategoryStore = {
-  courseCategories: Category[];
+  categories: Category[];
   selectedTargetId: string | null;
   storedOrderedIds: string[];
   expandedCategoryIds: string[];
@@ -21,28 +23,21 @@ type CategoryStore = {
 
   setParentContext: (targetId: string | null, orderedIds?: string[]) => void;
   clearParentContext: () => void;
-
   setCategories: (categories: Category[]) => void;
   replaceCategories: (categories: Category[], orderedIds?: string[]) => void;
   clearCategories: () => void;
-
   setLoading: (value: boolean) => void;
   setError: (value: string | null) => void;
   setEditMode: (value: boolean) => void;
-
   isCategoryExpanded: (categoryId: string) => boolean;
   toggleCategoryExpanded: (categoryId: string) => void;
   collapseAllCategories: () => void;
-
   getVisibleCategories: () => Category[];
   getOrderedCategoryIds: () => string[];
-
   toggleInactiveVisibility: () => void;
   hasInactiveItems: () => boolean;
-
   toggleCategoryActive: (id: string, active: boolean) => void;
   reorderCategories: (activeId: string, overId: string) => void;
-
   addCategory: (input: CreateCategoryInput) => void;
   deleteCategory: (id: string) => void;
   updateCategory: (id: string, data: UpdateCategoryInput | Category) => void;
@@ -50,21 +45,17 @@ type CategoryStore = {
   replaceTemporaryCategory: (tempId: string, createdCategory: Category) => void;
 };
 
-const getCategoriesForTarget = (categories: Category[], targetId: string) => {
-  return filterNotDeleted(categories.filter((item) => item.targetId === targetId));
-};
-
 export const categoryStore = create<CategoryStore>()(
   persist(
     (set, get) => ({
-      courseCategories: [],
+      categories: [],
       selectedTargetId: null,
       storedOrderedIds: [],
       expandedCategoryIds: [],
       isEditMode: false,
+      isInactiveVisible: false,
       isLoading: false,
       error: null,
-      isInactiveVisible: false,
 
       setParentContext: (targetId, orderedIds = []) =>
         set({
@@ -81,53 +72,38 @@ export const categoryStore = create<CategoryStore>()(
       setCategories: (categories) =>
         set((state) => {
           const categoryMap = new Map(categories.map((category) => [category.id, category]));
+          const existingIds = new Set(state.categories.map((item) => item.id));
 
-          const updatedCategories = state.courseCategories.map(
+          const updatedCategories = state.categories.map(
             (item) => categoryMap.get(item.id) ?? item,
           );
 
-          const newCategories = categories.filter(
-            (category) => !state.courseCategories.some((item) => item.id === category.id),
-          );
+          const newCategories = categories.filter((category) => !existingIds.has(category.id));
 
           const mergedCategories = filterNotDeleted([...updatedCategories, ...newCategories]);
 
           if (!state.selectedTargetId) {
             return {
-              courseCategories: mergedCategories,
+              categories: mergedCategories,
               error: null,
             };
           }
 
-          const targetCategories = getCategoriesForTarget(mergedCategories, state.selectedTargetId);
-          const orderedIds = mergeOrderedIds(targetCategories, state.storedOrderedIds);
-          const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
+          const categoriesForTarget = getItemsForParent(
+            mergedCategories,
+            (item) => item.targetId === state.selectedTargetId,
+          );
 
-          const sortedCategories = [...mergedCategories].sort((a, b) => {
-            const aIsCurrentTarget = a.targetId === state.selectedTargetId;
-            const bIsCurrentTarget = b.targetId === state.selectedTargetId;
+          const orderedIds = mergeOrderedIds(categoriesForTarget, state.storedOrderedIds);
 
-            if (aIsCurrentTarget && bIsCurrentTarget) {
-              if (a.active !== b.active) return a.active ? -1 : 1;
-
-              const aIndex = orderMap.get(a.id);
-              const bIndex = orderMap.get(b.id);
-
-              const aHasOrder = aIndex !== undefined;
-              const bHasOrder = bIndex !== undefined;
-
-              if (aHasOrder && bHasOrder) return aIndex - bIndex;
-              if (aHasOrder) return -1;
-              if (bHasOrder) return 1;
-
-              return a.createdAt.localeCompare(b.createdAt);
-            }
-
-            return 0;
-          });
+          const sortedCategories = sortEntitiesForContext(
+            mergedCategories,
+            orderedIds,
+            (item) => item.targetId === state.selectedTargetId,
+          );
 
           return {
-            courseCategories: sortedCategories,
+            categories: sortedCategories,
             storedOrderedIds: orderedIds,
             error: null,
           };
@@ -139,45 +115,29 @@ export const categoryStore = create<CategoryStore>()(
 
           if (!state.selectedTargetId) {
             return {
-              courseCategories: filteredCategories,
+              categories: filteredCategories,
               storedOrderedIds: orderedIds ?? state.storedOrderedIds,
               error: null,
             };
           }
 
           const nextStoredOrderedIds = orderedIds ?? state.storedOrderedIds;
-          const targetCategories = getCategoriesForTarget(
+
+          const categoriesForTarget = getItemsForParent(
             filteredCategories,
-            state.selectedTargetId,
+            (item) => item.targetId === state.selectedTargetId,
           );
-          const finalOrderedIds = mergeOrderedIds(targetCategories, nextStoredOrderedIds);
-          const orderMap = new Map(finalOrderedIds.map((id, index) => [id, index]));
 
-          const sortedCategories = [...filteredCategories].sort((a, b) => {
-            const aIsCurrentTarget = a.targetId === state.selectedTargetId;
-            const bIsCurrentTarget = b.targetId === state.selectedTargetId;
+          const finalOrderedIds = mergeOrderedIds(categoriesForTarget, nextStoredOrderedIds);
 
-            if (aIsCurrentTarget && bIsCurrentTarget) {
-              if (a.active !== b.active) return a.active ? -1 : 1;
-
-              const aIndex = orderMap.get(a.id);
-              const bIndex = orderMap.get(b.id);
-
-              const aHasOrder = aIndex !== undefined;
-              const bHasOrder = bIndex !== undefined;
-
-              if (aHasOrder && bHasOrder) return aIndex - bIndex;
-              if (aHasOrder) return -1;
-              if (bHasOrder) return 1;
-
-              return a.createdAt.localeCompare(b.createdAt);
-            }
-
-            return 0;
-          });
+          const sortedCategories = sortEntitiesForContext(
+            filteredCategories,
+            finalOrderedIds,
+            (item) => item.targetId === state.selectedTargetId,
+          );
 
           return {
-            courseCategories: sortedCategories,
+            categories: sortedCategories,
             storedOrderedIds: finalOrderedIds,
             error: null,
           };
@@ -185,7 +145,7 @@ export const categoryStore = create<CategoryStore>()(
 
       clearCategories: () =>
         set({
-          courseCategories: [],
+          categories: [],
           expandedCategoryIds: [],
           isLoading: false,
           error: null,
@@ -223,16 +183,19 @@ export const categoryStore = create<CategoryStore>()(
         }),
 
       getVisibleCategories: () => {
-        const { courseCategories, selectedTargetId, isInactiveVisible } = get();
+        const { categories, selectedTargetId, isInactiveVisible } = get();
         if (!selectedTargetId) return [];
 
-        return courseCategories.filter((item) => {
-          const isMatchingTarget = item.targetId === selectedTargetId;
-          const isVisibleByDelete = !item.isDeleted;
-          const isVisibleByActive = isInactiveVisible ? true : item.active;
+        const categoriesForTarget = getItemsForParent(
+          categories,
+          (item) => item.targetId === selectedTargetId,
+        );
 
-          return isMatchingTarget && isVisibleByDelete && isVisibleByActive;
-        });
+        const visibleCategories = isInactiveVisible
+          ? categoriesForTarget
+          : categoriesForTarget.filter((item) => item.active);
+
+        return sortEntitiesByOrderedIds(visibleCategories, get().storedOrderedIds);
       },
 
       toggleInactiveVisibility: () =>
@@ -241,74 +204,51 @@ export const categoryStore = create<CategoryStore>()(
         })),
 
       hasInactiveItems: () => {
-        const { courseCategories, selectedTargetId } = get();
+        const { categories, selectedTargetId } = get();
         if (!selectedTargetId) return false;
 
-        return courseCategories.some(
-          (item) => item.targetId === selectedTargetId && !item.isDeleted && !item.active,
+        return getItemsForParent(categories, (item) => item.targetId === selectedTargetId).some(
+          (item) => !item.active,
         );
       },
 
       getOrderedCategoryIds: () => {
-        const { courseCategories, selectedTargetId } = get();
+        const { categories, selectedTargetId } = get();
         if (!selectedTargetId) return [];
 
-        return courseCategories
-          .filter((item) => item.targetId === selectedTargetId && !item.isDeleted)
-          .map((item) => item.id);
+        return getItemsForParent(categories, (item) => item.targetId === selectedTargetId).map(
+          (item) => item.id,
+        );
       },
 
       toggleCategoryActive: (id, active) =>
         set((state) => {
-          const updatedCategories = state.courseCategories.map((item) =>
-            item.id === id
-              ? {
-                  ...item,
-                  active,
-                  updatedAt: new Date().toISOString(),
-                }
-              : item,
-          );
+          const updatedCategories = updateEntityById(state.categories, id, { active });
 
           if (!state.selectedTargetId) {
-            return { courseCategories: updatedCategories };
+            return { categories: updatedCategories };
           }
 
-          const targetCategories = getCategoriesForTarget(
+          const categoriesForTarget = getItemsForParent(
             updatedCategories,
-            state.selectedTargetId,
+            (item) => item.targetId === state.selectedTargetId,
           );
 
-          const sorted = sortByActiveStatus(targetCategories, state.storedOrderedIds);
-          const orderedIds = sorted.map((item) => item.id);
+          const sortedCategoriesForTarget = sortByActiveStatus(
+            categoriesForTarget,
+            state.storedOrderedIds,
+          );
 
-          const orderMap = new Map(orderedIds.map((categoryId, index) => [categoryId, index]));
+          const orderedIds = sortedCategoriesForTarget.map((item) => item.id);
 
-          const reorderedCategories = [...updatedCategories].sort((a, b) => {
-            const aIsCurrentTarget = a.targetId === state.selectedTargetId;
-            const bIsCurrentTarget = b.targetId === state.selectedTargetId;
-
-            if (aIsCurrentTarget && bIsCurrentTarget) {
-              if (a.active !== b.active) return a.active ? -1 : 1;
-
-              const aIndex = orderMap.get(a.id);
-              const bIndex = orderMap.get(b.id);
-
-              const aHasOrder = aIndex !== undefined;
-              const bHasOrder = bIndex !== undefined;
-
-              if (aHasOrder && bHasOrder) return aIndex - bIndex;
-              if (aHasOrder) return -1;
-              if (bHasOrder) return 1;
-
-              return a.createdAt.localeCompare(b.createdAt);
-            }
-
-            return 0;
-          });
+          const reorderedCategories = sortEntitiesForContext(
+            updatedCategories,
+            orderedIds,
+            (item) => item.targetId === state.selectedTargetId,
+          );
 
           return {
-            courseCategories: reorderedCategories,
+            categories: reorderedCategories,
             storedOrderedIds: orderedIds,
           };
         }),
@@ -317,64 +257,42 @@ export const categoryStore = create<CategoryStore>()(
         set((state) => {
           if (!state.selectedTargetId) return state;
 
-          const targetCategories = getCategoriesForTarget(
-            state.courseCategories,
-            state.selectedTargetId,
+          const categoriesForTarget = getItemsForParent(
+            state.categories,
+            (item) => item.targetId === state.selectedTargetId,
           );
 
-          const activeCategories = targetCategories.filter((item) => item.active);
-          const inactiveCategories = targetCategories.filter((item) => !item.active);
-
-          const mergedOrderedIds = mergeOrderedIds(activeCategories, state.storedOrderedIds);
-
-          const sortedActiveCategories = sortEntitiesByOrderedIds(
-            activeCategories,
-            mergedOrderedIds,
+          const activeCategories = sortEntitiesByOrderedIds(
+            categoriesForTarget.filter((item) => item.active),
+            mergeOrderedIds(
+              categoriesForTarget.filter((item) => item.active),
+              state.storedOrderedIds,
+            ),
           );
 
-          const sortedInactiveCategories = sortEntitiesByOrderedIds(
-            inactiveCategories,
+          const inactiveCategories = sortEntitiesByOrderedIds(
+            categoriesForTarget.filter((item) => !item.active),
             state.storedOrderedIds,
           );
 
-          const oldIndex = sortedActiveCategories.findIndex((item) => item.id === activeId);
-          const newIndex = sortedActiveCategories.findIndex((item) => item.id === overId);
+          const oldIndex = activeCategories.findIndex((item) => item.id === activeId);
+          const newIndex = activeCategories.findIndex((item) => item.id === overId);
 
           if (oldIndex === -1 || newIndex === -1) return state;
 
-          const reorderedActiveCategories = arrayMove(sortedActiveCategories, oldIndex, newIndex);
-
-          const orderedIds = [...reorderedActiveCategories, ...sortedInactiveCategories].map(
+          const reorderedActiveCategories = arrayMove(activeCategories, oldIndex, newIndex);
+          const orderedIds = [...reorderedActiveCategories, ...inactiveCategories].map(
             (item) => item.id,
           );
 
-          const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
-
-          const reorderedCategories = [...state.courseCategories].sort((a, b) => {
-            const aIsCurrentTarget = a.targetId === state.selectedTargetId;
-            const bIsCurrentTarget = b.targetId === state.selectedTargetId;
-
-            if (aIsCurrentTarget && bIsCurrentTarget) {
-              if (a.active !== b.active) return a.active ? -1 : 1;
-
-              const aIndex = orderMap.get(a.id);
-              const bIndex = orderMap.get(b.id);
-
-              const aHasOrder = aIndex !== undefined;
-              const bHasOrder = bIndex !== undefined;
-
-              if (aHasOrder && bHasOrder) return aIndex - bIndex;
-              if (aHasOrder) return -1;
-              if (bHasOrder) return 1;
-
-              return a.createdAt.localeCompare(b.createdAt);
-            }
-
-            return 0;
-          });
+          const reorderedCategories = sortEntitiesForContext(
+            state.categories,
+            orderedIds,
+            (item) => item.targetId === state.selectedTargetId,
+          );
 
           return {
-            courseCategories: reorderedCategories.map((item) =>
+            categories: reorderedCategories.map((item) =>
               item.id === activeId || item.id === overId
                 ? {
                     ...item,
@@ -405,83 +323,51 @@ export const categoryStore = create<CategoryStore>()(
             isNew: true,
           };
 
-          const nextCategories = [newCategory, ...state.courseCategories];
+          const nextCategories = [newCategory, ...state.categories];
 
           if (state.selectedTargetId === targetId) {
-            const targetCategories = getCategoriesForTarget(nextCategories, targetId);
+            const categoriesForTarget = getItemsForParent(
+              nextCategories,
+              (item) => item.targetId === targetId,
+            );
 
             const orderedIds = [
               newCategory.id,
-              ...mergeOrderedIds(targetCategories, state.storedOrderedIds).filter(
+              ...mergeOrderedIds(categoriesForTarget, state.storedOrderedIds).filter(
                 (id) => id !== newCategory.id,
               ),
             ];
 
-            const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
-
-            nextCategories.sort((a, b) => {
-              const aIsCurrentTarget = a.targetId === targetId;
-              const bIsCurrentTarget = b.targetId === targetId;
-
-              if (aIsCurrentTarget && bIsCurrentTarget) {
-                if (a.active !== b.active) return a.active ? -1 : 1;
-
-                const aIndex = orderMap.get(a.id);
-                const bIndex = orderMap.get(b.id);
-
-                const aHasOrder = aIndex !== undefined;
-                const bHasOrder = bIndex !== undefined;
-
-                if (aHasOrder && bHasOrder) return aIndex - bIndex;
-                if (aHasOrder) return -1;
-                if (bHasOrder) return 1;
-
-                return a.createdAt.localeCompare(b.createdAt);
-              }
-
-              return 0;
-            });
+            const reorderedCategories = sortEntitiesForContext(
+              nextCategories,
+              orderedIds,
+              (item) => item.targetId === targetId,
+            );
 
             return {
-              courseCategories: nextCategories,
+              categories: reorderedCategories,
               storedOrderedIds: orderedIds,
             };
           }
 
           return {
-            courseCategories: nextCategories,
+            categories: nextCategories,
           };
         }),
 
       updateCategory: (id, data) =>
         set((state) => ({
-          courseCategories: state.courseCategories.map((item) =>
-            item.id === id
-              ? {
-                  ...item,
-                  ...data,
-                  updatedAt: new Date().toISOString(),
-                }
-              : item,
-          ),
+          categories: updateEntityById(state.categories, id, data),
         })),
 
       updateCategoryColor: (id, color) =>
         set((state) => ({
-          courseCategories: state.courseCategories.map((item) =>
-            item.id === id
-              ? {
-                  ...item,
-                  color,
-                  updatedAt: new Date().toISOString(),
-                }
-              : item,
-          ),
+          categories: updateEntityById(state.categories, id, { color }),
         })),
 
       replaceTemporaryCategory: (tempId, createdCategory) =>
         set((state) => ({
-          courseCategories: state.courseCategories.map((item) =>
+          categories: state.categories.map((item) =>
             item.id === tempId
               ? {
                   ...createdCategory,
@@ -493,15 +379,15 @@ export const categoryStore = create<CategoryStore>()(
 
       deleteCategory: (id) =>
         set((state) => {
-          const categoryToDelete = state.courseCategories.find((item) => item.id === id);
+          const categoryToDelete = state.categories.find((item) => item.id === id);
           if (!categoryToDelete) return state;
 
-          const nextCategories = state.courseCategories.filter((item) => item.id !== id);
+          const nextCategories = state.categories.filter((item) => item.id !== id);
 
           if (state.selectedTargetId === categoryToDelete.targetId) {
-            const remainingCategoriesForTarget = getCategoriesForTarget(
+            const remainingCategoriesForTarget = getItemsForParent(
               nextCategories,
-              categoryToDelete.targetId,
+              (item) => item.targetId === categoryToDelete.targetId,
             );
 
             const orderedIds = mergeOrderedIds(
@@ -509,33 +395,14 @@ export const categoryStore = create<CategoryStore>()(
               state.storedOrderedIds.filter((categoryId) => categoryId !== id),
             );
 
-            const orderMap = new Map(orderedIds.map((categoryId, index) => [categoryId, index]));
-
-            nextCategories.sort((a, b) => {
-              const aIsCurrentTarget = a.targetId === categoryToDelete.targetId;
-              const bIsCurrentTarget = b.targetId === categoryToDelete.targetId;
-
-              if (aIsCurrentTarget && bIsCurrentTarget) {
-                if (a.active !== b.active) return a.active ? -1 : 1;
-
-                const aIndex = orderMap.get(a.id);
-                const bIndex = orderMap.get(b.id);
-
-                const aHasOrder = aIndex !== undefined;
-                const bHasOrder = bIndex !== undefined;
-
-                if (aHasOrder && bHasOrder) return aIndex - bIndex;
-                if (aHasOrder) return -1;
-                if (bHasOrder) return 1;
-
-                return a.createdAt.localeCompare(b.createdAt);
-              }
-
-              return 0;
-            });
+            const reorderedCategories = sortEntitiesForContext(
+              nextCategories,
+              orderedIds,
+              (item) => item.targetId === categoryToDelete.targetId,
+            );
 
             return {
-              courseCategories: nextCategories,
+              categories: reorderedCategories,
               storedOrderedIds: orderedIds,
               expandedCategoryIds: state.expandedCategoryIds.filter(
                 (categoryId) => categoryId !== id,
@@ -544,7 +411,7 @@ export const categoryStore = create<CategoryStore>()(
           }
 
           return {
-            courseCategories: nextCategories,
+            categories: nextCategories,
             expandedCategoryIds: state.expandedCategoryIds.filter(
               (categoryId) => categoryId !== id,
             ),
@@ -552,7 +419,7 @@ export const categoryStore = create<CategoryStore>()(
         }),
     }),
     {
-      name: "courseCategories-ui-storage",
+      name: "categories-ui-storage",
       partialize: (state) => ({
         expandedCategoryIds: state.expandedCategoryIds,
         isEditMode: state.isEditMode,
