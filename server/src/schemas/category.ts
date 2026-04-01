@@ -4,10 +4,10 @@ export const categorySchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   icon: z.string().optional(),
-  target: z.uuid(),
   color: z.array(z.string()).optional(),
   active: z.boolean().default(true),
-
+  
+  targetId: z.uuid(),
   setSeqCourse: z.array(z.uuid()).optional(),
 
   id: z.uuid(),

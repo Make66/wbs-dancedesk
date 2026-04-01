@@ -1,7 +1,8 @@
 model Module {
-  name   String  @default("Standard Modul")
-  color  String  @default("#B5252B")
-  active Boolean @default(true)
+  name        String  @default("Standard Modul")
+  description String? @default("")
+  color       String  @default("#B5252B")
+  active      Boolean @default(true)
 
   // relations
   users User[] @relation("UserModules") // Many-to-many relation with User

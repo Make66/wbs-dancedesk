@@ -4,13 +4,13 @@ export const targetSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   icon: z.string().optional(),
-  locationId: z.string().min(1),
   color: z.array(z.string()).optional(),
   active: z.boolean().optional(),
 
+  locationId: z.array(z.uuid()).optional(),
   setSeqCategory: z.array(z.uuid()).optional(),
 
-  id: z.uuid(),
+  id: z.uuid().optional(),
   tenantId: z.uuid(),
   isDeleted: z.boolean().default(false),
 });

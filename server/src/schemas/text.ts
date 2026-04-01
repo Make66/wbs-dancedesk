@@ -2,6 +2,7 @@ import { z } from 'zod/v4';
 
 export const textSchema = z.object({
   name: z.string().min(1),
+  description: z.string().optional(),
   type: z.number().min(0),
   text: z.string().optional(),
   active: z.boolean().default(true),
