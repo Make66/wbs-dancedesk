@@ -72,8 +72,17 @@ export const getCourseDates: RequestHandler = async (req, res) => {
     ? []
     : [...parseHolidays(settings?.holidays), ...parseHolidays(stateHolsRaw)];
 
+  // For club courses: advance from startsAt to the next occurrence on or after today
+  const today = utcMidnight(new Date());
+  let startMs = utcMidnight(course.startsAt);
+  if (course.isClub && startMs < today) {
+    while (startMs < today) {
+      startMs = nextOccurrence(startMs, course.frequency);
+    }
+  }
+
   const dates: string[] = [];
-  let current = utcMidnight(course.startsAt);
+  let current = startMs;
   const maxIterations = count * 10 + 365; // guard against infinite loop when many holidays
   let iterations = 0;
 

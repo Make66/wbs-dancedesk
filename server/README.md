@@ -82,10 +82,7 @@ npx prisma db seed
 # user / pass is now admin@test.de/test123
 
 -- or --
-npx prisma migrate reset
-npx prisma migrate dev --name init
-npx prisma generate
-npx prisma db seed
+npx prisma migrate reset && npx prisma migrate dev --name init && npx prisma generate && npx prisma db seed
 
 
 ```
