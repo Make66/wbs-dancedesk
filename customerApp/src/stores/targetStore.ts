@@ -3,22 +3,7 @@ import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { Target } from "../types/course-types";
 import { userStore } from "./userStore";
-
-type CreateTargetInput = {
-  locationId: string;
-  tenantId?: string;
-  name?: string;
-  color?: string[];
-  icon?: string;
-};
-
-type UpdateTargetInput = {
-  name?: string;
-  color?: string[];
-  icon?: string;
-  active?: boolean;
-  isDeleted?: boolean;
-};
+import type { UpdateTargetInput, CreateTargetInput } from "../types/course-types";
 
 type TargetStore = {
   courseTargets: Target[];
@@ -352,7 +337,7 @@ export const targetStore = create<TargetStore>()(
             color: input.color || ["#ff0000", "#ffffff"],
             icon: input.icon || "",
             active: true,
-            setSeqCategory: {},
+            setSeqCategory: [],
             locationId,
             tenantId: input.tenantId || "seed",
             createdAt: new Date().toISOString(),

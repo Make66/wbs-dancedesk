@@ -12,6 +12,7 @@ export type UserLocation = {
   latitude: number;
   customerId: string | null;
   setSeqTarget?: string[];
+  setSeqCategory?: string[];
   id: string;
   tenantId: string;
   createdAt: string;
