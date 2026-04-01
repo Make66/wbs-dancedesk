@@ -1,5 +1,6 @@
 model Category {
   name   String?  @default("Paare Grundkurs")
+  icon   String   @default("")
   color  String[] @default(["#000000", "#FFFFFF"])
   active Boolean  @default(true)
 

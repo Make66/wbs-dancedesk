@@ -2,6 +2,7 @@ import { z } from 'zod/v4';
 
 export const categorySchema = z.object({
   name: z.string().min(1),
+  icon: z.string().optional(),
   target: z.uuid(),
   color: z.array(z.string()).default(['#D1D5DC', '#000000']),
   active: z.boolean().default(true),
