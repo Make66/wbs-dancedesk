@@ -22,11 +22,11 @@ export const courseSchema = z.object({
   paymentTypes: z.array(z.enum(['cash', 'invoice', 'paypal'])).default([]),
   contractTypes: z.array(z.enum(['standard', 'trial'])).default([]),
   
-  category: z.uuid(),
-  instructor: z.uuid().optional(),
-  room: z.uuid().optional(),
-  textTerms: z.uuid().optional(),
-  textInfo: z.uuid().optional(),
+  categoryId: z.uuid(),
+  instructorId: z.uuid().optional(),
+  roomId: z.uuid().optional(),
+  textTermsId: z.uuid().optional(),
+  textInfoId: z.uuid().optional(),
 
   id: z.uuid(),
   tenantId: z.uuid(),

@@ -1,8 +1,9 @@
 model Room {
-  name     String? @default("Room 1")
-  imageUrl String  @default("./assets/images/no-profile-picture")
-  capacity Int     @default(20)
-  active   Boolean @default(true)
+  name        String? @default("Room 1")
+  description String? @default("")
+  imageUrl    String  @default("./assets/images/no-profile-picture")
+  capacity    Int     @default(20)
+  active      Boolean @default(true)
 
   // relations
   courses Course[]

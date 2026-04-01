@@ -434,14 +434,14 @@ async function main() {
   await prisma.text.deleteMany();
   await prisma.module.deleteMany();
   await prisma.registration.deleteMany();
+  await prisma.instructor.deleteMany();
   await prisma.user.deleteMany();
   await prisma.customer.deleteMany();
-  await prisma.module.deleteMany();
   await prisma.settings.deleteMany();
 
   // 2. customer
   await prisma.customer.create({
-    data: { name: "DanceSchool Flip'n Bit", email: 'info@dancedesk.de', tenantId: 'seed' },
+    data: { name: "DanceSchool Flip'n Bit", email: 'info@dancedesk.de', tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' },
   });
 
   // 3. locations
@@ -451,7 +451,7 @@ async function main() {
       data: {
         name: loc.title,
         active: toBool(loc.is_visible),
-        tenantId: 'seed',
+        tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
       },
     });
     locationMap.set(loc.id, location.id);
@@ -470,7 +470,7 @@ async function main() {
           name: zg.headline,
           active: toBool(zg.is_visible),
           locationId,
-          tenantId: 'seed',
+          tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
         },
       });
       targetMap.set(key, target.id);
@@ -500,7 +500,7 @@ async function main() {
   }
 
   for (const [key, data] of uniqueCategories) {
-    const category = await prisma.category.create({ data: { ...data, tenantId: 'seed' } });
+    const category = await prisma.category.create({ data: { ...data, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
     categoryMap.set(key, category.id);
   }
 
@@ -526,16 +526,17 @@ async function main() {
           await prisma.course.create({
             data: {
               name: kurs.kursbezeichnung,
-              active: toBool(kurs.is_visible),
+              // active: toBool(kurs.is_visible),
+              active: true,
               startsAt,
               endsAt,
               frequency: 'weekly',
               isIgnoreCalendar: kurs.kalenderignorieren === 1,
-              seatsCurrent,
-              seatsMax: 0,
+              seatsCurrent: Math.floor(Math.random() * 20) + 1, // randomize some bookings
+              seatsMax: 20,
               dates,
               categoryId,
-              tenantId: 'seed',
+              tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
             },
           });
           courseCount++;
@@ -544,7 +545,33 @@ async function main() {
     }
   }
 
-  // 7. modules
+  // 7. texts
+  const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus nulla mauris tristique phasellus condimentum fusce eros.';
+
+  const textTermsData = [
+    { name: 'Allgemeine Geschäftsbedingungen',  description: 'Standard-AGB für alle Kurse' },
+    { name: 'Nutzungsbedingungen Erwachsene',   description: 'Bedingungen für Erwachsenenkurse' },
+    { name: 'Teilnahmebedingungen Kinder',      description: 'Bedingungen für Kinderkurse' },
+    { name: 'Vertragsbedingungen Clubmitglied', description: 'AGB für Club-Mitgliedschaften' },
+    { name: 'Datenschutzbedingungen Kurs',      description: 'Datenschutzhinweise für Kursteilnehmer' },
+  ];
+
+  const textInfosData = [
+    { name: 'Kursinfo Anfänger',        description: 'Informationen für Anfängerkurse' },
+    { name: 'Kursinfo Fortgeschrittene', description: 'Informationen für Fortgeschrittenenkurse' },
+    { name: 'Probestunde Hinweise',     description: 'Hinweise zur Probestunde' },
+    { name: 'Clubinfo Mitgliedschaft',  description: 'Informationen zur Club-Mitgliedschaft' },
+    { name: 'Allgemeine Kurshinweise',  description: 'Allgemeine Informationen zu unseren Kursen' },
+  ];
+
+  for (const t of textTermsData) {
+    await prisma.text.create({ data: { ...t, type: 0, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  }
+  for (const t of textInfosData) {
+    await prisma.text.create({ data: { ...t, type: 1, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  }
+
+  // 8. modules
   const moduleIds: string[] = [];
   for (const data of [
     { name: 'Kurse',         color: '#66ff33', active: true },
@@ -554,11 +581,11 @@ async function main() {
     { name: 'Teilnehmer',    color: '#ff3385', active: true },
     { name: 'Einstellungen', color: '#CCCCCC', active: true },
   ]) {
-    const m = await prisma.module.create({ data: { ...data, tenantId: 'seed' } });
+    const m = await prisma.module.create({ data: { ...data, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
     moduleIds.push(m.id);
   }
 
-  // 8. user — connected to all locations and modules
+  // 9. user — connected to all locations and modules
   await prisma.user.create({
     data: {
       firstName: 'Admin',
@@ -566,13 +593,13 @@ async function main() {
       email: 'admin@test.de',
       password: await bcrypt.hash('test123', 10),
       active: true,
-      tenantId: 'seed',
+      tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
       modules:   { connect: moduleIds.map(id => ({ id })) },
       locations: { connect: [...locationMap.values()].map(id => ({ id })) },
     },
   });
 
-  // 9. settings — with German federal holidays 2026–2028
+  // 10. settings — with German federal holidays 2026–2028
   const germanyHolidays = [
     // 2026 — Easter: April 5
     { start: { dateTime: '2026-01-01' }, title: 'Neujahr' },
@@ -608,10 +635,10 @@ async function main() {
 
   await prisma.settings.create({
     data: {
-      tenantId: 'seed',
+      tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
       calendarOccurrences: 52,
       calendarLength: 12,
-      federalState: 'BY',
+      federalState: 'HE',
       holidays: germanyHolidays,
       schoolHolidays: schoolHolidays as unknown as object,
     },

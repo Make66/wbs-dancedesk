@@ -12,7 +12,7 @@ model Course {
   dates            Json     @default("[]")
   seatsCurrent     Int      @default(20)
   seatsMax         Int      @default(20)
-  paymentTypes     String[] @default(["bar", "paypal", "bank"])
+  paymentTypes     String[] @default(["cash", "invoice", "paypal"])
   contractTypes    String[] @default(["standard", "trial"])
 
   // relations from other models
