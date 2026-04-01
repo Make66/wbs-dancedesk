@@ -16,7 +16,7 @@ export const userSchema = z.object({
   modules: z.array(z.string()).default([]),
 
   id: z.uuid(),
-  tenantId: z.uuid(),
+  tenantId: z.uuid().optional(),
   isDeleted: z.boolean().default(false)
 });
 

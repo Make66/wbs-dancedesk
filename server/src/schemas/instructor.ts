@@ -7,7 +7,7 @@ export const instructorSchema = z.object({
   active: z.boolean().default(true),
 
   id: z.uuid(),
-  tenantId: z.uuid(),
+  tenantId: z.uuid().optional(),
   isDeleted: z.boolean().default(false)
 });
 
