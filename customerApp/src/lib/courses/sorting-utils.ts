@@ -100,28 +100,8 @@ export const sortEntitiesForContext = <T extends SortableEntity>(
   orderedIds: string[],
   isInCurrentContext: (item: T) => boolean,
 ) => {
-  const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
+  const contextItems = items.filter(isInCurrentContext);
+  const otherItems = items.filter((item) => !isInCurrentContext(item));
 
-  return [...items].sort((a, b) => {
-    const aIsCurrentContext = isInCurrentContext(a);
-    const bIsCurrentContext = isInCurrentContext(b);
-
-    if (aIsCurrentContext && bIsCurrentContext) {
-      if (a.active !== b.active) return a.active ? -1 : 1;
-
-      const aIndex = orderMap.get(a.id);
-      const bIndex = orderMap.get(b.id);
-
-      const aHasOrder = aIndex !== undefined;
-      const bHasOrder = bIndex !== undefined;
-
-      if (aHasOrder && bHasOrder) return aIndex - bIndex;
-      if (aHasOrder) return -1;
-      if (bHasOrder) return 1;
-
-      return a.createdAt.localeCompare(b.createdAt);
-    }
-
-    return 0;
-  });
+  return [...sortEntitiesByOrderedIds(contextItems, orderedIds), ...otherItems];
 };

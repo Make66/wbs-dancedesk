@@ -305,16 +305,44 @@ export const targetStore = create<TargetStore>()(
         })),
 
       replaceTemporaryTarget: (tempId, createdTarget) =>
-        set((state) => ({
-          targets: state.targets.map((item) =>
+        set((state) => {
+          const nextTargets = state.targets.map((item) =>
             item.id === tempId
               ? {
                   ...createdTarget,
                   isNew: false,
                 }
               : item,
-          ),
-        })),
+          );
+
+          const selectedLocation = userStore
+            .getState()
+            .user?.locations.find((loc) => loc.id === createdTarget.locationId);
+
+          if (selectedLocation) {
+            const nextOrderedIds = (selectedLocation.setSeqTarget ?? []).map((id) =>
+              id === tempId ? createdTarget.id : id,
+            );
+
+            userStore
+              .getState()
+              .updateLocationTargetOrder(createdTarget.locationId, nextOrderedIds);
+
+            const reorderedTargets = sortEntitiesForContext(
+              nextTargets,
+              nextOrderedIds,
+              (item) => item.locationId === createdTarget.locationId,
+            );
+
+            return {
+              targets: reorderedTargets,
+            };
+          }
+
+          return {
+            targets: nextTargets,
+          };
+        }),
 
       deleteTarget: (id) =>
         set((state) => {

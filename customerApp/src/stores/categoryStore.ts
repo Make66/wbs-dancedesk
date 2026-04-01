@@ -366,16 +366,25 @@ export const categoryStore = create<CategoryStore>()(
         })),
 
       replaceTemporaryCategory: (tempId, createdCategory) =>
-        set((state) => ({
-          categories: state.categories.map((item) =>
+        set((state) => {
+          const nextCategories = state.categories.map((item) =>
             item.id === tempId
               ? {
                   ...createdCategory,
                   isNew: false,
                 }
               : item,
-          ),
-        })),
+          );
+
+          const nextStoredOrderedIds = state.storedOrderedIds.map((id) =>
+            id === tempId ? createdCategory.id : id,
+          );
+
+          return {
+            categories: nextCategories,
+            storedOrderedIds: nextStoredOrderedIds,
+          };
+        }),
 
       deleteCategory: (id) =>
         set((state) => {
