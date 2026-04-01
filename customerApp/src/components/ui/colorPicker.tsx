@@ -15,6 +15,7 @@ const PRESET_COLORS = [
   ["#d8b4fe", "#c084fc", "#a855f7", "#9333ea", "#7e22ce"],
   ["#f9a8d4", "#f472b6", "#ec4899", "#db2777", "#be185d"],
   ["#d4d4d8", "#a1a1aa", "#71717a", "#52525b", "#3f3f46"],
+  ["#FFFFFF", "#000000"],
 ];
 
 export function ColorPicker({ color, onChange, children }: ColorPickerProps) {
@@ -28,7 +29,7 @@ export function ColorPicker({ color, onChange, children }: ColorPickerProps) {
         <div className="flex flex-wrap gap-2">
           {PRESET_COLORS.map((preset) =>
             preset.map((pre) => {
-              const isActive = color?.toLowerCase() === pre.toLowerCase();
+              const isActive = color === pre;
               return (
                 <button
                   key={pre}

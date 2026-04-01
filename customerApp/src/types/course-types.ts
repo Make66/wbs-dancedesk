@@ -1,15 +1,13 @@
-export type PaymentType = "cash" | "paypal" | "card" | "transfer";
-
-export type ContractType = "monthly" | "one-time" | "subscription";
-
-export type CourseFrequency = "daily" | "weekly" | "monthly";
+export type CourseFrequency = "daily" | "weekly" | "monthly" | "yearly";
+export type PaymentType = "cash" | "card" | "transfer" | "direct-debit";
+export type ContractType = "one-time" | "subscription" | "trial";
 
 export type Target = {
   name: string;
   icon: string;
   color: string[];
   active: boolean;
-  setSeqCategory: Record<string, unknown>;
+  setSeqCategory: string[];
   locationId: string;
   id: string;
   tenantId: string;
@@ -19,9 +17,24 @@ export type Target = {
   isNew?: boolean;
 };
 
+export type BaseEntity = {
+  id: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isDeleted?: boolean;
+  isNew?: boolean;
+};
+
+export type SortableEntity = {
+  seq: number;
+};
+
+export type ActivatableEntity = {
+  active?: boolean;
+};
+
 export type Course = {
   id: string;
-  seq: number;
   name: string;
   description: string;
   startsAt: string;
@@ -33,14 +46,27 @@ export type Course = {
   contractTypes: ContractType[];
   price: number;
   duration: number;
+  active: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isNew?: boolean;
 };
 
 export type Category = {
   id: string;
-  seq: number;
+  targetId: string;
   name: string;
+  icon?: string;
+  color: string[];
+  fontColor?: string;
   courses: Course[];
-  color: string;
+  setSeqCourse: string[];
+  active: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isNew?: boolean;
 };
 
 export type TargetDetail = {
@@ -48,4 +74,44 @@ export type TargetDetail = {
   name: string;
   color: string;
   categories: Category[];
+  setSeqCategories: string[];
+  active: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateTargetInput = {
+  name?: string;
+  color?: string[];
+  icon?: string;
+  active?: boolean;
+  isDeleted?: boolean;
+  setSeqCategory?: string[];
+};
+
+export type CreateTargetInput = {
+  locationId: string;
+  tenantId?: string;
+  active?: boolean;
+  name?: string;
+  color?: string[];
+  icon?: string;
+};
+
+export type CreateCategoryInput = {
+  targetId: string;
+  active?: boolean;
+  name?: string;
+  icon?: string;
+  color?: string[];
+};
+
+export type UpdateCategoryInput = {
+  name?: string;
+  color?: string[];
+  active?: boolean;
+  icon?: string;
+  isDeleted?: boolean;
+  setSeqCategory?: string[];
 };
