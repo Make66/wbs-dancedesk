@@ -110,9 +110,12 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
           >
             <button
               type="button"
-              className="w-10 h-10 rounded-full border border-gray-200 cursor-pointer flex items-center justify-center"
+              className="w-10 h-10 cursor-pointer flex items-center justify-center"
             >
-              <ImFont className="text-2xl" style={{ color: formData.fontColor }} />
+              <ImFont
+                className="text-2xl"
+                style={{ color: formData.fontColor, stroke: "#000", strokeWidth: "1px" }}
+              />
             </button>
           </ColorPicker>
           <IconPicker

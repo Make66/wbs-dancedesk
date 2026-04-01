@@ -10,8 +10,6 @@ type CreateTargetPayload = {
 };
 
 export const createTargetDB = async (data: CreateTargetPayload) => {
-  console.log("createTargetDB payload", data.locationId);
-
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets`, {
     method: "POST",
     headers: {

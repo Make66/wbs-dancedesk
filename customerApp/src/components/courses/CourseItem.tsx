@@ -13,6 +13,7 @@ type CourseItemProps = {
 
 const CourseItem = ({ course }: CourseItemProps) => {
   const isEditMode = categoryStore((state) => state.isEditMode);
+  const toggleCourseActive = categoryStore((state) => state.toggleCourseActive);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: course.id,
@@ -51,7 +52,14 @@ const CourseItem = ({ course }: CourseItemProps) => {
           <div className="flex items-center gap-3">
             <h3 className="font-semibold line-clamp-1 pr-2">{course.name}</h3>
           </div>
-          {isEditMode && <Switch />}
+          {isEditMode && (
+            <Switch
+              checked={course.active}
+              onCheckedChange={(checked) => {
+                toggleCourseActive(course.categoryId, course.id, checked);
+              }}
+            />
+          )}
         </div>
         <div className="pl-2">
           <p className="text-xs text-gray-500 mt-1">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { rectSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
 import {
@@ -8,6 +8,7 @@ import {
   useDndMonitor,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -24,6 +25,7 @@ import { toast } from "react-toastify";
 import CourseItem from "./CourseItem";
 import CategoryItemEdit from "./CategoryItemEdit";
 import type { Category as CourseCategoryType } from "../../types/course-types";
+import { sortEntitiesByOrderedIds } from "../../lib/courses/sorting-utils";
 
 type CategoryItemProps = {
   category: CourseCategoryType & { isNew?: boolean };
@@ -41,11 +43,27 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   });
 
   const isEditMode = categoryStore((state) => state.isEditMode);
-  const isOpened = categoryStore((state) => state.isCategoryExpanded(category.id));
+  const isInactiveVisible = categoryStore((state) => state.isInactiveVisible);
+  const isOpened = categoryStore((state) => state.expandedCategoryIds.includes(category.id));
   const toggleCategoryExpanded = categoryStore((state) => state.toggleCategoryExpanded);
-
   const toggleCategoryActive = categoryStore((state) => state.toggleCategoryActive);
   const deleteCategory = categoryStore((state) => state.deleteCategory);
+
+  const storeCategory = categoryStore((state) =>
+    state.categories.find((item) => item.id === category.id),
+  );
+
+  const visibleCourses = useMemo(() => {
+    if (!storeCategory) return [];
+
+    const notDeletedCourses = (storeCategory.courses ?? []).filter((course) => !course.isDeleted);
+
+    const filteredCourses = isInactiveVisible
+      ? notDeletedCourses
+      : notDeletedCourses.filter((course) => course.active);
+
+    return sortEntitiesByOrderedIds(filteredCourses, storeCategory.setSeqCourse ?? []);
+  }, [storeCategory, isInactiveVisible]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -54,6 +72,28 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
       },
     }),
   );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const prevCategories = structuredClone(categoryStore.getState().categories);
+    const prevOrderedIds = [...categoryStore.getState().storedOrderedIds];
+
+    try {
+      categoryStore.getState().reorderCourses(category.id, String(active.id), String(over.id));
+
+      const newOrderedIds = categoryStore.getState().getOrderedCourseIds(category.id);
+
+      await updateCategoryDB(category.id, {
+        setSeqCourse: newOrderedIds,
+      });
+    } catch (error) {
+      console.error("Error reordering courses:", error);
+      toast.error("Fehler beim Aktualisieren der Reihenfolge.");
+      categoryStore.getState().replaceCategories(prevCategories, prevOrderedIds);
+    }
+  };
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
@@ -70,7 +110,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
     const selectedTargetId = categoryStore.getState().selectedTargetId;
     if (!selectedTargetId) return;
 
-    const prevCategories = structuredClone(categoryStore.getState().courseCategories);
+    const prevCategories = structuredClone(categoryStore.getState().categories);
     const prevOrderedIds = [...categoryStore.getState().storedOrderedIds];
     const prevActive = category.active;
 
@@ -224,13 +264,17 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
         {isOpened && !isEditable && (
           <div>
-            <DndContext sensors={sensors} collisionDetection={closestCenter}>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
               <SortableContext
-                items={category.courses.map((course) => course.id)}
+                items={visibleCourses.map((course) => course.id)}
                 strategy={rectSortingStrategy}
               >
                 <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 5xl:grid-cols-6 gap-3">
-                  {category.courses.map((course) =>
+                  {visibleCourses.map((course) =>
                     isEditMode ? (
                       <CourseItem key={course.id} course={course} />
                     ) : (
@@ -245,6 +289,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
           </div>
         )}
       </div>
+
       {isEditable && (
         <div className="grid grid-cols-1 pt-4 px-8">
           <CategoryItemEdit

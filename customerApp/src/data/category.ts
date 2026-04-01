@@ -21,6 +21,7 @@ export const updateCategoryDB = async (
   id: string,
   data: UpdateCategoryInput,
 ): Promise<Category> => {
+  console.log("Updating category with data:", data);
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/categories/${id}`, {
     method: "PATCH",
     headers: {
