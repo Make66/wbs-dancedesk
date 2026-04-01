@@ -16,7 +16,7 @@ import { updateLocationDB } from "../data/location";
 import { toast } from "react-toastify";
 
 const TargetsPage = () => {
-  const courseTargets = targetStore((state) => state.courseTargets);
+  const courseTargets = targetStore((state) => state.targets);
   const isInactiveVisible = targetStore((state) => state.isInactiveVisible);
   const toggleInactiveVisibility = targetStore((state) => state.toggleInactiveVisibility);
   const reorderTargets = targetStore((state) => state.reorderTargets);
@@ -52,7 +52,7 @@ const TargetsPage = () => {
       console.log("Error reordering targets:", error);
       toast.error("Fehler beim Aktualisieren der Reihenfolge.");
       userStore.getState().updateLocationTargetOrder(selectedLocationId, prevOrderedIds);
-      targetStore.getState().replaceTargets(targetStore.getState().courseTargets);
+      targetStore.getState().replaceTargets(targetStore.getState().targets);
     }
   };
 

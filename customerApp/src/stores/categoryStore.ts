@@ -2,6 +2,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { Category, CreateCategoryInput, UpdateCategoryInput } from "../types/course-types";
+import {
+  sortEntitiesByOrderedIds,
+  mergeOrderedIds,
+  filterNotDeleted,
+  sortByActiveStatus,
+} from "../lib/courses/sorting-utils";
 
 type CategoryStore = {
   courseCategories: Category[];
@@ -44,48 +50,8 @@ type CategoryStore = {
   replaceTemporaryCategory: (tempId: string, createdCategory: Category) => void;
 };
 
-const filterNotDeleted = <T extends { isDeleted: boolean }>(items: T[]) => {
-  return items.filter((item) => !item.isDeleted);
-};
-
 const getCategoriesForTarget = (categories: Category[], targetId: string) => {
   return filterNotDeleted(categories.filter((item) => item.targetId === targetId));
-};
-
-const mergeOrderedIds = <T extends { id: string }>(items: T[], orderedIds: string[] = []) => {
-  const validIds = new Set(items.map((item) => item.id));
-
-  const existingOrderedIds = orderedIds.filter((id) => validIds.has(id));
-  const missingIds = items
-    .filter((item) => !existingOrderedIds.includes(item.id))
-    .map((item) => item.id);
-
-  return [...existingOrderedIds, ...missingIds];
-};
-
-const sortCategoriesByOrderedIds = <T extends { id: string; createdAt: string; active: boolean }>(
-  items: T[],
-  orderedIds: string[] = [],
-) => {
-  const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
-
-  return [...items].sort((a, b) => {
-    if (a.active !== b.active) {
-      return a.active ? -1 : 1;
-    }
-
-    const aIndex = orderMap.get(a.id);
-    const bIndex = orderMap.get(b.id);
-
-    const aHasOrder = aIndex !== undefined;
-    const bHasOrder = bIndex !== undefined;
-
-    if (aHasOrder && bHasOrder) return aIndex - bIndex;
-    if (aHasOrder) return -1;
-    if (bHasOrder) return 1;
-
-    return a.createdAt.localeCompare(b.createdAt);
-  });
 };
 
 export const categoryStore = create<CategoryStore>()(
@@ -313,13 +279,8 @@ export const categoryStore = create<CategoryStore>()(
             state.selectedTargetId,
           );
 
-          const activeCategories = targetCategories.filter((item) => item.active);
-          const inactiveCategories = targetCategories.filter((item) => !item.active);
-
-          const orderedIds = [
-            ...sortCategoriesByOrderedIds(activeCategories, state.storedOrderedIds),
-            ...sortCategoriesByOrderedIds(inactiveCategories, state.storedOrderedIds),
-          ].map((item) => item.id);
+          const sorted = sortByActiveStatus(targetCategories, state.storedOrderedIds);
+          const orderedIds = sorted.map((item) => item.id);
 
           const orderMap = new Map(orderedIds.map((categoryId, index) => [categoryId, index]));
 
@@ -364,9 +325,16 @@ export const categoryStore = create<CategoryStore>()(
           const activeCategories = targetCategories.filter((item) => item.active);
           const inactiveCategories = targetCategories.filter((item) => !item.active);
 
-          const sortedActiveCategories = sortCategoriesByOrderedIds(
+          const mergedOrderedIds = mergeOrderedIds(activeCategories, state.storedOrderedIds);
+
+          const sortedActiveCategories = sortEntitiesByOrderedIds(
             activeCategories,
-            mergeOrderedIds(activeCategories, state.storedOrderedIds),
+            mergedOrderedIds,
+          );
+
+          const sortedInactiveCategories = sortEntitiesByOrderedIds(
+            inactiveCategories,
+            state.storedOrderedIds,
           );
 
           const oldIndex = sortedActiveCategories.findIndex((item) => item.id === activeId);
@@ -375,7 +343,8 @@ export const categoryStore = create<CategoryStore>()(
           if (oldIndex === -1 || newIndex === -1) return state;
 
           const reorderedActiveCategories = arrayMove(sortedActiveCategories, oldIndex, newIndex);
-          const orderedIds = [...reorderedActiveCategories, ...inactiveCategories].map(
+
+          const orderedIds = [...reorderedActiveCategories, ...sortedInactiveCategories].map(
             (item) => item.id,
           );
 
