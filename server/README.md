@@ -143,4 +143,6 @@ GET /targets/:id/courses       — returns target + categories + their courses (
 
 GET /categories/:id/courses    — courses belonging to a category
 
+GET /courses/:id/dates         - delivers possible event dates for a course
+
 GET /users/:id                 — returns user with included locations and modules

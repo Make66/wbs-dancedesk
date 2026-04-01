@@ -3,6 +3,7 @@ import { categorySchema } from "./category.ts";
 
 export const targetSchema = z.object({
   name: z.string().min(1),
+  description: z.string().optional(),
   icon: z.string().optional(),
   categories: z.array(categorySchema).optional(),
   color: z.array(z.string()).optional(),

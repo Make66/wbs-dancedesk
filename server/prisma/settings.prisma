@@ -1,6 +1,7 @@
 model Settings {
   colTitles           Json?
   holidays            Json?
+  schoolHolidays      Json?
   rebates             Json?
   voucher             Json?
   calendarPast        Boolean  @default(false)
@@ -8,6 +9,7 @@ model Settings {
   calendarLength      Int      @default(12)
   formFields          Json?
   domain              String?
+  federalState        String?
   legalResources      String   @default("https://domain/fileadmin/kunden/mandant/rechtstexte/")
   contracts           Json?
   registration        Json?

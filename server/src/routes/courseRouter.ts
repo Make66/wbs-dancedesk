@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllCourses, getOneCourse, createCourse, updateCourse, removeCourse } from '#controllers';
+import { getAllCourses, getOneCourse, createCourse, updateCourse, removeCourse, getCourseDates } from '#controllers';
 import { courseSchema } from '#schemas';
 
 const coursesRouter = Router();
@@ -9,6 +9,10 @@ coursesRouter
   .route('/')
   .get(authenticate, getAllCourses)
   .post(authenticate, validateZod(courseSchema), createCourse);
+
+coursesRouter
+  .route('/:id/dates')
+  .get(authenticate, getCourseDates);
 
 coursesRouter
   .route('/:id')

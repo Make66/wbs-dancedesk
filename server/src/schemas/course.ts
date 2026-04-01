@@ -7,12 +7,15 @@ export const courseDateSchema = z.object({
 
 export const courseSchema = z.object({
   name: z.string().min(1),
+  description: z.string().optional(),
   active: z.boolean().default(true),
   startsAt: z.date().default(new Date()),
   endsAt: z.date().default(new Date()),
+  isClub: z.boolean().default(false),
   repeat: z.number().min(1).max(50).optional(),
   frequency: z.enum(['ongoing', 'daily', 'weekly', 'bi-weekly', 'monthly']).optional(),
   isIgnoreCalendar: z.boolean().default(false),
+  numberOfDates: z.number().default(1),
   dates: z.array(courseDateSchema).default([]),
   seatsCurrent: z.number().default(0),
   seatsMax: z.number().default(0),
