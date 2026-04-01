@@ -72,7 +72,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
     } catch (error) {
       toggleTargetActive(target.id, prevActive);
       userStore.getState().updateLocationTargetOrder(selectedLocationId, prevOrderedIds);
-      targetStore.getState().replaceTargets(targetStore.getState().courseTargets);
+      targetStore.getState().replaceTargets(targetStore.getState().targets);
 
       toast.error("Status konnte nicht gespeichert werden.");
       console.error("Error updating course target active status:", error);
@@ -128,7 +128,11 @@ const TargetItem = ({ target }: TargetItemProps) => {
                 {formData.name || "Neue Zielgruppe"}
               </span>
             ) : (
-              <Link to={`/courses/${target.id}`} className="flex items-center">
+              <Link
+                to={`/courses/${target.id}`}
+                state={{ target: target }}
+                className="flex items-center"
+              >
                 {iconName && IconComponent && (
                   <IconComponent fill={formData.fontColor} width={20} className="-ml-2 mr-3" />
                 )}
