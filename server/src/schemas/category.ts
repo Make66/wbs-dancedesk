@@ -11,7 +11,7 @@ export const categorySchema = z.object({
   setSeqCourse: z.array(z.uuid()).optional(),
 
   id: z.uuid(),
-  tenantId: z.uuid(),
+  tenantId: z.uuid().optional(),
   isDeleted: z.boolean().default(false),
 });
 

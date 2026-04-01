@@ -16,7 +16,7 @@ export const roomSchema = z.object({
   latitude: z.number().optional,
 
   id: z.uuid(),
-  tenantId: z.uuid(),
+  tenantId: z.uuid().optional(),
   isDeleted: z.boolean().default(false)
 });
 

@@ -25,7 +25,7 @@ export const settingsSchema = z.object({
   registration:        registrationSettingsSchema.optional(),
 
   id:       z.uuid(),
-  tenantId: z.uuid(),
+  tenantId: z.uuid().optional(),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

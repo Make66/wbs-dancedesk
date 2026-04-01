@@ -8,11 +8,11 @@ export const targetSchema = z.object({
   color: z.array(z.string()).optional(),
   active: z.boolean().optional(),
   
-  locationId: z.array(z.uuid()).optional(),
+  locationId: z.uuid('Location ID must be a UUID'),
   setSeqCategory: z.array(z.uuid()).optional(),
 
-  id: z.uuid().optional(),
-  tenantId: z.uuid(),
+  id: z.uuid('ID must be a UUID').optional(),
+  tenantId: z.uuid('Tenant ID must be a UUID').optional(),
   isDeleted: z.boolean().default(false),
 });
 

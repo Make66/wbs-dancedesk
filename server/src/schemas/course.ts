@@ -1,4 +1,4 @@
-import { z } from 'zod/v4';
+import { never, z } from 'zod/v4';
 
 export const courseDateSchema = z.object({
   date: z.date(),
@@ -29,7 +29,7 @@ export const courseSchema = z.object({
   textInfoId: z.uuid().optional(),
 
   id: z.uuid(),
-  tenantId: z.uuid(),
+  tenantId: z.uuid().optional(),
   isDeleted: z.boolean().default(false)
 });
 
@@ -47,7 +47,7 @@ courseSchema.partial({
   paymentTypes: true,
   contractTypes: true,
 
-  category: true,
+  ,
   instructor: true,
   room: true,
   textTerms: true,
