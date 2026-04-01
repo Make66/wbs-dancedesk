@@ -106,7 +106,6 @@ const CategoriesPage = () => {
         }
 
         const data = await response.json();
-        console.log("categories page response:", data);
 
         const fetchedCategories = data.categories ?? [];
         const orderedIds = data.setSeqCategory ?? [];
@@ -134,7 +133,7 @@ const CategoriesPage = () => {
 
   return (
     <div className="w-full">
-      <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 bg-white pl-6">
+      <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 bg-white pl-6 z-20">
         <div className="flex">
           {iconName && IconComponent && <IconComponent width={30} className="ml-1 mr-2" />}
           <h1 className="text-3xl font-semibold">{location.state?.target.name || ""}</h1>

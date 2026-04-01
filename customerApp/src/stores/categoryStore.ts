@@ -1,7 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { arrayMove } from "@dnd-kit/sortable";
-import type { Category, CreateCategoryInput, UpdateCategoryInput } from "../types/course-types";
+import { updateEntityById, getItemsForParent } from "../lib/courses/collection-utils";
+import type {
+  Category,
+  Course,
+  CreateCategoryInput,
+  UpdateCategoryInput,
+  CreateCourseInput,
+  UpdateCourseInput,
+} from "../types/course-types";
 import {
   sortEntitiesByOrderedIds,
   mergeOrderedIds,
@@ -9,7 +17,6 @@ import {
   sortByActiveStatus,
   sortEntitiesForContext,
 } from "../lib/courses/sorting-utils";
-import { updateEntityById, getItemsForParent } from "../lib/courses/collection-utils";
 
 type CategoryStore = {
   categories: Category[];
@@ -23,26 +30,60 @@ type CategoryStore = {
 
   setParentContext: (targetId: string | null, orderedIds?: string[]) => void;
   clearParentContext: () => void;
+
   setCategories: (categories: Category[]) => void;
   replaceCategories: (categories: Category[], orderedIds?: string[]) => void;
   clearCategories: () => void;
+
   setLoading: (value: boolean) => void;
   setError: (value: string | null) => void;
   setEditMode: (value: boolean) => void;
+
   isCategoryExpanded: (categoryId: string) => boolean;
   toggleCategoryExpanded: (categoryId: string) => void;
   collapseAllCategories: () => void;
+
   getVisibleCategories: () => Category[];
   getOrderedCategoryIds: () => string[];
+
   toggleInactiveVisibility: () => void;
   hasInactiveItems: () => boolean;
+
   toggleCategoryActive: (id: string, active: boolean) => void;
   reorderCategories: (activeId: string, overId: string) => void;
+
   addCategory: (input: CreateCategoryInput) => void;
-  deleteCategory: (id: string) => void;
   updateCategory: (id: string, data: UpdateCategoryInput | Category) => void;
   updateCategoryColor: (id: string, color: string[]) => void;
   replaceTemporaryCategory: (tempId: string, createdCategory: Category) => void;
+  deleteCategory: (id: string) => void;
+
+  getVisibleCourses: (categoryId: string) => Course[];
+  getOrderedCourseIds: (categoryId: string) => string[];
+  hasInactiveCourses: (categoryId: string) => boolean;
+
+  toggleCourseActive: (categoryId: string, courseId: string, active: boolean) => void;
+  reorderCourses: (categoryId: string, activeId: string, overId: string) => void;
+
+  addCourse: (categoryId: string, input: CreateCourseInput) => void;
+  updateCourse: (categoryId: string, courseId: string, data: UpdateCourseInput | Course) => void;
+  replaceTemporaryCourse: (categoryId: string, tempId: string, createdCourse: Course) => void;
+  deleteCourse: (categoryId: string, courseId: string) => void;
+};
+
+const getVisibleCoursesForCategory = (
+  category: Category | undefined,
+  isInactiveVisible: boolean,
+): Course[] => {
+  if (!category) return [];
+
+  const notDeletedCourses = filterNotDeleted(category.courses ?? []);
+
+  const visibleCourses = isInactiveVisible
+    ? notDeletedCourses
+    : notDeletedCourses.filter((course) => course.active);
+
+  return sortEntitiesByOrderedIds(visibleCourses, category.setSeqCourse ?? []);
 };
 
 export const categoryStore = create<CategoryStore>()(
@@ -116,7 +157,7 @@ export const categoryStore = create<CategoryStore>()(
           if (!state.selectedTargetId) {
             return {
               categories: filteredCategories,
-              storedOrderedIds: orderedIds ?? state.storedOrderedIds,
+              storedOrderedIds: orderedIds ?? [],
               error: null,
             };
           }
@@ -146,6 +187,8 @@ export const categoryStore = create<CategoryStore>()(
       clearCategories: () =>
         set({
           categories: [],
+          selectedTargetId: null,
+          storedOrderedIds: [],
           expandedCategoryIds: [],
           isLoading: false,
           error: null,
@@ -183,7 +226,7 @@ export const categoryStore = create<CategoryStore>()(
         }),
 
       getVisibleCategories: () => {
-        const { categories, selectedTargetId, isInactiveVisible } = get();
+        const { categories, selectedTargetId, isInactiveVisible, storedOrderedIds } = get();
         if (!selectedTargetId) return [];
 
         const categoriesForTarget = getItemsForParent(
@@ -195,7 +238,19 @@ export const categoryStore = create<CategoryStore>()(
           ? categoriesForTarget
           : categoriesForTarget.filter((item) => item.active);
 
-        return sortEntitiesByOrderedIds(visibleCategories, get().storedOrderedIds);
+        return sortEntitiesByOrderedIds(visibleCategories, storedOrderedIds);
+      },
+
+      getOrderedCategoryIds: () => {
+        const { categories, selectedTargetId, storedOrderedIds } = get();
+        if (!selectedTargetId) return [];
+
+        const categoriesForTarget = getItemsForParent(
+          categories,
+          (item) => item.targetId === selectedTargetId,
+        );
+
+        return mergeOrderedIds(categoriesForTarget, storedOrderedIds);
       },
 
       toggleInactiveVisibility: () =>
@@ -212,21 +267,14 @@ export const categoryStore = create<CategoryStore>()(
         );
       },
 
-      getOrderedCategoryIds: () => {
-        const { categories, selectedTargetId } = get();
-        if (!selectedTargetId) return [];
-
-        return getItemsForParent(categories, (item) => item.targetId === selectedTargetId).map(
-          (item) => item.id,
-        );
-      },
-
       toggleCategoryActive: (id, active) =>
         set((state) => {
           const updatedCategories = updateEntityById(state.categories, id, { active });
 
           if (!state.selectedTargetId) {
-            return { categories: updatedCategories };
+            return {
+              categories: updatedCategories,
+            };
           }
 
           const categoriesForTarget = getItemsForParent(
@@ -313,6 +361,7 @@ export const categoryStore = create<CategoryStore>()(
             id: crypto.randomUUID(),
             name: input.name?.trim() || "Neue Kategorie",
             color: [input.color?.[0] || "#d1d5db", input.color?.[1] || "#000000"],
+            icon: input.icon || "",
             active: true,
             targetId,
             setSeqCourse: [],
@@ -380,8 +429,14 @@ export const categoryStore = create<CategoryStore>()(
             id === tempId ? createdCategory.id : id,
           );
 
+          const reorderedCategories = sortEntitiesForContext(
+            nextCategories,
+            nextStoredOrderedIds,
+            (item) => item.targetId === createdCategory.targetId,
+          );
+
           return {
-            categories: nextCategories,
+            categories: reorderedCategories,
             storedOrderedIds: nextStoredOrderedIds,
           };
         }),
@@ -424,6 +479,219 @@ export const categoryStore = create<CategoryStore>()(
             expandedCategoryIds: state.expandedCategoryIds.filter(
               (categoryId) => categoryId !== id,
             ),
+          };
+        }),
+
+      getVisibleCourses: (categoryId) => {
+        const { categories, isInactiveVisible } = get();
+        const category = categories.find((item) => item.id === categoryId);
+
+        return getVisibleCoursesForCategory(category, isInactiveVisible);
+      },
+
+      getOrderedCourseIds: (categoryId) => {
+        const { categories } = get();
+        const category = categories.find((item) => item.id === categoryId);
+        if (!category) return [];
+
+        const courses = filterNotDeleted(category.courses ?? []);
+        return mergeOrderedIds(courses, category.setSeqCourse ?? []);
+      },
+
+      hasInactiveCourses: (categoryId) => {
+        const { categories } = get();
+        const category = categories.find((item) => item.id === categoryId);
+        if (!category) return false;
+
+        return filterNotDeleted(category.courses ?? []).some((course) => !course.active);
+      },
+
+      toggleCourseActive: (categoryId, courseId, active) =>
+        set((state) => {
+          const nextCategories = state.categories.map((category) => {
+            if (category.id !== categoryId) return category;
+
+            const updatedCourses = updateEntityById(category.courses ?? [], courseId, { active });
+            const visibleCourses = filterNotDeleted(updatedCourses);
+
+            const sortedCourses = sortByActiveStatus(visibleCourses, category.setSeqCourse ?? []);
+            const orderedIds = sortedCourses.map((course) => course.id);
+
+            return {
+              ...category,
+              courses: sortEntitiesByOrderedIds(visibleCourses, orderedIds),
+              setSeqCourse: orderedIds,
+              updatedAt: new Date().toISOString(),
+            };
+          });
+
+          return {
+            categories: nextCategories,
+          };
+        }),
+
+      reorderCourses: (categoryId, activeId, overId) =>
+        set((state) => {
+          const nextCategories = state.categories.map((category) => {
+            if (category.id !== categoryId) return category;
+
+            const courses = filterNotDeleted(category.courses ?? []);
+
+            const activeCourses = sortEntitiesByOrderedIds(
+              courses.filter((course) => course.active),
+              mergeOrderedIds(
+                courses.filter((course) => course.active),
+                category.setSeqCourse ?? [],
+              ),
+            );
+
+            const inactiveCourses = sortEntitiesByOrderedIds(
+              courses.filter((course) => !course.active),
+              category.setSeqCourse ?? [],
+            );
+
+            const oldIndex = activeCourses.findIndex((course) => course.id === activeId);
+            const newIndex = activeCourses.findIndex((course) => course.id === overId);
+
+            if (oldIndex === -1 || newIndex === -1) return category;
+
+            const reorderedActiveCourses = arrayMove(activeCourses, oldIndex, newIndex);
+            const orderedIds = [...reorderedActiveCourses, ...inactiveCourses].map(
+              (course) => course.id,
+            );
+
+            const updatedCourses = courses.map((course) =>
+              course.id === activeId || course.id === overId
+                ? {
+                    ...course,
+                    updatedAt: new Date().toISOString(),
+                  }
+                : course,
+            );
+
+            return {
+              ...category,
+              courses: sortEntitiesByOrderedIds(updatedCourses, orderedIds),
+              setSeqCourse: orderedIds,
+              updatedAt: new Date().toISOString(),
+            };
+          });
+
+          return {
+            categories: nextCategories,
+          };
+        }),
+
+      addCourse: (categoryId, input) =>
+        set((state) => {
+          const nextCategories = state.categories.map((category) => {
+            if (category.id !== categoryId) return category;
+
+            const newCourse: Course = {
+              id: crypto.randomUUID(),
+              name: input.name?.trim() || "Neuer Kurs",
+              active: true,
+              categoryId,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              isDeleted: false,
+              isNew: true,
+            } as Course;
+
+            const nextCourses = [newCourse, ...(category.courses ?? [])];
+
+            const filteredCourses = filterNotDeleted(nextCourses);
+            const orderedIds = [
+              newCourse.id,
+              ...mergeOrderedIds(filteredCourses, category.setSeqCourse ?? []).filter(
+                (id) => id !== newCourse.id,
+              ),
+            ];
+
+            return {
+              ...category,
+              courses: sortEntitiesByOrderedIds(filteredCourses, orderedIds),
+              setSeqCourse: orderedIds,
+              updatedAt: new Date().toISOString(),
+            };
+          });
+
+          return {
+            categories: nextCategories,
+          };
+        }),
+
+      updateCourse: (categoryId, courseId, data) =>
+        set((state) => {
+          const nextCategories = state.categories.map((category) => {
+            if (category.id !== categoryId) return category;
+
+            return {
+              ...category,
+              courses: updateEntityById(category.courses ?? [], courseId, data),
+              updatedAt: new Date().toISOString(),
+            };
+          });
+
+          return {
+            categories: nextCategories,
+          };
+        }),
+
+      replaceTemporaryCourse: (categoryId, tempId, createdCourse) =>
+        set((state) => {
+          const nextCategories = state.categories.map((category) => {
+            if (category.id !== categoryId) return category;
+
+            const nextCourses = (category.courses ?? []).map((course) =>
+              course.id === tempId
+                ? {
+                    ...createdCourse,
+                    isNew: false,
+                  }
+                : course,
+            );
+
+            const nextOrderedIds = (category.setSeqCourse ?? []).map((id) =>
+              id === tempId ? createdCourse.id : id,
+            );
+
+            return {
+              ...category,
+              courses: sortEntitiesByOrderedIds(filterNotDeleted(nextCourses), nextOrderedIds),
+              setSeqCourse: nextOrderedIds,
+              updatedAt: new Date().toISOString(),
+            };
+          });
+
+          return {
+            categories: nextCategories,
+          };
+        }),
+
+      deleteCourse: (categoryId, courseId) =>
+        set((state) => {
+          const nextCategories = state.categories.map((category) => {
+            if (category.id !== categoryId) return category;
+
+            const nextCourses = (category.courses ?? []).filter((course) => course.id !== courseId);
+
+            const filteredCourses = filterNotDeleted(nextCourses);
+            const orderedIds = mergeOrderedIds(
+              filteredCourses,
+              (category.setSeqCourse ?? []).filter((id) => id !== courseId),
+            );
+
+            return {
+              ...category,
+              courses: sortEntitiesByOrderedIds(filteredCourses, orderedIds),
+              setSeqCourse: orderedIds,
+              updatedAt: new Date().toISOString(),
+            };
+          });
+
+          return {
+            categories: nextCategories,
           };
         }),
     }),
