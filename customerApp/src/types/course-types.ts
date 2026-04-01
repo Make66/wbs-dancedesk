@@ -123,12 +123,13 @@ export type UpdateTargetInput = {
 };
 
 export type CreateTargetInput = {
-  locationId: string;
-  tenantId?: string;
-  active?: boolean;
   name?: string;
   color?: string[];
   icon?: string;
+  locationId: string;
+  tenantId: string;
+  active?: boolean;
+  setSeqCategory?: string[];
 };
 
 export type CreateCategoryInput = {

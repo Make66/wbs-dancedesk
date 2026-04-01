@@ -54,7 +54,9 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
           color: [formData.color, formData.fontColor],
           icon: formData.icon,
           active: true,
-          locationId: selectedLocationId!,
+          locationId: locationId,
+          tenantId: "seed",
+          setSeqCategory: [],
         });
         replaceTemporaryTarget(target.id, createdTarget);
         toast.success("Kursziel erfolgreich erstellt!");
