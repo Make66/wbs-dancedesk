@@ -1,20 +1,9 @@
-"use client";
-
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { Search, Check } from "lucide-react";
 import { Input } from "./input";
-import {
-  FaBook,
-  FaUser,
-  FaHeart,
-  FaStar,
-  FaShoppingCart,
-  FaHome,
-  FaEnvelope,
-  FaPhone,
-  FaCog,
-  FaCamera,
-} from "react-icons/fa";
+import { FaBook, FaUser, FaHeart, FaStar, FaHome, FaCamera, FaCog } from "react-icons/fa";
 import type { IconType } from "react-icons";
+import { cn } from "../../lib/utils";
 
 type IconItem = {
   name: string;
@@ -26,12 +15,9 @@ const ICONS: IconItem[] = [
   { name: "user", icon: FaUser },
   { name: "heart", icon: FaHeart },
   { name: "star", icon: FaStar },
-  { name: "shopping-cart", icon: FaShoppingCart },
   { name: "home", icon: FaHome },
-  { name: "envelope", icon: FaEnvelope },
-  { name: "phone", icon: FaPhone },
-  { name: "settings", icon: FaCog },
   { name: "camera", icon: FaCamera },
+  { name: "settings", icon: FaCog },
 ];
 
 type IconPickerProps = {
@@ -40,44 +26,85 @@ type IconPickerProps = {
 };
 
 export function IconPicker({ value, onChange }: IconPickerProps) {
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedIcon = ICONS.find((item) => item.name === value);
+  const SelectedIcon = selectedIcon?.icon ?? FaBook;
 
   const filteredIcons = useMemo(() => {
     const term = search.toLowerCase().trim();
 
     if (!term) return ICONS;
 
-    return ICONS.filter((item) => item.name.includes(term));
+    return ICONS.filter((item) => item.name.toLowerCase().includes(term));
   }, [search]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!wrapperRef.current) return;
+
+      if (!wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Icon suchen..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+    <div ref={wrapperRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-10 h-10 cursor-pointer flex items-center justify-center rounded-md border bg-white shadow-sm"
+        aria-label="Icon auswählen"
+      >
+        <SelectedIcon className="text-xl" />
+      </button>
 
-      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6">
-        {filteredIcons.map((item) => {
-          const Icon = item.icon;
-          const isSelected = value === item.name;
+      {open && (
+        <div className="absolute bottom-14 left-0 z-[80] w-[320px] rounded-2xl border bg-white p-3 shadow-2xl">
+          <div className="relative mb-3">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              value={search}
+              placeholder="Icon suchen..."
+              className="pl-9"
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-          return (
-            <button
-              key={item.name}
-              type="button"
-              onClick={() => onChange(item.name)}
-              className={`flex h-20 flex-col items-center justify-center rounded-md border p-2 transition hover:bg-muted ${
-                isSelected ? "border-primary bg-muted" : "border-border"
-              }`}
-            >
-              <Icon className="mb-2 h-5 w-5" />
-              <span className="text-xs text-center">{item.name}</span>
-            </button>
-          );
-        })}
-      </div>
+          <div className="grid max-h-[260px] grid-cols-4 gap-2 overflow-y-auto">
+            {filteredIcons.map((item) => {
+              const Icon = item.icon;
+              const isSelected = item.name === value;
+
+              return (
+                <button
+                  key={item.name}
+                  type="button"
+                  onClick={() => {
+                    onChange(item.name);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "relative flex h-16 items-center justify-center rounded-xl border transition hover:bg-gray-50",
+                    isSelected && "border-black bg-gray-100",
+                  )}
+                  title={item.name}
+                >
+                  {isSelected && <Check className="absolute right-1 top-1 h-3.5 w-3.5" />}
+                  <Icon className="text-lg" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

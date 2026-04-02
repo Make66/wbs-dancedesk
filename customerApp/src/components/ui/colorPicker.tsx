@@ -5,16 +5,14 @@ type ColorPickerProps = {
   color: string;
   onChange: (color: string) => void;
   children?: React.ReactNode;
+  showInput?: boolean;
 };
 
-export function ColorPicker({ color, onChange, children }: ColorPickerProps) {
+export function ColorPicker({ color, onChange, children, showInput = false }: ColorPickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-
-      <PopoverContent className="w-120 p-4 space-y-4">
-        <div className="text-sm font-medium">Farbe wählen</div>
-
+      <PopoverContent className="w-116 p-4 space-y-4">
         <div className="flex flex-wrap gap-2">
           {COLOR_PALETTE.map((preset) =>
             preset.map((pre) => {
@@ -23,7 +21,7 @@ export function ColorPicker({ color, onChange, children }: ColorPickerProps) {
                 <button
                   key={pre}
                   onClick={() => onChange(pre)}
-                  className={`w-8 h-8 rounded-full border-2 transition cursor-pointer ${
+                  className={`w-8 h-8 rounded-md border-2 transition cursor-pointer hover:scale-200 ${
                     isActive ? "border-black scale-110" : "border-transparent"
                   }`}
                   style={{ backgroundColor: pre }}
@@ -32,12 +30,14 @@ export function ColorPicker({ color, onChange, children }: ColorPickerProps) {
             }),
           )}
         </div>
-        <input
-          type="text"
-          value={color}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full border rounded px-2 py-1 text-sm"
-        />
+        {showInput && (
+          <input
+            type="text"
+            value={color}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full border rounded px-2 py-1 text-sm"
+          />
+        )}
       </PopoverContent>
     </Popover>
   );
