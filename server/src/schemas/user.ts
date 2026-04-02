@@ -7,16 +7,16 @@ export const userSchema = z.object({
   lastName: z.string().min(2).max(32),
   email: z.email(),
   password: z.string().min(6).max(64),
-  imageUrl: z.string().optional(),
-  active: z.boolean().default(true),
-  refreshToken: z.string().optional(),
+  imageUrl: z.string(),
+  refreshToken: z.string(),
   settings: z.json().default({}),
 
   locations : z.array(z.string()).default([]),
   modules: z.array(z.string()).default([]),
 
-  id: z.uuid(),
-  tenantId: z.uuid().optional(),
+  id: z.uuid('Id given is not a valid UUID'),
+  tenantId: z.uuid('Id given is not a valid UUID'),
+  isActive: z.boolean().default(true),
   isDeleted: z.boolean().default(false)
 });
 
@@ -26,14 +26,15 @@ userSchema.partial({
   email: true,
   password: true,
   imageUrl: true,
-  active: true,
   refreshToken: true,
   settings: true,
 
   locations : true,
   modules: true,
 
-  isDeleted: true
+  isActive: true,
+  isDeleted: true,
+  tenantId: true
 });
 
 export type User = z.infer<typeof userSchema>;

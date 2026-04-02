@@ -2,18 +2,18 @@ model Instructor {
   name        String?  @default("John Doe Instructor")
   description String?  @default("")
   imageUrl    String   @default("./assets/images/no-profile-picture")
-  active      Boolean  @default(true)
   skills      String[] @default(["Salsa", "WTP", "HipHop"])
   courses     Course[]
 
   // relations
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?   @db.Uuid
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String   @db.Uuid
 
   // Common fields
   id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 }

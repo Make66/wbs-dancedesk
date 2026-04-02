@@ -2,28 +2,29 @@ import { z } from 'zod/v4';
 
 export const textSchema = z.object({
   name: z.string().min(1),
-  description: z.string().optional(),
+  description: z.string(),
   type: z.number().min(0),
-  text: z.string().optional(),
-  active: z.boolean().default(true),
+  text: z.string(),
 
   // relations
-  courseInfo: z.array(z.uuid()).optional(),
-  courseTerms: z.array(z.uuid()).optional(),
+  courseInfoId: z.uuid('Id given is not a valid UUID'),
+  courseTermsId: z.uuid('Id given is not a valid UUID'),
   
-  id: z.uuid(),
-  tenantId: z.uuid().optional(),
+  id: z.uuid('Id given is not a valid UUID'),
+  tenantId: z.uuid('Id given is not a valid UUID'),
+  isActive: z.boolean().default(true),
   isDeleted: z.boolean().default(false)
 });
 
 textSchema.partial({
-  name: true,
+  description: true,
   type: true,
   text: true,
-  active: true,
-  courseInfo: true,
-  courseTerms: true,
+  courseInfoId: true,
+  courseTermsId: true,
+  isActive: true,
   isDeleted: true,
+  tenantId: true
 });
 
 export type Text = z.infer<typeof textSchema>;

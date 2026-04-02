@@ -2,7 +2,6 @@ model Location {
   name        String? @default("John Doe Instructor")
   description String? @default("")
   imageUrl    String  @default("./assets/images/no-profile-picture")
-  active      Boolean @default(true)
 
   // Common address fields
   street    String @default("123 Main St")
@@ -23,5 +22,6 @@ model Location {
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 }

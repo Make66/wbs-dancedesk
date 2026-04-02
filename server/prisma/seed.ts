@@ -29,6 +29,8 @@ interface CitiKurs {
   kalenderignorieren: number;
   seats_cur: number;
   termine: CitiTermin[];
+  categoryId: string;
+  isActive:boolean;
 }
 
 interface CitiZielseite {
@@ -450,7 +452,7 @@ async function main() {
     const location = await prisma.location.create({
       data: {
         name: loc.title,
-        active: toBool(loc.is_visible),
+        isActive: toBool(loc.is_visible),
         tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
       },
     });
@@ -468,7 +470,7 @@ async function main() {
       const target = await prisma.target.create({
         data: {
           name: zg.headline,
-          active: toBool(zg.is_visible),
+          isActive: toBool(zg.is_visible),
           locationId,
           tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
         },
@@ -480,7 +482,7 @@ async function main() {
   // 5. categories — deduplicated by targetId + headline
   const categoryMap = new Map<string, string>(); // `${targetId}:${headline}` → prisma id
 
-  const uniqueCategories = new Map<string, { name: string; active: boolean; targetId: string }>();
+  const uniqueCategories = new Map<string, { name: string; isActive: boolean; targetId: string }>();
   for (const loc of citiData) {
     for (const zg of loc.zielgruppen ?? []) {
       const targetId = targetMap.get(`${loc.id}:${zg.headline}`);
@@ -491,7 +493,7 @@ async function main() {
         if (!uniqueCategories.has(key)) {
           uniqueCategories.set(key, {
             name: zs.headline,
-            active: toBool(zs.is_visible),
+            isActive: toBool(zs.is_visible),
             targetId,
           });
         }
@@ -504,7 +506,35 @@ async function main() {
     categoryMap.set(key, category.id);
   }
 
-  // 6. courses
+  // 6. texts — must come before courses (textTermsId / textInfoId are required FKs)
+  const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus nulla mauris tristique phasellus condimentum fusce eros.';
+
+  const textTermsData = [
+    { name: 'Allgemeine Geschäftsbedingungen',  description: 'Standard-AGB für alle Kurse' },
+    { name: 'Nutzungsbedingungen Erwachsene',   description: 'Bedingungen für Erwachsenenkurse' },
+    { name: 'Teilnahmebedingungen Kinder',      description: 'Bedingungen für Kinderkurse' },
+    { name: 'Vertragsbedingungen Clubmitglied', description: 'AGB für Club-Mitgliedschaften' },
+    { name: 'Datenschutzbedingungen Kurs',      description: 'Datenschutzhinweise für Kursteilnehmer' },
+  ];
+
+  const textInfosData = [
+    { name: 'Kursinfo Anfänger',         description: 'Informationen für Anfängerkurse' },
+    { name: 'Kursinfo Fortgeschrittene', description: 'Informationen für Fortgeschrittenenkurse' },
+    { name: 'Probestunde Hinweise',      description: 'Hinweise zur Probestunde' },
+    { name: 'Clubinfo Mitgliedschaft',   description: 'Informationen zur Club-Mitgliedschaft' },
+    { name: 'Allgemeine Kurshinweise',   description: 'Allgemeine Informationen zu unseren Kursen' },
+  ];
+
+  const defaultTerms = await prisma.text.create({ data: { ...textTermsData[0], type: 0, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  for (const t of textTermsData.slice(1)) {
+    await prisma.text.create({ data: { ...t, type: 0, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  }
+  const defaultInfo = await prisma.text.create({ data: { ...textInfosData[0], type: 1, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  for (const t of textInfosData.slice(1)) {
+    await prisma.text.create({ data: { ...t, type: 1, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  }
+
+  // 7. courses
   let courseCount = 0;
   for (const loc of citiData) {
     for (const zg of loc.zielgruppen ?? []) {
@@ -526,16 +556,17 @@ async function main() {
           await prisma.course.create({
             data: {
               name: kurs.kursbezeichnung,
-              // active: toBool(kurs.is_visible),
-              active: true,
+              isActive: true,
               startsAt,
               endsAt,
               frequency: 'weekly',
               isIgnoreCalendar: kurs.kalenderignorieren === 1,
-              seatsCurrent: Math.floor(Math.random() * 20) + 1, // randomize some bookings
+              seatsCurrent: Math.floor(Math.random() * 20) + 1,
               seatsMax: 20,
               dates,
               categoryId,
+              textTermsId: defaultTerms.id,
+              textInfoId: defaultInfo.id,
               tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
             },
           });
@@ -545,41 +576,15 @@ async function main() {
     }
   }
 
-  // 7. texts
-  const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus nulla mauris tristique phasellus condimentum fusce eros.';
-
-  const textTermsData = [
-    { name: 'Allgemeine Geschäftsbedingungen',  description: 'Standard-AGB für alle Kurse' },
-    { name: 'Nutzungsbedingungen Erwachsene',   description: 'Bedingungen für Erwachsenenkurse' },
-    { name: 'Teilnahmebedingungen Kinder',      description: 'Bedingungen für Kinderkurse' },
-    { name: 'Vertragsbedingungen Clubmitglied', description: 'AGB für Club-Mitgliedschaften' },
-    { name: 'Datenschutzbedingungen Kurs',      description: 'Datenschutzhinweise für Kursteilnehmer' },
-  ];
-
-  const textInfosData = [
-    { name: 'Kursinfo Anfänger',        description: 'Informationen für Anfängerkurse' },
-    { name: 'Kursinfo Fortgeschrittene', description: 'Informationen für Fortgeschrittenenkurse' },
-    { name: 'Probestunde Hinweise',     description: 'Hinweise zur Probestunde' },
-    { name: 'Clubinfo Mitgliedschaft',  description: 'Informationen zur Club-Mitgliedschaft' },
-    { name: 'Allgemeine Kurshinweise',  description: 'Allgemeine Informationen zu unseren Kursen' },
-  ];
-
-  for (const t of textTermsData) {
-    await prisma.text.create({ data: { ...t, type: 0, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
-  }
-  for (const t of textInfosData) {
-    await prisma.text.create({ data: { ...t, type: 1, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
-  }
-
   // 8. modules
   const moduleIds: string[] = [];
   for (const data of [
-    { name: 'Kurse',         color: '#66ff33', active: true },
-    { name: 'Räume',         color: '#338fff', active: true },
-    { name: 'Lehrer',        color: '#e733ff', active: true },
-    { name: 'Anmeldungen',   color: '#FFCC33', active: true },
-    { name: 'Teilnehmer',    color: '#ff3385', active: true },
-    { name: 'Einstellungen', color: '#CCCCCC', active: true },
+    { name: 'Kurse',         color: '#66ff33', isActive: true },
+    { name: 'Räume',         color: '#338fff', isActive: true },
+    { name: 'Lehrer',        color: '#e733ff', isActive: true },
+    { name: 'Anmeldungen',   color: '#FFCC33', isActive: true },
+    { name: 'Teilnehmer',    color: '#ff3385', isActive: true },
+    { name: 'Einstellungen', color: '#CCCCCC', isActive: true },
   ]) {
     const m = await prisma.module.create({ data: { ...data, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
     moduleIds.push(m.id);
@@ -592,7 +597,7 @@ async function main() {
       lastName: 'User',
       email: 'admin@test.de',
       password: await bcrypt.hash('test123', 10),
-      active: true,
+      isActive: true,
       tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
       modules:   { connect: moduleIds.map(id => ({ id })) },
       locations: { connect: [...locationMap.values()].map(id => ({ id })) },

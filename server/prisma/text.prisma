@@ -5,9 +5,10 @@ model Text {
   text        String  @default("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
   active      Boolean @default(true)
 
-  // relations
-  courseInfo  Course[] @relation("CourseInfo")
-  courseTerms Course[] @relation("CourseTerms")
+  // relations 1:n — one Text record can serve as terms for many courses,
+  // and separately as info for many courses (distinguished by Text.type)
+  coursesAsTerms Course[] @relation("textTerms")
+  coursesAsInfo  Course[] @relation("textInfo")
 
   // Common fields
   id        String   @id @default(uuid()) @db.Uuid

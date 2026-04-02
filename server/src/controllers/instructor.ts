@@ -22,9 +22,11 @@ export const getOneInstructor: RequestHandler = async (req, res) => {
 
 export const createInstructor: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
+  console.log('req.user', req.user);
   const instructor = await prisma.instructor.create({
     data: { ...req.body, tenantId }
   });
+  console.log('req.body', req.body);
   res.status(201).json(instructor);
 };
 

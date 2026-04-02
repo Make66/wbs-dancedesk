@@ -2,7 +2,6 @@ model Module {
   name        String  @default("Standard Modul")
   description String? @default("")
   color       String  @default("#B5252B")
-  active      Boolean @default(true)
 
   // relations
   users User[] @relation("UserModules") // Many-to-many relation with User
@@ -12,5 +11,6 @@ model Module {
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 }

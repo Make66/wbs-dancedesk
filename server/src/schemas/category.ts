@@ -2,25 +2,28 @@ import { z } from "zod/v4";
 
 export const categorySchema = z.object({
   name: z.string().min(1),
-  description: z.string().optional(),
-  icon: z.string().optional(),
-  color: z.array(z.string()).optional(),
-  active: z.boolean().default(true),
+  description: z.string(),
+  icon: z.string(),
+  color: z.array(z.string()),
   
-  targetId: z.uuid(),
-  setSeqCourse: z.array(z.uuid()).optional(),
+  targetId: z.uuid('Id given is not a valid UUID'),
+  setSeqCourse: z.array(z.uuid('Id given is not a valid UUID')),
 
-  id: z.uuid(),
-  tenantId: z.uuid().optional(),
+  id: z.uuid('Id given is not a valid UUID'),
+  tenantId: z.uuid('Id given is not a valid UUID'),
+  isActive: z.boolean().default(true),
   isDeleted: z.boolean().default(false),
 });
 
 categorySchema.partial({
   name: true,
+  description: true,
+  icon: true,
   color: true,
-  active: true,
+  
   setSeqCourse: true,
   isDeleted: true,
+  tenantId: true,
 });
 
 export type Category = z.infer<typeof categorySchema>;

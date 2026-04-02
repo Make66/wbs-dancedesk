@@ -11,8 +11,8 @@ export const customerSchema = z.object({
   quaternary: z.string().default("#858384"),
   active: z.boolean().default(true),
 
-  setSeqLocation: z.array(z.uuid()).optional(),
-  setSeqInstructor: z.array(z.uuid()).optional(),
+  setSeqLocation: z.array(z.uuid('Id given is not a valid UUID')).optional(),
+  setSeqInstructor: z.array(z.uuid('Id given is not a valid UUID')).optional(),
 
   street: z.string().optional(),
   city: z.string().optional(),
@@ -20,8 +20,8 @@ export const customerSchema = z.object({
   longitude: z.number().optional(),
   latitude: z.number().optional(),
 
-  id: z.uuid(),
-  tenantId: z.uuid().optional(),
+  id: z.uuid('Id given is not a valid UUID'),
+  tenantId: z.uuid('Id given is not a valid UUID').optional(),
   isDeleted: z.boolean().default(false)
 });
 

@@ -14,8 +14,8 @@ export const registrationSchema = z.object({
 
   active: z.boolean().default(true),
 
-  id: z.uuid().optional(),
-  tenantId: z.uuid().optional(),
+  id: z.uuid('Id given is not a valid UUID').optional(),
+  tenantId: z.uuid('Id given is not a valid UUID').optional(),
   isDeleted: z.boolean().default(false)
 });
 

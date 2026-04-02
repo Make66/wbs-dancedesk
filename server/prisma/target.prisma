@@ -3,7 +3,6 @@ model Target {
   description String?  @default("")
   icon        String   @default("")
   color       String[] @default(["#000000", "#FFFFFF"])
-  active      Boolean  @default(true)
 
   // relations
   setSeqCategory String[]   @db.Uuid
@@ -16,5 +15,6 @@ model Target {
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 }

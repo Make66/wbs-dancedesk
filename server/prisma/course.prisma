@@ -1,19 +1,22 @@
 model Course {
   name             String?  @default("Grundkurs 1")
   description      String?  @default("")
-  active           Boolean  @default(true)
   startsAt         DateTime @default(now())
   endsAt           DateTime @default(now())
-  isClub           Boolean  @default(false)
-  repeat           Int      @default(0)
   frequency        String   @default("weekly")
-  isIgnoreCalendar Boolean  @default(false)
-  numberOfDates    Int      @default(1)
+  clubRepetition   Int      @default(50)
+  courseRepetition Int      @default(8)
   dates            Json     @default("[]")
-  seatsCurrent     Int      @default(20)
-  seatsMax         Int      @default(20)
   paymentTypes     String[] @default(["cash", "invoice", "paypal"])
   contractTypes    String[] @default(["standard", "trial"])
+  options          Int      @default(0)
+  seatsCurrent     Int      @default(20)
+  seatsMax         Int      @default(20)
+
+  isBookedOut      Boolean @default(false)
+  isClub           Boolean @default(false)
+  isIgnoreCalendar Boolean @default(false)
+  isTaxFree        Boolean @default(false)
 
   // relations from other models
   category     Category    @relation(fields: [categoryId], references: [id])
@@ -22,9 +25,9 @@ model Course {
   instructorId String?     @db.Uuid
   room         Room?       @relation(fields: [roomId], references: [id])
   roomId       String?     @db.Uuid
-  textTerms    Text?       @relation("CourseTerms", fields: [textTermsId], references: [id])
+  textTerms    Text?       @relation("textTerms", fields: [textTermsId], references: [id])
   textTermsId  String?     @db.Uuid
-  textInfo     Text?       @relation("CourseInfo", fields: [textInfoId], references: [id])
+  textInfo     Text?       @relation("textInfo", fields: [textInfoId], references: [id])
   textInfoId   String?     @db.Uuid
 
   // Common fields
@@ -32,6 +35,7 @@ model Course {
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 
   // remark on dates: On the application side, when reading dates from Prisma 

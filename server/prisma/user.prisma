@@ -4,7 +4,6 @@ model User {
   email        String  @unique @default("admin@test.de")
   password     String  @default("Test123!")
   imageUrl     String  @default("./assets/images/no-profile-picture")
-  active       Boolean @default(true)
   refreshToken String? // bcrypt hash of current refresh token; null = logged out
   settings     Json?   @default("{}") // JSON field for user-specific settings/preferences
 
@@ -17,5 +16,6 @@ model User {
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 }
