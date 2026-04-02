@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 
 export const categorySchema = z.object({
   name: z.string().min(1).optional(),
-  description: z.string().optional,
+  description: z.string().optional(),
   icon: z.string().optional(),
   color: z.array(z.string()).optional(),
   

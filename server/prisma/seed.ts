@@ -69,7 +69,7 @@ function createRotator(arr: string[]) {
     reset: () => { i = 0; }
   };
 }
-const colors = ['#DB2777', '#86198F', '#333333', '#D0872E', '#1A7595', '#1F7A55', '#9F0712', '#9f6767', '#800000', '#E7180B', '#16168e', '#98980c', '#5e8b83' ];
+const colors = ['#DB2777', '#86198F', '#333333', '#800000', '#D0872E', '#1A7595', '#1F7A55', '#9F0712', '#9f6767',  '#E7180B', '#16168e', '#98980c', '#5e8b83' ];
 const rotator = createRotator(colors);
 
 function toBool(val: string | number): boolean {
