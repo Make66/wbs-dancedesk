@@ -2,7 +2,7 @@ import type { Category, CreateCategoryInput, UpdateCategoryInput } from "../type
 
 export const createCategoryDB = async (data: CreateCategoryInput): Promise<Category> => {
   console.log("Creating category with data:", data);
-  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/categories`, {
+  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/categories/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

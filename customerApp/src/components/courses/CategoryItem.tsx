@@ -35,11 +35,9 @@ type CategoryItemProps = {
 const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   const [isEditable, setIsEditable] = useState(false);
   const [formData, setFormData] = useState({
-    id: category.id,
     name: category.name ?? "",
     color: [category.color?.[0] ?? "#d1d5db", category.color?.[1] ?? "#000000"],
     icon: category.icon ?? "",
-    targetId: category.targetId,
   });
 
   const isEditMode = categoryStore((state) => state.isEditMode);
@@ -85,8 +83,8 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
       const newOrderedIds = categoryStore.getState().getOrderedCourseIds(category.id);
 
-      await updateCategoryDB({
-        id: category.id,
+      await updateTargetDB(targetId!, {
+        setSeqCategory: newOrderedIds,
       });
     } catch (error) {
       console.error("Error reordering courses:", error);
@@ -124,7 +122,9 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
       await Promise.all([
         updateCategoryDB({
           id: category.id,
-          isActive: checked,
+          data: {
+            isActive: checked,
+          },
         }),
         updateTargetDB(selectedTargetId, {
           setSeqCategory: newOrderedIds,
@@ -148,7 +148,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
     try {
       await updateCategoryDB({
         id: category.id,
-        isDeleted: true,
+        data: {},
       });
       deleteCategory(category.id);
       toast.success("Kategorie gelöscht.");

@@ -63,9 +63,11 @@ const CategoryItemEdit = ({
       } else {
         const updatedCategory = await updateCategoryDB({
           id: category.id,
-          name: formData.name.trim(),
-          color: [formData.color[0], formData.color[1]],
-          icon: formData.icon,
+          data: {
+            name: formData.name.trim(),
+            color: [formData.color[0], formData.color[1]],
+            icon: formData.icon,
+          },
         });
 
         updateCategory(category.id, updatedCategory);
@@ -83,8 +85,6 @@ const CategoryItemEdit = ({
     <div className="py-4">
       <form onSubmit={handleSubmit} className="flex items-center justify-between gap-6">
         <div className="flex items-center gap-6">
-          <input type="hidden" value={formData.id} name="id" />
-
           <Input
             type="text"
             className="w-100"
@@ -115,7 +115,7 @@ const CategoryItemEdit = ({
           <ColorPicker
             color={formData.color[1]}
             onChange={(newColor) => {
-              setFormData((prev) => ({ ...prev, fontColor: newColor }));
+              setFormData((prev) => ({ ...prev, color: [prev.color[0], newColor] }));
               updateCategoryColor(category.id, [formData.color[0], newColor]);
             }}
           >
