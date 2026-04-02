@@ -1,13 +1,11 @@
 import { Input } from "../ui/input";
 import { ColorPicker } from "../ui/colorPicker";
 import { ImFont } from "react-icons/im";
-import { IconPicker } from "../ui/iconPicker";
 import { toast } from "react-toastify";
 import { targetStore } from "../../stores/targetStore";
 import { userStore } from "../../stores/userStore";
 import { createTargetDB, updateTargetDB } from "../../data/target";
 import type { Target } from "../../types/course-types";
-import { MdInsertEmoticon } from "react-icons/md";
 import { Button } from "../ui/button";
 
 type TargetFormDataType = {
@@ -27,7 +25,7 @@ type TargetItemEditProps = {
 const TargetItemEdit = ({ target, formData, setFormData }: TargetItemEditProps) => {
   const updateTarget = targetStore((state) => state.updateTarget);
   const updateColor = targetStore((state) => state.updateColor);
-  const updateIcon = targetStore((state) => state.updateIcon);
+  // const updateIcon = targetStore((state) => state.updateIcon);
   const setEditingTargetId = targetStore((state) => state.setEditingTargetId);
   const replaceTemporaryTarget = targetStore((state) => state.replaceTemporaryTarget);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
@@ -119,15 +117,7 @@ const TargetItemEdit = ({ target, formData, setFormData }: TargetItemEditProps) 
               />
             </button>
           </ColorPicker>
-          <IconPicker
-            icon={formData.icon}
-            onChange={(newIcon) => {
-              setFormData((prev) => ({ ...prev, icon: newIcon }));
-              updateIcon(target.id, newIcon);
-            }}
-          >
-            <MdInsertEmoticon className="cursor-pointer text-5xl text-gray-600" />
-          </IconPicker>
+          {/* // ICON PICKER */}
         </div>
         <Button type="submit" size="lg">
           Speichern

@@ -1,51 +1,83 @@
-import * as React from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
-import { appIcons, type AppIconName } from "../icons";
+"use client";
 
-type IconPickerProps = {
-  icon: string;
-  onChange: (icon: AppIconName) => void;
-  children?: React.ReactNode;
+import { useMemo, useState } from "react";
+import { Input } from "./input";
+import {
+  FaBook,
+  FaUser,
+  FaHeart,
+  FaStar,
+  FaShoppingCart,
+  FaHome,
+  FaEnvelope,
+  FaPhone,
+  FaCog,
+  FaCamera,
+} from "react-icons/fa";
+import type { IconType } from "react-icons";
+
+type IconItem = {
+  name: string;
+  icon: IconType;
 };
 
-const ICONS = Object.entries(appIcons) as [AppIconName, React.FC<React.SVGProps<SVGSVGElement>>][];
+const ICONS: IconItem[] = [
+  { name: "book", icon: FaBook },
+  { name: "user", icon: FaUser },
+  { name: "heart", icon: FaHeart },
+  { name: "star", icon: FaStar },
+  { name: "shopping-cart", icon: FaShoppingCart },
+  { name: "home", icon: FaHome },
+  { name: "envelope", icon: FaEnvelope },
+  { name: "phone", icon: FaPhone },
+  { name: "settings", icon: FaCog },
+  { name: "camera", icon: FaCamera },
+];
 
-export function IconPicker({ icon, onChange, children }: IconPickerProps) {
+type IconPickerProps = {
+  value?: string;
+  onChange: (iconName: string) => void;
+};
+
+export function IconPicker({ value, onChange }: IconPickerProps) {
+  const [search, setSearch] = useState("");
+
+  const filteredIcons = useMemo(() => {
+    const term = search.toLowerCase().trim();
+
+    if (!term) return ICONS;
+
+    return ICONS.filter((item) => item.name.includes(term));
+  }, [search]);
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+    <div className="space-y-4">
+      <Input
+        placeholder="Icon suchen..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-      <PopoverContent className="w-64 space-y-4 p-4">
-        <div className="text-sm font-medium">Icon wählen</div>
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6">
+        {filteredIcons.map((item) => {
+          const Icon = item.icon;
+          const isSelected = value === item.name;
 
-        <div className="flex flex-wrap gap-2">
-          {ICONS.map(([name, Icon]) => {
-            const isActive = icon?.toLowerCase() === name.toLowerCase();
-
-            return (
-              <button
-                key={name}
-                type="button"
-                onClick={() => onChange(name)}
-                className={[
-                  "flex h-10 w-10 items-center justify-center rounded-full border transition-all",
-                  isActive
-                    ? "scale-110 border-primary bg-primary/10"
-                    : "border-border hover:border-primary/50 hover:bg-muted",
-                ].join(" ")}
-                aria-label={`Wähle ${name} Icon`}
-              >
-                <Icon
-                  className={[
-                    "h-6 w-6 transition-colors",
-                    isActive ? "text-primary" : "text-muted-foreground",
-                  ].join(" ")}
-                />
-              </button>
-            );
-          })}
-        </div>
-      </PopoverContent>
-    </Popover>
+          return (
+            <button
+              key={item.name}
+              type="button"
+              onClick={() => onChange(item.name)}
+              className={`flex h-20 flex-col items-center justify-center rounded-md border p-2 transition hover:bg-muted ${
+                isSelected ? "border-primary bg-muted" : "border-border"
+              }`}
+            >
+              <Icon className="mb-2 h-5 w-5" />
+              <span className="text-xs text-center">{item.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

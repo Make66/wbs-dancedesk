@@ -12,7 +12,6 @@ import { Link } from "react-router";
 import { useDndMonitor } from "@dnd-kit/core";
 import { updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
-import { appIcons, type AppIconName } from "../icons";
 import TargetItemEdit from "./TargetItemEdit";
 import { userStore } from "../../stores/userStore";
 import { updateLocationDB } from "../../data/location";
@@ -36,9 +35,6 @@ const TargetItem = ({ target }: TargetItemProps) => {
 
   const toggleTargetActive = targetStore((state) => state.toggleTargetActive);
   const deleteTarget = targetStore((state) => state.deleteTarget);
-
-  const iconName = formData.icon || target.icon;
-  const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: target.id,
@@ -136,9 +132,9 @@ const TargetItem = ({ target }: TargetItemProps) => {
                 state={{ target: target }}
                 className="flex items-center"
               >
-                {iconName && IconComponent && (
-                  <IconComponent fill={formData.fontColor} width={20} className="-ml-2 mr-3" />
-                )}
+                {
+                  /////ICONS
+                }
                 <span style={{ color: formData.fontColor }}>{formData.name}</span>
               </Link>
             )}
@@ -175,11 +171,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
       </div>
 
       {isEditable && (
-        <TargetItemEdit
-          target={target}
-          formData={formData}
-          setFormData={setFormData}
-        />
+        <TargetItemEdit target={target} formData={formData} setFormData={setFormData} />
       )}
     </div>
   );

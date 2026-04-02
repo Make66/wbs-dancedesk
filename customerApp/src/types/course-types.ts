@@ -88,6 +88,7 @@ export type Category = {
   id: string;
   targetId: string;
   name: string;
+  description?: string;
   icon?: string;
   color: string[];
   fontColor?: string;
@@ -136,6 +137,7 @@ export type CreateCategoryInput = {
   name?: string;
   icon?: string;
   color?: string[];
+  description?: string;
 };
 
 export type UpdateCategoryInput = {
@@ -144,4 +146,5 @@ export type UpdateCategoryInput = {
   color?: string[];
   icon?: string;
   isActive?: boolean;
+  description?: string;
 };
