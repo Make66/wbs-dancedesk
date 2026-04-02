@@ -1,15 +1,7 @@
-import type { UpdateTargetInput } from "../types/course-types";
+import type { CreateTargetInput, UpdateTargetInput } from "../types/course-types";
 
-type CreateTargetPayload = {
-  name: string;
-  color: string[];
-  active?: boolean;
-  seq?: number;
-  locationId: string;
-  icon?: string;
-};
-
-export const createTargetDB = async (data: CreateTargetPayload) => {
+export const createTargetDB = async (data: CreateTargetInput) => {
+  console.log("createTargetDB payload", data);
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets`, {
     method: "POST",
     headers: {

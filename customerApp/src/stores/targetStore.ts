@@ -242,7 +242,7 @@ export const targetStore = create<TargetStore>()(
             color: input.color || ["#ff0000", "#ffffff"],
             icon: input.icon || "",
             active: true,
-            setSeqCategory: [],
+            setSeqCategory: input.setSeqCategory || [],
             locationId,
             tenantId: input.tenantId || "seed",
             createdAt: new Date().toISOString(),

@@ -68,8 +68,10 @@ const TargetsPage = () => {
               if (selectedLocationId) {
                 addTarget({
                   name: "Neue Zielgruppe",
-                  color: ["#DDDDDD", "#000000"],
                   locationId: selectedLocationId,
+                  tenantId: "seed",
+                  color: ["#ff0000", "#ffffff"],
+                  setSeqCategory: [],
                 });
               }
             }}

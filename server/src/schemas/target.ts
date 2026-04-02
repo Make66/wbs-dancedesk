@@ -1,11 +1,10 @@
 import { z } from "zod/v4";
-import { categorySchema } from "./category.ts";
 
 export const targetSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   icon: z.string().optional(),
-  color: z.array(z.string()).optional(),
+  color: z.array(z.string()).optional(), 
   
   locationId: z.uuid('Location ID must be a UUID'),
   setSeqCategory: z.array(z.uuid('Id given is not a valid UUID')).optional(),
