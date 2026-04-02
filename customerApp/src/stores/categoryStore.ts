@@ -17,7 +17,6 @@ import {
   sortByActiveStatus,
   sortEntitiesForContext,
 } from "../lib/courses/sorting-utils";
-import { userStore } from "./userStore";
 
 type CategoryStore = {
   categories: Category[];

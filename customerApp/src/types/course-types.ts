@@ -10,7 +10,6 @@ export type Target = {
   setSeqCategory: string[];
   locationId: string;
   id: string;
-  // tenantId: string;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
@@ -87,7 +86,6 @@ export type UpdateCourseInput = {
 
 export type Category = {
   id: string;
-  tenantId: string;
   targetId: string;
   name: string;
   icon?: string;
@@ -134,7 +132,6 @@ export type CreateTargetInput = {
 };
 
 export type CreateCategoryInput = {
-  tenantId?: string;
   targetId: string;
   active?: boolean;
   name?: string;
@@ -143,7 +140,6 @@ export type CreateCategoryInput = {
 };
 
 export type UpdateCategoryInput = {
-  tenantId?: string;
   targetId?: string;
   name?: string;
   color?: string[];
