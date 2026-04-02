@@ -1,6 +1,7 @@
 import type { Category, CreateCategoryInput, UpdateCategoryInput } from "../types/course-types";
 
 export const createCategoryDB = async (data: CreateCategoryInput): Promise<Category> => {
+  console.log("Creating category with data:", data);
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/categories`, {
     method: "POST",
     headers: {
@@ -17,17 +18,15 @@ export const createCategoryDB = async (data: CreateCategoryInput): Promise<Categ
   return response.json();
 };
 
-export const updateCategoryDB = async (
-  id: string,
-  data: UpdateCategoryInput,
-): Promise<Category> => {
+export const updateCategoryDB = async (data: { id: string; data: UpdateCategoryInput }) => {
   console.log("Updating category with data:", data);
+  const { id, data: updateData } = data;
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/categories/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(updateData),
   });
 
   if (!response.ok) {

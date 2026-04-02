@@ -33,7 +33,7 @@ const DataLoader = () => {
         }
 
         const data = await response.json();
-
+        console.log("Fetched user data:", data);
         setUser(data);
       } catch (error) {
         console.error("Error loading user data:", error);

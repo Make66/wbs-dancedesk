@@ -22,7 +22,6 @@ type TargetItemProps = {
 };
 
 const TargetItem = ({ target }: TargetItemProps) => {
-  const [isEditable, setIsEditable] = useState(false);
   const [formData, setFormData] = useState({
     id: target.id,
     name: target.name ?? "",
@@ -30,6 +29,10 @@ const TargetItem = ({ target }: TargetItemProps) => {
     fontColor: target.color?.[1],
     icon: target.icon ?? "",
   });
+
+  const editingTargetId = targetStore((state) => state.editingTargetId);
+  const setEditingTargetId = targetStore((state) => state.setEditingTargetId);
+  const isEditable = editingTargetId === target.id;
 
   const toggleTargetActive = targetStore((state) => state.toggleTargetActive);
   const deleteTarget = targetStore((state) => state.deleteTarget);
@@ -98,7 +101,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
   useDndMonitor({
     onDragStart(event) {
       if (event.active.id === target.id && isEditable) {
-        setIsEditable(false);
+        setEditingTargetId(null);
       }
     },
   });
@@ -146,7 +149,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
               <button
                 type="button"
                 className="cursor-pointer"
-                onClick={() => setIsEditable(!isEditable)}
+                onClick={() => setEditingTargetId(isEditable ? null : target.id)}
               >
                 <div className="rounded-full bg-transparent p-2">
                   <FaPenNib style={{ color: target.color[1] }} />
@@ -162,7 +165,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
               checked={target.isActive}
               onCheckedChange={(checked) => {
                 handleToggleActive(checked);
-                setIsEditable(false);
+                setEditingTargetId(null);
               }}
               color={target.color[1]}
               color2={target.color[0]}
@@ -176,7 +179,6 @@ const TargetItem = ({ target }: TargetItemProps) => {
           target={target}
           formData={formData}
           setFormData={setFormData}
-          setIsEditable={setIsEditable}
         />
       )}
     </div>

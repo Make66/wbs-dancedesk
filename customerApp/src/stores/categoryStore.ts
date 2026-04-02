@@ -52,7 +52,7 @@ type CategoryStore = {
   toggleCategoryActive: (id: string, active: boolean) => void;
   reorderCategories: (activeId: string, overId: string) => void;
 
-  addCategory: (input: CreateCategoryInput) => void;
+  addCategory: (input?: Partial<CreateCategoryInput>) => void;
   updateCategory: (id: string, data: UpdateCategoryInput | Category) => void;
   updateCategoryColor: (id: string, color: string[]) => void;
   replaceTemporaryCategory: (tempId: string, createdCategory: Category) => void;
@@ -81,7 +81,7 @@ const getVisibleCoursesForCategory = (
 
   const visibleCourses = isInactiveVisible
     ? notDeletedCourses
-    : notDeletedCourses.filter((course) => courseisActive);
+    : notDeletedCourses.filter((course) => course.isActive);
 
   return sortEntitiesByOrderedIds(visibleCourses, category.setSeqCourse ?? []);
 };
@@ -267,9 +267,9 @@ export const categoryStore = create<CategoryStore>()(
         );
       },
 
-      toggleCategoryActive: (id, active) =>
+      toggleCategoryActive: (id, isActive) =>
         set((state) => {
-          const updatedCategories = updateEntityById(state.categories, id, { active });
+          const updatedCategories = updateEntityById(state.categories, id, { isActive });
 
           if (!state.selectedTargetId) {
             return {
@@ -352,17 +352,17 @@ export const categoryStore = create<CategoryStore>()(
           };
         }),
 
-      addCategory: (input) =>
+      addCategory: (input?: Partial<CreateCategoryInput>) =>
         set((state) => {
-          const targetId = input.targetId || state.selectedTargetId;
+          const targetId = state.selectedTargetId;
           if (!targetId) return state;
 
           const newCategory: Category = {
             id: crypto.randomUUID(),
-            name: input.name?.trim() || "Neue Kategorie",
-            color: [input.color?.[0] || "#d1d5db", input.color?.[1] || "#000000"],
-            icon: input.icon || "",
-            active: true,
+            name: input?.name?.trim() || "Neue Kategorie",
+            color: [input?.color?.[0] || "#d1d5db", input?.color?.[1] || "#000000"],
+            icon: input?.icon || "",
+            isActive: true,
             targetId,
             setSeqCourse: [],
             createdAt: new Date().toISOString(),
@@ -503,15 +503,15 @@ export const categoryStore = create<CategoryStore>()(
         const category = categories.find((item) => item.id === categoryId);
         if (!category) return false;
 
-        return filterNotDeleted(category.courses ?? []).some((course) => !courseisActive);
+        return filterNotDeleted(category.courses ?? []).some((course) => !course.isActive);
       },
 
-      toggleCourseActive: (categoryId, courseId, active) =>
+      toggleCourseActive: (categoryId, courseId, isActive) =>
         set((state) => {
           const nextCategories = state.categories.map((category) => {
             if (category.id !== categoryId) return category;
 
-            const updatedCourses = updateEntityById(category.courses ?? [], courseId, { active });
+            const updatedCourses = updateEntityById(category.courses ?? [], courseId, { isActive });
             const visibleCourses = filterNotDeleted(updatedCourses);
 
             const sortedCourses = sortByActiveStatus(visibleCourses, category.setSeqCourse ?? []);
@@ -538,15 +538,15 @@ export const categoryStore = create<CategoryStore>()(
             const courses = filterNotDeleted(category.courses ?? []);
 
             const activeCourses = sortEntitiesByOrderedIds(
-              courses.filter((course) => courseisActive),
+              courses.filter((course) => course.isActive),
               mergeOrderedIds(
-                courses.filter((course) => courseisActive),
+                courses.filter((course) => course.isActive),
                 category.setSeqCourse ?? [],
               ),
             );
 
             const inactiveCourses = sortEntitiesByOrderedIds(
-              courses.filter((course) => !courseisActive),
+              courses.filter((course) => !course.isActive),
               category.setSeqCourse ?? [],
             );
 
@@ -590,7 +590,7 @@ export const categoryStore = create<CategoryStore>()(
             const newCourse: Course = {
               id: crypto.randomUUID(),
               name: input.name?.trim() || "Neuer Kurs",
-              active: true,
+              isActive: true,
               categoryId,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),

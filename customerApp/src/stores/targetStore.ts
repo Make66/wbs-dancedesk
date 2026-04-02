@@ -12,12 +12,14 @@ import {
   sortEntitiesForContext,
 } from "../lib/courses/sorting-utils";
 import { updateEntityById, getItemsForParent } from "../lib/courses/collection-utils";
+import { DEFAULT_TARGET_COLORS } from "../lib/constants/colors";
 
 type TargetStore = {
   targets: Target[];
   isInactiveVisible: boolean;
   isLoading: boolean;
   error: string | null;
+  editingTargetId: string | null;
 
   toggleInactiveVisibility: () => void;
   setTargets: (targets: Target[]) => void;
@@ -25,11 +27,12 @@ type TargetStore = {
   clearTargets: () => void;
   setLoading: (value: boolean) => void;
   setError: (value: string | null) => void;
+  setEditingTargetId: (id: string | null) => void;
   getVisibleTargets: () => Target[];
   getOrderedTargetIds: () => string[];
   toggleTargetActive: (id: string, active: boolean) => void;
   reorderTargets: (activeId: string, overId: string) => void;
-  addTarget: (input: CreateTargetInput) => void;
+  addTarget: (input?: Partial<CreateTargetInput>) => void;
   deleteTarget: (id: string) => void;
   updateTarget: (id: string, data: UpdateTargetInput) => void;
   updateColor: (id: string, color: string[]) => void;
@@ -46,11 +49,17 @@ export const targetStore = create<TargetStore>()(
       isInactiveVisible: false,
       isLoading: false,
       error: null,
+      editingTargetId: null,
 
       toggleInactiveVisibility: () =>
         set((state) => ({
           isInactiveVisible: !state.isInactiveVisible,
         })),
+
+      setEditingTargetId: (id) =>
+        set({
+          editingTargetId: id,
+        }),
 
       setTargets: (targets) =>
         set((state) => {
@@ -151,7 +160,7 @@ export const targetStore = create<TargetStore>()(
             item.id === id
               ? {
                   ...item,
-                  active,
+                  isActive: active,
                   updatedAt: new Date().toISOString(),
                 }
               : item,
@@ -229,22 +238,21 @@ export const targetStore = create<TargetStore>()(
           };
         }),
 
-      addTarget: (input) =>
+      addTarget: (input?: Partial<CreateTargetInput>) =>
         set((state) => {
           const selectedLocationId = userStore.getState().selectedLocationId;
           if (!selectedLocationId) return state;
 
-          const locationId = input.locationId || selectedLocationId;
+          const locationId = selectedLocationId;
 
           const newTarget: Target = {
             id: crypto.randomUUID(),
-            name: input.name?.trim() || "Neue Zielgruppe",
-            color: input.color || ["#ff0000", "#ffffff"],
-            icon: input.icon || "",
+            name: input?.name?.trim() || "Neue Zielgruppe",
+            color: input?.color || DEFAULT_TARGET_COLORS,
+            icon: input?.icon || "",
             isActive: true,
-            setSeqCategory: input.setSeqCategory || [],
+            setSeqCategory: [],
             locationId,
-            tenantId: input.tenantId || "seed",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             isDeleted: false,
@@ -281,11 +289,13 @@ export const targetStore = create<TargetStore>()(
 
             return {
               targets: reorderedTargets,
+              editingTargetId: newTarget.id,
             };
           }
 
           return {
             targets: nextTargets,
+            editingTargetId: newTarget.id,
           };
         }),
 
@@ -320,9 +330,9 @@ export const targetStore = create<TargetStore>()(
             .user?.locations.find((loc) => loc.id === createdTarget.locationId);
 
           if (selectedLocation) {
-            const nextOrderedIds = (selectedLocation.setSeqTarget ?? []).map((id) =>
-              id === tempId ? createdTarget.id : id,
-            );
+            const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
+            const filteredOrderedIds = storedOrderedIds.filter((id) => id !== tempId);
+            const nextOrderedIds = [createdTarget.id, ...filteredOrderedIds];
 
             userStore
               .getState()

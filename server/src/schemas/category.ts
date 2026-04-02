@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 
 export const categorySchema = z.object({
-  name: z.string().min(1).optional,
+  name: z.string().min(1).optional(),
   description: z.string().optional,
   icon: z.string().optional(),
   color: z.array(z.string()).optional(),
@@ -10,7 +10,7 @@ export const categorySchema = z.object({
   setSeqCourse: z.array(z.uuid('Id given is not a valid UUID')).optional(),
 
   id: z.uuid('Id given is not a valid UUID').optional(),
-  tenantId: z.uuid('Id given is not a valid UUID').optional,
+  tenantId: z.uuid('Id given is not a valid UUID').optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),
 });

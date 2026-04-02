@@ -37,9 +37,9 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   const [formData, setFormData] = useState({
     id: category.id,
     name: category.name ?? "",
-    color: category.color?.[0] ?? "#d1d5db",
-    fontColor: category.color?.[1] ?? "#000000",
+    color: [category.color?.[0] ?? "#d1d5db", category.color?.[1] ?? "#000000"],
     icon: category.icon ?? "",
+    targetId: category.targetId,
   });
 
   const isEditMode = categoryStore((state) => state.isEditMode);
@@ -85,8 +85,8 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
       const newOrderedIds = categoryStore.getState().getOrderedCourseIds(category.id);
 
-      await updateCategoryDB(category.id, {
-        setSeqCourse: newOrderedIds,
+      await updateCategoryDB({
+        id: category.id,
       });
     } catch (error) {
       console.error("Error reordering courses:", error);
@@ -122,7 +122,8 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
       const newOrderedIds = categoryStore.getState().getOrderedCategoryIds();
 
       await Promise.all([
-        updateCategoryDB(category.id, {
+        updateCategoryDB({
+          id: category.id,
           isActive: checked,
         }),
         updateTargetDB(selectedTargetId, {
@@ -145,7 +146,10 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
     }
 
     try {
-      await updateCategoryDB(category.id, { isDeleted: true });
+      await updateCategoryDB({
+        id: category.id,
+        isDeleted: true,
+      });
       deleteCategory(category.id);
       toast.success("Kategorie gelöscht.");
     } catch (error) {

@@ -1,8 +1,8 @@
-import { never, z } from 'zod/v4';
+import { never, z } from "zod/v4";
 
 export const courseDateSchema = z.object({
   date: z.date(),
-  isStart: z.boolean().default(false)
+  isStart: z.boolean().default(false),
 });
 
 export const courseSchema = z.object({
@@ -17,13 +17,13 @@ export const courseSchema = z.object({
   paymentTypes: z.array(z.enum(['cash', 'invoice', 'paypal'])).default([]).optional(),
   contractTypes: z.array(z.enum(['standard', 'trial'])).default([]).optional(),
   options: z.int('options must be a value between 0 and 12').default(0).optional(),
-  seatsCurrent: z.number().default(0).optional(),
-  seatsMax: z.number().default(0).optional(),
+  seatsCurrent: z.number().optional(),
+  seatsMax: z.number().optional(),
 
-  isBookedOut: z.boolean().default(false).optional(),
-  isClub: z.boolean().default(false).optional(),
-  isIgnoreCalendar: z.boolean().default(false).optional(),
-  isTaxFree: z.boolean().default(false).optional(),
+  isBookedOut: z.boolean().optional(),
+  isClub: z.boolean().optional(),
+  isIgnoreCalendar: z.boolean().optional(),
+  isTaxFree: z.boolean().optional(),
 
   categoryId: z.uuid('Id given is not a valid UUID').optional(),
   instructorId: z.uuid('Id given is not a valid UUID').optional(),
@@ -32,14 +32,12 @@ export const courseSchema = z.object({
   textInfoId: z.uuid('Id given is not a valid UUID').optional(),
 
   id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID').optional(),
+  tenantId: z.uuid('Id given is not a valid UUID'),
   isActive: z.boolean().optional(),
-  isDeleted: z.boolean().optional()
+  isDeleted: z.boolean().optional(),
 });
 
-export type Course = z.infer<typeof courseSchema>;
-
-export const CourseOptions = [
+export const courseOptions = [
   { key: 0, option: 'default' },
   { key: 1, option: 'geschlossen' },
   { key: 2, option: 'nur für Herren' },

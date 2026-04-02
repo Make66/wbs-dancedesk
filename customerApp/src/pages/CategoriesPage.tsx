@@ -152,8 +152,7 @@ const CategoriesPage = () => {
             type="button"
             aria-label="Kategorie hinzufügen"
             onClick={() => {
-              if (!targetId) return;
-              addCategory({ targetId });
+              addCategory();
             }}
           >
             <IoMdAddCircleOutline className="cursor-pointer text-xl" />
