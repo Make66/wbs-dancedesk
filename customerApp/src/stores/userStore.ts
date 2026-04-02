@@ -70,6 +70,7 @@ type UserStore = {
   getActiveLocation: () => UserLocation | null;
   getLocations: () => UserLocation[];
   getModules: () => UserModule[];
+  getTenantId: () => string | null;
 };
 
 const filterNotDeleted = <T extends { isDeleted: boolean }>(items: T[]) => {
@@ -191,6 +192,11 @@ export const userStore = create<UserStore>()(
         const { user } = get();
         if (!user) return [];
         return filterActive(filterNotDeleted(user.modules));
+      },
+
+      getTenantId: () => {
+        const { user } = get();
+        return user?.tenantId ?? null;
       },
     }),
     {

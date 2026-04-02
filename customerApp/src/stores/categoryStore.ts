@@ -17,6 +17,7 @@ import {
   sortByActiveStatus,
   sortEntitiesForContext,
 } from "../lib/courses/sorting-utils";
+import { userStore } from "./userStore";
 
 type CategoryStore = {
   categories: Category[];
@@ -52,7 +53,7 @@ type CategoryStore = {
   toggleCategoryActive: (id: string, active: boolean) => void;
   reorderCategories: (activeId: string, overId: string) => void;
 
-  addCategory: (input: CreateCategoryInput) => void;
+  addCategory: (input?: Partial<CreateCategoryInput>) => void;
   updateCategory: (id: string, data: UpdateCategoryInput | Category) => void;
   updateCategoryColor: (id: string, color: string[]) => void;
   replaceTemporaryCategory: (tempId: string, createdCategory: Category) => void;
@@ -352,16 +353,16 @@ export const categoryStore = create<CategoryStore>()(
           };
         }),
 
-      addCategory: (input) =>
+      addCategory: (input?: Partial<CreateCategoryInput>) =>
         set((state) => {
-          const targetId = input.targetId || state.selectedTargetId;
+          const targetId = state.selectedTargetId;
           if (!targetId) return state;
 
           const newCategory: Category = {
             id: crypto.randomUUID(),
-            name: input.name?.trim() || "Neue Kategorie",
-            color: [input.color?.[0] || "#d1d5db", input.color?.[1] || "#000000"],
-            icon: input.icon || "",
+            name: input?.name?.trim() || "Neue Kategorie",
+            color: [input?.color?.[0] || "#d1d5db", input?.color?.[1] || "#000000"],
+            icon: input?.icon || "",
             active: true,
             targetId,
             setSeqCourse: [],

@@ -16,17 +16,15 @@ import { updateLocationDB } from "../data/location";
 import { toast } from "react-toastify";
 
 const TargetsPage = () => {
-  const courseTargets = targetStore((state) => state.targets);
+  const targets = targetStore((state) => state.targets);
   const isInactiveVisible = targetStore((state) => state.isInactiveVisible);
   const toggleInactiveVisibility = targetStore((state) => state.toggleInactiveVisibility);
   const reorderTargets = targetStore((state) => state.reorderTargets);
   const addTarget = targetStore((state) => state.addTarget);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
   const getOrderedTargetIds = targetStore((state) => state.getOrderedTargetIds);
-  const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.active);
-  const visibleTargets = isInactiveVisible
-    ? courseTargets
-    : courseTargets.filter((target) => target.active);
+  const hasInactiveItems = targets.some((target) => !target.active);
+  const visibleTargets = isInactiveVisible ? targets : targets.filter((target) => target.active);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -65,15 +63,7 @@ const TargetsPage = () => {
             type="button"
             className="cursor-pointer"
             onClick={() => {
-              if (selectedLocationId) {
-                addTarget({
-                  name: "Neue Zielgruppe",
-                  locationId: selectedLocationId,
-                  tenantId: "seed",
-                  color: ["#ff0000", "#ffffff"],
-                  setSeqCategory: [],
-                });
-              }
+              addTarget();
             }}
           >
             <IoMdAddCircleOutline className="text-3xl" />

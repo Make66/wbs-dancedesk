@@ -22,13 +22,13 @@ type TargetItemEditProps = {
   target: Target & { isNew?: boolean };
   formData: TargetFormDataType;
   setFormData: React.Dispatch<React.SetStateAction<TargetFormDataType>>;
-  setIsEditable: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: TargetItemEditProps) => {
+const TargetItemEdit = ({ target, formData, setFormData }: TargetItemEditProps) => {
   const updateTarget = targetStore((state) => state.updateTarget);
   const updateColor = targetStore((state) => state.updateColor);
   const updateIcon = targetStore((state) => state.updateIcon);
+  const setEditingTargetId = targetStore((state) => state.setEditingTargetId);
   const replaceTemporaryTarget = targetStore((state) => state.replaceTemporaryTarget);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
 
@@ -55,7 +55,6 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
           icon: formData.icon,
           active: true,
           locationId: locationId,
-          tenantId: "seed",
           setSeqCategory: [],
         });
         replaceTemporaryTarget(target.id, createdTarget);
@@ -71,7 +70,7 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsEditable }: Target
         toast.success("Kursziel erfolgreich aktualisiert!");
       }
 
-      setIsEditable(false);
+      setEditingTargetId(null);
     } catch (error) {
       console.error(error);
       toast.error("Speichern fehlgeschlagen.");
