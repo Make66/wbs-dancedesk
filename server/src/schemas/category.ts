@@ -9,8 +9,6 @@ export const categorySchema = z.object({
   targetId: z.uuid('Id given is not a valid UUID').optional(),
   setSeqCourse: z.array(z.uuid('Id given is not a valid UUID')).optional(),
 
-  id: z.uuid('Id given is not a valid UUID').optional(),
-  tenantId: z.uuid('Id given is not a valid UUID').optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),
 });

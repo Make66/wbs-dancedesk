@@ -31,9 +31,6 @@ export const settingsSchema = z.object({
   legalResources:      z.string().optional(),
   contracts:           z.record(z.string(), z.unknown()).optional(),
   registration:        registrationSettingsSchema,
-
-  id:       z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID').optional(),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

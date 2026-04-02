@@ -2,6 +2,7 @@ model Module {
   name        String  @default("Standard Modul")
   description String? @default("")
   color       String  @default("#B5252B")
+  icon        String? @default("")
 
   // relations
   users User[] @relation("UserModules") // Many-to-many relation with User

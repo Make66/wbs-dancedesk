@@ -10,8 +10,6 @@ export const targetSchema = z.object({
   categories: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   setSeqCategory: z.array(z.uuid('Id given is not a valid UUID')).optional(),
 
-  id: z.uuid('ID must be a UUID'),
-  tenantId: z.uuid('Tenant ID must be a UUID').optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),
 });

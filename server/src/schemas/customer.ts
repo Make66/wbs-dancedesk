@@ -19,8 +19,6 @@ export const customerSchema = z.object({
   longitude: z.number().optional(),
   latitude: z.number().optional(),
   
-  id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID').optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional()
 });

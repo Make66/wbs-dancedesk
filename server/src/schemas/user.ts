@@ -1,5 +1,3 @@
-import { refresh } from '#controllers';
-import { id } from 'zod/locales';
 import { z } from 'zod/v4';
 
 export const userSchema = z.object({
@@ -14,8 +12,6 @@ export const userSchema = z.object({
   locations : z.array(z.string()).default([]).optional(),
   modules: z.array(z.string()).default([]).optional(),
 
-  id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID').optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional()
 });

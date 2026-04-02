@@ -1,4 +1,4 @@
-import { never, z } from "zod/v4";
+import { z } from "zod/v4";
 
 export const courseDateSchema = z.object({
   date: z.date(),
@@ -31,8 +31,6 @@ export const courseSchema = z.object({
   textTermsId: z.uuid('Id given is not a valid UUID').optional(),
   textInfoId: z.uuid('Id given is not a valid UUID').optional(),
 
-  id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID'),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),
 });

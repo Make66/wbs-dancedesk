@@ -10,8 +10,6 @@ export const textSchema = z.object({
   courseInfoId: z.uuid('Id given is not a valid UUID').optional(),
   courseTermsId: z.uuid('Id given is not a valid UUID').optional(),
   
-  id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID').optional(),
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),
 });
