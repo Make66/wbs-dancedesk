@@ -160,7 +160,7 @@ export const targetStore = create<TargetStore>()(
             item.id === id
               ? {
                   ...item,
-                  active,
+                  isActive: active,
                   updatedAt: new Date().toISOString(),
                 }
               : item,

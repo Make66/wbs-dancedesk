@@ -126,7 +126,6 @@ export type CreateTargetInput = {
   color?: string[];
   icon?: string;
   locationId: string;
-  tenantId: string;
   isActive?: boolean;
   setSeqCategory?: string[];
 };
@@ -140,11 +139,9 @@ export type CreateCategoryInput = {
 };
 
 export type UpdateCategoryInput = {
-  targetId?: string;
+  id?: string;
   name?: string;
   color?: string[];
-  isActive?: boolean;
   icon?: string;
-  isDeleted?: boolean;
-  setSeqCourse?: string[];
+  isActive?: boolean;
 };

@@ -53,7 +53,7 @@ const TargetItemEdit = ({ target, formData, setFormData }: TargetItemEditProps) 
           name: formData.name,
           color: [formData.color, formData.fontColor],
           icon: formData.icon,
-          active: true,
+          isActive: true,
           locationId: locationId,
           setSeqCategory: [],
         });

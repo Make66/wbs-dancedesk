@@ -10,9 +10,6 @@ import type { Category } from "../../types/course-types";
 import { ImFont } from "react-icons/im";
 
 type CategoryFormDataType = {
-  id: string;
-  tenantId: string;
-  targetId: string;
   name: string;
   color: string[];
   icon: string;
@@ -64,7 +61,8 @@ const CategoryItemEdit = ({
         replaceTemporaryCategory(category.id, createdCategory);
         toast.success("Kategorie erfolgreich erstellt.");
       } else {
-        const updatedCategory = await updateCategoryDB(category.id, {
+        const updatedCategory = await updateCategoryDB({
+          id: category.id,
           name: formData.name.trim(),
           color: [formData.color[0], formData.color[1]],
           icon: formData.icon,
