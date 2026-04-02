@@ -6,11 +6,11 @@ export const categorySchema = z.object({
   icon: z.string().optional(),
   color: z.array(z.string()).optional(),
   active: z.boolean().default(true),
-  
+
   targetId: z.uuid(),
   setSeqCourse: z.array(z.uuid()).optional(),
 
-  id: z.uuid(),
+  id: z.uuid().optional(),
   tenantId: z.uuid().optional(),
   isDeleted: z.boolean().default(false),
 });

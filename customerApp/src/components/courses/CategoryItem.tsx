@@ -37,9 +37,9 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   const [formData, setFormData] = useState({
     id: category.id,
     name: category.name ?? "",
-    color: category.color?.[0] ?? "#d1d5db",
-    fontColor: category.color?.[1] ?? "#000000",
+    color: [category.color?.[0] ?? "#d1d5db", category.color?.[1] ?? "#000000"],
     icon: category.icon ?? "",
+    targetId: category.targetId,
   });
 
   const isEditMode = categoryStore((state) => state.isEditMode);

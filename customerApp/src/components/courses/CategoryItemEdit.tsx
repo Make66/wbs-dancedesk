@@ -11,9 +11,10 @@ import { ImFont } from "react-icons/im";
 
 type CategoryFormDataType = {
   id: string;
+  tenantId: string;
+  targetId: string;
   name: string;
-  color: string;
-  fontColor: string;
+  color: string[];
   icon: string;
 };
 
@@ -55,9 +56,8 @@ const CategoryItemEdit = ({
         const createdCategory = await createCategoryDB({
           targetId: targetId! ?? "",
           name: formData.name.trim(),
-          color: [formData.color, formData.fontColor],
+          color: [formData.color[0], formData.color[1]],
           icon: formData.icon,
-          active: true,
         });
 
         replaceTemporaryCategory(category.id, createdCategory);
@@ -65,7 +65,7 @@ const CategoryItemEdit = ({
       } else {
         const updatedCategory = await updateCategoryDB(category.id, {
           name: formData.name.trim(),
-          color: [formData.color, formData.fontColor],
+          color: [formData.color[0], formData.color[1]],
           icon: formData.icon,
         });
 
@@ -100,27 +100,24 @@ const CategoryItemEdit = ({
           />
 
           <ColorPicker
-            color={formData.color}
+            color={formData.color[0]}
             onChange={(newColor) => {
-              setFormData((prev) => ({
-                ...prev,
-                color: newColor,
-              }));
-              updateCategoryColor(category.id, [newColor, formData.fontColor]);
+              setFormData((prev) => ({ ...prev, color: [newColor, formData.color[1]] }));
+              updateCategoryColor(category.id, [newColor, formData.color[1]]);
             }}
           >
             <button
               type="button"
               className="h-10 w-10 cursor-pointer rounded-full border shadow"
-              style={{ backgroundColor: formData.color }}
+              style={{ backgroundColor: formData.color[0] }}
               aria-label="Farbe auswählen"
             />
           </ColorPicker>
           <ColorPicker
-            color={formData.fontColor}
+            color={formData.color[1]}
             onChange={(newColor) => {
               setFormData((prev) => ({ ...prev, fontColor: newColor }));
-              updateCategoryColor(category.id, [formData.color, newColor]);
+              updateCategoryColor(category.id, [formData.color[0], newColor]);
             }}
           >
             <button
@@ -129,7 +126,7 @@ const CategoryItemEdit = ({
             >
               <ImFont
                 className="text-2xl"
-                style={{ color: formData.fontColor, stroke: "#000", strokeWidth: "1px" }}
+                style={{ color: formData.color[1], stroke: "#000", strokeWidth: "1px" }}
               />
             </button>
           </ColorPicker>

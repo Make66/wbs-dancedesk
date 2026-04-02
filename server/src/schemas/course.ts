@@ -1,8 +1,8 @@
-import { never, z } from 'zod/v4';
+import { never, z } from "zod/v4";
 
 export const courseDateSchema = z.object({
   date: z.date(),
-  isStart: z.boolean().default(false)
+  isStart: z.boolean().default(false),
 });
 
 export const courseSchema = z.object({
@@ -13,15 +13,15 @@ export const courseSchema = z.object({
   endsAt: z.date().default(new Date()),
   isClub: z.boolean().default(false),
   repeat: z.number().min(1).max(50).optional(),
-  frequency: z.enum(['ongoing', 'daily', 'weekly', 'bi-weekly', 'monthly']).optional(),
+  frequency: z.enum(["ongoing", "daily", "weekly", "bi-weekly", "monthly"]).optional(),
   isIgnoreCalendar: z.boolean().default(false),
   numberOfDates: z.number().default(1),
   dates: z.array(courseDateSchema).default([]),
   seatsCurrent: z.number().default(0),
   seatsMax: z.number().default(0),
-  paymentTypes: z.array(z.enum(['cash', 'invoice', 'paypal'])).default([]),
-  contractTypes: z.array(z.enum(['standard', 'trial'])).default([]),
-  
+  paymentTypes: z.array(z.enum(["cash", "invoice", "paypal"])).default([]),
+  contractTypes: z.array(z.enum(["standard", "trial"])).default([]),
+
   categoryId: z.uuid(),
   instructorId: z.uuid().optional(),
   roomId: z.uuid().optional(),
@@ -30,7 +30,7 @@ export const courseSchema = z.object({
 
   id: z.uuid(),
   tenantId: z.uuid().optional(),
-  isDeleted: z.boolean().default(false)
+  isDeleted: z.boolean().default(false),
 });
 
 courseSchema.partial({
@@ -47,11 +47,10 @@ courseSchema.partial({
   paymentTypes: true,
   contractTypes: true,
 
-  ,
   instructor: true,
   room: true,
   textTerms: true,
   textInfo: true,
 
-  isDeleted: true
+  isDeleted: true,
 });

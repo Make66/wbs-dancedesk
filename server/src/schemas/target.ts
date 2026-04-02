@@ -6,6 +6,7 @@ export const targetSchema = z.object({
   icon: z.string().optional(),
   color: z.array(z.string()).optional(),
   active: z.boolean().optional(),
+  categories: z.array(z.string()).optional(),
 
   locationId: z.uuid("Location ID must be a UUID"),
   setSeqCategory: z.array(z.uuid()).optional(),

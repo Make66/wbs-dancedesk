@@ -1,3 +1,5 @@
+export const DEFAULT_TARGET_COLORS = ["#d6d3d1", "#000000"];
+
 export const COLOR_PALETTE = [
   [
     // Red
@@ -126,20 +128,6 @@ export const COLOR_PALETTE = [
     "#2B0640",
   ],
   [
-    // Fuchsia
-    "#FDF4FF",
-    "#FAE8FF",
-    "#F5D0FE",
-    "#F0ABFC",
-    "#E879F9",
-    "#D946EF",
-    "#C026D3",
-    "#A21CAF",
-    "#86198F",
-    "#701A75",
-    "#581C87",
-  ],
-  [
     // Pink
     "#FDF2F8",
     "#FCE7F3",
@@ -165,6 +153,6 @@ export const COLOR_PALETTE = [
     "#374151",
     "#1F2937",
     "#111827",
-    "#3F3F46",
+    "#000000",
   ],
 ];
