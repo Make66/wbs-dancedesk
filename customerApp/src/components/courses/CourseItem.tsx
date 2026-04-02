@@ -54,7 +54,7 @@ const CourseItem = ({ course }: CourseItemProps) => {
           </div>
           {isEditMode && (
             <Switch
-              checked={course.active}
+              checked={course.isActive}
               onCheckedChange={(checked) => {
                 toggleCourseActive(course.categoryId, course.id, checked);
               }}

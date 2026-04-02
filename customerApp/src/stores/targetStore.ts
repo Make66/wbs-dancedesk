@@ -138,7 +138,7 @@ export const targetStore = create<TargetStore>()(
 
         const targetsVisible = isInactiveVisible
           ? targetsForLocation
-          : targetsForLocation.filter((item) => item.active);
+          : targetsForLocation.filter((item) => item.isActive);
 
         return sortEntitiesByOrderedIds(targetsVisible, storedOrderedIds);
       },
@@ -204,12 +204,12 @@ export const targetStore = create<TargetStore>()(
           const storedOrderedIds = selectedLocation.setSeqTarget ?? [];
 
           const activeTargets = sortEntitiesByOrderedIds(
-            locationTargets.filter((item) => item.active),
+            locationTargets.filter((item) => item.isActive),
             storedOrderedIds,
           );
 
           const inactiveTargets = sortEntitiesByOrderedIds(
-            locationTargets.filter((item) => !item.active),
+            locationTargets.filter((item) => !item.isActive),
             storedOrderedIds,
           );
 
@@ -250,7 +250,7 @@ export const targetStore = create<TargetStore>()(
             name: input?.name?.trim() || "Neue Zielgruppe",
             color: input?.color || DEFAULT_TARGET_COLORS,
             icon: input?.icon || "",
-            active: true,
+            isActive: true,
             setSeqCategory: [],
             locationId,
             createdAt: new Date().toISOString(),

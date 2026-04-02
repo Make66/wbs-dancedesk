@@ -25,3 +25,5 @@ model Location {
   isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 }
+
+const test='';

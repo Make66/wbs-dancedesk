@@ -60,7 +60,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
     const filteredCourses = isInactiveVisible
       ? notDeletedCourses
-      : notDeletedCourses.filter((course) => course.active);
+      : notDeletedCourses.filter((course) => course.isActive);
 
     return sortEntitiesByOrderedIds(filteredCourses, storeCategory.setSeqCourse ?? []);
   }, [storeCategory, isInactiveVisible]);
@@ -97,13 +97,13 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
-    disabled: !isEditMode || !category.active,
+    disabled: !isEditMode || !category.isActive,
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    backgroundColor: category.active ? category.color?.[0] : `${category.color?.[0]}80`,
+    backgroundColor: category.isActive ? category.color?.[0] : `${category.color?.[0]}80`,
   };
 
   const handleToggleActive = async (checked: boolean) => {
@@ -112,7 +112,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
     const prevCategories = structuredClone(categoryStore.getState().categories);
     const prevOrderedIds = [...categoryStore.getState().storedOrderedIds];
-    const prevActive = category.active;
+    const prevActive = category.isActive;
 
     toggleCategoryActive(category.id, checked);
 
@@ -123,7 +123,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
       await Promise.all([
         updateCategoryDB(category.id, {
-          active: checked,
+          isActive: checked,
         }),
         updateTargetDB(selectedTargetId, {
           setSeqCategory: newOrderedIds,
@@ -170,21 +170,21 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
         className={cn("rounded-xl p-4 bg-gray-300", isDragging && "z-20 opacity-60")}
       >
         <div
-          {...(isEditMode && category.active ? attributes : {})}
-          {...(isEditMode && category.active ? listeners : {})}
+          {...(isEditMode && category.isActive ? attributes : {})}
+          {...(isEditMode && category.isActive ? listeners : {})}
           className={cn(
             "flex items-center justify-between",
-            isEditMode && category.active
+            isEditMode && category.isActive
               ? "cursor-pointer touch-none active:cursor-grabbing"
               : "cursor-pointer",
-            !category.active && "opacity-50 cursor-not-allowed",
+            !category.isActive && "opacity-50 cursor-not-allowed",
           )}
           onClick={() => {
             if (!isEditable) toggleCategoryExpanded(category.id);
           }}
         >
           <div className="flex items-center">
-            {isEditMode && category.active && (
+            {isEditMode && category.isActive && (
               <RxHamburgerMenu className="mr-2 inline-block" style={{ color: category.color[1] }} />
             )}
             <h2 className="ml-3 font-semibold" style={{ color: category.color[1] }}>
@@ -195,7 +195,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
           <div className="flex items-center gap-6">
             {isEditMode && (
               <>
-                {category.active ? (
+                {category.isActive ? (
                   <button
                     type="button"
                     onClick={(event) => {
@@ -238,7 +238,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                   <Switch
                     color={category.color[1]}
                     color2={category.color[0]}
-                    checked={category.active}
+                    checked={category.isActive}
                     onCheckedChange={(checked) => {
                       handleToggleActive(checked);
                       setIsEditable(false);

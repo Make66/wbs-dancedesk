@@ -46,7 +46,7 @@ const CategoriesPage = () => {
   const visibleCategories = useMemo(() => {
     return isInactiveVisible
       ? courseCategories
-      : courseCategories.filter((category) => category.active);
+      : courseCategories.filter((category) => categoryisActive);
   }, [courseCategories, isInactiveVisible]);
 
   const target = location.state?.target;

@@ -1,7 +1,7 @@
 type SortableEntity = {
   id: string;
   createdAt: string;
-  active: boolean;
+  isActive: boolean;
 };
 
 type EntityWithId = {
@@ -24,8 +24,8 @@ export const sortEntitiesByOrderedIds = <T extends SortableEntity>(
   const orderMap = new Map(orderedIds.map((id, index) => [id, index]));
 
   return [...items].sort((a, b) => {
-    if (a.active !== b.active) {
-      return a.active ? -1 : 1;
+    if (a.isActive !== b.isActive) {
+      return a.isActive ? -1 : 1;
     }
 
     const aIndex = orderMap.get(a.id);
@@ -79,8 +79,8 @@ export const sortByActiveStatus = <T extends SortableEntity>(
   items: T[],
   orderedIds: string[] = [],
 ) => {
-  const activeItems = items.filter((item) => item.active);
-  const inactiveItems = items.filter((item) => !item.active);
+  const activeItems = items.filter((item) => item.isActive);
+  const inactiveItems = items.filter((item) => !item.isActive);
 
   return [
     ...sortEntitiesByOrderedIds(activeItems, orderedIds),

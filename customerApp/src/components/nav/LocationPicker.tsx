@@ -16,7 +16,7 @@ const LocationPicker = ({ className }: LocationPickerProps) => {
   const locations = useMemo(() => {
     if (!user) return [];
 
-    return [...user.locations].filter((location) => !location.isDeleted && location.active);
+    return [...user.locations].filter((location) => !location.isDeleted && location.isActive);
   }, [user]);
 
   useEffect(() => {

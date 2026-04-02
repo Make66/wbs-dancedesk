@@ -6,7 +6,7 @@ export type Target = {
   name: string;
   icon: string;
   color: string[];
-  active: boolean;
+  isActive: boolean;
   setSeqCategory: string[];
   locationId: string;
   id: string;
@@ -29,7 +29,7 @@ export type SortableEntity = {
 };
 
 export type ActivatableEntity = {
-  active?: boolean;
+  isActive?: boolean;
 };
 
 export type Course = {
@@ -46,7 +46,7 @@ export type Course = {
   contractTypes?: ContractType[];
   price: number;
   duration: number;
-  active: boolean;
+  isActive: boolean;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -80,7 +80,7 @@ export type UpdateCourseInput = {
   contractTypes?: ContractType[];
   price?: number;
   duration?: number;
-  active?: boolean;
+  isActive?: boolean;
   isDeleted?: boolean;
 };
 
@@ -93,7 +93,7 @@ export type Category = {
   fontColor?: string;
   courses: Course[];
   setSeqCourse: string[];
-  active: boolean;
+  isActive: boolean;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -106,7 +106,7 @@ export type TargetDetail = {
   color: string;
   categories: Category[];
   setSeqCategories: string[];
-  active: boolean;
+  isActive: boolean;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -116,7 +116,7 @@ export type UpdateTargetInput = {
   name?: string;
   color?: string[];
   icon?: string;
-  active?: boolean;
+  isActive?: boolean;
   isDeleted?: boolean;
   setSeqCategory?: string[];
 };
@@ -126,14 +126,14 @@ export type CreateTargetInput = {
   color?: string[];
   icon?: string;
   locationId: string;
-  // tenantId?: string;
-  active?: boolean;
+  tenantId: string;
+  isActive?: boolean;
   setSeqCategory?: string[];
 };
 
 export type CreateCategoryInput = {
   targetId: string;
-  active?: boolean;
+  isActive?: boolean;
   name?: string;
   icon?: string;
   color?: string[];
@@ -143,7 +143,7 @@ export type UpdateCategoryInput = {
   targetId?: string;
   name?: string;
   color?: string[];
-  active?: boolean;
+  isActive?: boolean;
   icon?: string;
   isDeleted?: boolean;
   setSeqCourse?: string[];
