@@ -10,7 +10,6 @@ import SidebarMin from "./SidebarMin";
 import LocationPicker from "./LocationPicker";
 import CourseTargetsLoader from "./DataLoader";
 import { userStore } from "../../stores/userStore";
-import { appIcons, type AppIconName } from "../icons";
 import type { CSSProperties } from "react";
 
 const Sidebar = () => {
@@ -65,8 +64,6 @@ const Sidebar = () => {
             </NavLink>
             <div>
               {activeTargets.map((target) => {
-                const iconName = target.icon;
-                const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;
                 return (
                   <Link to={`/courses/${target.id}`} state={{ target: target }} key={target.id}>
                     <div
@@ -79,12 +76,8 @@ const Sidebar = () => {
                       className="pl-6 py-2 rounded-xl text-gray-300 hover:bg-[var(--hover-color-back)] hover:text-[var(--hover-color-text)] cursor-pointer group"
                     >
                       <div className="flex items-center gap-3">
-                        {IconComponent && (
-                          <IconComponent
-                            className="fill-gray-300 group-hover:fill-[var(--hover-color-text)]"
-                            width={16}
-                          />
-                        )}
+                        {/* ///////ICONS */}
+
                         {target.name}
                       </div>
                     </div>

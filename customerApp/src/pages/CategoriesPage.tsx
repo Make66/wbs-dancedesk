@@ -18,7 +18,6 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { useParams } from "react-router";
 import { toast } from "react-toastify";
 import { updateTargetDB } from "../data/target";
-import { appIcons, type AppIconName } from "../components/icons";
 
 const CategoriesPage = () => {
   const { targetId } = useParams();
@@ -46,12 +45,8 @@ const CategoriesPage = () => {
   const visibleCategories = useMemo(() => {
     return isInactiveVisible
       ? courseCategories
-      : courseCategories.filter((category) => categoryisActive);
+      : courseCategories.filter((category) => category.isActive);
   }, [courseCategories, isInactiveVisible]);
-
-  const target = location.state?.target;
-  const iconName = target.icon;
-  const IconComponent = iconName ? appIcons[iconName as AppIconName] : null;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -135,7 +130,9 @@ const CategoriesPage = () => {
     <div className="w-full">
       <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 bg-white pl-6 z-20">
         <div className="flex">
-          {iconName && IconComponent && <IconComponent width={30} className="ml-1 mr-2" />}
+          {
+            /////ICONS
+          }
           <h1 className="text-3xl font-semibold">{location.state?.target.name || ""}</h1>
         </div>
 

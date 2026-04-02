@@ -23,7 +23,7 @@ import { updateCategoryDB } from "../../data/category";
 import { updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
 import CourseItem from "./CourseItem";
-import CategoryItemEdit from "./CategoryItemEdit";
+import CategoryItemModal from "./CategoryItemModal";
 import type { Category as CourseCategoryType } from "../../types/course-types";
 import { sortEntitiesByOrderedIds } from "../../lib/courses/sorting-utils";
 
@@ -34,12 +34,12 @@ type CategoryItemProps = {
 
 const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   const [isEditable, setIsEditable] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    id: category.id,
     name: category.name ?? "",
+    description: category.description ?? "",
     color: [category.color?.[0] ?? "#d1d5db", category.color?.[1] ?? "#000000"],
     icon: category.icon ?? "",
-    targetId: category.targetId,
   });
 
   const isEditMode = categoryStore((state) => state.isEditMode);
@@ -85,8 +85,8 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
       const newOrderedIds = categoryStore.getState().getOrderedCourseIds(category.id);
 
-      await updateCategoryDB({
-        id: category.id,
+      await updateTargetDB(targetId!, {
+        setSeqCategory: newOrderedIds,
       });
     } catch (error) {
       console.error("Error reordering courses:", error);
@@ -124,7 +124,9 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
       await Promise.all([
         updateCategoryDB({
           id: category.id,
-          isActive: checked,
+          data: {
+            isActive: checked,
+          },
         }),
         updateTargetDB(selectedTargetId, {
           setSeqCategory: newOrderedIds,
@@ -148,7 +150,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
     try {
       await updateCategoryDB({
         id: category.id,
-        isDeleted: true,
+        data: {},
       });
       deleteCategory(category.id);
       toast.success("Kategorie gelöscht.");
@@ -167,145 +169,153 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   });
 
   return (
-    <div>
-      <div
-        ref={setNodeRef}
-        style={style}
-        className={cn("rounded-xl p-4 bg-gray-300", isDragging && "z-20 opacity-60")}
-      >
+    <>
+      <div>
         <div
-          {...(isEditMode && category.isActive ? attributes : {})}
-          {...(isEditMode && category.isActive ? listeners : {})}
-          className={cn(
-            "flex items-center justify-between",
-            isEditMode && category.isActive
-              ? "cursor-pointer touch-none active:cursor-grabbing"
-              : "cursor-pointer",
-            !category.isActive && "opacity-50 cursor-not-allowed",
-          )}
-          onClick={() => {
-            if (!isEditable) toggleCategoryExpanded(category.id);
-          }}
+          ref={setNodeRef}
+          style={style}
+          className={cn("rounded-xl p-4 bg-gray-300", isDragging && "z-20 opacity-60")}
         >
-          <div className="flex items-center">
-            {isEditMode && category.isActive && (
-              <RxHamburgerMenu className="mr-2 inline-block" style={{ color: category.color[1] }} />
+          <div
+            {...(isEditMode && category.isActive ? attributes : {})}
+            {...(isEditMode && category.isActive ? listeners : {})}
+            className={cn(
+              "flex items-center justify-between",
+              isEditMode && category.isActive
+                ? "cursor-pointer touch-none active:cursor-grabbing"
+                : "cursor-pointer",
+              !category.isActive && "opacity-50 cursor-not-allowed",
             )}
-            <h2 className="ml-3 font-semibold" style={{ color: category.color[1] }}>
-              {formData.name}
-            </h2>
-          </div>
+            onClick={() => {
+              if (!isEditable) toggleCategoryExpanded(category.id);
+            }}
+          >
+            <div className="flex items-center">
+              {isEditMode && category.isActive && (
+                <RxHamburgerMenu
+                  className="mr-2 inline-block"
+                  style={{ color: category.color[1] }}
+                />
+              )}
+              <h2 className="ml-3 font-semibold" style={{ color: category.color[1] }}>
+                {formData.name}
+              </h2>
+            </div>
 
-          <div className="flex items-center gap-6">
-            {isEditMode && (
-              <>
-                {category.isActive ? (
+            <div className="flex items-center gap-6">
+              {isEditMode && (
+                <>
+                  {category.isActive ? (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setIsModalOpen((prev) => !prev);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <FaPenNib className="text-lg" style={{ color: category.color[1] }} />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleDelete();
+                      }}
+                      className="cursor-pointer text-2xl"
+                    >
+                      <MdDelete />
+                    </button>
+                  )}
+
                   <button
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation();
-                      setIsEditable((prev) => !prev);
+                      setIsEditable(false);
                     }}
                     className="cursor-pointer"
                   >
-                    <FaPenNib className="text-lg" style={{ color: category.color[1] }} />
+                    <IoMdAddCircleOutline
+                      className="text-xl"
+                      style={{ color: category.color[1] }}
+                    />
                   </button>
-                ) : (
-                  <button
-                    type="button"
+
+                  <div
                     onClick={(event) => {
                       event.stopPropagation();
-                      handleDelete();
                     }}
-                    className="cursor-pointer text-2xl"
                   >
-                    <MdDelete />
-                  </button>
-                )}
+                    <Switch
+                      color={category.color[1]}
+                      color2={category.color[0]}
+                      checked={category.isActive}
+                      onCheckedChange={(checked) => {
+                        handleToggleActive(checked);
+                        setIsEditable(false);
+                      }}
+                    />
+                  </div>
+                </>
+              )}
 
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setIsEditable(false);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <IoMdAddCircleOutline className="text-xl" style={{ color: category.color[1] }} />
-                </button>
-
-                <div
-                  onClick={(event) => {
-                    event.stopPropagation();
-                  }}
-                >
-                  <Switch
-                    color={category.color[1]}
-                    color2={category.color[0]}
-                    checked={category.isActive}
-                    onCheckedChange={(checked) => {
-                      handleToggleActive(checked);
-                      setIsEditable(false);
-                    }}
-                  />
-                </div>
-              </>
-            )}
-
-            {isOpened ? (
-              <RiArrowUpSLine
-                className="mr-2 text-xl cursor-pointer"
-                style={{ color: category.color[1] }}
-              />
-            ) : (
-              <RiArrowDownSLine
-                className="mr-2 text-xl cursor-pointer"
-                style={{ color: category.color[1] }}
-              />
-            )}
+              {isOpened ? (
+                <RiArrowUpSLine
+                  className="mr-2 text-xl cursor-pointer"
+                  style={{ color: category.color[1] }}
+                />
+              ) : (
+                <RiArrowDownSLine
+                  className="mr-2 text-xl cursor-pointer"
+                  style={{ color: category.color[1] }}
+                />
+              )}
+            </div>
           </div>
-        </div>
 
-        {isOpened && !isEditable && (
-          <div>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={visibleCourses.map((course) => course.id)}
-                strategy={rectSortingStrategy}
+          {isOpened && !isEditable && (
+            <div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 5xl:grid-cols-6 gap-3">
-                  {visibleCourses.map((course) =>
-                    isEditMode ? (
-                      <CourseItem key={course.id} course={course} />
-                    ) : (
-                      <Link key={course.id} to={`/course/${course.id}`}>
-                        <CourseItem course={course} />
-                      </Link>
-                    ),
-                  )}
-                </div>
-              </SortableContext>
-            </DndContext>
-          </div>
-        )}
+                <SortableContext
+                  items={visibleCourses.map((course) => course.id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="py-4 grid md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 5xl:grid-cols-6 gap-3">
+                    {visibleCourses.map((course) =>
+                      isEditMode ? (
+                        <CourseItem key={course.id} course={course} />
+                      ) : (
+                        <Link key={course.id} to={`/course/${course.id}`}>
+                          <CourseItem course={course} />
+                        </Link>
+                      ),
+                    )}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            </div>
+          )}
+        </div>
       </div>
-
-      {isEditable && (
+      {isModalOpen && (
         <div className="grid grid-cols-1 pt-4 px-8">
-          <CategoryItemEdit
+          <CategoryItemModal
             category={category}
             targetId={targetId}
             formData={formData}
             setFormData={setFormData}
+            setIsModalOpen={setIsModalOpen}
             setIsEditable={setIsEditable}
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 
