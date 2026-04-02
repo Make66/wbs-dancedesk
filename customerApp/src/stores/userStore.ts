@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 export type UserLocation = {
   name: string;
   imageUrl: string;
-  active: boolean;
+  isActive: boolean;
   street: string;
   city: string;
   zipCode: string;
@@ -23,7 +23,7 @@ export type UserLocation = {
 export type UserModule = {
   name: string;
   color: string;
-  active: boolean;
+  isActive: boolean;
   id: string;
   tenantId: string;
   createdAt: string;
@@ -36,7 +36,7 @@ export type User = {
   lastName: string;
   email: string;
   imageUrl: string;
-  active: boolean;
+  isActive: boolean;
   setSeqTarget?: string[];
   setSeqCategory?: unknown;
   setSeqCourse?: unknown;
@@ -76,8 +76,8 @@ const filterNotDeleted = <T extends { isDeleted: boolean }>(items: T[]) => {
   return items.filter((item) => !item.isDeleted);
 };
 
-const filterActive = <T extends { active: boolean }>(items: T[]) => {
-  return items.filter((item) => item.active);
+const filterActive = <T extends { isActive: boolean }>(items: T[]) => {
+  return items.filter((item) => item.isActive);
 };
 
 export const userStore = create<UserStore>()(

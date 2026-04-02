@@ -81,7 +81,7 @@ const getVisibleCoursesForCategory = (
 
   const visibleCourses = isInactiveVisible
     ? notDeletedCourses
-    : notDeletedCourses.filter((course) => course.active);
+    : notDeletedCourses.filter((course) => courseisActive);
 
   return sortEntitiesByOrderedIds(visibleCourses, category.setSeqCourse ?? []);
 };
@@ -236,7 +236,7 @@ export const categoryStore = create<CategoryStore>()(
 
         const visibleCategories = isInactiveVisible
           ? categoriesForTarget
-          : categoriesForTarget.filter((item) => item.active);
+          : categoriesForTarget.filter((item) => item.isActive);
 
         return sortEntitiesByOrderedIds(visibleCategories, storedOrderedIds);
       },
@@ -263,7 +263,7 @@ export const categoryStore = create<CategoryStore>()(
         if (!selectedTargetId) return false;
 
         return getItemsForParent(categories, (item) => item.targetId === selectedTargetId).some(
-          (item) => !item.active,
+          (item) => !item.isActive,
         );
       },
 
@@ -311,15 +311,15 @@ export const categoryStore = create<CategoryStore>()(
           );
 
           const activeCategories = sortEntitiesByOrderedIds(
-            categoriesForTarget.filter((item) => item.active),
+            categoriesForTarget.filter((item) => item.isActive),
             mergeOrderedIds(
-              categoriesForTarget.filter((item) => item.active),
+              categoriesForTarget.filter((item) => item.isActive),
               state.storedOrderedIds,
             ),
           );
 
           const inactiveCategories = sortEntitiesByOrderedIds(
-            categoriesForTarget.filter((item) => !item.active),
+            categoriesForTarget.filter((item) => !item.isActive),
             state.storedOrderedIds,
           );
 
@@ -503,7 +503,7 @@ export const categoryStore = create<CategoryStore>()(
         const category = categories.find((item) => item.id === categoryId);
         if (!category) return false;
 
-        return filterNotDeleted(category.courses ?? []).some((course) => !course.active);
+        return filterNotDeleted(category.courses ?? []).some((course) => !courseisActive);
       },
 
       toggleCourseActive: (categoryId, courseId, active) =>
@@ -538,15 +538,15 @@ export const categoryStore = create<CategoryStore>()(
             const courses = filterNotDeleted(category.courses ?? []);
 
             const activeCourses = sortEntitiesByOrderedIds(
-              courses.filter((course) => course.active),
+              courses.filter((course) => courseisActive),
               mergeOrderedIds(
-                courses.filter((course) => course.active),
+                courses.filter((course) => courseisActive),
                 category.setSeqCourse ?? [],
               ),
             );
 
             const inactiveCourses = sortEntitiesByOrderedIds(
-              courses.filter((course) => !course.active),
+              courses.filter((course) => !courseisActive),
               category.setSeqCourse ?? [],
             );
 

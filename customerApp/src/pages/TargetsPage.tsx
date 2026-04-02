@@ -23,10 +23,10 @@ const TargetsPage = () => {
   const addTarget = targetStore((state) => state.addTarget);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
   const getOrderedTargetIds = targetStore((state) => state.getOrderedTargetIds);
-  const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.active);
+  const hasInactiveItems = courseTargets.some((courseTarget) => !courseTarget.isActive);
   const visibleTargets = isInactiveVisible
     ? courseTargets
-    : courseTargets.filter((target) => target.active);
+    : courseTargets.filter((target) => target.isActive);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

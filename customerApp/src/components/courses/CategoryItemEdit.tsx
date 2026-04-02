@@ -57,7 +57,7 @@ const CategoryItemEdit = ({
           name: formData.name.trim(),
           color: [formData.color, formData.fontColor],
           icon: formData.icon,
-          active: true,
+          isActive: true,
         });
 
         replaceTemporaryCategory(category.id, createdCategory);

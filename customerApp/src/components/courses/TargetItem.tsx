@@ -39,7 +39,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: target.id,
-    disabled: !target.active,
+    disabled: !target.isActive,
   });
 
   const style = {
@@ -52,7 +52,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
     if (!selectedLocationId) return;
 
     const prevOrderedIds = targetStore.getState().getOrderedTargetIds();
-    const prevActive = target.active;
+    const prevActive = target.isActive;
 
     toggleTargetActive(target.id, checked);
 
@@ -63,7 +63,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
 
       await Promise.all([
         updateTargetDB(target.id, {
-          active: checked,
+          isActive: checked,
         }),
         updateLocationDB(selectedLocationId, {
           setSeqTarget: newOrderedIds,
@@ -109,7 +109,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
         ref={setNodeRef}
         style={{
           ...style,
-          backgroundColor: target.active ? target?.color[0] : target.color[0] + "80",
+          backgroundColor: target.isActive ? target?.color[0] : target.color[0] + "80",
         }}
         {...attributes}
         {...listeners}
@@ -117,7 +117,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
           "rounded-2xl p-5",
           isDragging && "z-20 opacity-60",
           "cursor-grab touch-none active:cursor-grabbing",
-          !target.active && "cursor-not-allowed opacity-50",
+          !target.isActive && "cursor-not-allowed opacity-50",
         )}
       >
         <div className="flex items-center justify-between">
@@ -142,7 +142,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
           </div>
 
           <div className="flex items-center gap-7">
-            {target.active ? (
+            {target.isActive ? (
               <button
                 type="button"
                 className="cursor-pointer"
@@ -159,7 +159,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
             )}
             <Switch
               className="cursor-pointer"
-              checked={target.active}
+              checked={target.isActive}
               onCheckedChange={(checked) => {
                 handleToggleActive(checked);
                 setIsEditable(false);

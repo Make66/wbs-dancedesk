@@ -16,7 +16,7 @@ import type { CSSProperties } from "react";
 const Sidebar = () => {
   const isSidebarOpen = userStore((state) => state.isSidebarOpen);
   const targets = targetStore((state) => state.targets);
-  const activeTargets = targets.filter((target) => target.active);
+  const activeTargets = targets.filter((target) => target.isActive);
 
   return (
     <aside
