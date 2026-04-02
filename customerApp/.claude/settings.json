@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/martin/dev/wbs/wbs-dancedesk/server/**)"
+    ],
+    "additionalDirectories": [
+      "/Users/martin/dev/wbs/wbs-dancedesk/server"
+    ]
+  }
+}

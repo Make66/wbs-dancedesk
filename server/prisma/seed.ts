@@ -58,6 +58,20 @@ interface CitiLocation {
 
 // --- helpers ---
 
+function createRotator(arr: string[]) {
+  let i = 0;
+  return {
+    next: () => {
+      const val = arr[i];
+      i = (i + 1) % arr.length;
+      return val;
+    },
+    reset: () => { i = 0; }
+  };
+}
+const colors = ['#DB2777', '#86198F', '#333333', '#D0872E', '#1A7595', '#1F7A55', '#9F0712', '#9f6767', '#800000', '#E7180B', '#16168e', '#98980c', '#5e8b83' ];
+const rotator = createRotator(colors);
+
 function toBool(val: string | number): boolean {
   return Number(val) === 1;
 }
@@ -461,6 +475,7 @@ async function main() {
 
   // 4. targets — one per location × headline
   const targetMap = new Map<string, string>(); // `${citiLocId}:${headline}` → prisma id
+  
   for (const loc of citiData) {
     const locationId = locationMap.get(loc.id);
     if (!locationId) continue;
@@ -473,6 +488,7 @@ async function main() {
           isActive: toBool(zg.is_visible),
           locationId,
           tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
+          color: [rotator.next(), '#fff'],
         },
       });
       targetMap.set(key, target.id);
@@ -482,7 +498,7 @@ async function main() {
   // 5. categories — deduplicated by targetId + headline
   const categoryMap = new Map<string, string>(); // `${targetId}:${headline}` → prisma id
 
-  const uniqueCategories = new Map<string, { name: string; isActive: boolean; targetId: string }>();
+  const uniqueCategories = new Map<string, { name: string; isActive: boolean; targetId: string; color: string[] }>();
   for (const loc of citiData) {
     for (const zg of loc.zielgruppen ?? []) {
       const targetId = targetMap.get(`${loc.id}:${zg.headline}`);
@@ -495,6 +511,7 @@ async function main() {
             name: zs.headline,
             isActive: toBool(zs.is_visible),
             targetId,
+            color: [rotator.next(), '#fff'],
           });
         }
       }

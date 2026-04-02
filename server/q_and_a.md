@@ -150,3 +150,51 @@ In development, if the client (`localhost:3000`) and server (`localhost:8000`) a
 
 The most common culprit in a dev environment is **#4** (missing `credentials: 'include'`) or **#2** (expired token with no refresh logic running).
 
+---
+
+## Why does PATCH /targets/:id return 500 with no error message, and no update in Postman?
+
+### Root cause: `id` and `tenantId` in the Zod body schema
+
+`src/schemas/target.ts` includes:
+```ts
+id: z.uuid('ID must be a UUID').optional(),
+tenantId: z.uuid('Tenant ID must be a UUID').optional(),
+```
+
+When Postman sends a full object with `id` in the body (common when copying a response to test an update), Zod validation passes it through and it ends up spread into Prisma's `data`:
+
+```ts
+// controllers/target.ts:45
+data: { ...req.body, setSeqCategory: sequences }
+```
+
+Prisma rejects updating the primary key `id` → uncaught error → 500.
+
+### Why there's no useful error message in the client
+
+The client throws its own message before reading the body:
+```ts
+throw new Error(`Failed to update target: ${response.status}`);
+```
+The server's `{ message: "..." }` JSON is never read.
+
+### Fix: remove `id` and `tenantId` from `targetSchema`
+
+Both fields arrive through already-validated channels and must not come from the client body:
+
+- **`id`** comes from `req.params.id` (the URL). Existence is validated by the `findFirst` check in the controller (→ 404 if missing).
+- **`tenantId`** comes from `req.user!.tenantId`, set by the `authenticate` middleware from the JWT. Accepting it from the body is also a **security risk** — a malicious client could send a different `tenantId` and override tenant isolation via the `...req.body` spread.
+
+### Secondary issues found
+
+**Zod defaults swallow PATCH values**
+`isActive: z.boolean().default(true)` fires before `.partial()`, so every PATCH sets `isActive=true` and `isDeleted=false` even when those fields are absent from the payload. Use `z.boolean().optional()` in the partial schema instead.
+
+**Broken `.partial()` call in the schema file**
+```ts
+// result is discarded — this call has no effect
+targetSchema.partial({ description: true, ... });
+```
+`.partial()` returns a new schema. The router correctly calls `.partial()` on its own copy, so this doesn't cause the 500, but the export is misleading.
+
