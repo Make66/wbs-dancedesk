@@ -19,8 +19,4 @@ export const registrationSchema = z.object({
   isDeleted: z.boolean().default(false)
 });
 
-registrationSchema.partial({
-  isDeleted: true,
-});
-
 export type Registration = z.infer<typeof registrationSchema>;

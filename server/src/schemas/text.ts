@@ -7,24 +7,13 @@ export const textSchema = z.object({
   text: z.string(),
 
   // relations
-  courseInfoId: z.uuid('Id given is not a valid UUID'),
-  courseTermsId: z.uuid('Id given is not a valid UUID'),
+  courseInfoId: z.uuid('Id given is not a valid UUID').optional(),
+  courseTermsId: z.uuid('Id given is not a valid UUID').optional(),
   
   id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID'),
-  isActive: z.boolean().default(true),
-  isDeleted: z.boolean().default(false)
-});
-
-textSchema.partial({
-  description: true,
-  type: true,
-  text: true,
-  courseInfoId: true,
-  courseTermsId: true,
-  isActive: true,
-  isDeleted: true,
-  tenantId: true
+  tenantId: z.uuid('Id given is not a valid UUID').optional(),
+  isActive: z.boolean().optional(),
+  isDeleted: z.boolean().optional(),
 });
 
 export type Text = z.infer<typeof textSchema>;

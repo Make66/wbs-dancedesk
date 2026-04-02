@@ -6,49 +6,40 @@ export const courseDateSchema = z.object({
 });
 
 export const courseSchema = z.object({
-  name: z.string().min(1),
-  description: z.string(),
-  startsAt: z.date().default(new Date()),
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  startsAt: z.date().default(new Date()).optional(),
   endsAt: z.date().default(new Date()),
-  frequency: z.enum(['ongoing', 'daily', 'weekly', 'biweekly', 'monthly']).default('weekly'),
-  clubRepetition: z.int().min(1).max(50).default(50),
-  courseRepetition: z.int().default(8),
-  dates: z.array(courseDateSchema).default([]),
-  paymentTypes: z.array(z.enum(['cash', 'invoice', 'paypal'])).default([]),
-  contractTypes: z.array(z.enum(['standard', 'trial'])).default([]),
-  options: z.int('options must be a value between 0 and 12').default(0),
-  seatsCurrent: z.number().default(0),
-  seatsMax: z.number().default(0),
-  
-  isBookedOut: z.boolean().default(false),
-  isClub: z.boolean().default(false),
-  isIgnoreCalendar: z.boolean().default(false),
-  isTaxFree: z.boolean().default(false),
-  
-  categoryId: z.uuid('Id given is not a valid UUID'),
-  instructorId: z.uuid('Id given is not a valid UUID'),
-  roomId: z.uuid('Id given is not a valid UUID'),
-  textTermsId: z.uuid('Id given is not a valid UUID'),
-  textInfoId: z.uuid('Id given is not a valid UUID'),
+  frequency: z.enum(['ongoing', 'daily', 'weekly', 'biweekly', 'monthly']).default('weekly').optional(),
+  clubRepetition: z.int().min(1).max(50).default(50).optional(),
+  courseRepetition: z.int().default(8).optional(),
+  dates: z.array(courseDateSchema).default([]).optional(),
+  paymentTypes: z.array(z.enum(['cash', 'invoice', 'paypal'])).default([]).optional(),
+  contractTypes: z.array(z.enum(['standard', 'trial'])).default([]).optional(),
+  options: z.int('options must be a value between 0 and 12').default(0).optional(),
+  seatsCurrent: z.number().default(0).optional(),
+  seatsMax: z.number().default(0).optional(),
+
+  isBookedOut: z.boolean().default(false).optional(),
+  isClub: z.boolean().default(false).optional(),
+  isIgnoreCalendar: z.boolean().default(false).optional(),
+  isTaxFree: z.boolean().default(false).optional(),
+
+  categoryId: z.uuid('Id given is not a valid UUID').optional(),
+  instructorId: z.uuid('Id given is not a valid UUID').optional(),
+  roomId: z.uuid('Id given is not a valid UUID').optional(),
+  textTermsId: z.uuid('Id given is not a valid UUID').optional(),
+  textInfoId: z.uuid('Id given is not a valid UUID').optional(),
 
   id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID'),
-  isActive: z.boolean().default(true),
-  isDeleted: z.boolean().default(false)
+  tenantId: z.uuid('Id given is not a valid UUID').optional(),
+  isActive: z.boolean().optional(),
+  isDeleted: z.boolean().optional()
 });
 
-courseSchema.partial({
-  description: true,
-  instructorId: true,
-  roomId: true,
-  textTermsId: true,
-  textInfoId: true,
-  isActive: true,
-  isDeleted: true,
-  tenantId: true,
-});
+export type Course = z.infer<typeof courseSchema>;
 
-const options = [
+export const CourseOptions = [
   { key: 0, option: 'default' },
   { key: 1, option: 'geschlossen' },
   { key: 2, option: 'nur für Herren' },

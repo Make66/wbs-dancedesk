@@ -17,40 +17,23 @@ registrationSettingsSchema.partial({
 });
 
 export const settingsSchema = z.object({
-  colTitles:           z.record(z.string(), z.unknown()),
-  holidays:            z.array(z.unknown()),
-  schoolHolidays:      z.record(z.string(), z.array(z.unknown())),
-  rebates:             z.record(z.string(), z.unknown()),
-  voucher:             z.record(z.string(), z.unknown()),
-  calendarPast:        z.boolean(),
-  calendarOccurrences: z.number(),
-  calendarLength:      z.number(),
-  formFields:          z.record(z.string(), z.unknown()),
-  domain:              z.string(),
-  federalState:        z.string(),
-  legalResources:      z.string(),
-  contracts:           z.record(z.string(), z.unknown()),
+  colTitles:           z.record(z.string(), z.unknown()).optional,
+  holidays:            z.array(z.unknown()).optional(),
+  schoolHolidays:      z.record(z.string(), z.array(z.unknown())).optional(),
+  rebates:             z.record(z.string(), z.unknown()).optional(),
+  voucher:             z.record(z.string(), z.unknown()).optional(),
+  calendarPast:        z.boolean().optional(),
+  calendarOccurrences: z.number().optional(),
+  calendarLength:      z.number().optional(),
+  formFields:          z.record(z.string(), z.unknown()).optional(),
+  domain:              z.string().optional(),
+  federalState:        z.string().optional(),
+  legalResources:      z.string().optional(),
+  contracts:           z.record(z.string(), z.unknown()).optional(),
   registration:        registrationSettingsSchema,
 
   id:       z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID'),
-});
-
-settingsSchema.partial({
-  colTitles: true,
-  holidays: true,
-  schoolHolidays: true,
-  rebates: true,
-  voucher: true,
-  calendarPast: true,
-  calendarOccurrences: true,
-  calendarLength: true,
-  formFields: true,
-  domain: true,
-  federalState: true,
-  legalResources: true,
-  contracts: true,
-  registration: true
+  tenantId: z.uuid('Id given is not a valid UUID').optional(),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

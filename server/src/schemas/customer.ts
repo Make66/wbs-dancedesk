@@ -1,51 +1,28 @@
 import { z } from 'zod/v4';
 
 export const customerSchema = z.object({
-  name: z.string().min(1),
-  email: z.email(),
-  website: z.string().url(),
+  name: z.string().min(1).optional(),
+  email: z.email().optional(),
+  website: z.string().url().optional(),
   logoUrl: z.string().optional(),
-  primary: z.string().default("#B5252B"),
-  secondary: z.string().default("#858384"),
-  tertiary: z.string().default("#858384"),
-  quaternary: z.string().default("#858384"),
-  active: z.boolean().default(true),
-
+  primary: z.string().default("#B5252B").optional(),
+  secondary: z.string().default("#858384").optional(),
+  tertiary: z.string().default("#858384").optional(),
+  quaternary: z.string().default("#858384").optional(),
+  
   setSeqLocation: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   setSeqInstructor: z.array(z.uuid('Id given is not a valid UUID')).optional(),
-
+  
   street: z.string().optional(),
   city: z.string().optional(),
   zipCode: z.string().optional(),
   longitude: z.number().optional(),
   latitude: z.number().optional(),
-
+  
   id: z.uuid('Id given is not a valid UUID'),
   tenantId: z.uuid('Id given is not a valid UUID').optional(),
-  isDeleted: z.boolean().default(false)
-});
-
-customerSchema.partial({
-  name: true,
-  email: true,
-  website: true,
-  logoUrl: true,
-  primary: true,
-  secondary: true,
-  tertiary: true,
-  quaternary: true,
-  active: true,
-
-  setSeqLocation: true,
-  setSeqInstructor: true,
-
-  street: true,
-  city: true,
-  zipCode: true,
-  longitude: true,
-  latitude: true,
-
-  isDeleted: true
+  isActive: z.boolean().optional(),
+  isDeleted: z.boolean().optional()
 });
 
 export type Customer = z.infer<typeof customerSchema>;

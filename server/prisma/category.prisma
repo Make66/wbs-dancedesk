@@ -5,7 +5,7 @@ model Category {
   color       String[] @default(["#000000", "#FFFFFF"])
 
   // relations
-  setSeqCourse String[] @db.Uuid
+  setSeqCourse String[] @default([])
   target       Target   @relation(fields: [targetId], references: [id])
   targetId     String   @db.Uuid
   courses      Course[]

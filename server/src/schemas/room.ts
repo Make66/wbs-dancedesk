@@ -1,40 +1,23 @@
 import { z } from 'zod/v4';
 
 export const roomSchema = z.object({
-  name: z.string().min(1),
-  description: z.string(),
-  imageUrl: z.string(),
-  capacity: z.number(),
-  
-  courses: z.array(z.uuid('Id given is not a valid UUID')),
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
+  capacity: z.number().optional(),
 
-  street: z.string(),
-  city: z.string(),
-  zipCode: z.string(),
-  longitude: z.number(),
-  latitude: z.number(),
+  courses: z.array(z.uuid('Id given is not a valid UUID')).optional(),
+
+  street: z.string().optional(),
+  city: z.string().optional(),
+  zipCode: z.string().optional(),
+  longitude: z.number().optional(),
+  latitude: z.number().optional(),
 
   id: z.uuid('Id given is not a valid UUID'),
-  tenantId: z.uuid('Id given is not a valid UUID'),
-  isActive: z.boolean().default(true),
-  isDeleted: z.boolean().default(false)
-});
-
-roomSchema.partial({
-  description: true,
-  imageUrl: true,
-  capacity: true,
-  courses: true,
-
-  street: true,
-  city: true,
-  zipCode: true,
-  longitude: true,
-  latitude: true,
-
-  isActive: true,
-  isDeleted: true,
-  tenantId: true
+  tenantId: z.uuid('Id given is not a valid UUID').optional(),
+  isActive: z.boolean().optional(),
+  isDeleted: z.boolean().optional()
 });
 
 export type Room = z.infer<typeof roomSchema>;
