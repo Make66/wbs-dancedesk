@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import WeeklyPlan from "../components/calendar/WeeklyPlan";
 
 const CoursesPage = () => {
   return (
@@ -15,9 +14,7 @@ const CoursesPage = () => {
           RÄUME VERWALTEN
         </Link>
       </div>
-      <div className="p-6 mt-3">
-        <WeeklyPlan />
-      </div>
+      <div className="p-6 mt-3"></div>
     </div>
   );
 };
