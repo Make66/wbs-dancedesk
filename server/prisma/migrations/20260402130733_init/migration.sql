@@ -4,13 +4,13 @@ CREATE TABLE "Category" (
     "description" TEXT DEFAULT '',
     "icon" TEXT NOT NULL DEFAULT '',
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
-    "active" BOOLEAN NOT NULL DEFAULT true,
-    "setSeqCourse" UUID[],
+    "setSeqCourse" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "targetId" UUID NOT NULL,
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
@@ -20,19 +20,21 @@ CREATE TABLE "Category" (
 CREATE TABLE "Course" (
     "name" TEXT DEFAULT 'Grundkurs 1',
     "description" TEXT DEFAULT '',
-    "active" BOOLEAN NOT NULL DEFAULT true,
     "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "isClub" BOOLEAN NOT NULL DEFAULT false,
-    "repeat" INTEGER NOT NULL DEFAULT 0,
     "frequency" TEXT NOT NULL DEFAULT 'weekly',
-    "isIgnoreCalendar" BOOLEAN NOT NULL DEFAULT false,
-    "numberOfDates" INTEGER NOT NULL DEFAULT 1,
+    "clubRepetition" INTEGER NOT NULL DEFAULT 50,
+    "courseRepetition" INTEGER NOT NULL DEFAULT 8,
     "dates" JSONB NOT NULL DEFAULT '[]',
+    "paymentTypes" TEXT[] DEFAULT ARRAY['cash', 'invoice', 'paypal']::TEXT[],
+    "contractTypes" TEXT[] DEFAULT ARRAY['standard', 'trial']::TEXT[],
+    "options" INTEGER NOT NULL DEFAULT 0,
     "seatsCurrent" INTEGER NOT NULL DEFAULT 20,
     "seatsMax" INTEGER NOT NULL DEFAULT 20,
-    "paymentTypes" TEXT[] DEFAULT ARRAY['bar', 'paypal', 'bank']::TEXT[],
-    "contractTypes" TEXT[] DEFAULT ARRAY['standard', 'trial']::TEXT[],
+    "isBookedOut" BOOLEAN NOT NULL DEFAULT false,
+    "isClub" BOOLEAN NOT NULL DEFAULT false,
+    "isIgnoreCalendar" BOOLEAN NOT NULL DEFAULT false,
+    "isTaxFree" BOOLEAN NOT NULL DEFAULT false,
     "categoryId" UUID NOT NULL,
     "instructorId" UUID,
     "roomId" UUID,
@@ -42,6 +44,7 @@ CREATE TABLE "Course" (
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Course_pkey" PRIMARY KEY ("id")
@@ -77,14 +80,15 @@ CREATE TABLE "Customer" (
 -- CreateTable
 CREATE TABLE "Instructor" (
     "name" TEXT DEFAULT 'John Doe Instructor',
+    "description" TEXT DEFAULT '',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
-    "active" BOOLEAN NOT NULL DEFAULT true,
     "skills" TEXT[] DEFAULT ARRAY['Salsa', 'WTP', 'HipHop']::TEXT[],
-    "customerId" UUID,
+    "customerId" UUID NOT NULL,
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Instructor_pkey" PRIMARY KEY ("id")
@@ -93,8 +97,8 @@ CREATE TABLE "Instructor" (
 -- CreateTable
 CREATE TABLE "Location" (
     "name" TEXT DEFAULT 'John Doe Instructor',
+    "description" TEXT DEFAULT '',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
-    "active" BOOLEAN NOT NULL DEFAULT true,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
@@ -106,6 +110,7 @@ CREATE TABLE "Location" (
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Location_pkey" PRIMARY KEY ("id")
@@ -114,12 +119,14 @@ CREATE TABLE "Location" (
 -- CreateTable
 CREATE TABLE "Module" (
     "name" TEXT NOT NULL DEFAULT 'Standard Modul',
+    "description" TEXT DEFAULT '',
     "color" TEXT NOT NULL DEFAULT '#B5252B',
-    "active" BOOLEAN NOT NULL DEFAULT true,
+    "icon" TEXT DEFAULT '',
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Module_pkey" PRIMARY KEY ("id")
@@ -149,9 +156,9 @@ CREATE TABLE "Registration" (
 -- CreateTable
 CREATE TABLE "Room" (
     "name" TEXT DEFAULT 'Room 1',
+    "description" TEXT DEFAULT '',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
     "capacity" INTEGER NOT NULL DEFAULT 20,
-    "active" BOOLEAN NOT NULL DEFAULT true,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
@@ -161,6 +168,7 @@ CREATE TABLE "Room" (
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Room_pkey" PRIMARY KEY ("id")
@@ -196,13 +204,13 @@ CREATE TABLE "Target" (
     "description" TEXT DEFAULT '',
     "icon" TEXT NOT NULL DEFAULT '',
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
-    "active" BOOLEAN NOT NULL DEFAULT true,
     "setSeqCategory" UUID[],
     "locationId" UUID,
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Target_pkey" PRIMARY KEY ("id")
@@ -211,6 +219,7 @@ CREATE TABLE "Target" (
 -- CreateTable
 CREATE TABLE "Text" (
     "name" TEXT DEFAULT 'Erwachsene',
+    "description" TEXT DEFAULT '',
     "type" INTEGER NOT NULL DEFAULT 0,
     "text" TEXT NOT NULL DEFAULT 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     "active" BOOLEAN NOT NULL DEFAULT true,
@@ -230,13 +239,13 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL DEFAULT 'admin@test.de',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
-    "active" BOOLEAN NOT NULL DEFAULT true,
     "refreshToken" TEXT,
     "settings" JSONB DEFAULT '{}',
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -292,7 +301,7 @@ ALTER TABLE "Course" ADD CONSTRAINT "Course_textTermsId_fkey" FOREIGN KEY ("text
 ALTER TABLE "Course" ADD CONSTRAINT "Course_textInfoId_fkey" FOREIGN KEY ("textInfoId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Location" ADD CONSTRAINT "Location_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
