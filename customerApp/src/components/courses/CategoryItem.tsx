@@ -23,7 +23,7 @@ import { updateCategoryDB } from "../../data/category";
 import { updateTargetDB } from "../../data/target";
 import { toast } from "react-toastify";
 import CourseItem from "./CourseItem";
-import CategoryItemModal from "./CategoryItemModal";
+import CategoryItemEdit from "./CategoryItemEdit";
 import type { Category as CourseCategoryType } from "../../types/course-types";
 import { sortEntitiesByOrderedIds } from "../../lib/courses/sorting-utils";
 
@@ -304,16 +304,14 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
         </div>
       </div>
       {isModalOpen && (
-        <div className="grid grid-cols-1 pt-4 px-8">
-          <CategoryItemModal
-            category={category}
-            targetId={targetId}
-            formData={formData}
-            setFormData={setFormData}
-            setIsModalOpen={setIsModalOpen}
-            setIsEditable={setIsEditable}
-          />
-        </div>
+        <CategoryItemEdit
+          category={category}
+          targetId={targetId}
+          formData={formData}
+          setFormData={setFormData}
+          setIsModalOpen={setIsModalOpen}
+          setIsEditable={setIsEditable}
+        />
       )}
     </>
   );

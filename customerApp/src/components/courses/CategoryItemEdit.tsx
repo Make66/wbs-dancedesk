@@ -18,7 +18,7 @@ type CategoryFormDataType = {
   description: string;
 };
 
-type CategoryItemEditModalProps = {
+type CategoryItemEditProps = {
   category: Category & { isNew?: boolean };
   formData: CategoryFormDataType;
   setFormData: React.Dispatch<React.SetStateAction<CategoryFormDataType>>;
@@ -27,14 +27,14 @@ type CategoryItemEditModalProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const CategoryItemEditModal = ({
+const CategoryItemEdit = ({
   category,
   formData,
   setFormData,
   setIsEditable,
   targetId,
   setIsModalOpen,
-}: CategoryItemEditModalProps) => {
+}: CategoryItemEditProps) => {
   const updateCategory = categoryStore((state) => state.updateCategory);
   const updateCategoryIcon = categoryStore((state) => state.updateCategoryIcon);
   const updateCategoryColor = categoryStore((state) => state.updateCategoryColor);
@@ -92,7 +92,7 @@ const CategoryItemEditModal = ({
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/60" onClick={() => setIsModalOpen(false)} />
 
-      <div className="absolute left-1/2 top-1/2 z-[60] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl overflow-visible">
+      <div className="absolute left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-2xl overflow-visible">
         <div className="mb-6 flex items-start justify-between">
           <h3 className="text-2xl font-semibold">
             {category.isNew ? "Neue Kategorie" : "Kategorie bearbeiten"}
@@ -101,7 +101,7 @@ const CategoryItemEditModal = ({
           <button
             type="button"
             onClick={() => setIsModalOpen(false)}
-            className="flex h-9 w-9 items-center justify-center rounded-md transition hover:bg-gray-100"
+            className="cursor-pointer"
             aria-label="Modal schließen"
           >
             <IoIosClose size={30} />
@@ -192,4 +192,4 @@ const CategoryItemEditModal = ({
   );
 };
 
-export default CategoryItemEditModal;
+export default CategoryItemEdit;

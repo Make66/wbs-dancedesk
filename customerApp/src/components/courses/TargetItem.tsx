@@ -15,23 +15,27 @@ import { toast } from "react-toastify";
 import TargetItemEdit from "./TargetItemEdit";
 import { userStore } from "../../stores/userStore";
 import { updateLocationDB } from "../../data/location";
+import { getIconComponent } from "../../lib/constants/icons";
+
+type TargetFormDataType = {
+  name: string;
+  description: string;
+  color: string[];
+  icon: string;
+};
 
 type TargetItemProps = {
   target: Target & { isNew?: boolean };
 };
 
 const TargetItem = ({ target }: TargetItemProps) => {
-  const [formData, setFormData] = useState({
-    id: target.id,
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState<TargetFormDataType>({
     name: target.name ?? "",
-    color: target.color?.[0],
-    fontColor: target.color?.[1],
+    description: target.description ?? "",
+    color: target.color ?? ["#d1d5db", "#000000"],
     icon: target.icon ?? "",
   });
-
-  const editingTargetId = targetStore((state) => state.editingTargetId);
-  const setEditingTargetId = targetStore((state) => state.setEditingTargetId);
-  const isEditable = editingTargetId === target.id;
 
   const toggleTargetActive = targetStore((state) => state.toggleTargetActive);
   const deleteTarget = targetStore((state) => state.deleteTarget);
@@ -96,14 +100,14 @@ const TargetItem = ({ target }: TargetItemProps) => {
 
   useDndMonitor({
     onDragStart(event) {
-      if (event.active.id === target.id && isEditable) {
-        setEditingTargetId(null);
+      if (event.active.id === target.id && isModalOpen) {
+        setIsModalOpen(false);
       }
     },
   });
 
   return (
-    <div className={cn(isDragging && "z-50 opacity-60", "z-0 w-full max-w-200")}>
+    <div className={cn(isDragging && "z-20 opacity-60", "w-full max-w-200")}>
       <div
         ref={setNodeRef}
         style={{
@@ -123,19 +127,38 @@ const TargetItem = ({ target }: TargetItemProps) => {
           <div className="flex items-center gap-5">
             <RxHamburgerMenu style={{ color: target.color[1] }} />
             {target.isNew ? (
-              <span style={{ color: formData.fontColor }}>
-                {formData.name || "Neue Zielgruppe"}
-              </span>
+              <div className="flex items-center gap-3">
+                {formData.icon &&
+                  (() => {
+                    const Icon = getIconComponent(formData.icon);
+                    return <Icon className="text-lg" style={{ color: formData.color[1] }} />;
+                  })()}
+                <span style={{ color: formData.color[1] }}>
+                  {formData.name || "Neue Zielgruppe"}
+                </span>
+              </div>
             ) : (
               <Link
                 to={`/courses/${target.id}`}
                 state={{ target: target }}
-                className="flex items-center"
+                className="flex items-center gap-3"
               >
-                {
-                  /////ICONS
-                }
-                <span style={{ color: formData.fontColor }}>{formData.name}</span>
+                {formData.icon &&
+                  (() => {
+                    const Icon = getIconComponent(formData.icon);
+                    return <Icon className="text-lg" style={{ color: formData.color[1] }} />;
+                  })()}
+                <span style={{ color: formData.color[1] }}>{formData.name}</span>
+                {formData.description && (
+                  <>
+                    <span style={{ color: formData.color[1] }} className="mx-0.5">
+                      -
+                    </span>
+                    <span style={{ color: formData.color[1] }} className="text-xs">
+                      {formData.description}
+                    </span>
+                  </>
+                )}
               </Link>
             )}
           </div>
@@ -145,7 +168,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
               <button
                 type="button"
                 className="cursor-pointer"
-                onClick={() => setEditingTargetId(isEditable ? null : target.id)}
+                onClick={() => setIsModalOpen(!isModalOpen)}
               >
                 <div className="rounded-full bg-transparent p-2">
                   <FaPenNib style={{ color: target.color[1] }} />
@@ -161,7 +184,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
               checked={target.isActive}
               onCheckedChange={(checked) => {
                 handleToggleActive(checked);
-                setEditingTargetId(null);
+                setIsModalOpen(false);
               }}
               color={target.color[1]}
               color2={target.color[0]}
@@ -170,8 +193,13 @@ const TargetItem = ({ target }: TargetItemProps) => {
         </div>
       </div>
 
-      {isEditable && (
-        <TargetItemEdit target={target} formData={formData} setFormData={setFormData} />
+      {isModalOpen && (
+        <TargetItemEdit
+          target={target}
+          formData={formData}
+          setFormData={setFormData}
+          setIsModalOpen={setIsModalOpen}
+        />
       )}
     </div>
   );

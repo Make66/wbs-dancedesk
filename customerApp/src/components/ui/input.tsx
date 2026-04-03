@@ -1,35 +1,72 @@
 import * as React from "react";
-
-import { cn } from "../../lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
+import { cn } from "../../lib/utils";
 
-const inputVariants = cva("w-full h-8 p-7 rounded-lg", {
-  variants: {
-    variant: {
-      default:
-        "border border-gray-300 bg-transparent text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+const inputVariants = cva(
+  [
+    "w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all",
+    "bg-white text-gray-900 placeholder:text-gray-400",
+    "border-gray-200 shadow-sm",
+    "focus:border-gray-400 focus:ring-2 focus:ring-gray-200",
+    "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100",
+    "dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500",
+    "dark:border-zinc-700 dark:focus:border-zinc-500 dark:focus:ring-zinc-800",
+  ].join(" "),
+  {
+    variants: {
+      variant: {
+        default: "",
+        ghost: [
+          "border-transparent bg-gray-50 shadow-none",
+          "focus:border-gray-300 focus:bg-white",
+          "dark:bg-zinc-800 dark:focus:bg-zinc-900 dark:focus:border-zinc-600",
+        ].join(" "),
+      },
+    },
+    defaultVariants: {
+      variant: "default",
     },
   },
-});
+);
+
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
+  VariantProps<typeof inputVariants> & {
+    label?: string;
+    wrapperClassName?: string;
+  };
 
 function Input({
   className,
-  variant = "default",
-  asChild = false,
-  type,
+  wrapperClassName,
+  variant,
+  type = "text",
   label,
+  id,
   ...props
-}: React.ComponentProps<"input"> &
-  VariantProps<typeof inputVariants> & { asChild?: boolean; label?: string }) {
-  const Comp = asChild ? Slot.Root : "input";
+}: InputProps) {
+  const generatedId = React.useId();
+  const inputId = id ?? generatedId;
+
   return (
-    <div className="relative">
-      <span className="text-xs absolute -top-2 left-6 px-1 bg-white text-gray-500">{label}</span>
-      <Comp
+    <div className={cn("relative w-full", wrapperClassName)}>
+      {label && (
+        <label
+          htmlFor={inputId}
+          className={cn(
+            "absolute left-3 top-0 z-10 -translate-y-1/2 rounded-md px-2 text-xs font-medium",
+            "bg-white text-gray-500",
+            "dark:bg-zinc-900 dark:text-zinc-400",
+          )}
+        >
+          {label}
+        </label>
+      )}
+
+      <input
+        id={inputId}
         type={type}
         data-slot="input"
-        className={cn(inputVariants({ variant, className }))}
+        className={cn(inputVariants({ variant }), label && "pt-4", className)}
         {...props}
       />
     </div>
