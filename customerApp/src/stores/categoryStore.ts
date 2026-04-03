@@ -55,6 +55,7 @@ type CategoryStore = {
   addCategory: (input?: Partial<CreateCategoryInput>) => void;
   updateCategory: (id: string, data: UpdateCategoryInput | Category) => void;
   updateCategoryColor: (id: string, color: string[]) => void;
+  updateCategoryIcon: (id: string, icon: string) => void;
   replaceTemporaryCategory: (tempId: string, createdCategory: Category) => void;
   deleteCategory: (id: string) => void;
 
@@ -412,6 +413,11 @@ export const categoryStore = create<CategoryStore>()(
       updateCategoryColor: (id, color) =>
         set((state) => ({
           categories: updateEntityById(state.categories, id, { color }),
+        })),
+
+      updateCategoryIcon: (id, icon) =>
+        set((state) => ({
+          categories: updateEntityById(state.categories, id, { icon }),
         })),
 
       replaceTemporaryCategory: (tempId, createdCategory) =>

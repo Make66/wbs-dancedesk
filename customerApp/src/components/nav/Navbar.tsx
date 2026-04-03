@@ -2,6 +2,7 @@ import { FaEnvelope, FaRegCircleUser } from "react-icons/fa6";
 import { IoSettingsSharp } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Navbar = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -23,6 +24,7 @@ const Navbar = () => {
   return (
     <nav className="h-20 flex items-center px-6 absolute top-0 right-6 z-50">
       <div className="flex items-center gap-7">
+        <ThemeToggle />
         <div className="relative">
           <span className="absolute -top-1.5 -right-2 px-1.5 py-0.5 text-[8px] text-white font-bold bg-red-500 rounded-full">
             1

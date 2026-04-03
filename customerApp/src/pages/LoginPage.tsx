@@ -58,7 +58,7 @@ const LoginPage = () => {
         <div className="flex flex-col gap-5 w-100 p-5 rounded-2xl bg-white">
           <h1 className="text-2xl font-bold">DanceDesk Login</h1>
           <form
-            className="mt-4 flex flex-col gap-3"
+            className="mt-4 flex flex-col gap-6"
             onSubmit={handleSubmit}
             autoComplete="on"
             action="/"
@@ -83,7 +83,7 @@ const LoginPage = () => {
             />
             <Button
               type="submit"
-              className="btn btn-primary self-center w-full mt-3"
+              className="btn btn-primary self-center w-full mt-1"
               size="lg"
               disabled={loading}
             >

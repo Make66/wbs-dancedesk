@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router";
+import { NavLink } from "react-router";
 import { targetStore } from "../../stores/targetStore";
 import { cn } from "../../lib/utils";
 import { LuArrowLeftToLine, LuArrowRightToLine } from "react-icons/lu";
@@ -6,21 +6,24 @@ import { FaChalkboardTeacher } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 import SidebarMin from "./SidebarMin";
 import LocationPicker from "./LocationPicker";
 import CourseTargetsLoader from "./DataLoader";
 import { userStore } from "../../stores/userStore";
-import type { CSSProperties } from "react";
+import SidebarTargetItem from "./SidebarTargetItem";
 
 const Sidebar = () => {
   const isSidebarOpen = userStore((state) => state.isSidebarOpen);
   const targets = targetStore((state) => state.targets);
   const activeTargets = targets.filter((target) => target.isActive);
+  const [isCoursesExpanded, setIsCoursesExpanded] = useState(true);
 
   return (
     <aside
       className={cn(
-        isSidebarOpen ? "min-w-64 px-5" : "w-16 px-2",
+        isSidebarOpen ? "min-w-74 px-5" : "w-16 px-2",
         "h-screen flex flex-col bg-gray-800 transition-all duration-200 overflow-y-scroll scrollbar",
       )}
     >
@@ -48,59 +51,84 @@ const Sidebar = () => {
         <div className="flex flex-col gap-6 mt-6">
           <NavLink
             to="/"
-            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
+            className={({ isActive }) =>
+              cn(
+                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                isActive
+                  ? "bg-gray-700 text-white"
+                  : "hover:bg-gray-700 hover:text-white text-gray-300",
+              )
+            }
           >
-            <MdDashboard className="text-2xl cursor-pointer fill-gray-300" />
-            <span className="text-gray-300">Dashboard</span>
+            <MdDashboard className="text-2xl cursor-pointer fill-current ml-2" />
+            <span>Dashboard</span>
           </NavLink>
           <div className="border-b border-gray-500" />
           <div>
-            <NavLink
-              to="/courses"
-              className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2 mb-3"
-            >
-              <IoSchool className="text-2xl cursor-pointer fill-gray-300" />
-              <span className="text-gray-300">Kurse</span>
-            </NavLink>
-            <div>
-              {activeTargets.map((target) => {
-                return (
-                  <Link to={`/courses/${target.id}`} state={{ target: target }} key={target.id}>
-                    <div
-                      style={
-                        {
-                          "--hover-color-back": target.color[0],
-                          "--hover-color-text": target.color[1],
-                        } as CSSProperties
-                      }
-                      className="pl-6 py-2 rounded-xl text-gray-300 hover:bg-[var(--hover-color-back)] hover:text-[var(--hover-color-text)] cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-3">
-                        {/* ///////ICONS */}
-
-                        {target.name}
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+            <div className="flex items-center justify-between mb-3">
+              <NavLink
+                onClick={() => setIsCoursesExpanded(!isCoursesExpanded)}
+                to="/courses"
+                className={({ isActive }) =>
+                  cn(
+                    "flex-1 flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                    isActive
+                      ? "bg-gray-700 text-white"
+                      : "hover:bg-gray-700 hover:text-white text-gray-300",
+                  )
+                }
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-4 pl-2">
+                    <IoSchool className="text-2xl cursor-pointer fill-current" />
+                    <span>Kurse</span>
+                  </div>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-200 mr-3",
+                      isCoursesExpanded && "rotate-180",
+                    )}
+                  />
+                </div>
+              </NavLink>
             </div>
+            {isCoursesExpanded && (
+              <div>
+                {activeTargets.map((target) => {
+                  return <SidebarTargetItem className="ml-5" key={target.id} target={target} />;
+                })}
+              </div>
+            )}
           </div>
           <div className="border-b border-gray-500" />
           <NavLink
             to="/users"
-            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
+            className={({ isActive }) =>
+              cn(
+                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                isActive
+                  ? "bg-gray-700 text-white"
+                  : "hover:bg-gray-700 hover:text-white text-gray-300",
+              )
+            }
           >
-            <ImUsers className="text-2xl cursor-pointer fill-gray-300" />
-            <span className="text-gray-300">Teilnehmer</span>
+            <ImUsers className="text-2xl cursor-pointer fill-current ml-2" />
+            <span>Teilnehmer</span>
           </NavLink>
           <div className="border-b border-gray-500" />
           <NavLink
             to="/instructors"
-            className="flex gap-3 hover:bg-black hover:text-white rounded-xl py-3 px-2"
+            className={({ isActive }) =>
+              cn(
+                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                isActive
+                  ? "bg-gray-700 text-white"
+                  : "hover:bg-gray-700 hover:text-white text-gray-300",
+              )
+            }
           >
-            <FaChalkboardTeacher className="text-2xl cursor-pointer fill-gray-300" />
-            <span className="text-gray-300">Instruktoren</span>
+            <FaChalkboardTeacher className="text-2xl cursor-pointer fill-current ml-2" />
+            <span>Instruktoren</span>
           </NavLink>
         </div>
       )}

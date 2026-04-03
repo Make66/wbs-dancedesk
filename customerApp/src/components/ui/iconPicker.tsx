@@ -1,38 +1,7 @@
-"use client";
-
-import { useMemo, useState } from "react";
-import { Input } from "./input";
-import {
-  FaBook,
-  FaUser,
-  FaHeart,
-  FaStar,
-  FaShoppingCart,
-  FaHome,
-  FaEnvelope,
-  FaPhone,
-  FaCog,
-  FaCamera,
-} from "react-icons/fa";
-import type { IconType } from "react-icons";
-
-type IconItem = {
-  name: string;
-  icon: IconType;
-};
-
-const ICONS: IconItem[] = [
-  { name: "book", icon: FaBook },
-  { name: "user", icon: FaUser },
-  { name: "heart", icon: FaHeart },
-  { name: "star", icon: FaStar },
-  { name: "shopping-cart", icon: FaShoppingCart },
-  { name: "home", icon: FaHome },
-  { name: "envelope", icon: FaEnvelope },
-  { name: "phone", icon: FaPhone },
-  { name: "settings", icon: FaCog },
-  { name: "camera", icon: FaCamera },
-];
+import { cn } from "../../lib/utils";
+import { FaIcons } from "react-icons/fa";
+import { ICONS } from "../../lib/constants/icons";
+import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
 
 type IconPickerProps = {
   value?: string;
@@ -40,44 +9,45 @@ type IconPickerProps = {
 };
 
 export function IconPicker({ value, onChange }: IconPickerProps) {
-  const [search, setSearch] = useState("");
-
-  const filteredIcons = useMemo(() => {
-    const term = search.toLowerCase().trim();
-
-    if (!term) return ICONS;
-
-    return ICONS.filter((item) => item.name.includes(term));
-  }, [search]);
+  const selectedIcon = ICONS.find((item) => item.name === value);
+  const SelectedIcon = selectedIcon?.icon ?? FaIcons;
 
   return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Icon suchen..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="flex h-11 w-11 bg-transparent cursor-pointer items-center justify-center rounded-md border shadow-sm"
+          aria-label="Textfarbe auswählen"
+        >
+          <SelectedIcon className="text-xl" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-100 p-4">
+        <div className="flex gap-2 overflow-y-auto">
+          {ICONS.map((item) => {
+            const Icon = item.icon;
+            const isSelected = item.name === value;
 
-      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 md:grid-cols-6">
-        {filteredIcons.map((item) => {
-          const Icon = item.icon;
-          const isSelected = value === item.name;
-
-          return (
-            <button
-              key={item.name}
-              type="button"
-              onClick={() => onChange(item.name)}
-              className={`flex h-20 flex-col items-center justify-center rounded-md border p-2 transition hover:bg-muted ${
-                isSelected ? "border-primary bg-muted" : "border-border"
-              }`}
-            >
-              <Icon className="mb-2 h-5 w-5" />
-              <span className="text-xs text-center">{item.name}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
+            return (
+              <button
+                key={item.name}
+                type="button"
+                onClick={() => {
+                  onChange(item.name);
+                }}
+                className={cn(
+                  "relative cursor-pointer flex h-6 w-6 items-center justify-center rounded-xl border transition hover:bg-gray-50",
+                  isSelected && "border-black bg-gray-100",
+                )}
+                title={item.name}
+              >
+                <Icon className="text-lg" />
+              </button>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

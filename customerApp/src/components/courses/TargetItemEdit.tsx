@@ -1,18 +1,20 @@
+import type React from "react";
 import { Input } from "../ui/input";
 import { ColorPicker } from "../ui/colorPicker";
-import { ImFont } from "react-icons/im";
+import { Button } from "../ui/button";
 import { toast } from "react-toastify";
 import { targetStore } from "../../stores/targetStore";
 import { userStore } from "../../stores/userStore";
 import { createTargetDB, updateTargetDB } from "../../data/target";
 import type { Target } from "../../types/course-types";
-import { Button } from "../ui/button";
+import { ImFont } from "react-icons/im";
+import { IoIosClose } from "react-icons/io";
+import { IconPicker } from "../ui/iconPicker";
 
 type TargetFormDataType = {
-  id: string;
   name: string;
-  color: string;
-  fontColor: string;
+  description: string;
+  color: string[];
   icon: string;
 };
 
@@ -20,17 +22,16 @@ type TargetItemEditProps = {
   target: Target & { isNew?: boolean };
   formData: TargetFormDataType;
   setFormData: React.Dispatch<React.SetStateAction<TargetFormDataType>>;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const TargetItemEdit = ({ target, formData, setFormData }: TargetItemEditProps) => {
+const TargetItemEdit = ({ target, formData, setFormData, setIsModalOpen }: TargetItemEditProps) => {
   const updateTarget = targetStore((state) => state.updateTarget);
   const updateColor = targetStore((state) => state.updateColor);
-  // const updateIcon = targetStore((state) => state.updateIcon);
-  const setEditingTargetId = targetStore((state) => state.setEditingTargetId);
   const replaceTemporaryTarget = targetStore((state) => state.replaceTemporaryTarget);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.name.trim()) {
@@ -48,81 +49,134 @@ const TargetItemEdit = ({ target, formData, setFormData }: TargetItemEditProps) 
     try {
       if (target.isNew) {
         const createdTarget = await createTargetDB({
-          name: formData.name,
-          color: [formData.color, formData.fontColor],
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+          color: [formData.color[0], formData.color[1]],
           icon: formData.icon,
           isActive: true,
           locationId: locationId,
           setSeqCategory: [],
         });
+
         replaceTemporaryTarget(target.id, createdTarget);
-        toast.success("Kursziel erfolgreich erstellt!");
+        toast.success("Kursziel erfolgreich erstellt.");
       } else {
         const updatedTarget = await updateTargetDB(target.id, {
-          name: formData.name,
-          color: [formData.color, formData.fontColor],
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+          color: [formData.color[0], formData.color[1]],
           icon: formData.icon,
         });
 
         updateTarget(target.id, updatedTarget);
-        toast.success("Kursziel erfolgreich aktualisiert!");
+        toast.success("Kursziel erfolgreich aktualisiert.");
       }
 
-      setEditingTargetId(null);
+      setIsModalOpen(false);
     } catch (error) {
-      console.error(error);
+      console.error("Error saving target:", error);
       toast.error("Speichern fehlgeschlagen.");
     }
   };
 
   return (
-    <div className="h-28">
-      <form onSubmit={handleSubmit} className="flex items-center justify-between px-5 py-7">
-        <div className="flex items-center gap-6">
-          <input type="hidden" value={formData.id} name="id" />
-          <Input
-            type="text"
-            className="w-100"
-            label="Name"
-            value={formData.name}
-            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-          />
-          <ColorPicker
-            color={formData.color}
-            onChange={(newColor) => {
-              setFormData((prev) => ({ ...prev, color: newColor }));
-              updateColor(target.id, [newColor, formData.fontColor]);
-            }}
+    <div className="fixed inset-0 z-50">
+      <div className="absolute inset-0 bg-black/60" onClick={() => setIsModalOpen(false)} />
+
+      <div className="absolute left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-2xl overflow-visible">
+        <div className="mb-6 flex items-start justify-between">
+          <h3 className="text-2xl font-semibold">
+            {target.isNew ? "Neue Zielgruppe" : "Zielgruppe bearbeiten"}
+          </h3>
+
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(false)}
+            className="cursor-pointer"
+            aria-label="Modal schließen"
           >
-            <button
-              type="button"
-              className="w-10 h-10 rounded-full border shadow cursor-pointer"
-              style={{ backgroundColor: formData.color }}
-            />
-          </ColorPicker>
-          <ColorPicker
-            color={formData.fontColor}
-            onChange={(newColor) => {
-              setFormData((prev) => ({ ...prev, fontColor: newColor }));
-              updateColor(target.id, [formData.color, newColor]);
-            }}
-          >
-            <button
-              type="button"
-              className="w-10 h-10 cursor-pointer flex items-center justify-center"
-            >
-              <ImFont
-                className="text-2xl"
-                style={{ color: formData.fontColor, stroke: "#000", strokeWidth: "1px" }}
-              />
-            </button>
-          </ColorPicker>
-          {/* // ICON PICKER */}
+            <IoIosClose size={30} />
+          </button>
         </div>
-        <Button type="submit" size="lg">
-          Speichern
-        </Button>
-      </form>
+
+        <form onSubmit={handleSubmit} className="w-full">
+          <div className="flex w-full flex-col gap-6">
+            <Input
+              type="text"
+              className="w-full"
+              label="Name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  name: e.target.value,
+                }))
+              }
+            />
+            <Input
+              type="text"
+              className="w-full"
+              label="Beschreibung"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+            />
+
+            <div className="flex w-full items-center justify-between gap-4">
+              <div className="relative flex items-center gap-7 overflow-visible">
+                <ColorPicker
+                  color={formData.color[0]}
+                  onChange={(newColor) => {
+                    setFormData((prev) => ({ ...prev, color: [newColor, formData.color[1]] }));
+                    updateColor(target.id, [newColor, formData.color[1]]);
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="h-10 w-10 cursor-pointer rounded-md border shadow-sm"
+                    style={{ backgroundColor: formData.color[0] }}
+                    aria-label="Hintergrundfarbe auswählen"
+                  />
+                </ColorPicker>
+
+                <ColorPicker
+                  color={formData.color[1]}
+                  onChange={(newColor) => {
+                    setFormData((prev) => ({ ...prev, color: [prev.color[0], newColor] }));
+                    updateColor(target.id, [formData.color[0], newColor]);
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border bg-white shadow-sm"
+                    aria-label="Textfarbe auswählen"
+                  >
+                    <ImFont
+                      className="text-2xl"
+                      style={{ color: formData.color[1], stroke: "#000", strokeWidth: "1px" }}
+                    />
+                  </button>
+                </ColorPicker>
+
+                <IconPicker
+                  value={formData.icon}
+                  onChange={(newIcon) => {
+                    setFormData((prev) => ({ ...prev, icon: newIcon }));
+                  }}
+                />
+              </div>
+
+              <Button type="submit" size="lg">
+                Speichern
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

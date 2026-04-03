@@ -4,6 +4,7 @@ export type ContractType = "one-time" | "subscription" | "trial";
 
 export type Target = {
   name: string;
+  description: string;
   icon: string;
   color: string[];
   isActive: boolean;
@@ -104,6 +105,8 @@ export type Category = {
 export type TargetDetail = {
   id: string;
   name: string;
+  description: string;
+  icon: string;
   color: string;
   categories: Category[];
   setSeqCategories: string[];
@@ -115,6 +118,7 @@ export type TargetDetail = {
 
 export type UpdateTargetInput = {
   name?: string;
+  description?: string;
   color?: string[];
   icon?: string;
   isActive?: boolean;
@@ -124,6 +128,7 @@ export type UpdateTargetInput = {
 
 export type CreateTargetInput = {
   name?: string;
+  description?: string;
   color?: string[];
   icon?: string;
   locationId: string;

@@ -9,6 +9,7 @@ import { createCategoryDB, updateCategoryDB } from "../../data/category";
 import type { Category } from "../../types/course-types";
 import { ImFont } from "react-icons/im";
 import { IoIosClose } from "react-icons/io";
+import { IconPicker } from "../ui/iconPicker";
 
 type CategoryFormDataType = {
   name: string;
@@ -17,7 +18,7 @@ type CategoryFormDataType = {
   description: string;
 };
 
-type CategoryItemEditModalProps = {
+type CategoryItemEditProps = {
   category: Category & { isNew?: boolean };
   formData: CategoryFormDataType;
   setFormData: React.Dispatch<React.SetStateAction<CategoryFormDataType>>;
@@ -26,15 +27,16 @@ type CategoryItemEditModalProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const CategoryItemEditModal = ({
+const CategoryItemEdit = ({
   category,
   formData,
   setFormData,
   setIsEditable,
   targetId,
   setIsModalOpen,
-}: CategoryItemEditModalProps) => {
+}: CategoryItemEditProps) => {
   const updateCategory = categoryStore((state) => state.updateCategory);
+  const updateCategoryIcon = categoryStore((state) => state.updateCategoryIcon);
   const updateCategoryColor = categoryStore((state) => state.updateCategoryColor);
   const replaceTemporaryCategory = categoryStore((state) => state.replaceTemporaryCategory);
   const selectedLocationId = userStore((state) => state.selectedLocationId);
@@ -55,7 +57,7 @@ const CategoryItemEditModal = ({
     try {
       if (category.isNew) {
         const createdCategory = await createCategoryDB({
-          targetId: targetId! ?? "",
+          targetId: targetId ?? "",
           name: formData.name.trim(),
           color: [formData.color[0], formData.color[1]],
           icon: formData.icon,
@@ -79,6 +81,7 @@ const CategoryItemEditModal = ({
       }
 
       setIsEditable(false);
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving category:", error);
       toast.error("Speichern fehlgeschlagen.");
@@ -86,22 +89,30 @@ const CategoryItemEditModal = ({
   };
 
   return (
-    <div
-      className="w-full h-screen fixed top-0 left-0 bg-black/40 z-50"
-      onClick={() => setIsModalOpen(false)}
-    >
-      <div className="absolute rounded-2xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-lg z-50 w-full max-w-md">
-        <div className="flex items-start justify-between mb-6">
-          <h3 className="mb-8 font-semibold text-2xl">
-            {category.isNew ? "Neue Kategorie" : `Kategorie bearbeiten`}
+    <div className="fixed inset-0 z-50">
+      <div className="absolute inset-0 bg-black/60" onClick={() => setIsModalOpen(false)} />
+
+      <div className="absolute left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-2xl overflow-visible">
+        <div className="mb-6 flex items-start justify-between">
+          <h3 className="text-2xl font-semibold">
+            {category.isNew ? "Neue Kategorie" : "Kategorie bearbeiten"}
           </h3>
-          <IoIosClose className="cursor-pointer" size={30} onClick={() => setIsEditable(false)} />
+
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(false)}
+            className="cursor-pointer"
+            aria-label="Modal schließen"
+          >
+            <IoIosClose size={30} />
+          </button>
         </div>
-        <form onSubmit={handleSubmit} className="flex items-center justify-between gap-6">
-          <div className="flex flex-col items-center gap-6">
+
+        <form onSubmit={handleSubmit} className="w-full">
+          <div className="flex w-full flex-col gap-6">
             <Input
               type="text"
-              className="w-100"
+              className="w-full"
               label="Name"
               value={formData.name}
               onChange={(e) =>
@@ -111,9 +122,10 @@ const CategoryItemEditModal = ({
                 }))
               }
             />
+
             <Input
               type="text"
-              className="w-100"
+              className="w-full"
               label="Beschreibung"
               value={formData.description}
               onChange={(e) =>
@@ -123,8 +135,9 @@ const CategoryItemEditModal = ({
                 }))
               }
             />
-            <div className="w-full flex items-center justify-between">
-              <div className="flex gap-6">
+
+            <div className="flex w-full items-center justify-between gap-4">
+              <div className="relative flex items-center gap-4 overflow-visible">
                 <ColorPicker
                   color={formData.color[0]}
                   onChange={(newColor) => {
@@ -134,11 +147,12 @@ const CategoryItemEditModal = ({
                 >
                   <button
                     type="button"
-                    className="h-10 w-10 cursor-pointer rounded-full border shadow"
+                    className="h-10 w-10 cursor-pointer rounded-md border shadow-sm"
                     style={{ backgroundColor: formData.color[0] }}
-                    aria-label="Farbe auswählen"
+                    aria-label="Hintergrundfarbe auswählen"
                   />
                 </ColorPicker>
+
                 <ColorPicker
                   color={formData.color[1]}
                   onChange={(newColor) => {
@@ -148,7 +162,8 @@ const CategoryItemEditModal = ({
                 >
                   <button
                     type="button"
-                    className="w-10 h-10 cursor-pointer flex items-center justify-center"
+                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border bg-white shadow-sm"
+                    aria-label="Textfarbe auswählen"
                   >
                     <ImFont
                       className="text-2xl"
@@ -156,7 +171,16 @@ const CategoryItemEditModal = ({
                     />
                   </button>
                 </ColorPicker>
+
+                <IconPicker
+                  value={formData.icon}
+                  onChange={(newIcon) => {
+                    setFormData((prev) => ({ ...prev, icon: newIcon }));
+                    updateCategoryIcon(category.id, newIcon);
+                  }}
+                />
               </div>
+
               <Button type="submit" size="lg">
                 Speichern
               </Button>
@@ -168,4 +192,4 @@ const CategoryItemEditModal = ({
   );
 };
 
-export default CategoryItemEditModal;
+export default CategoryItemEdit;
