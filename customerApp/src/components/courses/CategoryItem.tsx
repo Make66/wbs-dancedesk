@@ -200,6 +200,16 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
               <h2 className="ml-3 font-semibold" style={{ color: category.color[1] }}>
                 {formData.name}
               </h2>
+              {formData.description && (
+                <>
+                  <span style={{ color: formData.color[1] }} className="mx-2">
+                    -
+                  </span>
+                  <span style={{ color: formData.color[1] }} className="text-xs">
+                    {formData.description}
+                  </span>
+                </>
+              )}
             </div>
 
             <div className="flex items-center gap-6">

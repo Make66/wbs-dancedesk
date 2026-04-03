@@ -141,17 +141,17 @@ const TargetItem = ({ target }: TargetItemProps) => {
               <Link
                 to={`/courses/${target.id}`}
                 state={{ target: target }}
-                className="flex items-center gap-3"
+                className="flex items-center"
               >
                 {formData.icon &&
                   (() => {
                     const Icon = getIconComponent(formData.icon);
-                    return <Icon className="text-lg" style={{ color: formData.color[1] }} />;
+                    return <Icon className="text-lg mr-2" style={{ color: formData.color[1] }} />;
                   })()}
                 <span style={{ color: formData.color[1] }}>{formData.name}</span>
                 {formData.description && (
                   <>
-                    <span style={{ color: formData.color[1] }} className="mx-0.5">
+                    <span style={{ color: formData.color[1] }} className="mx-2">
                       -
                     </span>
                     <span style={{ color: formData.color[1] }} className="text-xs">
