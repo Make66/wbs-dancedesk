@@ -1,66 +1,61 @@
-import { format, getISOWeek } from "date-fns";
-import { de } from "date-fns/locale";
-import { GrPrevious, GrNext } from "react-icons/gr";
 import { ChevronDown, Check } from "lucide-react";
 import { useState } from "react";
-
-export type CalendarView = "day" | "week" | "month";
+import { GrPrevious, GrNext } from "react-icons/gr";
+import type { CalendarHeaderDisplayData, CalendarView } from "../../../types/calendar-types";
+import { calendarStore } from "../../../stores/calendarStore";
 
 type CalendarHeaderProps = {
-  days: Date[];
-  currentView: CalendarView;
-  onPrev: () => void;
-  onNext: () => void;
-  onToday: () => void;
-  onChangeView: (view: CalendarView) => void;
+  displayData: CalendarHeaderDisplayData;
 };
 
 const views: CalendarView[] = ["day", "week", "month"];
 
-export function CalendarHeader({
-  days,
-  currentView,
-  onPrev,
-  onNext,
-  onToday,
-  onChangeView,
-}: CalendarHeaderProps) {
+const viewLabels: Record<CalendarView, string> = {
+  day: "Tag",
+  week: "Woche",
+  month: "Monat",
+};
+
+export function CalendarHeader({ displayData }: CalendarHeaderProps) {
   const [open, setOpen] = useState(false);
 
-  const viewLabels: Record<CalendarView, string> = {
-    day: "Tag",
-    week: "Woche",
-    month: "Monat",
-  };
+  const currentView = calendarStore((state) => state.currentView);
+  const setCurrentView = calendarStore((state) => state.setCurrentView);
+  const goToPrevious = calendarStore((state) => state.goToPrevious);
+  const goToNext = calendarStore((state) => state.goToNext);
+  const goToToday = calendarStore((state) => state.goToToday);
 
   const handleSelectView = (view: CalendarView) => {
-    onChangeView(view);
+    setCurrentView(view);
     setOpen(false);
   };
+
   return (
     <div className="rounded-t-3xl flex gap-4 border-b dark:bg-zinc-800 border-zinc-200 px-6 py-5 md:flex-row md:items-center md:justify-between">
       <div className="flex gap-4 items-center">
         <div className="w-15 h-15 rounded-md border border-zinc-200 flex flex-col items-center justify-center gap-1 shadow-sm">
-          <span className="text-zinc-400 font-semibold text-xs">
-            {format(new Date(), "LLL", { locale: de }).toUpperCase()}
-          </span>
+          <span className="text-zinc-400 font-semibold text-xs">{displayData.todayMonthLabel}</span>
           <span className="text-zinc-900 font-bold text-sm dark:text-zinc-400">
-            {format(new Date(), "dd", { locale: de })}
+            {displayData.todayDayLabel}
           </span>
         </div>
+
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-400">
-              {format(days[0], "MMMM yyyy", { locale: de })}
+              {displayData.monthLabel}
             </h1>
-            <span className="py-1 px-4 rounded-full bg-zinc-800 dark:bg-black text-white dark:text-zinc-400 text-xs">
-              {getISOWeek(days[0])} KW
-            </span>
+
+            {displayData.weekLabel && (
+              <span className="py-1 px-4 rounded-full bg-zinc-800 dark:bg-black text-white dark:text-zinc-400 text-xs">
+                {displayData.weekLabel}
+              </span>
+            )}
           </div>
-          <span className="text-sm text-zinc-500">
-            {format(days[0], "dd. MMMM yyyy - ", { locale: de })}{" "}
-            {format(days[1], "dd. MMMM yyyy", { locale: de })}
-          </span>
+
+          {displayData.rangeLabel && (
+            <span className="text-sm text-zinc-500">{displayData.rangeLabel}</span>
+          )}
         </div>
       </div>
 
@@ -68,7 +63,7 @@ export function CalendarHeader({
         <div className="inline-flex items-center rounded-2xl border border-zinc-200 p-1 shadow-sm cursor-pointer">
           <button
             type="button"
-            onClick={onPrev}
+            onClick={goToPrevious}
             className="rounded-xl px-3 py-2 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900"
           >
             <GrPrevious />
@@ -76,7 +71,7 @@ export function CalendarHeader({
 
           <button
             type="button"
-            onClick={onToday}
+            onClick={goToToday}
             className="rounded-xl px-3 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 dark:text-zinc-400"
           >
             Heute
@@ -84,7 +79,7 @@ export function CalendarHeader({
 
           <button
             type="button"
-            onClick={onNext}
+            onClick={goToNext}
             className="rounded-xl px-3 py-2 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900"
           >
             <GrNext />

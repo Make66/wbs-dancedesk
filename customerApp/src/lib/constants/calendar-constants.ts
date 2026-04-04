@@ -1,11 +1,24 @@
-export const START_HOUR = 8;
-export const END_HOUR = 17;
+import type { CalendarConfig } from "../../types/calendar-types";
 
-export const SLOT_HEIGHT = 20;
+export const DEFAULT_CALENDAR_CONFIG: CalendarConfig = {
+  startHour: 8,
+  endHour: 19,
+  slotHeight: 20,
+  minutesPerSlot: 15,
+};
 
-export const MINUTES_PER_SLOT = 15;
-export const SLOTS_PER_HOUR = 60 / MINUTES_PER_SLOT;
+export function getSlotsPerHour(config: CalendarConfig) {
+  return 60 / config.minutesPerSlot;
+}
 
-export const START_SLOT = START_HOUR * SLOTS_PER_HOUR;
-export const END_SLOT = END_HOUR * SLOTS_PER_HOUR;
-export const VISIBLE_SLOT_COUNT = END_SLOT - START_SLOT;
+export function getStartSlot(config: CalendarConfig) {
+  return config.startHour * getSlotsPerHour(config);
+}
+
+export function getEndSlot(config: CalendarConfig) {
+  return config.endHour * getSlotsPerHour(config);
+}
+
+export function getVisibleSlotCount(config: CalendarConfig) {
+  return getEndSlot(config) - getStartSlot(config);
+}

@@ -1,40 +1,39 @@
 import type {
+  CalendarConfig,
   CalendarEvent,
-  DraftEvent,
   PositionedCalendarEvent,
 } from "../../types/calendar-types";
 import { getMinutesSinceStartOfDay } from "./date-utils";
-import { MINUTES_PER_SLOT, START_HOUR, END_HOUR } from "../constants/calendar-constants";
 
 function eventsOverlap(a: CalendarEvent, b: CalendarEvent) {
   return a.start < b.end && b.start < a.end;
 }
 
-function getVisibleRangeStartMinutes() {
-  return START_HOUR * 60;
+function getVisibleRangeStartMinutes(config: CalendarConfig) {
+  return config.startHour * 60;
 }
 
-function getVisibleRangeEndMinutes() {
-  return END_HOUR * 60;
+function getVisibleRangeEndMinutes(config: CalendarConfig) {
+  return config.endHour * 60;
 }
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-function getTop(start: Date, slotHeight: number) {
-  const visibleStart = getVisibleRangeStartMinutes();
+function getTop(start: Date, slotHeight: number, config: CalendarConfig) {
+  const visibleStart = getVisibleRangeStartMinutes(config);
   const startMinutes = getMinutesSinceStartOfDay(start);
 
   const clampedStart = Math.max(startMinutes, visibleStart);
   const relativeMinutes = clampedStart - visibleStart;
 
-  return (relativeMinutes / MINUTES_PER_SLOT) * slotHeight;
+  return (relativeMinutes / config.minutesPerSlot) * slotHeight;
 }
 
-function getHeight(start: Date, end: Date, slotHeight: number) {
-  const visibleStart = getVisibleRangeStartMinutes();
-  const visibleEnd = getVisibleRangeEndMinutes();
+function getHeight(start: Date, end: Date, slotHeight: number, config: CalendarConfig) {
+  const visibleStart = getVisibleRangeStartMinutes(config);
+  const visibleEnd = getVisibleRangeEndMinutes(config);
 
   const startMinutes = getMinutesSinceStartOfDay(start);
   const endMinutes = getMinutesSinceStartOfDay(end);
@@ -44,12 +43,12 @@ function getHeight(start: Date, end: Date, slotHeight: number) {
 
   const durationMinutes = Math.max(0, clippedEnd - clippedStart);
 
-  return (durationMinutes / MINUTES_PER_SLOT) * slotHeight;
+  return (durationMinutes / config.minutesPerSlot) * slotHeight;
 }
 
-function isEventVisible(event: CalendarEvent) {
-  const visibleStart = getVisibleRangeStartMinutes();
-  const visibleEnd = getVisibleRangeEndMinutes();
+function isEventVisible(event: CalendarEvent, config: CalendarConfig) {
+  const visibleStart = getVisibleRangeStartMinutes(config);
+  const visibleEnd = getVisibleRangeEndMinutes(config);
 
   const startMinutes = getMinutesSinceStartOfDay(event.start);
   const endMinutes = getMinutesSinceStartOfDay(event.end);
@@ -67,7 +66,7 @@ function groupOverlappingEvents(events: CalendarEvent[]) {
       continue;
     }
 
-    const overlaps = currentGroup.some((e) => eventsOverlap(e, event));
+    const overlaps = currentGroup.some((existingEvent) => eventsOverlap(existingEvent, event));
 
     if (overlaps) {
       currentGroup.push(event);
@@ -111,13 +110,13 @@ function assignColumns(group: CalendarEvent[]) {
 export function getPositionedEvents(
   events: CalendarEvent[],
   slotHeight: number,
+  config: CalendarConfig,
 ): PositionedCalendarEvent[] {
-  const visibleEvents = events.filter(isEventVisible);
+  const visibleEvents = events.filter((event) => isEventVisible(event, config));
+  const sortedEvents = [...visibleEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  const sorted = [...visibleEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
-
-  const groups = groupOverlappingEvents(sorted);
-  const positioned: PositionedCalendarEvent[] = [];
+  const groups = groupOverlappingEvents(sortedEvents);
+  const positionedEvents: PositionedCalendarEvent[] = [];
 
   for (const group of groups) {
     const columns = assignColumns(group);
@@ -125,10 +124,10 @@ export function getPositionedEvents(
 
     columns.forEach((column, columnIndex) => {
       column.forEach((event) => {
-        positioned.push({
+        positionedEvents.push({
           event,
-          top: getTop(event.start, slotHeight),
-          height: getHeight(event.start, event.end, slotHeight),
+          top: getTop(event.start, slotHeight, config),
+          height: getHeight(event.start, event.end, slotHeight, config),
           left: (100 / columnCount) * columnIndex,
           width: 100 / columnCount,
         });
@@ -136,14 +135,5 @@ export function getPositionedEvents(
     });
   }
 
-  return positioned;
-}
-
-export function getDraftEventStyle(draftEvent: DraftEvent, slotHeight: number) {
-  return {
-    top: `${getTop(draftEvent.start, slotHeight)}px`,
-    height: `${getHeight(draftEvent.start, draftEvent.end, slotHeight)}px`,
-    left: "4px",
-    width: "calc(100% - 8px)",
-  };
+  return positionedEvents;
 }
