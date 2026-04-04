@@ -19,21 +19,21 @@ import { getWeekDays } from "../../lib/calendar/date-utils";
 const initialEvents: CalendarEvent[] = [
   {
     id: "1",
-    title: "Design review",
-    start: new Date(2026, 3, 6, 9, 0),
-    end: new Date(2026, 3, 6, 10, 30),
+    title: "HipHop",
+    start: new Date(2026, 3, 4, 7, 30),
+    end: new Date(2026, 3, 4, 8, 30),
   },
   {
     id: "2",
-    title: "Client call",
-    start: new Date(2026, 3, 7, 13, 0),
-    end: new Date(2026, 3, 7, 14, 0),
+    title: "Salsa",
+    start: new Date(2026, 3, 5, 11, 0),
+    end: new Date(2026, 3, 5, 14, 0),
   },
   {
     id: "3",
-    title: "Planning",
-    start: new Date(2026, 3, 9, 11, 30),
-    end: new Date(2026, 3, 9, 13, 0),
+    title: "Paartanz",
+    start: new Date(2026, 3, 4, 11, 30),
+    end: new Date(2026, 3, 4, 13, 0),
   },
 ];
 
@@ -205,7 +205,7 @@ export function WeekCalendar() {
   }
 
   return (
-    <div className="rounded-3xl border bg-white shadow-sm">
+    <div className="rounded-3xl border shadow-sm">
       <CalendarHeader
         days={days}
         currentView={currentView}

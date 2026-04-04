@@ -9,10 +9,10 @@ export function TimeGutter() {
       {HOURS.map((hour) => (
         <div
           key={hour}
-          className="relative border-b px-3"
+          className="relative px-3"
           style={{ height: `${SLOT_HEIGHT * SLOTS_PER_HOUR}px` }}
         >
-          <span className="absolute -top-2 left-3 text-xs text-muted-foreground">
+          <span className="absolute -top-2 right-4 text-xs text-muted-foreground">
             {format(setMinutes(setHours(new Date(), hour), 0), "HH:mm")}
           </span>
         </div>

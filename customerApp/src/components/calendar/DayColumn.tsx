@@ -262,7 +262,7 @@ export function DayColumn({
   }, [day, resizingEvent, resizingEventId, slotHeight, onEventResizeChange, onEventResizeEnd]);
 
   return (
-    <div ref={columnRef} className="relative border-r last:border-r-0">
+    <div ref={columnRef} className="relative border-r border-zinc-200 last:border-r-0">
       {Array.from({ length: TOTAL_SLOTS }, (_, slotIndex) => {
         const slotStart = getSlotStart(day, slotIndex);
         const slotEnd = getSlotEnd(day, slotIndex);
@@ -281,7 +281,7 @@ export function DayColumn({
             className={[
               "relative block w-full text-left select-none",
               isSelected ? "bg-zinc-100" : "bg-transparent",
-              isHourBoundary ? "border-b" : "border-b border-dashed border-zinc-200",
+              isHourBoundary ? "border-t border-zinc-200" : "",
             ].join(" ")}
             style={{ height: `${slotHeight}px` }}
           />

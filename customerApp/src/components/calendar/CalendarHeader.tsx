@@ -38,22 +38,22 @@ export function CalendarHeader({
     setOpen(false);
   };
   return (
-    <div className="rounded-3xl flex gap-4 border-b border-zinc-200 bg-white px-6 py-5 md:flex-row md:items-center md:justify-between">
+    <div className="rounded-t-3xl flex gap-4 border-b dark:bg-zinc-800 border-zinc-200 px-6 py-5 md:flex-row md:items-center md:justify-between">
       <div className="flex gap-4 items-center">
-        <div className="w-15 h-15 rounded-md border border-zinc-300 flex flex-col items-center justify-center gap-1 shadow-sm">
+        <div className="w-15 h-15 rounded-md border border-zinc-200 flex flex-col items-center justify-center gap-1 shadow-sm">
           <span className="text-zinc-400 font-semibold text-xs">
             {format(new Date(), "LLL", { locale: de }).toUpperCase()}
           </span>
-          <span className="text-zinc-900 font-bold text-sm">
+          <span className="text-zinc-900 font-bold text-sm dark:text-zinc-400">
             {format(new Date(), "dd", { locale: de })}
           </span>
         </div>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-semibold tracking-tight text-zinc-950">
+            <h1 className="text-xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-400">
               {format(days[0], "MMMM yyyy", { locale: de })}
             </h1>
-            <span className="py-1 px-4 rounded-full bg-zinc-800 text-white text-xs">
+            <span className="py-1 px-4 rounded-full bg-zinc-800 dark:bg-black text-white dark:text-zinc-400 text-xs">
               {getISOWeek(days[0])} KW
             </span>
           </div>
@@ -65,7 +65,7 @@ export function CalendarHeader({
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="inline-flex items-center rounded-2xl border border-zinc-200 bg-white p-1 shadow-sm">
+        <div className="inline-flex items-center rounded-2xl border border-zinc-200 p-1 shadow-sm cursor-pointer">
           <button
             type="button"
             onClick={onPrev}
@@ -77,7 +77,7 @@ export function CalendarHeader({
           <button
             type="button"
             onClick={onToday}
-            className="rounded-xl px-3 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100"
+            className="rounded-xl px-3 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 dark:text-zinc-400"
           >
             Heute
           </button>

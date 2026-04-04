@@ -7,7 +7,7 @@ type WeekHeaderProps = {
 
 export function WeekHeader({ days }: WeekHeaderProps) {
   return (
-    <div className="grid grid-cols-[80px_repeat(7,minmax(0,1fr))] border-b bg-white">
+    <div className="grid grid-cols-[80px_repeat(7,minmax(0,1fr))] bg-white">
       <div className="border-r px-3 py-4" />
 
       {days.map((day) => {
@@ -18,13 +18,13 @@ export function WeekHeader({ days }: WeekHeaderProps) {
             key={day.toISOString()}
             className="flex items-center justify-center gap-1 border-r px-2 py-3 last:border-r-0"
           >
-            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {format(day, "EEE", { locale: de })}
+            <span className="text-xs tracking-wide text-muted-foreground">
+              {format(day, "	EEE", { locale: de })}
             </span>
 
             <span
               className={[
-                "flex h-6 w-6 items-center justify-center rounded-full text-sm",
+                "flex h-4 w-4 items-center justify-center rounded-full text-xs text-muted-foreground",
                 today ? "bg-black text-white" : "text-foreground",
               ].join(" ")}
             >
