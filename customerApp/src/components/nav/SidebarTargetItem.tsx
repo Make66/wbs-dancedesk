@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
 import type { Target } from "../../types/course-types";
 import { cn } from "../../lib/utils";
-import { getIconComponent } from "../../lib/constants/icons";
+import { getIconComponent } from "../../lib/constants/icon-constants";
 
 type SidebarTargetItemProps = {
   target: Target;

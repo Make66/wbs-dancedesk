@@ -1,5 +1,5 @@
 import { FaEnvelope, FaRegCircleUser } from "react-icons/fa6";
-import { IoSettingsSharp } from "react-icons/io5";
+
 import { toast } from "react-toastify";
 import { useAuth } from "../../context";
 import { ThemeToggle } from "./ThemeToggle";
@@ -31,7 +31,6 @@ const Navbar = () => {
           </span>
           <FaEnvelope className="text-2xl cursor-pointer" />
         </div>
-        <IoSettingsSharp className="text-2xl cursor-pointer" />
         <FaRegCircleUser className="text-2xl cursor-pointer" onClick={handleLogout} />
       </div>
     </nav>

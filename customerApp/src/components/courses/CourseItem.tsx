@@ -6,9 +6,29 @@ import type { Course } from "../../types/course-types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "../../lib/utils";
+import { toast } from "react-toastify";
 
 type CourseItemProps = {
   course: Course;
+};
+
+const updateCourseDB = async (id: string, data: { isActive?: boolean; isDeleted?: boolean }) => {
+  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update course: ${response.status}`);
+  }
+
+  const contentType = response.headers.get("content-type");
+  if (contentType?.includes("application/json")) {
+    return response.json();
+  }
+  return null;
 };
 
 const CourseItem = ({ course }: CourseItemProps) => {
@@ -25,11 +45,33 @@ const CourseItem = ({ course }: CourseItemProps) => {
     transition,
   };
 
+  const handleToggleActive = async (checked: boolean) => {
+    const prevActive = course.isActive;
+
+    toggleCourseActive(course.categoryId, course.id, checked);
+
+    if (course.isNew) return;
+
+    try {
+      await updateCourseDB(course.id, {
+        isActive: checked,
+      });
+    } catch (error) {
+      toggleCourseActive(course.categoryId, course.id, prevActive);
+      toast.error("Status konnte nicht gespeichert werden.");
+      console.error("Error updating course active status:", error);
+    }
+  };
+
   return (
     <div
-      ref={setNodeRef}
+      ref={course.isActive ? setNodeRef : undefined}
       style={style}
-      className={cn("p-4 bg-white rounded-xl shadow h-full flex", isDragging && "opacity-60 z-20")}
+      className={cn(
+        !course.isActive && "opacity-30 cursor-not-allowed",
+        "p-4 bg-white rounded-xl shadow h-full flex",
+        isDragging && "opacity-60 z-20",
+      )}
     >
       {isEditMode && (
         <div className="flex w-6 h-full pt-1 mr-1">
@@ -43,20 +85,20 @@ const CourseItem = ({ course }: CourseItemProps) => {
               event.stopPropagation();
             }}
           >
-            <RxHamburgerMenu className="inline-block" />
+            <RxHamburgerMenu className="inline-block dark:text-black" />
           </button>
         </div>
       )}
       <div className="flex flex-col flex-1">
         <div className="flex items-center justify-between pl-2">
           <div className="flex items-center gap-3">
-            <h3 className="font-semibold line-clamp-1 pr-2">{course.name}</h3>
+            <h3 className="font-semibold line-clamp-1 pr-2 dark:text-black">{course.name}</h3>
           </div>
           {isEditMode && (
             <Switch
               checked={course.isActive}
               onCheckedChange={(checked) => {
-                toggleCourseActive(course.categoryId, course.id, checked);
+                handleToggleActive(checked);
               }}
             />
           )}
