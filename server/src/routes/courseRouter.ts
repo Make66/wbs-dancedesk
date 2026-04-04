@@ -15,6 +15,10 @@ coursesRouter
   .get(authenticate, getWeekCourses);
 
 coursesRouter
+  .route('/week/:number')
+  .get(authenticate, getWeekCourses);
+
+coursesRouter
   .route('/:id/dates')
   .get(authenticate, getCourseDates);
 

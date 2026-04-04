@@ -104,13 +104,58 @@ export const getCourseDates: RequestHandler = async (req, res) => {
   res.json(generateDatesFromCourse(course, settings as SettingsForDates, count));
 };
 
+/** Returns UTC-midnight ms for the Monday of the given ISO year + week (1-based). */
+function getMondayOfISOWeek(year: number, isoWeek: number): number {
+  // Jan 4 of any year is always in ISO week 1
+  const jan4Ms = Date.UTC(year, 0, 4);
+  const jan4Day = new Date(jan4Ms).getUTCDay(); // 0=Sun … 6=Sat
+  const mondayOfWeek1 = jan4Ms - ((jan4Day + 6) % 7) * 86_400_000;
+  return mondayOfWeek1 + (isoWeek - 1) * 7 * 86_400_000;
+}
+
+/** Returns the ISO week-year of a UTC-midnight timestamp. */
+function isoWeekYear(ms: number): number {
+  // The ISO year can differ from the calendar year in early Jan / late Dec.
+  // Week 1 contains Jan 4, so check whether ms belongs to next/prev year's week.
+  const d = new Date(ms);
+  const year = d.getUTCFullYear();
+  // If the ms is in a week that's week 1 of year+1, return year+1, etc.
+  const nearJan1Next = getMondayOfISOWeek(year + 1, 1);
+  if (ms >= nearJan1Next) return year + 1;
+  const nearJan1Curr = getMondayOfISOWeek(year, 1);
+  if (ms < nearJan1Curr) return year - 1;
+  return year;
+}
+
+/**
+ * Compute { weekStart, weekEnd } in UTC-midnight ms.
+ * If numberOfWeek is undefined → current week.
+ * Otherwise: yearsAhead = floor(n / 53), isoWeek = (n % 53) || 53
+ */
+function resolveWeekBounds(numberOfWeek?: number): { weekStart: number; weekEnd: number } {
+  if (numberOfWeek === undefined) {
+    const todayMs   = utcMidnight(new Date());
+    const jsDay     = new Date(todayMs).getUTCDay();
+    const weekStart = todayMs - ((jsDay + 6) % 7) * 86_400_000;
+    return { weekStart, weekEnd: weekStart + 6 * 86_400_000 };
+  }
+  const yearsAhead = Math.floor(numberOfWeek / 53);
+  const isoWeek    = numberOfWeek % 53 || 53;
+  const baseYear   = isoWeekYear(utcMidnight(new Date()));
+  const weekStart  = getMondayOfISOWeek(baseYear + yearsAhead, isoWeek);
+  return { weekStart, weekEnd: weekStart + 6 * 86_400_000 };
+}
+
 export const getWeekCourses: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
 
-  const todayMs  = utcMidnight(new Date());
-  const jsDay    = new Date(todayMs).getUTCDay();           // 0=Sun … 6=Sat
-  const weekStart = todayMs - ((jsDay + 6) % 7) * 86_400_000; // Monday 00:00 UTC
-  const weekEnd   = weekStart + 6 * 86_400_000;               // Sunday 00:00 UTC
+  const rawWeek = req.params.numberOfWeek;
+  const numberOfWeek = rawWeek !== undefined ? parseInt(rawWeek, 10) : undefined;
+  if (numberOfWeek !== undefined && (isNaN(numberOfWeek) || numberOfWeek < 1)) {
+    throw new Error('Invalid week number', { cause: { status: 400 } });
+  }
+
+  const { weekStart, weekEnd } = resolveWeekBounds(numberOfWeek);
 
   const [courses, settings] = await Promise.all([
     prisma.course.findMany({
