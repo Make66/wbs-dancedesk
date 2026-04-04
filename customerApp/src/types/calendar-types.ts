@@ -1,3 +1,5 @@
+export type CalendarView = "day" | "week" | "month";
+
 export type CalendarEvent = {
   id: string;
   title: string;
@@ -23,13 +25,6 @@ export type DragSelection = {
   end: Date;
 };
 
-export type DraftEvent = {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-};
-
 export type DraggedEventState = {
   eventId: string;
   originalStart: Date;
@@ -45,4 +40,47 @@ export type ResizingEventState = {
   originalEnd: Date;
   currentStart: Date;
   currentEnd: Date;
+};
+
+export type CalendarEventDragEndPayload = {
+  eventId: string;
+  originalStart: Date;
+  originalEnd: Date;
+  start: Date;
+  end: Date;
+};
+
+export type CalendarEventResizeEndPayload = {
+  eventId: string;
+  originalStart: Date;
+  originalEnd: Date;
+  start: Date;
+  end: Date;
+};
+
+export type CalendarConfig = {
+  startHour: number;
+  endHour: number;
+  slotHeight: number;
+  minutesPerSlot: number;
+};
+
+export type CalendarHeaderDisplayData = {
+  monthLabel: string;
+  weekLabel?: string;
+  rangeLabel?: string;
+  todayMonthLabel: string;
+  todayDayLabel: string;
+};
+
+export type CalendarDragData = {
+  type: "calendar-event";
+  eventId: string;
+  start: Date;
+  end: Date;
+};
+
+export type CalendarDropData = {
+  type: "day-column";
+  day: Date;
 };
