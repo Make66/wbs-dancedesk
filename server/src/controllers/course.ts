@@ -46,20 +46,13 @@ function formatDate(ms: number): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
 }
 
-export const getCourseDates: RequestHandler = async (req, res) => {
-  const { id } = req.params;
-  const { tenantId } = req.user!;
+type CourseForDates = {
+  startsAt: Date; frequency: string; isClub: boolean;
+  isIgnoreCalendar: boolean; clubRepetition: number; courseRepetition: number;
+};
+type SettingsForDates = { holidays?: unknown; schoolHolidays?: unknown; federalState?: string } | null;
 
-  const [course, settings] = await Promise.all([
-    prisma.course.findFirst({ where: { id, tenantId, isDeleted: false } }),
-    prisma.settings.findUnique({ where: { tenantId } }),
-  ]);
-  if (!course) throw new Error('Course not found', { cause: { status: 404 } });
-
-  const count = course.isClub
-    ? (settings?.calendarOccurrences ?? 0)
-    : course.numberOfDates;
-
+function generateDatesFromCourse(course: CourseForDates, settings: SettingsForDates, count: number): string[] {
   const stateHolsRaw = (() => {
     const s = settings as Record<string, unknown> | null;
     const sh = s?.schoolHolidays;
@@ -72,7 +65,6 @@ export const getCourseDates: RequestHandler = async (req, res) => {
     ? []
     : [...parseHolidays(settings?.holidays), ...parseHolidays(stateHolsRaw)];
 
-  // For club courses: advance from startsAt to the next occurrence on or after today
   const today = utcMidnight(new Date());
   let startMs = utcMidnight(course.startsAt);
   if (course.isClub && startMs < today) {
@@ -83,7 +75,7 @@ export const getCourseDates: RequestHandler = async (req, res) => {
 
   const dates: string[] = [];
   let current = startMs;
-  const maxIterations = count * 10 + 365; // guard against infinite loop when many holidays
+  const maxIterations = count * 10 + 365;
   let iterations = 0;
 
   while (dates.length < count && iterations < maxIterations) {
@@ -92,7 +84,105 @@ export const getCourseDates: RequestHandler = async (req, res) => {
     iterations++;
   }
 
-  res.json(dates);
+  return dates;
+}
+
+export const getCourseDates: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+
+  const [course, settings] = await Promise.all([
+    prisma.course.findFirst({ where: { id, tenantId, isDeleted: false } }),
+    prisma.settings.findUnique({ where: { tenantId } }),
+  ]);
+  if (!course) throw new Error('Course not found', { cause: { status: 404 } });
+
+  const count = course.isClub
+    ? (course.clubRepetition ?? 0)
+    : course.courseRepetition ?? 0;
+
+  res.json(generateDatesFromCourse(course, settings as SettingsForDates, count));
+};
+
+export const getWeekCourses: RequestHandler = async (req, res) => {
+  const { tenantId } = req.user!;
+
+  const todayMs  = utcMidnight(new Date());
+  const jsDay    = new Date(todayMs).getUTCDay();           // 0=Sun … 6=Sat
+  const weekStart = todayMs - ((jsDay + 6) % 7) * 86_400_000; // Monday 00:00 UTC
+  const weekEnd   = weekStart + 6 * 86_400_000;               // Sunday 00:00 UTC
+
+  const [courses, settings] = await Promise.all([
+    prisma.course.findMany({
+      where: { tenantId, isDeleted: false, isActive: true },
+      include: {
+        category: { include: { target: true } },
+        instructor: true,
+        room: true,
+      },
+    }),
+    prisma.settings.findUnique({ where: { tenantId } }),
+  ]);
+
+  const result: Record<number, object[]> = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+
+  for (const course of courses) {
+    const storedMs = (course.dates as { date: string }[] ?? [])
+      .map(d => utcMidnight(new Date(d.date)))
+      .filter(ms => ms >= weekStart && ms <= weekEnd);
+
+    const count = course.isClub ? (course.clubRepetition ?? 50) : (course.courseRepetition ?? 8);
+    const weekMs = storedMs.length
+      ? storedMs
+      : generateDatesFromCourse(course, settings as SettingsForDates, count)
+          .map(s => utcMidnight(new Date(s)))
+          .filter(ms => ms >= weekStart && ms <= weekEnd);
+
+    if (weekMs.length === 0) continue;
+
+    const info = {
+      id:           course.id,
+      name:         course.name,
+      description:  course.description,
+      startsAt:     course.startsAt,
+      endsAt:       course.endsAt,
+      options:      course.options,
+      seatsCurrent: course.seatsCurrent,
+      seatsMax:     course.seatsMax,
+      isBookedOut:  course.isBookedOut,
+      isClub:       course.isClub,
+      color:        (course.category as unknown as { color: string[] }).color,
+      category: {
+        id:    course.category.id,
+        name:  course.category.name,
+        color: (course.category as unknown as { color: string[] }).color,
+      },
+      target: {
+        id:    course.category.target.id,
+        name:  course.category.target.name,
+        color: (course.category.target as unknown as { color: string[] }).color,
+      },
+      instructor: course.instructor
+        ? { id: course.instructor.id, name: course.instructor.name, imageUrl: course.instructor.imageUrl }
+        : null,
+      room: course.room
+        ? { id: course.room.id, name: course.room.name, description: course.room.description }
+        : null,
+    };
+
+    for (const ms of weekMs) {
+      const weekday = (new Date(ms).getUTCDay() + 6) % 7; // 0=Mon … 6=Sun
+      result[weekday]!.push(info);
+    }
+  }
+
+  // sort each bucket by startsAt time-of-day
+  const timeMinutes = (d: Date) => d.getUTCHours() * 60 + d.getUTCMinutes();
+  for (const bucket of Object.values(result)) {
+    (bucket as { startsAt: Date }[]).sort((a, b) => timeMinutes(a.startsAt) - timeMinutes(b.startsAt));
+  }
+
+  res.json(result);
 };
 
 function mapCourseBody(body: Record<string, unknown>) {
