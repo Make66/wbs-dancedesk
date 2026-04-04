@@ -26,6 +26,7 @@ import CourseItem from "./CourseItem";
 import CategoryItemEdit from "./CategoryItemEdit";
 import type { Category as CourseCategoryType } from "../../types/course-types";
 import { sortEntitiesByOrderedIds } from "../../lib/courses/sorting-utils";
+import ConfirmationModal from "../ui/confirmationModal";
 
 type CategoryItemProps = {
   category: CourseCategoryType & { isNew?: boolean };
@@ -35,6 +36,8 @@ type CategoryItemProps = {
 const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   const [isEditable, setIsEditable] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: category.name ?? "",
     description: category.description ?? "",
@@ -142,21 +145,25 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
   };
 
   const handleDelete = async () => {
-    if (category.isNew) {
-      deleteCategory(category.id);
-      return;
-    }
-
+    setIsDeleting(true);
     try {
-      await updateCategoryDB({
-        id: category.id,
-        data: {},
-      });
-      deleteCategory(category.id);
-      toast.success("Kategorie gelöscht.");
+      if (category.isNew) {
+        deleteCategory(category.id);
+        toast.success("Kategorie verworfen.");
+      } else {
+        await updateCategoryDB({
+          id: category.id,
+          data: {},
+        });
+        deleteCategory(category.id);
+        toast.success("Kategorie gelöscht.");
+      }
     } catch (error) {
       toast.error("Löschen fehlgeschlagen.");
       console.error("Error deleting category:", error);
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteConfirmOpen(false);
     }
   };
 
@@ -231,7 +238,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                       type="button"
                       onClick={(event) => {
                         event.stopPropagation();
-                        handleDelete();
+                        setIsDeleteConfirmOpen(true);
                       }}
                       className="cursor-pointer text-2xl"
                     >
@@ -239,19 +246,12 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                     </button>
                   )}
 
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setIsEditable(false);
-                    }}
-                    className="cursor-pointer"
-                  >
+                  <Link to="/course" className="cursor-pointer">
                     <IoMdAddCircleOutline
                       className="text-xl"
                       style={{ color: category.color[1] }}
                     />
-                  </button>
+                  </Link>
 
                   <div
                     onClick={(event) => {
@@ -301,7 +301,11 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                       isEditMode ? (
                         <CourseItem key={course.id} course={course} />
                       ) : (
-                        <Link key={course.id} to={`/course/${course.id}`}>
+                        <Link
+                          key={course.id}
+                          to={`/course/${course.id}`}
+                          state={{ category: category }}
+                        >
                           <CourseItem course={course} />
                         </Link>
                       ),
@@ -323,6 +327,21 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
           setIsEditable={setIsEditable}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={isDeleteConfirmOpen}
+        title={category.isNew ? "Kategorie verwerfen?" : "Kategorie wirklich löschen?"}
+        description={
+          category.isNew
+            ? "Diese neue Kategorie wird gelöscht."
+            : `Die Kategorie "${category.name}" wird gelöscht und kann nicht wiederhergestellt werden.`
+        }
+        confirmText={category.isNew ? "Verwerfen" : "Löschen"}
+        isDestructive={true}
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteConfirmOpen(false)}
+      />
     </>
   );
 };

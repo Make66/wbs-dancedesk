@@ -1,5 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
-import { COLOR_PALETTE } from "../../lib/constants/colors";
+import { COLOR_PALETTE } from "../../lib/constants/color-constants";
 
 type ColorPickerProps = {
   color: string;

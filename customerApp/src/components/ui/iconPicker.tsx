@@ -1,6 +1,6 @@
 import { cn } from "../../lib/utils";
 import { FaIcons } from "react-icons/fa";
-import { ICONS } from "../../lib/constants/icons";
+import { ICONS } from "../../lib/constants/icon-constants";
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
 
 type IconPickerProps = {

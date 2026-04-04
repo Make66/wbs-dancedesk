@@ -7,6 +7,7 @@ import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
 import { ChevronDown } from "lucide-react";
+import { IoSettingsSharp } from "react-icons/io5";
 import { useState } from "react";
 import SidebarMin from "./SidebarMin";
 import LocationPicker from "./LocationPicker";
@@ -142,6 +143,21 @@ const Sidebar = () => {
           >
             <FaChalkboardTeacher className="text-2xl cursor-pointer fill-current ml-2" />
             <span>Instruktoren</span>
+          </NavLink>
+          <div className="border-b border-gray-500" />
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              cn(
+                "flex gap-3 rounded-xl py-3 px-2 mt-auto mb-4 transition-all duration-200",
+                isActive
+                  ? "bg-gray-700 text-white"
+                  : "hover:bg-gray-700 hover:text-white text-gray-300",
+              )
+            }
+          >
+            <IoSettingsSharp className="text-2xl cursor-pointer fill-current ml-2" />
+            <span>Einstellungen</span>
           </NavLink>
         </div>
       )}
