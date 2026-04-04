@@ -1,8 +1,24 @@
-export const MINUTES_PER_SLOT = 15;
-export const SLOTS_PER_HOUR = 60 / MINUTES_PER_SLOT; // 4
-export const HOURS_PER_DAY = 24;
-export const TOTAL_SLOTS = HOURS_PER_DAY * SLOTS_PER_HOUR; // 96
+import type { CalendarConfig } from "../../types/calendar-types";
 
-export const SLOT_HEIGHT = 15;
-export const DAYS_IN_WEEK = 7;
-export const TIME_GUTTER_WIDTH = 80;
+export const DEFAULT_CALENDAR_CONFIG: CalendarConfig = {
+  startHour: 8,
+  endHour: 19,
+  slotHeight: 20,
+  minutesPerSlot: 15,
+};
+
+export function getSlotsPerHour(config: CalendarConfig) {
+  return 60 / config.minutesPerSlot;
+}
+
+export function getStartSlot(config: CalendarConfig) {
+  return config.startHour * getSlotsPerHour(config);
+}
+
+export function getEndSlot(config: CalendarConfig) {
+  return config.endHour * getSlotsPerHour(config);
+}
+
+export function getVisibleSlotCount(config: CalendarConfig) {
+  return getEndSlot(config) - getStartSlot(config);
+}
