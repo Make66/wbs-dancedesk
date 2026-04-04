@@ -3,26 +3,29 @@ import { DndContext, DragOverlay, type DragEndEvent, type DragStartEvent } from 
 import { CalendarHeader } from "./CalendarHeader";
 import { CalendarWeekView } from "../week/CalendarWeekView";
 import type {
-  CalendarDragData,
   CalendarEvent,
   CalendarEventDragEndPayload,
   CalendarEventResizeEndPayload,
+  CalendarDragData,
 } from "../../../types/calendar-types";
 import { getCalendarHeaderDisplayData } from "../../../lib/calendar/date-utils";
 import { getCalendarDragEndPayload } from "../../../lib/calendar/calendar-dnd";
 import { calendarStore } from "../../../stores/calendarStore";
 
-type CalendarRootProps = {
+type Props = {
   events: CalendarEvent[];
   onEventDragEnd?: (payload: CalendarEventDragEndPayload) => void;
   onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
 };
 
-export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: CalendarRootProps) {
-  const currentView = calendarStore((state) => state.currentView);
-  const currentDate = calendarStore((state) => state.currentDate);
-  const config = calendarStore((state) => state.config);
-  const activeDragEventId = calendarStore((state) => state.activeDragEventId);
+export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: Props) {
+  const currentView = calendarStore((s) => s.currentView);
+  const currentDate = calendarStore((s) => s.currentDate);
+  const config = calendarStore((s) => s.config);
+  const activeDragEventId = calendarStore((s) => s.activeDragEventId);
+
+  const setActiveDragEventId = calendarStore((s) => s.setActiveDragEventId);
+  const selectEvent = calendarStore((s) => s.selectEvent);
 
   const headerDisplayData = useMemo(
     () => getCalendarHeaderDisplayData(currentView, currentDate),
@@ -30,19 +33,20 @@ export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: Calen
   );
 
   const activeDragEvent = useMemo(
-    () => events.find((event) => event.id === activeDragEventId) ?? null,
+    () => events.find((e) => e.id === activeDragEventId) ?? null,
     [events, activeDragEventId],
   );
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const data = event.active.data.current as CalendarDragData | undefined;
-
-    if (data?.type === "calendar-event") {
-      const store = calendarStore.getState();
-      store.selectEvent(data.eventId);
-      store.setActiveDragEventId(data.eventId);
-    }
-  }, []);
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const data = event.active.data.current as CalendarDragData | undefined;
+      if (data?.type === "calendar-event") {
+        selectEvent(data.eventId);
+        setActiveDragEventId(data.eventId);
+      }
+    },
+    [selectEvent, setActiveDragEventId],
+  );
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -52,18 +56,17 @@ export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: Calen
         config,
       });
 
-      calendarStore.getState().setActiveDragEventId(null);
-
+      setActiveDragEventId(null);
       if (!payload) return;
 
       onEventDragEnd?.(payload);
     },
-    [config, onEventDragEnd],
+    [config, onEventDragEnd, setActiveDragEventId],
   );
 
   const handleDragCancel = useCallback(() => {
-    calendarStore.getState().setActiveDragEventId(null);
-  }, []);
+    setActiveDragEventId(null);
+  }, [setActiveDragEventId]);
 
   return (
     <div className="rounded-3xl border shadow-sm">
@@ -83,7 +86,9 @@ export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: Calen
 
         <DragOverlay>
           {activeDragEvent ? (
-            <CalendarDragOverlayCard event={activeDragEvent} config={config} />
+            <div className="rounded-xl border bg-white px-3 py-2 shadow-lg opacity-90">
+              <p className="text-sm font-semibold">{activeDragEvent.title}</p>
+            </div>
           ) : null}
         </DragOverlay>
       </DndContext>

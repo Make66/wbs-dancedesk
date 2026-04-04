@@ -4,21 +4,16 @@ import { useDraggable } from "@dnd-kit/core";
 import type { CalendarDragData, PositionedCalendarEvent } from "../../../types/calendar-types";
 import { calendarStore } from "../../../stores/calendarStore";
 
-type WeekEventCardProps = {
+type Props = {
   positionedEvent: PositionedCalendarEvent;
   isSelected: boolean;
   onClick: () => void;
   onResizeMouseDown: (e: ReactMouseEvent<HTMLDivElement>) => void;
 };
 
-export function WeekEventCard({
-  positionedEvent,
-  isSelected,
-  onClick,
-  onResizeMouseDown,
-}: WeekEventCardProps) {
+export function WeekEventCard({ positionedEvent, isSelected, onClick, onResizeMouseDown }: Props) {
   const { event, top, height, left, width } = positionedEvent;
-  const activeDragEventId = calendarStore((state) => state.activeDragEventId);
+  const activeDragEventId = calendarStore((s) => s.activeDragEventId);
 
   const dragData: CalendarDragData = {
     type: "calendar-event",
@@ -41,21 +36,20 @@ export function WeekEventCard({
       onClick={onClick}
       {...listeners}
       {...attributes}
-      className={[
-        "absolute overflow-hidden rounded-xl border px-3 py-2 text-left shadow-sm bg-amber-300",
-        isSelected ? "border-zinc-900 bg-zinc-100" : "border-zinc-200 bg-zinc-50",
-      ].join(" ")}
+      className={`absolute rounded-xl border px-3 py-2 text-left shadow-sm ${
+        isSelected ? "border-zinc-900 bg-zinc-100" : "border-zinc-200 bg-zinc-50"
+      }`}
       style={{
         top: `${top}px`,
         height: `${height}px`,
         left: `calc(${left}% + 4px)`,
         width: `calc(${width}% - 8px)`,
         transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-        opacity: isDragging || isOverlaySource ? 0.25 : 1,
+        opacity: isDragging || isOverlaySource ? 0.3 : 1,
       }}
     >
-      <p className="text-sm font-semibold text-zinc-900">{event.title}</p>
-      <p className="mt-1 text-xs text-zinc-500">
+      <p className="text-sm font-semibold">{event.title}</p>
+      <p className="text-xs text-zinc-500">
         {format(event.start, "HH:mm")} – {format(event.end, "HH:mm")}
       </p>
 
@@ -64,10 +58,8 @@ export function WeekEventCard({
           e.stopPropagation();
           onResizeMouseDown(e);
         }}
-        className="absolute bottom-0 left-0 right-0 z-20 h-3 cursor-ns-resize"
-      >
-        <div className="mx-auto mt-1 h-1 w-10 rounded-full bg-zinc-300" />
-      </div>
+        className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize"
+      />
     </button>
   );
 }

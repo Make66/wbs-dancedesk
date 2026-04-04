@@ -5,13 +5,13 @@ import type { CalendarEvent, CalendarEventResizeEndPayload } from "../../../type
 import { getWeekDays } from "../../../lib/calendar/date-utils";
 import { calendarStore } from "../../../stores/calendarStore";
 
-type CalendarWeekViewProps = {
+type Props = {
   events: CalendarEvent[];
   onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
 };
 
-export function CalendarWeekView({ events, onEventResizeEnd }: CalendarWeekViewProps) {
-  const currentDate = calendarStore((state) => state.currentDate);
+export function CalendarWeekView({ events, onEventResizeEnd }: Props) {
+  const currentDate = calendarStore((s) => s.currentDate);
   const days = useMemo(() => getWeekDays(currentDate), [currentDate]);
 
   return (

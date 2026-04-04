@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { CurrentTimeLine } from "../core/CurrentTimeLine";
@@ -18,31 +18,28 @@ import { isSameDay } from "../../../lib/calendar/date-utils";
 import { calendarStore } from "../../../stores/calendarStore";
 import { useDayColumnResize } from "../../../lib/calendar/hooks/useDayColumnResize";
 
-type WeekDayColumnProps = {
+type Props = {
   day: Date;
   events: CalendarEvent[];
   onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
 };
 
-export function WeekDayColumn({ day, events, onEventResizeEnd }: WeekDayColumnProps) {
+export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
   const columnRef = useRef<HTMLDivElement | null>(null);
   const [resizingEventId, setResizingEventId] = useState<string | null>(null);
 
-  const config = calendarStore((state) => state.config);
-  const selectedEventId = calendarStore((state) => state.selectedEventId);
-  const resizingEvent = calendarStore((state) => state.resizingEvent);
+  const config = calendarStore((s) => s.config);
+  const selectedEventId = calendarStore((s) => s.selectedEventId);
+  const resizingEvent = calendarStore((s) => s.resizingEvent);
 
-  const selectEvent = calendarStore((state) => state.selectEvent);
-  const startResize = calendarStore((state) => state.startResize);
-  const updateResize = calendarStore((state) => state.updateResize);
-  const endResize = calendarStore((state) => state.endResize);
+  const selectEvent = calendarStore((s) => s.selectEvent);
+  const startResize = calendarStore((s) => s.startResize);
+  const updateResize = calendarStore((s) => s.updateResize);
+  const endResize = calendarStore((s) => s.endResize);
 
-  const dropData: CalendarDropData = {
-    type: "day-column",
-    day,
-  };
+  const dropData: CalendarDropData = { type: "day-column", day };
 
-  const { setNodeRef: setDroppableNodeRef } = useDroppable({
+  const { setNodeRef } = useDroppable({
     id: `day-${day.toISOString()}`,
     data: dropData,
   });
@@ -59,21 +56,21 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: WeekDayColumnPr
     onEventResizeEnd,
   });
 
-  const renderedDayEvents = events
-    .map((event) => {
-      if (resizingEvent && event.id === resizingEvent.eventId) {
-        return {
-          ...event,
-          start: resizingEvent.currentStart,
-          end: resizingEvent.currentEnd,
-        };
-      }
+  const renderedEvents = useMemo(() => {
+    return events
+      .map((e) => {
+        if (resizingEvent && e.id === resizingEvent.eventId) {
+          return { ...e, start: resizingEvent.currentStart, end: resizingEvent.currentEnd };
+        }
+        return e;
+      })
+      .filter((e) => isSameDay(e.start, day));
+  }, [events, resizingEvent, day]);
 
-      return event;
-    })
-    .filter((event) => isSameDay(event.start, day));
-
-  const positionedEvents = getPositionedEvents(renderedDayEvents, config.slotHeight, config);
+  const positionedEvents = useMemo(
+    () => getPositionedEvents(renderedEvents, config.slotHeight, config),
+    [renderedEvents, config],
+  );
 
   const startSlot = getStartSlot(config);
   const visibleSlotCount = getVisibleSlotCount(config);
@@ -89,20 +86,18 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: WeekDayColumnPr
     <div
       ref={(node) => {
         columnRef.current = node;
-        setDroppableNodeRef(node);
+        setNodeRef(node);
       }}
-      className="relative border-r border-zinc-200 last:border-r-0"
+      className="relative border-r last:border-r-0"
     >
       {Array.from({ length: visibleSlotCount }, (_, i) => {
         const slotIndex = startSlot + i;
-        const isHourBoundary = slotIndex % slotsPerHour === 0;
+        const isHour = slotIndex % slotsPerHour === 0;
 
         return (
           <div
             key={slotIndex}
-            className={["relative w-full", isHourBoundary ? "border-t border-zinc-200" : ""].join(
-              " ",
-            )}
+            className={isHour ? "border-t" : ""}
             style={{ height: `${config.slotHeight}px` }}
           />
         );
@@ -111,13 +106,13 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: WeekDayColumnPr
       <CurrentTimeLine day={day} slotHeight={config.slotHeight} config={config} />
 
       <div className="absolute inset-0 z-10">
-        {positionedEvents.map((positionedEvent) => (
+        {positionedEvents.map((p) => (
           <WeekEventCard
-            key={positionedEvent.event.id}
-            positionedEvent={positionedEvent}
-            isSelected={selectedEventId === positionedEvent.event.id}
-            onClick={() => selectEvent(positionedEvent.event.id)}
-            onResizeMouseDown={(e) => handleResizeMouseDown(positionedEvent.event, e)}
+            key={p.event.id}
+            positionedEvent={p}
+            isSelected={selectedEventId === p.event.id}
+            onClick={() => selectEvent(p.event.id)}
+            onResizeMouseDown={(e) => handleResizeMouseDown(p.event, e)}
           />
         ))}
       </div>

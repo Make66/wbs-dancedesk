@@ -3,14 +3,14 @@ import { TimeGutter } from "../core/TimeGutter";
 import type { CalendarEvent, CalendarEventResizeEndPayload } from "../../../types/calendar-types";
 import { calendarStore } from "../../../stores/calendarStore";
 
-type WeekGridProps = {
+type Props = {
   days: Date[];
   events: CalendarEvent[];
   onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
 };
 
-export function WeekGrid({ days, events, onEventResizeEnd }: WeekGridProps) {
-  const config = calendarStore((state) => state.config);
+export function WeekGrid({ days, events, onEventResizeEnd }: Props) {
+  const config = calendarStore((s) => s.config);
 
   return (
     <div className="grid grid-cols-[80px_repeat(7,minmax(0,1fr))]">
