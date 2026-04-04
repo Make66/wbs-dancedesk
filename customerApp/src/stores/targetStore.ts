@@ -12,7 +12,7 @@ import {
   sortEntitiesForContext,
 } from "../lib/courses/sorting-utils";
 import { updateEntityById, getItemsForParent } from "../lib/courses/collection-utils";
-import { DEFAULT_TARGET_COLORS } from "../lib/constants/colors";
+import { DEFAULT_TARGET_COLORS } from "../lib/constants/color-constants";
 
 type TargetStore = {
   targets: Target[];

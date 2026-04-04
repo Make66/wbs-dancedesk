@@ -15,7 +15,8 @@ import { toast } from "react-toastify";
 import TargetItemEdit from "./TargetItemEdit";
 import { userStore } from "../../stores/userStore";
 import { updateLocationDB } from "../../data/location";
-import { getIconComponent } from "../../lib/constants/icons";
+import { getIconComponent } from "../../lib/constants/icon-constants";
+import ConfirmationModal from "../ui/confirmationModal";
 
 type TargetFormDataType = {
   name: string;
@@ -30,6 +31,8 @@ type TargetItemProps = {
 
 const TargetItem = ({ target }: TargetItemProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState<TargetFormDataType>({
     name: target.name ?? "",
     description: target.description ?? "",
@@ -83,18 +86,22 @@ const TargetItem = ({ target }: TargetItemProps) => {
   };
 
   const handleDelete = async () => {
-    if (target.isNew) {
-      deleteTarget(target.id);
-      return;
-    }
-
+    setIsDeleting(true);
     try {
-      await updateTargetDB(target.id, { isDeleted: true });
-      deleteTarget(target.id);
-      toast.success("Kursziel gelöscht.");
+      if (target.isNew) {
+        deleteTarget(target.id);
+        toast.success("Zielgruppe verworfen.");
+      } else {
+        await updateTargetDB(target.id, { isDeleted: true });
+        deleteTarget(target.id);
+        toast.success("Kursziel gelöscht.");
+      }
     } catch (error) {
       toast.error("Löschen fehlgeschlagen.");
       console.error("Error deleting course target:", error);
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteConfirmOpen(false);
     }
   };
 
@@ -141,17 +148,17 @@ const TargetItem = ({ target }: TargetItemProps) => {
               <Link
                 to={`/courses/${target.id}`}
                 state={{ target: target }}
-                className="flex items-center gap-3"
+                className="flex items-center"
               >
                 {formData.icon &&
                   (() => {
                     const Icon = getIconComponent(formData.icon);
-                    return <Icon className="text-lg" style={{ color: formData.color[1] }} />;
+                    return <Icon className="text-lg mr-2" style={{ color: formData.color[1] }} />;
                   })()}
                 <span style={{ color: formData.color[1] }}>{formData.name}</span>
                 {formData.description && (
                   <>
-                    <span style={{ color: formData.color[1] }} className="mx-0.5">
+                    <span style={{ color: formData.color[1] }} className="mx-2">
                       -
                     </span>
                     <span style={{ color: formData.color[1] }} className="text-xs">
@@ -175,7 +182,11 @@ const TargetItem = ({ target }: TargetItemProps) => {
                 </div>
               </button>
             ) : (
-              <button type="button" className="cursor-pointer text-2xl" onClick={handleDelete}>
+              <button
+                type="button"
+                className="cursor-pointer text-2xl"
+                onClick={() => setIsDeleteConfirmOpen(true)}
+              >
                 <MdDelete />
               </button>
             )}
@@ -201,6 +212,21 @@ const TargetItem = ({ target }: TargetItemProps) => {
           setIsModalOpen={setIsModalOpen}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={isDeleteConfirmOpen}
+        title={target.isNew ? "Zielgruppe verwerfen?" : "Zielgruppe wirklich löschen?"}
+        description={
+          target.isNew
+            ? "Diese neue Zielgruppe wird gelöscht."
+            : `Die Zielgruppe "${target.name}" wird gelöscht und kann nicht wiederhergestellt werden.`
+        }
+        confirmText={target.isNew ? "Verwerfen" : "Löschen"}
+        isDestructive={true}
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteConfirmOpen(false)}
+      />
     </div>
   );
 };

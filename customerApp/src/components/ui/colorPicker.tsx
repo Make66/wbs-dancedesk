@@ -1,5 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from "../../components/ui/popover";
-import { COLOR_PALETTE } from "../../lib/constants/colors";
+import { COLOR_PALETTE } from "../../lib/constants/color-constants";
 
 type ColorPickerProps = {
   color: string;
@@ -12,8 +12,8 @@ export function ColorPicker({ color, onChange, children, showInput = false }: Co
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="w-116 p-4 space-y-4">
-        <div className="flex flex-wrap gap-2">
+      <PopoverContent className="w-106 p-4 space-y-4">
+        <div className="flex flex-wrap gap-1">
           {COLOR_PALETTE.map((preset) =>
             preset.map((pre) => {
               const isActive = color === pre;
@@ -21,7 +21,7 @@ export function ColorPicker({ color, onChange, children, showInput = false }: Co
                 <button
                   key={pre}
                   onClick={() => onChange(pre)}
-                  className={`w-8 h-8 rounded-md border-2 transition cursor-pointer hover:scale-200 ${
+                  className={`w-8 h-8 rounded-md border-2 transition cursor-pointer hover:scale-200 hover:z-20 ${
                     isActive ? "border-black scale-110" : "border-transparent"
                   }`}
                   style={{ backgroundColor: pre }}

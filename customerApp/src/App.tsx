@@ -10,6 +10,7 @@ import {
   TargetsPage,
   CourseDetailPage,
   RoomsPage,
+  SettingsPage,
 } from "./pages";
 import "./App.css";
 
@@ -23,12 +24,13 @@ function App() {
           <Route path="/targets" element={<TargetsPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:targetId" element={<CategoriesPage />} />
+          <Route path="/course" element={<CourseDetailPage />} />
           <Route path="/course/:courseId" element={<CourseDetailPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/rooms" element={<RoomsPage />} />
           <Route path="/instructors" element={<InstructorsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<HomePage />} />
-          <Route path="/settings" element={<div className="p-6">SettingsPage</div>} />
         </Route>
       </Routes>
     </BrowserRouter>

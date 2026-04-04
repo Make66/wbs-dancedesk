@@ -1,10 +1,10 @@
 .scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
+  scrollbar-color: rgba(100, 100, 100, 0) transparent;
 }
 
 .scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 0px;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
