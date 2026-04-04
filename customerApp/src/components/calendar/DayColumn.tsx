@@ -12,9 +12,12 @@ import type {
   SelectedTimeRange,
 } from "../../types/calendar-types";
 import {
+  END_HOUR,
   MINUTES_PER_SLOT,
   SLOTS_PER_HOUR,
-  TOTAL_SLOTS,
+  START_HOUR,
+  START_SLOT,
+  VISIBLE_SLOT_COUNT,
 } from "../../lib/constants/calendar-constants";
 import {
   addMinutesToDate,
@@ -147,7 +150,12 @@ export function DayColumn({
     if (!columnRef.current) return;
 
     const rect = columnRef.current.getBoundingClientRect();
-    const eventTop = (getMinutesSinceStartOfDay(event.start) / MINUTES_PER_SLOT) * slotHeight;
+
+    const visibleStartMinutes = START_HOUR * 60;
+    const startMinutes = getMinutesSinceStartOfDay(event.start);
+    const relativeMinutes = Math.max(0, startMinutes - visibleStartMinutes);
+
+    const eventTop = (relativeMinutes / MINUTES_PER_SLOT) * slotHeight;
     const offsetY = clientY - rect.top - eventTop;
 
     onEventDragStart(event, offsetY);
@@ -188,17 +196,27 @@ export function DayColumn({
 
       if (!isInsideColumn) return;
 
+      const visibleStartMinutes = START_HOUR * 60;
+      const visibleEndMinutes = END_HOUR * 60;
+
       const relativeY = e.clientY - rect.top - draggedEvent.pointerOffsetY;
-      const rawMinutes = (relativeY / slotHeight) * MINUTES_PER_SLOT;
-      const snappedMinutes = Math.max(0, snapMinutesToSlot(rawMinutes));
+      const rawMinutesFromVisibleStart = (relativeY / slotHeight) * MINUTES_PER_SLOT;
+      const snappedMinutesFromVisibleStart = snapMinutesToSlot(rawMinutesFromVisibleStart);
 
       const durationMinutes = getDifferenceInMinutes(
         draggedEvent.originalEnd,
         draggedEvent.originalStart,
       );
 
+      const proposedStartMinutes = visibleStartMinutes + snappedMinutesFromVisibleStart;
+
+      const clampedStartMinutes = Math.min(
+        visibleEndMinutes - durationMinutes,
+        Math.max(visibleStartMinutes, proposedStartMinutes),
+      );
+
       const nextStart = createDateWithTime(day, 0, 0);
-      nextStart.setMinutes(snappedMinutes);
+      nextStart.setMinutes(clampedStartMinutes);
 
       const nextEnd = addMinutesToDate(nextStart, durationMinutes);
 
@@ -230,15 +248,27 @@ export function DayColumn({
 
       if (!isInsideColumn) return;
 
+      const visibleStartMinutes = START_HOUR * 60;
+      const visibleEndMinutes = END_HOUR * 60;
+
       const relativeY = e.clientY - rect.top;
-      const rawMinutes = (relativeY / slotHeight) * MINUTES_PER_SLOT;
-      const snappedMinutes = Math.max(
-        MINUTES_PER_SLOT,
-        Math.round(rawMinutes / MINUTES_PER_SLOT) * MINUTES_PER_SLOT,
+      const rawMinutesFromVisibleStart = (relativeY / slotHeight) * MINUTES_PER_SLOT;
+
+      const snappedMinutesFromVisibleStart =
+        Math.round(rawMinutesFromVisibleStart / MINUTES_PER_SLOT) * MINUTES_PER_SLOT;
+
+      const absoluteMinutes = visibleStartMinutes + snappedMinutesFromVisibleStart;
+
+      const clampedMinutes = Math.min(
+        visibleEndMinutes,
+        Math.max(
+          getMinutesSinceStartOfDay(resizingEvent.currentStart) + MINUTES_PER_SLOT,
+          absoluteMinutes,
+        ),
       );
 
       const nextEnd = createDateWithTime(day, 0, 0);
-      nextEnd.setMinutes(snappedMinutes);
+      nextEnd.setMinutes(clampedMinutes);
 
       if (nextEnd <= resizingEvent.currentStart) return;
 
@@ -263,7 +293,8 @@ export function DayColumn({
 
   return (
     <div ref={columnRef} className="relative border-r border-zinc-200 last:border-r-0">
-      {Array.from({ length: TOTAL_SLOTS }, (_, slotIndex) => {
+      {Array.from({ length: VISIBLE_SLOT_COUNT }, (_, i) => {
+        const slotIndex = START_SLOT + i;
         const slotStart = getSlotStart(day, slotIndex);
         const slotEnd = getSlotEnd(day, slotIndex);
 

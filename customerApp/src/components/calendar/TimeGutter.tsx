@@ -1,7 +1,12 @@
 import { format, setHours, setMinutes } from "date-fns";
-import { HOURS_PER_DAY, SLOT_HEIGHT, SLOTS_PER_HOUR } from "../../lib/constants/calendar-constants";
+import {
+  START_HOUR,
+  END_HOUR,
+  SLOT_HEIGHT,
+  SLOTS_PER_HOUR,
+} from "../../lib/constants/calendar-constants";
 
-const HOURS = Array.from({ length: HOURS_PER_DAY }, (_, i) => i);
+const HOURS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => i + START_HOUR);
 
 export function TimeGutter() {
   return (

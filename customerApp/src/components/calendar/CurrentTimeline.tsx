@@ -1,3 +1,4 @@
+import { MINUTES_PER_SLOT, START_HOUR, END_HOUR } from "../../lib/constants/calendar-constants";
 import { getMinutesSinceStartOfDay, isSameDay } from "../../lib/calendar/date-utils";
 
 type CurrentTimeLineProps = {
@@ -10,7 +11,16 @@ export function CurrentTimeLine({ day, slotHeight }: CurrentTimeLineProps) {
 
   if (!isSameDay(now, day)) return null;
 
-  const top = (getMinutesSinceStartOfDay(now) / 60) * slotHeight;
+  const currentMinutes = getMinutesSinceStartOfDay(now);
+  const visibleStart = START_HOUR * 60;
+  const visibleEnd = END_HOUR * 60;
+
+  if (currentMinutes < visibleStart || currentMinutes > visibleEnd) {
+    return null;
+  }
+
+  const relativeMinutes = currentMinutes - visibleStart;
+  const top = (relativeMinutes / MINUTES_PER_SLOT) * slotHeight;
 
   return (
     <div className="pointer-events-none absolute left-0 right-0 z-20" style={{ top: `${top}px` }}>

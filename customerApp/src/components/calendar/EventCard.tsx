@@ -1,13 +1,13 @@
 import { format } from "date-fns";
 import type { PositionedCalendarEvent } from "../../types/calendar-types";
-import type React from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 
 type EventCardProps = {
   positionedEvent: PositionedCalendarEvent;
   isSelected: boolean;
   onClick: () => void;
-  onMouseDown: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onResizeMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseDown: (e: ReactMouseEvent<HTMLButtonElement>) => void;
+  onResizeMouseDown: (e: ReactMouseEvent<HTMLDivElement>) => void;
 };
 
 export function EventCard({
@@ -26,7 +26,9 @@ export function EventCard({
       onMouseDown={onMouseDown}
       className={[
         "absolute overflow-hidden rounded-xl border px-3 py-2 text-left shadow-sm",
-        isSelected ? "border-zinc-900 bg-zinc-100" : "border-zinc-200 bg-zinc-50",
+        isSelected
+          ? "border-zinc-900 bg-zinc-100"
+          : "border-zinc-200 bg-zinc-50",
       ].join(" ")}
       style={{
         top: `${top}px`,
@@ -41,9 +43,14 @@ export function EventCard({
       </p>
 
       <div
-        onMouseDown={onResizeMouseDown}
-        className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize"
-      />
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          onResizeMouseDown(e);
+        }}
+        className="absolute bottom-0 left-0 right-0 z-20 h-3 cursor-ns-resize"
+      >
+        <div className="mx-auto mt-1 h-1 w-10 rounded-full bg-zinc-300" />
+      </div>
     </button>
   );
 }
