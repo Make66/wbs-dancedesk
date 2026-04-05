@@ -22,7 +22,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="h-20 flex items-center px-6 absolute top-0 right-6 z-50">
+    <nav className="bg-background h-15 flex items-center px-6 absolute top-2 right-6 z-50">
       <div className="flex items-center gap-7">
         <ThemeToggle />
         <div className="relative">

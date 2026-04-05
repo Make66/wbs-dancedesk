@@ -230,6 +230,9 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                         setIsModalOpen((prev) => !prev);
                       }}
                       className="cursor-pointer"
+                      data-tooltip-id="tooltip"
+                      data-tooltip-content="Kategorie bearbeiten"
+                      data-tooltip-place="top"
                     >
                       <FaPenNib className="text-lg" style={{ color: category.color[1] }} />
                     </button>
@@ -241,12 +244,21 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                         setIsDeleteConfirmOpen(true);
                       }}
                       className="cursor-pointer text-2xl"
+                      data-tooltip-id="tooltip"
+                      data-tooltip-content="Kategorie löschen"
+                      data-tooltip-place="top"
                     >
                       <MdDelete />
                     </button>
                   )}
 
-                  <Link to="/course" className="cursor-pointer">
+                  <Link
+                    to="/course"
+                    className="cursor-pointer"
+                    data-tooltip-id="tooltip"
+                    data-tooltip-content="Kurs hinzufügen"
+                    data-tooltip-place="top"
+                  >
                     <IoMdAddCircleOutline
                       className="text-xl"
                       style={{ color: category.color[1] }}
@@ -266,6 +278,9 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                         handleToggleActive(checked);
                         setIsEditable(false);
                       }}
+                      data-tooltip-id="tooltip"
+                      data-tooltip-content="Kategorie aktivieren/deaktivieren"
+                      data-tooltip-place="top"
                     />
                   </div>
                 </>

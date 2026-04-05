@@ -55,7 +55,7 @@ const LoginPage = () => {
   return (
     <div className="h-screen w-full grid grid-cols-1 items-center justify-center">
       <div className="flex items-center justify-center">
-        <div className="flex flex-col gap-5 w-100 p-5 rounded-2xl bg-white">
+        <div className="flex flex-col gap-5 w-100 p-5 rounded-2xl bg-background">
           <h1 className="text-2xl font-bold">DanceDesk Login</h1>
           <form
             className="mt-4 flex flex-col gap-6"

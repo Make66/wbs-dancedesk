@@ -1,5 +1,4 @@
 import { RxHamburgerMenu } from "react-icons/rx";
-import { FaUsers } from "react-icons/fa";
 import { Switch } from "../ui/switch";
 import { categoryStore } from "../../stores/categoryStore";
 import type { Course } from "../../types/course-types";
@@ -7,6 +6,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "../../lib/utils";
 import { toast } from "react-toastify";
+import SeatingItem from "../ui/SeatingItem";
 
 type CourseItemProps = {
   course: Course;
@@ -100,6 +100,9 @@ const CourseItem = ({ course }: CourseItemProps) => {
               onCheckedChange={(checked) => {
                 handleToggleActive(checked);
               }}
+              data-tooltip-id="tooltip"
+              data-tooltip-content="Kurs aktivieren/deaktivieren"
+              data-tooltip-place="top"
             />
           )}
         </div>
@@ -112,13 +115,8 @@ const CourseItem = ({ course }: CourseItemProps) => {
               minute: "2-digit",
             })}{" "}
           </p>
-          <div>
-            <div className="flex my-2 px-4 py-2 bg-gray-800 w-fit rounded-3xl">
-              <FaUsers className="inline-block mr-3 text-white" />
-              <span className="text-xs text-white">
-                {course.seatsCurrent} / {course.seatsMax}
-              </span>
-            </div>
+          <div className="my-2">
+            <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
           </div>
           <p className="text-sm text-gray-600 mt-2">{course.description}</p>
           <p className="text-sm text-gray-800 mt-2 font-medium">€ {course.price}</p>

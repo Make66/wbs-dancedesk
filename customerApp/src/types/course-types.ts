@@ -1,5 +1,5 @@
 export type CourseFrequency = "daily" | "weekly" | "monthly" | "yearly";
-export type PaymentType = "cash" | "card" | "transfer" | "direct-debit";
+export type PaymentType = "cash" | "invoice" | "paypal";
 export type ContractType = "one-time" | "subscription" | "trial";
 
 export type Target = {
@@ -39,10 +39,11 @@ export type Course = {
   name: string;
   description: string;
   startsAt: string;
+  endsAt: string;
   repeat?: number;
   frequency?: CourseFrequency;
-  seatsCurrent?: number;
-  seatsMax?: number;
+  seatsCurrent: number;
+  seatsMax: number;
   paymentTypes?: PaymentType[];
   contractTypes?: ContractType[];
   price: number;
@@ -52,6 +53,9 @@ export type Course = {
   createdAt: string;
   updatedAt: string;
   isNew?: boolean;
+  color?: string[];
+  isBookedOut?: boolean;
+  isClub?: boolean;
 };
 
 export type CreateCourseInput = {

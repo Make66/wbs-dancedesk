@@ -29,7 +29,6 @@ const CategoriesPage = () => {
   const courseCategories = categoryStore((state) => state.categories);
   const isInactiveVisible = categoryStore((state) => state.isInactiveVisible);
   const toggleInactiveVisibility = categoryStore((state) => state.toggleInactiveVisibility);
-  const hasInactiveItems = categoryStore((state) => state.hasInactiveItems());
 
   const setError = categoryStore((state) => state.setError);
   const setLoading = categoryStore((state) => state.setLoading);
@@ -140,29 +139,44 @@ const CategoriesPage = () => {
           type="button"
           onClick={() => setEditMode(!isEditMode)}
           aria-label="Bearbeitungsmodus umschalten"
+          data-tooltip-id="tooltip"
+          data-tooltip-content={
+            isEditMode ? "Bearbeitungsmodus verlassen" : "Bearbeitungsmodus betreten"
+          }
+          data-tooltip-place="right"
         >
           <FaPenNib className="cursor-pointer text-xl" />
         </button>
 
         {isEditMode && (
-          <button
-            type="button"
-            aria-label="Kategorie hinzufügen"
-            onClick={() => {
-              addCategory();
-            }}
-          >
-            <IoMdAddCircleOutline className="cursor-pointer text-xl" />
-          </button>
-        )}
-        {hasInactiveItems && (
-          <button type="button" className="cursor-pointer" onClick={toggleInactiveVisibility}>
-            {isInactiveVisible ? (
-              <IoMdEyeOff className="text-3xl" />
-            ) : (
-              <IoMdEye className="text-3xl" />
-            )}
-          </button>
+          <>
+            <button
+              type="button"
+              aria-label="Kategorie hinzufügen"
+              onClick={() => {
+                addCategory();
+              }}
+              data-tooltip-id="tooltip"
+              data-tooltip-content="Kategorie hinzufügen"
+              data-tooltip-place="right"
+            >
+              <IoMdAddCircleOutline className="cursor-pointer text-xl" />
+            </button>
+            <button
+              type="button"
+              className="cursor-pointer"
+              onClick={toggleInactiveVisibility}
+              data-tooltip-id="tooltip"
+              data-tooltip-content="Inaktive Kategorien anzeigen/verbergen"
+              data-tooltip-place="right"
+            >
+              {isInactiveVisible ? (
+                <IoMdEyeOff className="text-3xl" />
+              ) : (
+                <IoMdEye className="text-3xl" />
+              )}
+            </button>
+          </>
         )}
       </div>
 
