@@ -2,6 +2,7 @@ import { FaCoins } from "react-icons/fa";
 import { AiFillBank } from "react-icons/ai";
 import { FaPaypal } from "react-icons/fa";
 import type { PaymentType } from "../../types/course-types";
+import { Check } from "lucide-react";
 
 type PaymentPickerProps = {
   selected?: PaymentType[];
@@ -29,21 +30,25 @@ const PaymentPicker = ({ selected = [], onChange }: PaymentPickerProps) => {
       </span>
       <div className="flex items-center justify-between w-fit gap-2">
         {paymentMethods.map((method) => (
-          <button
-            key={method.id}
-            type="button"
-            onClick={() => toggleMethod(method.id as PaymentType)}
-            className={`w-15 h-15 rounded-xl border flex items-center justify-center cursor-pointer transition-all ${
-              selected.includes(method.id as PaymentType)
-                ? "bg-muted-foreground text-background"
-                : "border-muted-foreground"
-            }`}
-            data-tooltip-id="tooltip"
-            data-tooltip-content={method.name}
-            data-tooltip-place="top"
-          >
-            {method.icon}
-          </button>
+          <div key={method.id} className="relative">
+            <button
+              type="button"
+              onClick={() => toggleMethod(method.id as PaymentType)}
+              className={`w-20 h-20 rounded-xl border flex items-center justify-center cursor-pointer transition-all ${
+                selected.includes(method.id as PaymentType)
+                  ? "bg-muted-foreground text-background"
+                  : "border-muted-foreground"
+              }`}
+              data-tooltip-id="tooltip"
+              data-tooltip-content={method.name}
+              data-tooltip-place="top"
+            >
+              <span>{method.icon}</span>
+            </button>
+            {selected.includes(method.id as PaymentType) && (
+              <Check className="h-4 w-4 absolute top-2 right-2 text-background" />
+            )}
+          </div>
         ))}
       </div>
     </div>
