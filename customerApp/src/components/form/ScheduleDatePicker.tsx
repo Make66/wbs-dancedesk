@@ -31,7 +31,7 @@ function combineDateAndTime(date: Date | undefined, time: string) {
 
 const TIME_OPTIONS = generateTimeOptions(DEFAULT_CALENDAR_CONFIG);
 
-const FormDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePickerProps) => {
+const ScheduleDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePickerProps) => {
   const selectedDate = startsAt ?? endsAt;
   const selectedStartTime = getTimeString(startsAt);
   const selectedEndTime = getTimeString(endsAt);
@@ -61,16 +61,12 @@ const FormDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePicke
       <DatePicker value={selectedDate} onChange={handleDateChange}>
         <button
           type="button"
-          className="w-full h-22 p-6 flex justify-start items-center border-r border-muted-foreground cursor-pointer hover:bg-blue-200 hover:text-background"
+          className="w-full h-22 p-6 flex justify-start items-center border-r-none md:border-r border-muted-foreground cursor-pointer hover:bg-blue-500"
         >
           <div>
             <FaPlay className="inline mr-4 text-2xl" />
             <span
-              className={cn(
-                selectedDate
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
+              className={cn("text-lg", selectedDate ? "text-foreground" : "text-muted-foreground")}
             >
               {selectedDate
                 ? selectedDate.toLocaleDateString("de-DE", {
@@ -83,16 +79,16 @@ const FormDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePicke
           </div>
         </button>
       </DatePicker>
-      <div className="flex">
+      <div className="flex border-t border-muted-foreground md:border-t-0">
         <Popover>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="w-full h-22 pl-7 text-foreground border-r border-muted-foreground text-left cursor-pointer hover:bg-blue-200 hover:text-background"
+              className="w-full h-22 pl-7 text-foreground border-r border-muted-foreground text-left cursor-pointer hover:bg-blue-500"
             >
               <div>
                 <FaClock className="inline mr-4 text-lg" />
-                <span>{selectedStartTime}</span>
+                <span className="text-lg">{selectedStartTime}</span>
               </div>
             </button>
           </PopoverTrigger>
@@ -119,11 +115,11 @@ const FormDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePicke
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="w-full h-22 pl-7 text-foreground text-left cursor-pointer hover:bg-blue-200 hover:text-background"
+              className="w-full h-22 pl-7 text-foreground text-left cursor-pointer hover:bg-blue-500"
             >
               <div>
                 <FaClock className="inline mr-4 text-lg" />
-                <span>{selectedEndTime}</span>
+                <span className="text-lg">{selectedEndTime}</span>
               </div>
             </button>
           </PopoverTrigger>
@@ -139,7 +135,7 @@ const FormDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePicke
                     selectedEndTime === time && "bg-muted font-medium",
                   )}
                 >
-                  {time}
+                  <span className="text-lg">{time}</span>
                 </button>
               ))}
             </div>
@@ -150,4 +146,4 @@ const FormDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePicke
   );
 };
 
-export default FormDatePicker;
+export default ScheduleDatePicker;

@@ -2,9 +2,9 @@ import { PiStandardDefinitionFill } from "react-icons/pi";
 import { Bird } from "lucide-react";
 import { FaBell } from "react-icons/fa";
 import { FaSubscript } from "react-icons/fa";
-import type { ContractType } from "../types/course-types";
+import type { ContractType } from "../../types/course-types";
 import { Check } from "lucide-react";
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 
 type ContractTypesPickerProps = {
   selected?: ContractType[];

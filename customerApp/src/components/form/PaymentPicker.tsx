@@ -1,9 +1,9 @@
 import { FaCoins } from "react-icons/fa";
 import { AiFillBank } from "react-icons/ai";
 import { FaPaypal } from "react-icons/fa";
-import type { PaymentType } from "../types/course-types";
+import type { PaymentType } from "../../types/course-types";
 import { Check } from "lucide-react";
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 
 type PaymentPickerProps = {
   selected?: PaymentType[];

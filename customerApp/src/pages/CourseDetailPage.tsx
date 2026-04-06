@@ -2,8 +2,7 @@ import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { getCourseById } from "../data/course";
 import type { Course } from "../types/course-types";
-import CourseForm1 from "../components/CourseForm1";
-import CourseForm from "../components/CourseForm";
+import CourseForm from "../components/form/CourseForm";
 
 const CourseDetailPage = () => {
   const courseId = useParams<{ courseId: string }>().courseId;
@@ -34,9 +33,6 @@ const CourseDetailPage = () => {
       </div>
       <div className="p-6">
         <CourseForm course={course} />
-        <div className="mt-200">
-          <CourseForm1 course={course} />
-        </div>
       </div>
     </div>
   );

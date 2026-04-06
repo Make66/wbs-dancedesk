@@ -1,4 +1,4 @@
-export type CourseFrequency = "daily" | "weekly" | "monthly" | "yearly";
+export type CourseFrequency = "daily" | "weekly" | "biweekly" | "monthly" | "yearly";
 export type PaymentType = "cash" | "invoice" | "paypal";
 export type ContractType = "one-time" | "subscription" | "trial" | "standard";
 
