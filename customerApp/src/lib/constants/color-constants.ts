@@ -1,5 +1,12 @@
 export const DEFAULT_TARGET_COLORS = ["#d6d3d1", "#000000"];
 
+export const SEATING_COLORS = {
+  empty: ["#bbf451", "#18181b"],
+  low: ["#ffdf20", "#18181b"],
+  high: ["#ff8904", "#18181b"],
+  full: ["#fb2c36", "#FFFFFF"],
+};
+
 export const COLOR_PALETTE = [
   [
     // Red

@@ -1,6 +1,6 @@
 export type CourseFrequency = "daily" | "weekly" | "monthly" | "yearly";
-export type PaymentType = "cash" | "card" | "transfer" | "direct-debit";
-export type ContractType = "one-time" | "subscription" | "trial";
+export type PaymentType = "cash" | "invoice" | "paypal";
+export type ContractType = "one-time" | "subscription" | "trial" | "standard";
 
 export type Target = {
   name: string;
@@ -39,50 +39,83 @@ export type Course = {
   name: string;
   description: string;
   startsAt: string;
-  repeat?: number;
-  frequency?: CourseFrequency;
-  seatsCurrent?: number;
-  seatsMax?: number;
-  paymentTypes?: PaymentType[];
-  contractTypes?: ContractType[];
-  price: number;
-  duration: number;
+  endsAt: string;
+  frequency: CourseFrequency;
+  clubRepetition?: number;
+  courseRepetition?: number;
+  seatsCurrent: number;
+  seatsMax: number;
+  paymentTypes: PaymentType[];
+  contractTypes: ContractType[];
+  price?: number;
+  duration?: number;
+  options?: number;
   isActive: boolean;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
   isNew?: boolean;
+  color?: string[];
+  isBookedOut?: boolean;
+  isClub?: boolean;
+  isIgnoreCalendar?: boolean;
+  isTaxFree?: boolean;
+  dates?: {
+    date: string;
+    isStart: boolean;
+  }[];
+  instructorId?: string | null;
+  roomId?: string | null;
+  textTermsId?: string | null;
+  textInfoId?: string | null;
+  tenantId?: string;
 };
 
 export type CreateCourseInput = {
   name: string;
   description: string;
   startsAt: string;
-  repeat: number;
+  endsAt: string;
   frequency: CourseFrequency;
+  clubRepetition?: number;
+  courseRepetition?: number;
   seatsCurrent: number;
   seatsMax: number;
   paymentTypes: PaymentType[];
   contractTypes: ContractType[];
-  price: number;
-  duration: number;
   categoryId: string;
+  instructorId?: string | null;
+  roomId?: string | null;
+  textTermsId?: string | null;
+  textInfoId?: string | null;
+  isIgnoreCalendar?: boolean;
+  isTaxFree?: boolean;
+  price?: number;
+  options?: number;
 };
 
 export type UpdateCourseInput = {
   name?: string;
   description?: string;
   startsAt?: string;
-  repeat?: number;
+  endsAt?: string;
   frequency?: CourseFrequency;
+  clubRepetition?: number;
+  courseRepetition?: number;
   seatsCurrent?: number;
   seatsMax?: number;
   paymentTypes?: PaymentType[];
   contractTypes?: ContractType[];
-  price?: number;
-  duration?: number;
   isActive?: boolean;
   isDeleted?: boolean;
+  instructorId?: string | null;
+  roomId?: string | null;
+  textTermsId?: string | null;
+  textInfoId?: string | null;
+  isIgnoreCalendar?: boolean;
+  isTaxFree?: boolean;
+  price?: number;
+  options?: number;
 };
 
 export type Category = {

@@ -25,3 +25,17 @@ export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
 
   return null;
 };
+
+export const getCourseById = async (id: string) => {
+  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch course: ${response.status}`);
+  }
+
+  return response.json();
+};

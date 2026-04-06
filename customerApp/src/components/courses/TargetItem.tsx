@@ -114,7 +114,12 @@ const TargetItem = ({ target }: TargetItemProps) => {
   });
 
   return (
-    <div className={cn(isDragging && "z-20 opacity-60", "w-full max-w-200")}>
+    <div
+      className={cn(
+        isDragging && "z-20 opacity-60",
+        "w-full max-w-200 hover:saturate-150 hover:scale-y-110 transition-all",
+      )}
+    >
       <div
         ref={setNodeRef}
         style={{

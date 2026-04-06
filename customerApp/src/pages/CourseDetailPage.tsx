@@ -1,24 +1,42 @@
 import { useParams } from "react-router";
-import { categoryStore } from "../stores/categoryStore";
+import { useEffect, useState } from "react";
+import { getCourseById } from "../data/course";
+import type { Course } from "../types/course-types";
+import CourseForm1 from "../components/CourseForm1";
+import CourseForm from "../components/CourseForm";
 
 const CourseDetailPage = () => {
   const courseId = useParams<{ courseId: string }>().courseId;
+  const [course, setCourse] = useState<Course | undefined>(undefined);
 
-  const course = categoryStore((state) =>
-    state.categories
-      .flatMap((category) => category.courses)
-      .find((course) => course.id === courseId),
-  );
+  useEffect(() => {
+    if (!courseId) return;
+
+    const fetchCourse = async () => {
+      try {
+        const response = await getCourseById(courseId);
+        setCourse(response ?? undefined);
+      } catch (error) {
+        console.error("Error fetching course:", error);
+        setCourse(undefined);
+      }
+    };
+
+    fetchCourse();
+  }, [courseId]);
+
+  console.log("Fetched course:", course);
 
   return (
-    <div className="w-full h-screen bg-white dark:bg-gray-900">
-      <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
-        <h1 className="text-3xl font-semibold">{course?.name || "Kurs nicht gefunden"}</h1>
+    <div className="w-full h-screen bg-background">
+      <div className="sticky top-0 flex h-20 items-center gap-9 border-b bg-background border-gray-400 dark:border-gray-700 pl-6 z-20">
+        <h1 className="text-3xl font-semibold line-clamp-1">Kursdetails</h1>
       </div>
       <div className="p-6">
-        <p className="text-lg">{course?.description}</p>
-        <p className="text-md text-gray-600">Start: {course?.startsAt}</p>
-        <p className="text-md text-gray-600">Dauer: {course?.frequency}</p>
+        <CourseForm course={course} />
+        <div className="mt-200">
+          <CourseForm1 course={course} />
+        </div>
       </div>
     </div>
   );
