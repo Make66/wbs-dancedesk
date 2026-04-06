@@ -23,8 +23,8 @@ const SeatingItem = ({ seatsCurrent, seatsMax }: SeatingProps) => {
       className="flex items-center px-2 py-1 w-fit rounded-3xl border border-zinc-600"
       style={{ backgroundColor: color[0] }}
     >
-      <FaUsers className={`text-[10px] mr-2 text-zinc-900`} style={{ color: color[1] }} />
-      <span className="text-[10px] text-zinc-900" style={{ color: color[1] }}>
+      <FaUsers className={`text-[11px] mr-2 text-zinc-900`} style={{ color: color[1] }} />
+      <span className="text-[11px] text-zinc-900" style={{ color: color[1] }}>
         {seatsCurrent} / {seatsMax}
       </span>
     </div>

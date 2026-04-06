@@ -1,7 +1,7 @@
 import { FaCoins } from "react-icons/fa";
 import { AiFillBank } from "react-icons/ai";
 import { FaPaypal } from "react-icons/fa";
-import type { PaymentType } from "../../types/course-types";
+import type { PaymentType } from "../types/course-types";
 import { Check } from "lucide-react";
 
 type PaymentPickerProps = {
@@ -9,7 +9,7 @@ type PaymentPickerProps = {
   onChange?: (types: PaymentType[]) => void;
 };
 
-const PaymentPicker = ({ selected = [], onChange }: PaymentPickerProps) => {
+const PaymentPicker1 = ({ selected = [], onChange }: PaymentPickerProps) => {
   const paymentMethods = [
     { id: "cash", name: "Bar", icon: <FaCoins className="text-2xl" /> },
     { id: "invoice", name: "Rechnung", icon: <AiFillBank className="text-2xl" /> },
@@ -55,4 +55,4 @@ const PaymentPicker = ({ selected = [], onChange }: PaymentPickerProps) => {
   );
 };
 
-export default PaymentPicker;
+export default PaymentPicker1;

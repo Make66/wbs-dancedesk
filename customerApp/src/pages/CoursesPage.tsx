@@ -21,7 +21,6 @@ const CoursesPage = () => {
           },
         );
         const data = await response.json();
-        console.log("Week data:", data);
         setWeekData(data);
       } catch (error) {
         console.error("Error fetching week data:", error);
@@ -51,7 +50,7 @@ const CoursesPage = () => {
           </div>
         </div>
       </div>
-      <div className="p-6 mt-3">
+      <div className="p-6 mt-1">
         <WeeklySchedule data={weekData} week={currentWeek} year={new Date().getFullYear()} />
       </div>
     </div>

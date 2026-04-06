@@ -1,30 +1,43 @@
 const originalFetch = window.fetch;
 const authServiceURL = import.meta.env.VITE_APP_AUTH_SERVER_URL;
+
 if (!authServiceURL) {
-	console.error('No Auth service set');
+  console.error("No Auth service set");
 }
 
-window.fetch = async (url, options, ...rest) => {
-	let res = await originalFetch(
-		url,
-		{ ...options, credentials: 'include' },
-		...rest
-	);
-	const authHeader = res.headers.get('www-authenticate');
-	if (authHeader?.includes('token_expired')) {
-		console.log('ATTEMPT REFRESH');
-		const refreshRes = await originalFetch(`${authServiceURL}/auth/refresh`, {
-			method: 'POST',
-			credentials: 'include'
-		});
-		if (!refreshRes.ok) throw new Error('Login required');
-		res = await originalFetch(
-			url,
-			{ ...options, credentials: 'include' },
-			...rest
-		);
-	}
-	return res;
+window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const url =
+    typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+
+  const isOwnApi = !!authServiceURL && (url.startsWith(authServiceURL) || url.startsWith("/"));
+
+  const requestInit: RequestInit = {
+    ...init,
+    credentials: isOwnApi ? "include" : "omit",
+  };
+
+  let res = await originalFetch(input, requestInit);
+
+  if (!isOwnApi) {
+    return res;
+  }
+
+  const authHeader = res.headers.get("www-authenticate");
+
+  if (authHeader?.includes("token_expired")) {
+    const refreshRes = await originalFetch(`${authServiceURL}/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!refreshRes.ok) {
+      throw new Error("Login required");
+    }
+
+    res = await originalFetch(input, requestInit);
+  }
+
+  return res;
 };
 
 export { authServiceURL };

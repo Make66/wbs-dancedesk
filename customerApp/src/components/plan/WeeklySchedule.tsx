@@ -3,6 +3,10 @@ import { addDays, format, setISOWeek, setISOWeekYear, startOfISOWeek } from "dat
 import WeeklyScheduleItem from "./WeeklyScheduleItem";
 import type { Course } from "../../types/course-types";
 import { cn } from "../../lib/utils";
+import { useEffect, useState } from "react";
+import { fetch7DayForecast } from "../../data/weather";
+import WeatherWidget from "../ui/WeatherWidget";
+import { userStore } from "../../stores/userStore";
 
 type WeekData = {
   [key: number]: Course[];
@@ -14,12 +18,34 @@ type WeeklyScheduleProps = {
   year: number;
 };
 
+type WeatherData = {
+  weatherCode: number;
+  tempMin: number;
+  tempMax: number;
+};
+
 const dayLabels = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
 
 export default function WeeklySchedule({ data, week }: WeeklyScheduleProps) {
+  const location = userStore((state) => state.getActiveLocation());
+  const longitude = location?.longitude ?? 13.405;
+  const latitude = location?.latitude ?? 52.52;
   const year = new Date().getFullYear();
-
   const weekStart = startOfISOWeek(setISOWeek(setISOWeekYear(new Date(), year), week));
+  const [weather, setWeather] = useState<WeatherData[] | null>(null);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch7DayForecast(latitude, longitude);
+        setWeather(res);
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   return (
     <div className="w-full">
@@ -35,14 +61,27 @@ export default function WeeklySchedule({ data, week }: WeeklyScheduleProps) {
               key={index}
               className={cn(
                 format(currentDate, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd") &&
-                  "bg-accent",
-                "rounded-xl border border-muted-foreground p-1 shadow-sm",
+                  "border-t-2 border-purple-500",
+                format(currentDate, "yyyy-MM-dd") < format(new Date(), "yyyy-MM-dd") &&
+                  "opacity-30",
+                "p-1 relative",
               )}
             >
-              <p className="text-xs text-muted-foreground text-center w-full">
+              <p className="text-xs text-muted-foreground text-center w-full pt-3">
                 {format(currentDate, "dd.MM.yy")}
               </p>
               <h2 className="mb-4 mt-1 text-center text-sm font-semibold">{label}</h2>
+              {weather &&
+                format(currentDate, "yyyy-MM-dd") >= format(new Date(), "yyyy-MM-dd") &&
+                format(currentDate, "yyyy-MM-dd") <=
+                  format(addDays(new Date(), 6), "yyyy-MM-dd") && (
+                  <WeatherWidget
+                    className="absolute top-4 right-2"
+                    weatherCode={weather[index]?.weatherCode}
+                    tempMin={weather[index]?.tempMin}
+                    tempMax={weather[index]?.tempMax}
+                  />
+                )}
 
               <div className="space-y-1">
                 {courses

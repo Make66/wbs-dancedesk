@@ -1,82 +1,72 @@
-import { Input } from "./ui/input";
-import type { Course } from "../types/course-types";
-import { useForm } from "react-hook-form";
-import PaymentPicker from "./ui/PaymentPicker";
-import CourseSeatChart from "./CourseSeatChart";
 import { useState } from "react";
-import type { PaymentType } from "../types/course-types";
+import type { Course } from "../types/course-types";
+import PaymentPicker from "./PaymentPicker";
+import ContractTypesPicker from "./ContractTypesPicker";
+import { DatePicker } from "./ui/DatePicker";
+import { FaPlay } from "react-icons/fa";
+import { cn } from "../lib/utils";
+import FormDatePicker from "./form/FormDatePicker";
 
 type CourseFormProps = {
   course?: Course;
-  onSubmit?: (data: { name: string; description: string; paymentTypes: PaymentType[] }) => void;
 };
 
-const CourseForm = ({ course, onSubmit }: CourseFormProps) => {
-  const [selectedPaymentTypes, setSelectedPaymentTypes] = useState<PaymentType[]>(
-    course?.paymentTypes || [],
-  );
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: course?.name || "",
-      description: course?.description || "",
-    },
+const CourseForm = ({ course }: CourseFormProps) => {
+  const [formData, setFormData] = useState({
+    name: course?.name || "",
+    description: course?.description || "",
+    paymentTypes: course?.paymentTypes || [],
+    contractTypes: course?.contractTypes || [],
+    startsAt: course?.startsAt ? new Date(course.startsAt) : undefined,
+    endsAt: course?.endsAt ? new Date(course.endsAt) : undefined,
   });
 
-  const onFormSubmit = (data: { name: string; description: string }) => {
-    onSubmit?.({
-      ...data,
-      paymentTypes: selectedPaymentTypes,
-    });
-  };
-
-  console.log("Selected payment types:", selectedPaymentTypes);
+  console.log("PAYMENT TYPES:", formData.paymentTypes);
+  console.log("CONTRACT TYPES:", formData.contractTypes);
+  console.log("STARTS AT:", formData.startsAt);
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)}>
-      <div className="grid grid-cols-2 gap-5">
-        <div className="flex flex-col gap-6 mt-3">
-          <div>
-            <Input
-              placeholder="Kursname"
-              className="w-full"
-              label="Kursname"
-              {...register("name")}
-            />
-            {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
-          </div>
-          <div>
-            <Input label="Beschreibung" {...register("description")} />
-            {errors.description && (
-              <span className="text-red-500 text-sm">{errors.description.message}</span>
-            )}
-          </div>
-          <PaymentPicker selected={selectedPaymentTypes} onChange={setSelectedPaymentTypes} />
-          <div className="grid grid-cols-5 mt-5">
-            {course?.dates && course.dates.length > 0 ? (
-              course.dates.map((date) => (
-                <div
-                  key={date.date}
-                  className="p-4 border rounded flex items-center justify-center"
-                >
-                  <p className="font-semibold">{new Date(date.date).toLocaleDateString()}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 mt-4">Keine Termine verfügbar</p>
-            )}
-          </div>
+    <form className="mt-10 grid grid-cols-1 xl:grid-cols-3 gap-12">
+      <div className="xl:col-span-2">
+        <input
+          type="text"
+          defaultValue={course?.name}
+          placeholder="Kursname"
+          className="text-3xl w-full font-bold focus:outline-none focus:ring-0 focus:shadow-none"
+        />
+        <input
+          type="text"
+          defaultValue={course?.description}
+          placeholder="Kursbeschreibung"
+          className="text-lg w-full mt-4 mb-12 focus:outline-none focus:ring-0 focus:shadow-none"
+        />
+        <div className="flex">
+          <FormDatePicker
+            type="start"
+            value={formData.startsAt}
+            onChange={(date) => setFormData({ ...formData, startsAt: date })}
+            className="h-22 w-60 border border-muted-foreground py-4 px-6 rounded-2xl cursor-pointer hover:bg-blue-400"
+          />
+          <FormDatePicker
+            type="end"
+            value={formData.endsAt}
+            onChange={(date) => setFormData({ ...formData, endsAt: date })}
+            className="h-22 w-60 border border-muted-foreground py-4 px-6 rounded-2xl cursor-pointer hover:bg-blue-400"
+          />
         </div>
-        {course && (
-          <div className="flex items-center justify-center">
-            <CourseSeatChart course={course} />
-          </div>
-        )}
+        <div className="my-12 border-t" />
+        <ContractTypesPicker
+          selected={formData.contractTypes}
+          onChange={(contractTypes) => setFormData({ ...formData, contractTypes })}
+        />
+        <button></button>
+        <div className="my-12 border-t" />
+        <PaymentPicker
+          selected={formData.paymentTypes}
+          onChange={(paymentTypes) => setFormData({ ...formData, paymentTypes })}
+        />
       </div>
+      <div></div>
     </form>
   );
 };

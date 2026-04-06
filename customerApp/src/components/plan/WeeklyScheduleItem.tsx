@@ -14,7 +14,7 @@ const WeeklyScheduleItem = ({ course, bg, text }: { course: Course; bg: string; 
   return (
     <div
       key={course.id}
-      className="rounded-lg p-3 shadow-sm hover:saturate-150 hover:scale-105 transition-shadow duration-300"
+      className="rounded-lg p-3 shadow-sm hover:saturate-200 hover:scale-105 transition-shadow duration-300"
       style={{
         backgroundColor: bg,
         color: text,
