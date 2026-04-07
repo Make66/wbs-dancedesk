@@ -5,6 +5,8 @@ import ScheduleSection from "./ScheduleSection";
 import type { CourseFormValues } from "../../types/form";
 import SeatChart from "../charts/SeatChart";
 import ContractSection from "./ContractSection";
+import { Button } from "../ui/button";
+import { updateCourseDB } from "../../data/course";
 
 type CourseFormProps = {
   course?: Course;
@@ -25,6 +27,8 @@ const CourseForm = ({ course }: CourseFormProps) => {
       clubRepetition: course?.clubRepetition || 0,
       isIgnoreCalendar: course?.isIgnoreCalendar || false,
       dates: course?.dates || [],
+      isTaxFree: course?.isTaxFree || false,
+      isBookedOut: course?.isBookedOut || false,
     },
   });
 
@@ -46,15 +50,38 @@ const CourseForm = ({ course }: CourseFormProps) => {
       clubRepetition: course.clubRepetition || 0,
       isIgnoreCalendar: course.isIgnoreCalendar || false,
       dates: course.dates || [],
+      isTaxFree: course.isTaxFree || false,
+      isBookedOut: course.isBookedOut || false,
     });
   }, [course, reset]);
 
   const watchedValues = watch();
 
   console.log("WATCHED VALUES:", watchedValues);
+  const onSubmit = async (values: CourseFormValues) => {
+    const payload = {
+      ...values,
+      startsAt: values.startsAt?.toISOString() ?? null,
+      endsAt: values.endsAt?.toISOString() ?? null,
+      dates:
+        values.dates?.map((item) => ({
+          ...item,
+          date: new Date(item.date).toISOString(),
+        })) ?? [],
+    };
 
-  const onSubmit = (values: CourseFormValues) => {
-    console.log("FORM SUBMIT:", values);
+    console.log("SAVE PAYLOAD:", payload);
+
+    // const isEditMode = !!course?.id;
+
+    const res = await updateCourseDB(course!.id, payload);
+
+    if (!res.ok) {
+      throw new Error("Kurs konnte nicht gespeichert werden.");
+    }
+
+    const savedCourse = await res.json();
+    console.log("SAVED COURSE:", savedCourse);
   };
 
   return (
@@ -90,8 +117,14 @@ const CourseForm = ({ course }: CourseFormProps) => {
         </div>
 
         <div>
-          <SeatChart seatsCurrent={course?.seatsCurrent || 0} maxSeats={course?.seatsMax || 0} />
+          <SeatChart
+            seatsCurrent={course?.seatsCurrent || 0}
+            maxSeats={course?.seatsMax || 0}
+          />
         </div>
+         <Button type="submit" className="col-span-3 md:col-span-1">
+          Speichern
+        </Button>
       </form>
     </FormProvider>
   );
