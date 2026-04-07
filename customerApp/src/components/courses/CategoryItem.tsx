@@ -255,6 +255,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                   <Link
                     to="/course"
                     className="cursor-pointer"
+                    state={{ category }}
                     data-tooltip-id="tooltip"
                     data-tooltip-content="Kurs hinzufügen"
                     data-tooltip-place="top"

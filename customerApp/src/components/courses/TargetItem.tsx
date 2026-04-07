@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import TargetItemEdit from "./TargetItemEdit";
 import { userStore } from "../../stores/userStore";
 import { updateLocationDB } from "../../data/location";
-import { getIconComponent } from "../../lib/constants/icon-constants";
+import { getIconComponent } from "../../lib/constants/iconPicker-constants";
 import ConfirmationModal from "../ui/confirmationModal";
 
 type TargetFormDataType = {

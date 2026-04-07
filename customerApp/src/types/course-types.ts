@@ -1,5 +1,5 @@
 export type CourseFrequency = "daily" | "weekly" | "biweekly" | "monthly" | "yearly";
-export type PaymentType = "cash" | "invoice" | "paypal";
+export type PaymentType = "cash" | "bank" | "direct" | "paypal";
 export type ContractType = "one-time" | "subscription" | "trial" | "standard";
 
 export type Target = {
@@ -15,6 +15,15 @@ export type Target = {
   updatedAt: string;
   isDeleted: boolean;
   isNew?: boolean;
+};
+
+export type Contract = {
+  title: string;
+  amount: number;
+  installments: number;
+  autoEnd: boolean;
+  paymentTypes: PaymentType[];
+  isActive: boolean;
 };
 
 export type BaseEntity = {
@@ -45,14 +54,7 @@ export type Course = {
   courseRepetition?: number;
   seatsCurrent: number;
   seatsMax: number;
-  contracts: {
-    title: string;
-    amount: number;
-    installments: number;
-    endsAutomatically: boolean;
-    paymentTypes: PaymentType[];
-    isActive: boolean;
-  }[];
+  contracts: Contract[];
   price?: number;
   duration?: number;
   options?: number;

@@ -7,17 +7,20 @@ import SeatChart from "../charts/SeatChart";
 import ContractSection from "./ContractSection";
 import { Button } from "../ui/button";
 import { updateCourseDB, createCourseDB } from "../../data/course";
+import { useLocation, useNavigate } from "react-router";
 
 type CourseFormProps = {
   course?: Course;
 };
 
 const CourseForm = ({ course }: CourseFormProps) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const methods = useForm<CourseFormValues>({
     defaultValues: {
       name: course?.name || "",
       description: course?.description || "",
-      // contracts: course?.contracts || [],
+      contracts: course?.contracts || [],
       startsAt: course?.startsAt ? new Date(course.startsAt) : undefined,
       endsAt: course?.endsAt ? new Date(course.endsAt) : undefined,
       frequency: course?.frequency || "weekly",
@@ -39,7 +42,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
     reset({
       name: course.name || "",
       description: course.description || "",
-      // contracts: course.contracts || [],
+      contracts: course.contracts || [],
       startsAt: course.startsAt ? new Date(course.startsAt) : undefined,
       endsAt: course.endsAt ? new Date(course.endsAt) : undefined,
       frequency: course.frequency || "weekly",
@@ -54,8 +57,8 @@ const CourseForm = ({ course }: CourseFormProps) => {
   }, [course, reset]);
 
   const watchedValues = watch();
-
   console.log("WATCHED VALUES:", watchedValues);
+
   const onSubmit = async (values: CourseFormValues) => {
     const payload = {
       ...values,
@@ -68,16 +71,17 @@ const CourseForm = ({ course }: CourseFormProps) => {
         })) ?? [],
     };
 
-    console.log("SAVE PAYLOAD:", payload);
-
     try {
       const isEditMode = !!course?.id;
+
       const res = isEditMode
-        ? await updateCourseDB(course!.id, payload)
-        : await createCourseDB(payload);
+        ? await updateCourseDB(course.id, payload)
+        : await createCourseDB(location.state.category.id, payload);
 
       const savedCourse = await res.json();
       console.log("SAVED COURSE:", savedCourse);
+
+      navigate(`/course/${savedCourse.id}`);
     } catch (error) {
       console.error("Submit error:", error);
       throw error;
@@ -88,7 +92,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-12"
+        className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"
       >
         <div className="col-span-3">
           <input
@@ -116,7 +120,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
           <div className="my-12 border-t" />
         </div>
 
-        <div>
+        <div className="">
           <SeatChart seatsCurrent={course?.seatsCurrent || 0} maxSeats={course?.seatsMax || 0} />
         </div>
         <Button type="submit" className="col-span-3 md:col-span-1">
