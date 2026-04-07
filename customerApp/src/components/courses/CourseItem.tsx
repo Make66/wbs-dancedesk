@@ -91,8 +91,9 @@ const CourseItem = ({ course }: CourseItemProps) => {
       )}
       <div className="flex flex-col flex-1">
         <div className="flex items-center justify-between pl-2">
-          <div className="flex items-center gap-3">
-            <h3 className="font-semibold line-clamp-1 pr-2 dark:text-black">{course.name}</h3>
+          <div className="flex flex-col">
+            <h3 className="font-semibold line-clamp-1 pr-2 text-background">{course.name}</h3>
+            <p className="text-sm text-zinc-600 line-clamp-1">{course.description}</p>
           </div>
           {isEditMode && (
             <Switch
@@ -118,8 +119,6 @@ const CourseItem = ({ course }: CourseItemProps) => {
           <div className="my-2">
             <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
           </div>
-          <p className="text-sm text-gray-600 mt-2">{course.description}</p>
-          <p className="text-sm text-gray-800 mt-2 font-medium">€ {course.price}</p>
         </div>
       </div>
     </div>

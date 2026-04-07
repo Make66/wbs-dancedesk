@@ -4,7 +4,7 @@ import { cn } from "../../lib/utils";
 
 const inputVariants = cva(
   [
-    "w-full rounded-xl border border-muted-foreground px-5 py-5 text-sm outline-none text-xl",
+    "w-full h-22 rounded-xl border border-muted-foreground px-5 py-5 text-sm outline-none text-xl",
     "text-foreground placeholder:text-zinc-400",
     "bg-white text-zinc-900 placeholder:text-zinc-400",
     "focus:border-3",

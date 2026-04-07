@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import ScheduleSection from "./ScheduleSection";
 import type { CourseFormValues } from "../../types/form";
 import SeatChart from "../charts/SeatChart";
-// import ContractSection from "./ContractSection";
+import ContractSection from "./ContractSection";
 import { Button } from "../ui/button";
 import { updateCourseDB, createCourseDB } from "../../data/course";
 
@@ -109,7 +109,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
           <ScheduleSection />
 
           <div className="my-6" />
-          {/* <ContractSection /> */}
+          <ContractSection />
 
           <button type="submit"></button>
 
