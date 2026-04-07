@@ -5,6 +5,15 @@ export const courseDateSchema = z.object({
   isStart: z.boolean().default(false),
 });
 
+export const contractSchema = z.object({
+  title: z.string().min(2).max(64),
+  amount: z.number().default(0),
+  installments: z.int(),
+  endsAutomatically: z.boolean().default(true),
+  paymentTypes: z.array(z.enum(['direct', 'transfer', 'cash', 'paypal'])).default([]),
+  isActive: z.boolean().default(true),
+});
+
 export const courseSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
@@ -14,11 +23,11 @@ export const courseSchema = z.object({
   clubRepetition: z.int().min(1).max(50).default(50).optional(),
   courseRepetition: z.int().default(8).optional(),
   dates: z.array(courseDateSchema).default([]).optional(),
-  paymentTypes: z.array(z.enum(['cash', 'invoice', 'paypal'])).default([]).optional(),
-  contractTypes: z.array(z.enum(['standard', 'trial'])).default([]).optional(),
+  contracts: z.array(contractSchema).default([]).optional(),
   options: z.int('options must be a value between 0 and 12').default(0).optional(),
   seatsCurrent: z.number().optional(),
   seatsMax: z.number().optional(),
+  color: z.array(z.string()).optional(),
 
   isBookedOut: z.boolean().optional(),
   isClub: z.boolean().optional(),

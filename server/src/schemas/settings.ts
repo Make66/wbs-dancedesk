@@ -29,7 +29,7 @@ export const settingsSchema = z.object({
   domain:              z.string().optional(),
   federalState:        z.string().optional(),
   legalResources:      z.string().optional(),
-  contracts:           z.record(z.string(), z.unknown()).optional(),
+  contracts:           z.array(z.string()).default([]),
   registration:        registrationSettingsSchema,
 });
 

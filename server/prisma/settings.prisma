@@ -11,7 +11,7 @@ model Settings {
   domain              String?
   federalState        String?
   legalResources      String   @default("https://domain/fileadmin/kunden/mandant/rechtstexte/")
-  contracts           Json?
+  contracts           String[] @default([])
   registration        Json?
 
   // Common fields

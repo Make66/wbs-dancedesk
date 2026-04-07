@@ -7,11 +7,11 @@ model Course {
   clubRepetition   Int      @default(50)
   courseRepetition Int      @default(8)
   dates            Json     @default("[]")
-  paymentTypes     String[] @default(["cash", "invoice", "paypal"])
   contractTypes    Json[]   @default([])
   options          Int      @default(0)
   seatsCurrent     Int      @default(20)
   seatsMax         Int      @default(20)
+  color            Json?    @default("[]")
 
   isBookedOut      Boolean @default(false)
   isClub           Boolean @default(false)
