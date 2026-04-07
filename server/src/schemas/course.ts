@@ -1,15 +1,15 @@
 import { z } from "zod/v4";
 
 export const courseDateSchema = z.object({
-  date: z.date(),
+  date: z.coerce.date(),
   isStart: z.boolean().default(false),
 });
 
 export const courseSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
-  startsAt: z.date().default(new Date()).optional(),
-  endsAt: z.date().default(new Date()),
+  startsAt: z.coerce.date().default(new Date()).optional(),
+  endsAt: z.coerce.date().default(new Date()),
   frequency: z.enum(['ongoing', 'daily', 'weekly', 'biweekly', 'monthly']).default('weekly').optional(),
   clubRepetition: z.int().min(1).max(50).default(50).optional(),
   courseRepetition: z.int().default(8).optional(),

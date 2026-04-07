@@ -7,7 +7,8 @@ export interface UpdateCourseInput {
 }
 
 export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
-  console.log("updateCourseDB payload", id, data);
+  console.log("updateCourseDB id, payload", id, data);
+  console.log("updateCourseDB payload", JSON.stringify(data));
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
       method: "PATCH",
