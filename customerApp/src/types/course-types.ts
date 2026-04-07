@@ -45,8 +45,14 @@ export type Course = {
   courseRepetition?: number;
   seatsCurrent: number;
   seatsMax: number;
-  paymentTypes: PaymentType[];
-  contractTypes: ContractType[];
+  contracts: {
+    title: string;
+    amount: number;
+    installments: number;
+    endsAutomatically: boolean;
+    paymentTypes: PaymentType[];
+    isActive: boolean;
+  }[];
   price?: number;
   duration?: number;
   options?: number;

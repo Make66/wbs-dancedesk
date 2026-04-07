@@ -31,6 +31,31 @@ export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
   }
 };
 
+export const createCourseDB = async (data: UpdateCourseInput) => {
+  console.log("createCourseDB payload", data);
+  console.log("createCourseDB payload", JSON.stringify(data));
+  try {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Server error response:", errorText);
+      throw new Error(`Failed to create course: ${response.status} - ${errorText}`);
+    }
+    toast.success("Kurs erfolgreich erstellt.");
+    return response;
+  } catch (error) {
+    console.error("Error creating course:", error);
+    toast.error(`Fehler beim Erstellen des Kurses. Bitte versuche es erneut.`);
+    throw error;
+  }
+};
+
 export const getCourseById = async (id: string) => {
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
     method: "GET",

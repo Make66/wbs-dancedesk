@@ -1,5 +1,4 @@
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 type CourseSeatChartProps = {
   seatsCurrent: number;
@@ -48,19 +47,6 @@ const SeatChart = ({ seatsCurrent, maxSeats }: CourseSeatChartProps) => {
                 <Cell key={entry.name} fill={entry.color} />
               ))}
             </Pie>
-
-            <Tooltip
-              formatter={(value: ValueType | undefined, name: NameType | undefined) => {
-                const normalizedValue = Array.isArray(value) ? value[0] : value;
-                const numericValue =
-                  typeof normalizedValue === "number"
-                    ? normalizedValue
-                    : Number(normalizedValue ?? 0);
-                const percent = seatsMax > 0 ? Math.round((numericValue / seatsMax) * 100) : 0;
-
-                return [`${numericValue} Plätze (${percent}%)`, name ?? ""];
-              }}
-            />
           </PieChart>
         </ResponsiveContainer>
 
