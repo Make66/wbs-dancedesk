@@ -18,20 +18,17 @@ export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to update course: ${response.status}`);
-    }
-
-    const contentType = response.headers.get("content-type");
-
-    if (contentType?.includes("application/json")) {
-      return response.json();
+      const errorText = await response.text();
+      console.error("Server error response:", errorText);
+      throw new Error(`Failed to update course: ${response.status} - ${errorText}`);
     }
     toast.success("Kurs erfolgreich aktualisiert.");
+    return response;
   } catch (error) {
     console.error("Error updating course:", error);
     toast.error(`Fehler beim Aktualisieren des Kurses. Bitte versuche es erneut.`);
+    throw error;
   }
-  return null;
 };
 
 export const getCourseById = async (id: string) => {
