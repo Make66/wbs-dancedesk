@@ -1,8 +1,8 @@
 import type { CalendarConfig } from "../../types/calendar-types";
 
 export const DEFAULT_CALENDAR_CONFIG: CalendarConfig = {
-  startHour: 10,
-  endHour: 16,
+  startHour: 12,
+  endHour: 14,
   slotHeight: 20,
   minutesPerSlot: 15,
 };

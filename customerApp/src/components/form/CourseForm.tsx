@@ -5,8 +5,6 @@ import ScheduleSection from "./ScheduleSection";
 import type { CourseFormValues } from "../../types/form";
 import SeatChart from "../charts/SeatChart";
 import ContractSection from "./ContractSection";
-import { Button } from "../ui/button";
-import { updateCourseDB } from "../../data/course";
 
 type CourseFormProps = {
   course?: Course;
@@ -27,8 +25,6 @@ const CourseForm = ({ course }: CourseFormProps) => {
       clubRepetition: course?.clubRepetition || 0,
       isIgnoreCalendar: course?.isIgnoreCalendar || false,
       dates: course?.dates || [],
-      isTaxFree: course?.isTaxFree || false,
-      isBookedOut: course?.isBookedOut || false,
     },
   });
 
@@ -50,8 +46,6 @@ const CourseForm = ({ course }: CourseFormProps) => {
       clubRepetition: course.clubRepetition || 0,
       isIgnoreCalendar: course.isIgnoreCalendar || false,
       dates: course.dates || [],
-      isTaxFree: course.isTaxFree || false,
-      isBookedOut: course.isBookedOut || false,
     });
   }, [course, reset]);
 
@@ -59,37 +53,15 @@ const CourseForm = ({ course }: CourseFormProps) => {
 
   console.log("WATCHED VALUES:", watchedValues);
 
-  const onSubmit = async (values: CourseFormValues) => {
-    const payload = {
-      ...values,
-      startsAt: values.startsAt?.toISOString() ?? null,
-      endsAt: values.endsAt?.toISOString() ?? null,
-      dates:
-        values.dates?.map((item) => ({
-          ...item,
-          date: new Date(item.date).toISOString(),
-        })) ?? [],
-    };
-
-    console.log("SAVE PAYLOAD:", payload);
-
-    // const isEditMode = !!course?.id;
-
-    const res = await updateCourseDB(course!.id, payload);
-
-    if (!res.ok) {
-      throw new Error("Kurs konnte nicht gespeichert werden.");
-    }
-
-    const savedCourse = await res.json();
-    console.log("SAVED COURSE:", savedCourse);
+  const onSubmit = (values: CourseFormValues) => {
+    console.log("FORM SUBMIT:", values);
   };
 
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-12"
+        className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-12"
       >
         <div className="col-span-3">
           <input
@@ -102,11 +74,11 @@ const CourseForm = ({ course }: CourseFormProps) => {
             type="text"
             placeholder="Kursbeschreibung"
             {...register("description")}
-            className="text-lg w-full mt-4 focus:outline-none focus:ring-0 focus:shadow-none"
+            className="text-lg w-full mt-4 mb-12 focus:outline-none focus:ring-0 focus:shadow-none"
           />
         </div>
 
-        <div className="col-span-3 md:col-span-2 mt-2">
+        <div className="col-span-3 md:col-span-2">
           <ScheduleSection />
 
           <div className="my-6" />
@@ -120,9 +92,6 @@ const CourseForm = ({ course }: CourseFormProps) => {
         <div>
           <SeatChart seatsCurrent={course?.seatsCurrent || 0} maxSeats={course?.seatsMax || 0} />
         </div>
-        <Button type="submit" className="col-span-3 md:col-span-1">
-          Speichern
-        </Button>
       </form>
     </FormProvider>
   );
