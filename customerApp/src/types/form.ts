@@ -14,4 +14,7 @@ export type CourseFormValues = {
     date: string;
     isStart: boolean;
   }[];
+  isTaxFree?: boolean;
+  isBookedOut?: boolean;
+  seatsMax?: number;
 };
