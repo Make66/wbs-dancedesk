@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import ScheduleSection from "./ScheduleSection";
 import type { CourseFormValues } from "../../types/form";
 import SeatChart from "../charts/SeatChart";
-import ContractSection from "./ContractSection";
+// import ContractSection from "./ContractSection";
 import { Button } from "../ui/button";
-import { updateCourseDB } from "../../data/course";
+import { updateCourseDB, createCourseDB } from "../../data/course";
 
 type CourseFormProps = {
   course?: Course;
@@ -17,8 +17,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
     defaultValues: {
       name: course?.name || "",
       description: course?.description || "",
-      paymentTypes: course?.paymentTypes || [],
-      contractTypes: course?.contractTypes || [],
+      // contracts: course?.contracts || [],
       startsAt: course?.startsAt ? new Date(course.startsAt) : undefined,
       endsAt: course?.endsAt ? new Date(course.endsAt) : undefined,
       frequency: course?.frequency || "weekly",
@@ -40,8 +39,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
     reset({
       name: course.name || "",
       description: course.description || "",
-      paymentTypes: course.paymentTypes || [],
-      contractTypes: course.contractTypes || [],
+      // contracts: course.contracts || [],
       startsAt: course.startsAt ? new Date(course.startsAt) : undefined,
       endsAt: course.endsAt ? new Date(course.endsAt) : undefined,
       frequency: course.frequency || "weekly",
@@ -73,7 +71,10 @@ const CourseForm = ({ course }: CourseFormProps) => {
     console.log("SAVE PAYLOAD:", payload);
 
     try {
-      const res = await updateCourseDB(course!.id, payload);
+      const isEditMode = !!course?.id;
+      const res = isEditMode
+        ? await updateCourseDB(course!.id, payload)
+        : await createCourseDB(payload);
 
       const savedCourse = await res.json();
       console.log("SAVED COURSE:", savedCourse);
@@ -108,7 +109,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
           <ScheduleSection />
 
           <div className="my-6" />
-          <ContractSection />
+          {/* <ContractSection /> */}
 
           <button type="submit"></button>
 

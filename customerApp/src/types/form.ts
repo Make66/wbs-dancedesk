@@ -1,8 +1,16 @@
+import type { PaymentType } from "./course-types";
+
 export type CourseFormValues = {
   name: string;
   description?: string;
-  paymentTypes?: unknown[];
-  contractTypes?: unknown[];
+  contracts?: {
+    title: string;
+    amount: number;
+    installments: number;
+    endsAutomatically: boolean;
+    paymentTypes: PaymentType[];
+    isActive: boolean;
+  }[];
   startsAt?: Date | undefined;
   endsAt?: Date | undefined;
   frequency?: string;
