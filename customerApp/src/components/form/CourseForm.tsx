@@ -72,16 +72,15 @@ const CourseForm = ({ course }: CourseFormProps) => {
 
     console.log("SAVE PAYLOAD:", payload);
 
-    // const isEditMode = !!course?.id;
+    try {
+      const res = await updateCourseDB(course!.id, payload);
 
-    const res = await updateCourseDB(course!.id, payload);
-
-    if (!res.ok) {
-      throw new Error("Kurs konnte nicht gespeichert werden.");
+      const savedCourse = await res.json();
+      console.log("SAVED COURSE:", savedCourse);
+    } catch (error) {
+      console.error("Submit error:", error);
+      throw error;
     }
-
-    const savedCourse = await res.json();
-    console.log("SAVED COURSE:", savedCourse);
   };
 
   return (
@@ -117,12 +116,9 @@ const CourseForm = ({ course }: CourseFormProps) => {
         </div>
 
         <div>
-          <SeatChart
-            seatsCurrent={course?.seatsCurrent || 0}
-            maxSeats={course?.seatsMax || 0}
-          />
+          <SeatChart seatsCurrent={course?.seatsCurrent || 0} maxSeats={course?.seatsMax || 0} />
         </div>
-         <Button type="submit" className="col-span-3 md:col-span-1">
+        <Button type="submit" className="col-span-3 md:col-span-1">
           Speichern
         </Button>
       </form>
