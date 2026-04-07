@@ -1,9 +1,9 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
-import type { Course } from "../types/course-types";
 
 type CourseSeatChartProps = {
-  course: Course;
+  seatsCurrent: number;
+  maxSeats: number;
 };
 
 const COLORS = {
@@ -11,9 +11,9 @@ const COLORS = {
   available: "#22c55e",
 };
 
-const CourseSeatChart = ({ course }: CourseSeatChartProps) => {
-  const seatsMax = Math.max(course.seatsMax, 0);
-  const occupiedSeats = Math.min(Math.max(course.seatsCurrent, 0), seatsMax);
+const SeatChart = ({ seatsCurrent, maxSeats }: CourseSeatChartProps) => {
+  const seatsMax = Math.max(maxSeats, 0);
+  const occupiedSeats = Math.min(Math.max(seatsCurrent, 0), seatsMax);
   const availableSeats = Math.max(seatsMax - occupiedSeats, 0);
   const occupancyPercent = seatsMax > 0 ? Math.round((occupiedSeats / seatsMax) * 100) : 0;
 
@@ -53,7 +53,9 @@ const CourseSeatChart = ({ course }: CourseSeatChartProps) => {
               formatter={(value: ValueType | undefined, name: NameType | undefined) => {
                 const normalizedValue = Array.isArray(value) ? value[0] : value;
                 const numericValue =
-                  typeof normalizedValue === "number" ? normalizedValue : Number(normalizedValue ?? 0);
+                  typeof normalizedValue === "number"
+                    ? normalizedValue
+                    : Number(normalizedValue ?? 0);
                 const percent = seatsMax > 0 ? Math.round((numericValue / seatsMax) * 100) : 0;
 
                 return [`${numericValue} Plätze (${percent}%)`, name ?? ""];
@@ -71,4 +73,4 @@ const CourseSeatChart = ({ course }: CourseSeatChartProps) => {
   );
 };
 
-export default CourseSeatChart;
+export default SeatChart;
