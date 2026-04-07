@@ -63,7 +63,10 @@ const RepetitionPicker = () => {
         data-tooltip-content="Club- oder regulärer Kurs"
         data-tooltip-place="bottom"
       >
-        <SiDinersclub className="text-3xl" />
+        <div className="flex flex-col items-center mt-2">
+          <SiDinersclub className="text-3xl" />
+          <span className="text-[13px] mt-1">{isClub ? "Club" : "Regulär"}</span>
+        </div>
         {isClub && <Check className="h-4 w-4 absolute top-2 right-6" />}
       </button>
 
@@ -78,12 +81,15 @@ const RepetitionPicker = () => {
         data-tooltip-content="Ferienkalender ignorieren"
         data-tooltip-place="bottom"
       >
-        <div>
+        <div className="flex flex-col items-center mt-3">
           {isIgnoreCalendar ? (
             <TbCalendarOff className="text-3xl" />
           ) : (
             <TbCalendar className="text-3xl" />
           )}
+          <span className="text-[13px] mt-1">
+            {isIgnoreCalendar ? "ignorieren" : "Ferienkalender"}
+          </span>
         </div>
         {isIgnoreCalendar && <Check className="h-4 w-4 absolute top-2 right-6" />}
       </button>
