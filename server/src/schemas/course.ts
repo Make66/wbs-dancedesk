@@ -10,7 +10,7 @@ export const courseSchema = z.object({
   description: z.string().optional(),
   startsAt: z.coerce.date().default(new Date()).optional(),
   endsAt: z.coerce.date().default(new Date()),
-  frequency: z.enum(['ongoing', 'daily', 'weekly', 'biweekly', 'monthly']).default('weekly').optional(),
+  frequency: z.enum(['daily', 'weekly', 'biweekly', 'monthly']).default('weekly').optional(),
   clubRepetition: z.int().min(1).max(50).default(50).optional(),
   courseRepetition: z.int().default(8).optional(),
   dates: z.array(courseDateSchema).default([]).optional(),
