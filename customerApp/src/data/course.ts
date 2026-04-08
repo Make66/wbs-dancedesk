@@ -31,7 +31,7 @@ export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
   }
 };
 
-export const createCourseDB = async (data: UpdateCourseInput) => {
+export const createCourseDB = async (id: string, data: UpdateCourseInput) => {
   console.log("createCourseDB payload", data);
   console.log("createCourseDB payload", JSON.stringify(data));
   try {

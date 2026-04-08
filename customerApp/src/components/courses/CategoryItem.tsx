@@ -27,6 +27,7 @@ import CategoryItemEdit from "./CategoryItemEdit";
 import type { Category as CourseCategoryType } from "../../types/course-types";
 import { sortEntitiesByOrderedIds } from "../../lib/courses/sorting-utils";
 import ConfirmationModal from "../ui/confirmationModal";
+import { getIconComponent } from "../../lib/constants/iconPicker-constants";
 
 type CategoryItemProps = {
   category: CourseCategoryType & { isNew?: boolean };
@@ -181,7 +182,11 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
         <div
           ref={setNodeRef}
           style={style}
-          className={cn("rounded-xl p-4 bg-gray-300", isDragging && "z-20 opacity-60")}
+          className={cn(
+            "rounded-xl p-4 shadow-2xl dark:shadow-gray-900",
+            !isOpened && "hover:scale-y-115",
+            isDragging && "z-20 opacity-60",
+          )}
         >
           <div
             {...(isEditMode && category.isActive ? attributes : {})}
@@ -204,9 +209,22 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                   style={{ color: category.color[1] }}
                 />
               )}
-              <h2 className="ml-3 font-semibold" style={{ color: category.color[1] }}>
-                {formData.name}
-              </h2>
+              <div className="flex items-center ml-3">
+                {category.icon
+                  ? (() => {
+                      const IconComponent = getIconComponent(category.icon);
+                      return (
+                        <IconComponent
+                          className="inline-block mr-1"
+                          style={{ color: category.color[1] }}
+                        />
+                      );
+                    })()
+                  : null}
+                <h2 className="ml-1 font-semibold" style={{ color: category.color[1] }}>
+                  {formData.name}
+                </h2>
+              </div>
               {formData.description && (
                 <>
                   <span style={{ color: formData.color[1] }} className="mx-2">
@@ -255,6 +273,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                   <Link
                     to="/course"
                     className="cursor-pointer"
+                    state={{ category }}
                     data-tooltip-id="tooltip"
                     data-tooltip-content="Kurs hinzufügen"
                     data-tooltip-place="top"

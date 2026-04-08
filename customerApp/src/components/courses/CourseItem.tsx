@@ -66,10 +66,10 @@ const CourseItem = ({ course }: CourseItemProps) => {
   return (
     <div
       ref={course.isActive ? setNodeRef : undefined}
-      style={style}
+      style={{ backgroundColor: course.color?.[0] ?? "#ffffff", ...style }}
       className={cn(
         !course.isActive && "opacity-30 cursor-not-allowed",
-        "p-4 bg-white rounded-xl shadow h-full flex",
+        "p-4 rounded-xl shadow h-full flex",
         isDragging && "opacity-60 z-20",
       )}
     >
@@ -85,30 +85,47 @@ const CourseItem = ({ course }: CourseItemProps) => {
               event.stopPropagation();
             }}
           >
-            <RxHamburgerMenu className="inline-block dark:text-black" />
+            <RxHamburgerMenu
+              className="inline-block dark:text-black"
+              style={{ color: course.color?.[1] ?? "#000000" }}
+            />
           </button>
         </div>
       )}
       <div className="flex flex-col flex-1">
         <div className="flex items-center justify-between pl-2">
-          <div className="flex flex-col">
-            <h3 className="font-semibold line-clamp-1 pr-2 text-background">{course.name}</h3>
-            <p className="text-sm text-zinc-600 line-clamp-1">{course.description}</p>
+          <div className="w-full flex flex-col">
+            <div className="w-full flex justify-between">
+              <h3
+                className="font-semibold line-clamp-1 pr-2 text-background"
+                style={{ color: course.color?.[1] ?? "#000000" }}
+              >
+                {course.name}
+              </h3>
+              {isEditMode && (
+                <Switch
+                  checked={course.isActive}
+                  onCheckedChange={(checked) => {
+                    handleToggleActive(checked);
+                  }}
+                  data-tooltip-id="tooltip"
+                  data-tooltip-content="Kurs aktivieren/deaktivieren"
+                  data-tooltip-place="top"
+                  color={course.color?.[1]}
+                  color2={course.color?.[0]}
+                />
+              )}
+            </div>
+            <p
+              className="text-sm line-clamp-1 opacity-90"
+              style={{ color: course.color?.[1] ?? "#000000" }}
+            >
+              {course.description}
+            </p>
           </div>
-          {isEditMode && (
-            <Switch
-              checked={course.isActive}
-              onCheckedChange={(checked) => {
-                handleToggleActive(checked);
-              }}
-              data-tooltip-id="tooltip"
-              data-tooltip-content="Kurs aktivieren/deaktivieren"
-              data-tooltip-place="top"
-            />
-          )}
         </div>
         <div className="pl-2">
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs opacity-80 mt-1" style={{ color: course.color?.[1] ?? "#000000" }}>
             ab {new Date(course.startsAt).toLocaleDateString("de-DE", { weekday: "long" })}, dem{" "}
             {new Date(course.startsAt).toLocaleDateString()} um{" "}
             {new Date(course.startsAt).toLocaleTimeString([], {

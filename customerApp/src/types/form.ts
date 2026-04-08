@@ -1,19 +1,12 @@
-import type { PaymentType } from "./course-types";
+import type { Contract } from "./course-types";
 
 export type CourseFormValues = {
   name: string;
   description?: string;
-  contracts?: {
-    title: string;
-    amount: number;
-    installments: number;
-    endsAutomatically: boolean;
-    paymentTypes: PaymentType[];
-    isActive: boolean;
-  }[];
+  contracts?: Contract[];
   startsAt?: Date | undefined;
   endsAt?: Date | undefined;
-  frequency?: string;
+  frequency?: "daily" | "weekly" | "biweekly" | "monthly" | "yearly";
   isClub?: boolean;
   courseRepetition?: number;
   clubRepetition?: number;
@@ -25,4 +18,6 @@ export type CourseFormValues = {
   isTaxFree?: boolean;
   isBookedOut?: boolean;
   seatsMax?: number;
+  seatsCurrent?: number;
+  color?: [string, string];
 };

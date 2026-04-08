@@ -40,12 +40,10 @@ const RepetitionPicker = () => {
     <div className="flex">
       <div className="w-full relative">
         <input
-          type="number"
-          min="1"
-          max="100"
+          type="text"
           value={activeValue ?? ""}
           onChange={(e) => handleChange(e.target.value)}
-          className="h-22 w-full pl-18 bg-background rounded-l-2xl border border-muted-foreground cursor-pointer focus:outline-none focus:ring-0 focus:shadow-none"
+          className="h-22 w-full pl-18 bg-background rounded-l-2xl border border-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none"
           data-tooltip-id="tooltip"
           data-tooltip-content="Anzahl der Wiederholungen (z.B. 8 = Kurs findet 8x statt)"
           data-tooltip-place="bottom"
@@ -65,7 +63,7 @@ const RepetitionPicker = () => {
       >
         <div className="flex flex-col items-center mt-2">
           <SiDinersclub className="text-3xl" />
-          <span className="text-[13px] mt-1">{isClub ? "Club" : "Regulär"}</span>
+          <span className="text-[13px] mt-1 line-clamp-1">{isClub ? "Club" : "Regulär"}</span>
         </div>
         {isClub && <Check className="h-4 w-4 absolute top-2 right-6" />}
       </button>
@@ -87,7 +85,7 @@ const RepetitionPicker = () => {
           ) : (
             <TbCalendar className="text-3xl" />
           )}
-          <span className="text-[13px] mt-1">
+          <span className="text-[13px] mt-1 line-clamp-1">
             {isIgnoreCalendar ? "ignorieren" : "Ferienkalender"}
           </span>
         </div>
