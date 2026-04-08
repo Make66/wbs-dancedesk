@@ -22,6 +22,7 @@ interface CitiKurs {
   id: number;
   kursbezeichnung: string;
   is_visible: number;
+  standort: string;
   startdatum: string;
   anfangszeit: string;
   endezeit: string;
@@ -515,6 +516,51 @@ async function main() {
     });
     locationMap.set(loc.id, location.id);
   }
+  // title → prisma uuid (built once here, reused for rooms and course matching)
+  const locationByTitle = new Map<string, string>(
+    citiData.flatMap(loc => {
+      const id = locationMap.get(loc.id);
+      return id ? [[loc.title, id] as [string, string]] : [];
+    })
+  );
+
+  // 3b. rooms — created per location, Bühl gets 3 (rotated per course), Achern gets 1
+  const roomsByLocation = new Map<string, string[]>(); // locationId → [roomId, ...]
+
+  const roomDefs: { title: string; rooms: { name: string; street: string }[] }[] = [
+    {
+      title: 'Buehl',
+      rooms: [
+        { name: 'Dreherstraße',     street: 'Dreherstraße 1' },
+        { name: 'Johannespassage',  street: 'Johannespassage 5' },
+        { name: 'Eisenbahnstraße',  street: 'Eisenbahnstraße 12' },
+      ],
+    },
+    {
+      title: 'Achern',
+      rooms: [
+        { name: 'Hauptstraße 108', street: 'Hauptstraße 108' },
+      ],
+    },
+  ];
+
+  for (const { title, rooms } of roomDefs) {
+    const locationId = locationByTitle.get(title);
+    if (!locationId) continue;
+    const ids: string[] = [];
+    for (const r of rooms) {
+      const room = await prisma.room.create({
+        data: {
+          name:       r.name,
+          street:     r.street,
+          locationId,
+          tenantId:   'a50834f8-ad1a-46d2-836a-003d8d926dac',
+        },
+      });
+      ids.push(room.id);
+    }
+    roomsByLocation.set(locationId, ids);
+  }
 
   // 4. targets — one per location × headline
   const targetMap = new Map<string, string>(); // `${citiLocId}:${headline}` → prisma id
@@ -615,6 +661,9 @@ async function main() {
           }));
 
           const instructorId = matchInstructor(kurs.kursbezeichnung);
+          const locationId   = locationByTitle.get(kurs.standort);
+          const roomPool     = locationId ? (roomsByLocation.get(locationId) ?? []) : [];
+          const roomId       = roomPool.length ? roomPool[courseCount % roomPool.length] : undefined;
           const course = await prisma.course.create({
             data: {
               name: kurs.kursbezeichnung,
@@ -631,6 +680,8 @@ async function main() {
               textInfoId: defaultInfo.id,
               tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
               ...(instructorId && { instructorId }),
+              ...(locationId   && { locationId }),
+              ...(roomId       && { roomId }),
             },
           });
           courseSeats.push({ id: course.id, seats: course.seatsCurrent });

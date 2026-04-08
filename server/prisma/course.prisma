@@ -23,6 +23,8 @@ model Course {
   categoryId   String      @db.Uuid
   instructor   Instructor? @relation(fields: [instructorId], references: [id])
   instructorId String?     @db.Uuid
+  location     Location?   @relation(fields: [locationId], references: [id])
+  locationId   String?     @db.Uuid
   room         Room?       @relation(fields: [roomId], references: [id])
   roomId       String?     @db.Uuid
   textTerms    Text?       @relation("textTerms", fields: [textTermsId], references: [id])

@@ -12,10 +12,12 @@ model Location {
 
   // relations
   setSeqTarget String[]  @db.Uuid
+  courses      Course[]
   customer     Customer? @relation(fields: [customerId], references: [id])
   customerId   String?   @db.Uuid
   targets      Target[]
   users        User[]    @relation("UserLocations") // Many-to-many relation with User
+  rooms        Room[]
 
   // Common fields
   id        String   @id @default(uuid()) @db.Uuid

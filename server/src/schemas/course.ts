@@ -36,6 +36,7 @@ export const courseSchema = z.object({
 
   categoryId: z.uuid("Id given is not a valid UUID").optional(),
   instructorId: z.uuid("Id given is not a valid UUID").optional(),
+  locationId: z.uuid("Id given is not a valid UUID").optional(),
   roomId: z.uuid("Id given is not a valid UUID").optional(),
   textTermsId: z.uuid("Id given is not a valid UUID").optional(),
   textInfoId: z.uuid("Id given is not a valid UUID").optional(),

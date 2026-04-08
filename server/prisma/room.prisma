@@ -5,7 +5,9 @@ model Room {
   capacity    Int     @default(20)
 
   // relations
-  courses Course[]
+  courses    Course[]
+  location   Location? @relation(fields: [locationId], references: [id])
+  locationId String?   @db.Uuid
 
   // Common address fields
   street    String @default("123 Main St")
