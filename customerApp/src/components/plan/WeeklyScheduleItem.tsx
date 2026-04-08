@@ -2,7 +2,7 @@ import type { Course } from "../../types/course-types";
 import SeatingItem from "../ui/SeatingItem";
 import { MdMeetingRoom } from "react-icons/md";
 import { FaChalkboardTeacher } from "react-icons/fa";
-import { FaLock, FaLockOpen } from "react-icons/fa";
+import { FaLock } from "react-icons/fa";
 
 function formatTime(dateString: string) {
   return new Date(dateString).toLocaleTimeString("de-DE", {
@@ -27,7 +27,7 @@ const WeeklyScheduleItem = ({ course, bg, text }: { course: Course; bg: string; 
         </p>
         <div className="w-full my-2" style={{ borderBottom: `1px solid ${text}`, opacity: 0.7 }} />
         <p className="text-sm font-semibold leading-snug line-clamp-1">{course.name}</p>
-        <p className="text-xs opacity-90 line-clamp-1">Hier kommt die Beschreibung</p>
+        <p className="text-xs opacity-90 line-clamp-1">{course.description}</p>
       </div>
       <div className="mt-3 text-center space-y-1">
         <div className="flex items-center justify-center gap-2">
@@ -40,19 +40,22 @@ const WeeklyScheduleItem = ({ course, bg, text }: { course: Course; bg: string; 
         </div>
       </div>
       <div className="flex items-center justify-center gap-4">
-        <div className="flex justify-around mt-3">
-          <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
-        </div>
-        {course.isBookedOut && (
-          <div
-            className="flex items-center justify-center gap-2 mt-3"
-            data-tooltip-id="tooltip"
-            data-tooltip-content="Kurs ist geschlossen"
-            data-tooltip-place="top"
-          >
-            <FaLock className="" />
+        <div className="grid grid-cols-3 gap-3 items-center">
+          <div className="col-span-1"></div>
+          <div className="col-span-1 flex justify-around mt-3">
+            <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
           </div>
-        )}
+          {course.isBookedOut && (
+            <div
+              className="col-span-1flex items-center justify-center gap-2 mt-3"
+              data-tooltip-id="tooltip"
+              data-tooltip-content="Kurs ist geschlossen"
+              data-tooltip-place="top"
+            >
+              <FaLock className="" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
