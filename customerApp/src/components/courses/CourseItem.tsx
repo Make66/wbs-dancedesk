@@ -69,7 +69,7 @@ const CourseItem = ({ course }: CourseItemProps) => {
       style={{ backgroundColor: course.color?.[0] ?? "#ffffff", ...style }}
       className={cn(
         !course.isActive && "opacity-30 cursor-not-allowed",
-        "p-4 rounded-xl shadow h-full flex",
+        "p-4 rounded-xl shadow-xl h-full flex",
         isDragging && "opacity-60 z-20",
       )}
     >

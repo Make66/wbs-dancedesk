@@ -1,6 +1,6 @@
 import { FaCalendarAlt } from "react-icons/fa";
 import ScheduleDatePicker from "./ScheduleDatePicker";
-import type { CourseFormValues } from "../../types/form";
+import type { CourseFormValues } from "./schemas/course-schema";
 import { useFormContext } from "react-hook-form";
 import FrequencyPicker from "./FrequencyPicker";
 import RepetitionPicker from "./RepetitionPicker";
@@ -10,7 +10,7 @@ import { LuRefreshCcwDot } from "react-icons/lu";
 import { useState } from "react";
 
 const ScheduleSection = () => {
-  const { watch, setValue } = useFormContext<CourseFormValues>();
+  const { watch, setValue, trigger } = useFormContext<CourseFormValues>();
   const [toggleDates, setToggleDates] = useState(false);
 
   return (
@@ -52,6 +52,7 @@ const ScheduleSection = () => {
           onChange={({ startsAt, endsAt }) => {
             setValue("startsAt", startsAt);
             setValue("endsAt", endsAt);
+            trigger(["startsAt", "endsAt"]);
           }}
           className="w-full bg-background border border-muted-foreground rounded-2xl cursor-pointer overflow-hidden"
         />

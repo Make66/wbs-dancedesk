@@ -49,7 +49,7 @@ export default function WeeklySchedule({ data, week }: WeeklyScheduleProps) {
 
   return (
     <div className="w-full">
-      <div className="w-full grid md:grid-cols-3 lg:grid-cols-4 xl:grid-flow-col xl:auto-cols-fr">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-flow-col xl:auto-cols-fr">
         {dayLabels.map((label, index) => {
           const courses = data?.[index] ?? [];
           if (courses.length === 0) return null;

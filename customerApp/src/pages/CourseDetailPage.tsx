@@ -24,8 +24,6 @@ const CourseDetailPage = () => {
     fetchCourse();
   }, [courseId]);
 
-  console.log("Fetched course:", course);
-
   return (
     <div className="w-full h-screen flex flex-col bg-background">
       <div className="sticky top-0 flex h-20 items-center gap-9 border-b bg-background border-gray-400 dark:border-gray-700 pl-6 z-20">
