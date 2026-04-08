@@ -14,7 +14,7 @@ const ScheduleSection = () => {
   const [toggleDates, setToggleDates] = useState(false);
 
   return (
-    <div className="p-2 rounded-2xl bg-blue-400/40 grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="p-2 rounded-2xl bg-blue-400/40 grid grid-cols-1 md:grid-cols-2 gap-3 shadow-xl">
       <div className="pt-2 pl-3 flex items-center justify-between col-span-1 md:col-span-2">
         <div className="flex items-center">
           <FaCalendarAlt className="inline mr-4 text-2xl" />

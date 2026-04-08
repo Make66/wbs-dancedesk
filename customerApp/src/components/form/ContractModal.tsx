@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoIosClose } from "react-icons/io";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -7,6 +7,7 @@ import { BsSignStopFill, BsSignStop } from "react-icons/bs";
 import { cn } from "../../lib/utils";
 import type { Contract, PaymentType } from "../../types/course-types";
 import { Check } from "lucide-react";
+import { contractDraftSchema } from "./schemas/contract-schema";
 
 type ContractModalProps = {
   isOpen: boolean;
@@ -20,6 +21,8 @@ type ContractDraft = Omit<Contract, "amount" | "installments"> & {
   installments: string;
 };
 
+type ContractDraftErrors = Partial<Record<keyof ContractDraft, string>>;
+
 const toDraft = (contract: Contract): ContractDraft => ({
   ...contract,
   amount: contract.amount?.toString() ?? "",
@@ -32,24 +35,43 @@ const toNumber = (value: string) => {
 };
 
 const ContractModal = ({ onClose, initialValues, onSave }: ContractModalProps) => {
-  const [draft, setDraft] = useState<ContractDraft>(toDraft(initialValues));
-
-  useEffect(() => {
-    setDraft(toDraft(initialValues));
-  }, [initialValues]);
+  const [draft, setDraft] = useState<ContractDraft>(() => toDraft(initialValues));
+  const [errors, setErrors] = useState<ContractDraftErrors>({});
 
   const handleChange = <K extends keyof ContractDraft>(key: K, value: ContractDraft[K]) => {
     setDraft((prev) => ({
       ...prev,
       [key]: value,
     }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [key]: undefined,
+    }));
   };
 
   const handleSubmit = () => {
+    const result = contractDraftSchema.safeParse(draft);
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+
+      setErrors({
+        title: fieldErrors.title?.[0],
+        amount: fieldErrors.amount?.[0],
+        installments: fieldErrors.installments?.[0],
+        paymentTypes: fieldErrors.paymentTypes?.[0],
+      });
+
+      return;
+    }
+
+    setErrors({});
+
     onSave({
-      ...draft,
-      amount: toNumber(draft.amount),
-      installments: toNumber(draft.installments),
+      ...result.data,
+      amount: toNumber(result.data.amount),
+      installments: toNumber(result.data.installments),
     });
   };
 
@@ -72,33 +94,44 @@ const ContractModal = ({ onClose, initialValues, onSave }: ContractModalProps) =
         </div>
 
         <div className="flex flex-col gap-5">
-          <Input
-            type="text"
-            placeholder="Vertragstitel"
-            label="Vertragstitel"
-            className="w-full"
-            value={draft.title}
-            onChange={(e) => handleChange("title", e.target.value)}
-          />
+          <div>
+            <Input
+              type="text"
+              placeholder="Vertragstitel"
+              label="Vertragstitel"
+              className="w-full"
+              value={draft.title}
+              onChange={(e) => handleChange("title", e.target.value)}
+            />
+            {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
+          </div>
 
           <div className="flex gap-5">
-            <Input
-              type="text"
-              placeholder="Betrag"
-              label="Betrag"
-              className="w-full"
-              value={draft.amount}
-              onChange={(e) => handleChange("amount", e.target.value)}
-            />
+            <div className="w-full">
+              <Input
+                type="text"
+                placeholder="Betrag"
+                label="Betrag"
+                className="w-full"
+                value={draft.amount}
+                onChange={(e) => handleChange("amount", e.target.value)}
+              />
+              {errors.amount && <p className="mt-1 text-sm text-red-500">{errors.amount}</p>}
+            </div>
 
-            <Input
-              type="text"
-              placeholder="Anzahl Raten"
-              label="Anzahl Raten"
-              className="w-full"
-              value={draft.installments}
-              onChange={(e) => handleChange("installments", e.target.value)}
-            />
+            <div className="w-full">
+              <Input
+                type="text"
+                placeholder="Anzahl Raten"
+                label="Anzahl Raten"
+                className="w-full"
+                value={draft.installments}
+                onChange={(e) => handleChange("installments", e.target.value)}
+              />
+              {errors.installments && (
+                <p className="mt-1 text-sm text-red-500">{errors.installments}</p>
+              )}
+            </div>
 
             <button
               type="button"
@@ -126,10 +159,15 @@ const ContractModal = ({ onClose, initialValues, onSave }: ContractModalProps) =
             </button>
           </div>
 
-          <PaymentPicker
-            selected={draft.paymentTypes}
-            onChange={(types: PaymentType[]) => handleChange("paymentTypes", types)}
-          />
+          <div>
+            <PaymentPicker
+              selected={draft.paymentTypes}
+              onChange={(types: PaymentType[]) => handleChange("paymentTypes", types)}
+            />
+            {errors.paymentTypes && (
+              <p className="mt-1 text-sm text-red-500">{errors.paymentTypes}</p>
+            )}
+          </div>
         </div>
 
         <Button type="button" size="lg" className="mt-5" onClick={handleSubmit}>

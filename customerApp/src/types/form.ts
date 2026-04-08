@@ -18,4 +18,6 @@ export type CourseFormValues = {
   isTaxFree?: boolean;
   isBookedOut?: boolean;
   seatsMax?: number;
+  seatsCurrent?: number;
+  color?: [string, string];
 };

@@ -86,7 +86,7 @@ const ContractSection = () => {
   };
 
   return (
-    <div className="p-2 rounded-2xl bg-orange-400/40 grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="p-2 rounded-2xl bg-orange-400/40 grid grid-cols-1 md:grid-cols-2 gap-3 shadow-xl">
       <div className="pt-2 pl-3 flex items-center justify-between col-span-1 md:col-span-2">
         <div className="w-full flex items-center justify-between">
           <div className="flex items-center">

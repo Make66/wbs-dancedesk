@@ -126,8 +126,8 @@ const CategoriesPage = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-white dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-900 sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
+    <div className="w-full min-h-screen bg-background">
+      <div className="bg-background sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
         <div className="flex">
           {
             /////ICONS
@@ -180,7 +180,7 @@ const CategoriesPage = () => {
         )}
       </div>
 
-      <div className="p-6 bg-white dark:bg-gray-900">
+      <div className="p-6 bg-background">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

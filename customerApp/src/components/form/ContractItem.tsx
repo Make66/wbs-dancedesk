@@ -34,21 +34,28 @@ const ContractItem = ({
         <span className="text-md text-muted-foreground">
           {contract.amount} € x {contract.installments} Rate(n)
           {" = "}
-          {contract.amount * contract.installments} € gesamt
+          <span className="font-semibold">{contract.amount * contract.installments} €</span>
         </span>
       </div>
 
-      <div className="hidden lg:flex items-center gap-3 text-sm text-muted-foreground">
-        <div
-          className="mr-6"
-          data-tooltip-id="tooltip"
-          data-tooltip-content="Automatische Beendigung"
-        >
-          {contract.autoEnd && <BsSignStopFill className="text-xl" />}
-        </div>
+      <div className="hidden lg:flex items-center text-sm text-muted-foreground">
+        {contract.autoEnd && (
+          <div
+            className="mr-14"
+            data-tooltip-id="tooltip"
+            data-tooltip-content="Automatische Beendigung"
+          >
+            <BsSignStopFill className="text-xl" />
+          </div>
+        )}
         {PAYMENT.filter((method) => contract.paymentTypes.includes(method.id as PaymentType)).map(
           (method) => (
-            <div key={method.id} data-tooltip-id="tooltip" data-tooltip-content={method.name}>
+            <div
+              key={method.id}
+              className="mr-6"
+              data-tooltip-id="tooltip"
+              data-tooltip-content={method.name}
+            >
               {method.icon}
             </div>
           ),
