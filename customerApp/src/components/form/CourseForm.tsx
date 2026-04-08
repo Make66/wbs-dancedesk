@@ -93,7 +93,8 @@ const CourseForm = ({ course }: CourseFormProps) => {
       const savedCourse = await res.json();
       console.log("SAVED COURSE:", savedCourse);
 
-      navigate(`/course/${savedCourse.id}`);
+      // navigate(`/course/${savedCourse.id}`);
+      navigate(-1);
     } catch (error) {
       console.error("Submit error:", error);
       throw error;

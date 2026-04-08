@@ -2,6 +2,7 @@ import type { Course } from "../../types/course-types";
 import SeatingItem from "../ui/SeatingItem";
 import { MdMeetingRoom } from "react-icons/md";
 import { FaChalkboardTeacher } from "react-icons/fa";
+import { FaLock, FaLockOpen } from "react-icons/fa";
 
 function formatTime(dateString: string) {
   return new Date(dateString).toLocaleTimeString("de-DE", {
@@ -38,8 +39,20 @@ const WeeklyScheduleItem = ({ course, bg, text }: { course: Course; bg: string; 
           <span className="text-xs opacity-90">Instruktor</span>
         </div>
       </div>
-      <div className="flex justify-around mt-3">
-        <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
+      <div className="flex items-center justify-center gap-4">
+        <div className="flex justify-around mt-3">
+          <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
+        </div>
+        {course.isBookedOut && (
+          <div
+            className="flex items-center justify-center gap-2 mt-3"
+            data-tooltip-id="tooltip"
+            data-tooltip-content="Kurs ist geschlossen"
+            data-tooltip-place="top"
+          >
+            <FaLock className="" />
+          </div>
+        )}
       </div>
     </div>
   );

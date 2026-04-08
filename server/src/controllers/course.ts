@@ -1,5 +1,5 @@
-import type { RequestHandler } from 'express';
-import prisma from '#db';
+import type { RequestHandler } from "express";
+import prisma from "#db";
 
 // --- date generation helpers ---
 
@@ -8,7 +8,10 @@ interface HolidayEntry {
   end?: { dateTime: string };
 }
 
-interface ParsedHoliday { start: number; end: number }
+interface ParsedHoliday {
+  start: number;
+  end: number;
+}
 
 function utcMidnight(date: Date): number {
   return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
@@ -16,8 +19,8 @@ function utcMidnight(date: Date): number {
 
 function parseHolidays(raw: unknown): ParsedHoliday[] {
   if (!Array.isArray(raw)) return [];
-  return (raw as unknown[]).flatMap(h => {
-    if (!h || typeof h !== 'object' || !('start' in h)) return [];
+  return (raw as unknown[]).flatMap((h) => {
+    if (!h || typeof h !== "object" || !("start" in h)) return [];
     const entry = h as HolidayEntry;
     const startMs = Date.parse(entry.start.dateTime);
     if (isNaN(startMs)) return [];
@@ -27,37 +30,57 @@ function parseHolidays(raw: unknown): ParsedHoliday[] {
 }
 
 function isHoliday(dateMs: number, holidays: ParsedHoliday[]): boolean {
-  return holidays.some(h => dateMs >= h.start && dateMs <= h.end);
+  return holidays.some((h) => dateMs >= h.start && dateMs <= h.end);
 }
 
 function nextOccurrence(dateMs: number, frequency: string): number {
   const d = new Date(dateMs);
   switch (frequency) {
-    case 'daily':     d.setUTCDate(d.getUTCDate() + 1);    break;
-    case 'bi-weekly': d.setUTCDate(d.getUTCDate() + 14);   break;
-    case 'monthly':   d.setUTCMonth(d.getUTCMonth() + 1);  break;
-    default:          d.setUTCDate(d.getUTCDate() + 7);    break; // weekly / ongoing
+    case "daily":
+      d.setUTCDate(d.getUTCDate() + 1);
+      break;
+    case "bi-weekly":
+      d.setUTCDate(d.getUTCDate() + 14);
+      break;
+    case "monthly":
+      d.setUTCMonth(d.getUTCMonth() + 1);
+      break;
+    default:
+      d.setUTCDate(d.getUTCDate() + 7);
+      break; // weekly / ongoing
   }
   return d.getTime();
 }
 
 function formatDate(ms: number): string {
   const d = new Date(ms);
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
 type CourseForDates = {
-  startsAt: Date; frequency: string; isClub: boolean;
-  isIgnoreCalendar: boolean; clubRepetition: number; courseRepetition: number;
+  startsAt: Date;
+  frequency: string;
+  isClub: boolean;
+  isIgnoreCalendar: boolean;
+  clubRepetition: number;
+  courseRepetition: number;
 };
-type SettingsForDates = { holidays?: unknown; schoolHolidays?: unknown; federalState?: string } | null;
+type SettingsForDates = {
+  holidays?: unknown;
+  schoolHolidays?: unknown;
+  federalState?: string;
+} | null;
 
-function generateDatesFromCourse(course: CourseForDates, settings: SettingsForDates, count: number): string[] {
+function generateDatesFromCourse(
+  course: CourseForDates,
+  settings: SettingsForDates,
+  count: number,
+): string[] {
   const stateHolsRaw = (() => {
     const s = settings as Record<string, unknown> | null;
     const sh = s?.schoolHolidays;
     const fs = s?.federalState as string | undefined;
-    if (!fs || !sh || typeof sh !== 'object' || Array.isArray(sh)) return undefined;
+    if (!fs || !sh || typeof sh !== "object" || Array.isArray(sh)) return undefined;
     return (sh as Record<string, unknown>)[fs];
   })();
 
@@ -95,11 +118,9 @@ export const getCourseDates: RequestHandler = async (req, res) => {
     prisma.course.findFirst({ where: { id, tenantId, isDeleted: false } }),
     prisma.settings.findUnique({ where: { tenantId } }),
   ]);
-  if (!course) throw new Error('Course not found', { cause: { status: 404 } });
+  if (!course) throw new Error("Course not found", { cause: { status: 404 } });
 
-  const count = course.isClub
-    ? (course.clubRepetition ?? 0)
-    : course.courseRepetition ?? 0;
+  const count = course.isClub ? (course.clubRepetition ?? 0) : (course.courseRepetition ?? 0);
 
   res.json(generateDatesFromCourse(course, settings as SettingsForDates, count));
 };
@@ -134,15 +155,15 @@ function isoWeekYear(ms: number): number {
  */
 function resolveWeekBounds(numberOfWeek?: number): { weekStart: number; weekEnd: number } {
   if (numberOfWeek === undefined) {
-    const todayMs   = utcMidnight(new Date());
-    const jsDay     = new Date(todayMs).getUTCDay();
+    const todayMs = utcMidnight(new Date());
+    const jsDay = new Date(todayMs).getUTCDay();
     const weekStart = todayMs - ((jsDay + 6) % 7) * 86_400_000;
     return { weekStart, weekEnd: weekStart + 6 * 86_400_000 };
   }
   const yearsAhead = Math.floor(numberOfWeek / 53);
-  const isoWeek    = numberOfWeek % 53 || 53;
-  const baseYear   = isoWeekYear(utcMidnight(new Date()));
-  const weekStart  = getMondayOfISOWeek(baseYear + yearsAhead, isoWeek);
+  const isoWeek = numberOfWeek % 53 || 53;
+  const baseYear = isoWeekYear(utcMidnight(new Date()));
+  const weekStart = getMondayOfISOWeek(baseYear + yearsAhead, isoWeek);
   return { weekStart, weekEnd: weekStart + 6 * 86_400_000 };
 }
 
@@ -152,7 +173,7 @@ export const getWeekCourses: RequestHandler = async (req, res) => {
   const rawWeek = req.params.numberOfWeek;
   const numberOfWeek = rawWeek !== undefined ? parseInt(rawWeek, 10) : undefined;
   if (numberOfWeek !== undefined && (isNaN(numberOfWeek) || numberOfWeek < 1)) {
-    throw new Error('Invalid week number', { cause: { status: 400 } });
+    throw new Error("Invalid week number", { cause: { status: 400 } });
   }
 
   const { weekStart, weekEnd } = resolveWeekBounds(numberOfWeek);
@@ -172,43 +193,47 @@ export const getWeekCourses: RequestHandler = async (req, res) => {
   const result: Record<number, object[]> = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
 
   for (const course of courses) {
-    const storedMs = (course.dates as { date: string }[] ?? [])
-      .map(d => utcMidnight(new Date(d.date)))
-      .filter(ms => ms >= weekStart && ms <= weekEnd);
+    const storedMs = ((course.dates as { date: string }[]) ?? [])
+      .map((d) => utcMidnight(new Date(d.date)))
+      .filter((ms) => ms >= weekStart && ms <= weekEnd);
 
     const count = course.isClub ? (course.clubRepetition ?? 50) : (course.courseRepetition ?? 8);
     const weekMs = storedMs.length
       ? storedMs
       : generateDatesFromCourse(course, settings as SettingsForDates, count)
-          .map(s => utcMidnight(new Date(s)))
-          .filter(ms => ms >= weekStart && ms <= weekEnd);
+          .map((s) => utcMidnight(new Date(s)))
+          .filter((ms) => ms >= weekStart && ms <= weekEnd);
 
     if (weekMs.length === 0) continue;
 
     const info = {
-      id:           course.id,
-      name:         course.name,
-      description:  course.description,
-      startsAt:     course.startsAt,
-      endsAt:       course.endsAt,
-      options:      course.options,
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      startsAt: course.startsAt,
+      endsAt: course.endsAt,
+      options: course.options,
       seatsCurrent: course.seatsCurrent,
-      seatsMax:     course.seatsMax,
-      isBookedOut:  course.isBookedOut,
-      isClub:       course.isClub,
-      color:        (course.category as unknown as { color: string[] }).color,
+      seatsMax: course.seatsMax,
+      isBookedOut: course.isBookedOut,
+      isClub: course.isClub,
+      color: course.color,
       category: {
-        id:    course.category.id,
-        name:  course.category.name,
+        id: course.category.id,
+        name: course.category.name,
         color: (course.category as unknown as { color: string[] }).color,
       },
       target: {
-        id:    course.category.target.id,
-        name:  course.category.target.name,
+        id: course.category.target.id,
+        name: course.category.target.name,
         color: (course.category.target as unknown as { color: string[] }).color,
       },
       instructor: course.instructor
-        ? { id: course.instructor.id, name: course.instructor.name, imageUrl: course.instructor.imageUrl }
+        ? {
+            id: course.instructor.id,
+            name: course.instructor.name,
+            imageUrl: course.instructor.imageUrl,
+          }
         : null,
       room: course.room
         ? { id: course.room.id, name: course.room.name, description: course.room.description }
@@ -224,7 +249,9 @@ export const getWeekCourses: RequestHandler = async (req, res) => {
   // sort each bucket by startsAt time-of-day
   const timeMinutes = (d: Date) => d.getUTCHours() * 60 + d.getUTCMinutes();
   for (const bucket of Object.values(result)) {
-    (bucket as { startsAt: Date }[]).sort((a, b) => timeMinutes(a.startsAt) - timeMinutes(b.startsAt));
+    (bucket as { startsAt: Date }[]).sort(
+      (a, b) => timeMinutes(a.startsAt) - timeMinutes(b.startsAt),
+    );
   }
 
   res.json(result);
@@ -235,10 +262,10 @@ function mapCourseBody(body: Record<string, unknown>) {
   return {
     ...rest,
     categoryId: category as string,
-    ...(room !== undefined      && { roomId: room as string }),
+    ...(room !== undefined && { roomId: room as string }),
     ...(instructor !== undefined && { instructorId: instructor as string }),
-    ...(textTerms !== undefined  && { textTermsId: textTerms as string }),
-    ...(textInfo !== undefined   && { textInfoId: textInfo as string }),
+    ...(textTerms !== undefined && { textTermsId: textTerms as string }),
+    ...(textInfo !== undefined && { textInfoId: textInfo as string }),
   };
 }
 
@@ -263,16 +290,16 @@ export const getOneCourse: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;
   const course = await prisma.course.findFirst({
-    where: { id, tenantId, isDeleted: false }
+    where: { id, tenantId, isDeleted: false },
   });
-  if (!course) throw new Error('Course not found', { cause: { status: 404 } });
+  if (!course) throw new Error("Course not found", { cause: { status: 404 } });
   res.json(course);
 };
 
 export const createCourse: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const course = await prisma.course.create({
-    data: { ...mapCourseBody(req.body), tenantId }
+    data: { ...mapCourseBody(req.body), tenantId },
   });
   res.status(201).json(course);
 };
@@ -281,10 +308,10 @@ export const updateCourse: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;
   const exists = await prisma.course.findFirst({ where: { id, tenantId, isDeleted: false } });
-  if (!exists) throw new Error('Course not found', { cause: { status: 404 } });
+  if (!exists) throw new Error("Course not found", { cause: { status: 404 } });
   const course = await prisma.course.update({
     where: { id },
-    data: mapCourseBody(req.body)
+    data: mapCourseBody(req.body),
   });
   res.json(course);
 };
@@ -293,7 +320,7 @@ export const removeCourse: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;
   const exists = await prisma.course.findFirst({ where: { id, tenantId, isDeleted: false } });
-  if (!exists) throw new Error('Course not found', { cause: { status: 404 } });
+  if (!exists) throw new Error("Course not found", { cause: { status: 404 } });
   await prisma.course.update({ where: { id }, data: { isDeleted: true } });
   res.status(204).send();
 };

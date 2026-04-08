@@ -12,7 +12,7 @@ const MainLayout = () => {
         <Sidebar />
         <div className="flex-1 h-screen w-full flex flex-col">
           <Navbar />
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar">
+          <div className="flex-1 overflow-y-auto scrollbar">
             <Outlet />
           </div>
         </div>
