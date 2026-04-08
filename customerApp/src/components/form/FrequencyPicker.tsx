@@ -4,6 +4,7 @@ import type { CourseFrequency } from "../../types/course-types";
 import { cn } from "../../lib/utils";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormValues } from "../../types/form";
+import { useState } from "react";
 
 const frequencyOptions: { id: CourseFrequency; name: string }[] = [
   { id: "daily", name: "täglich" },
@@ -13,10 +14,11 @@ const frequencyOptions: { id: CourseFrequency; name: string }[] = [
 ] as const;
 
 const FrequencyPicker = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const { watch, setValue } = useFormContext<CourseFormValues>();
   return (
     <div className="h-22 w-full bg-background rounded-2xl border border-muted-foreground flex items-center hover:bg-blue-500 transition-colors">
-      <Popover>
+      <Popover open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <PopoverTrigger asChild>
           <button className="w-full h-full flex items-center cursor-pointer">
             <div className="flex">
@@ -27,16 +29,19 @@ const FrequencyPicker = () => {
             </div>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-50 overflow-y-scroll scrollbar">
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] overflow-y-scroll scrollbar">
           <div className="grid gap-1 p-2">
             {frequencyOptions.map((option) => (
               <button
                 key={option.id}
                 type="button"
-                onClick={() => setValue("frequency", option.id)}
+                onClick={() => {
+                  setValue("frequency", option.id);
+                  setIsOpen(false);
+                }}
                 className={cn(
-                  "rounded-md px-3 py-2 text-lg hover:bg-blue-500 text-left cursor-pointer",
-                  watch("frequency") === option.id && "bg-muted",
+                  "rounded-md px-3 py-2 text-lg hover:bg-blue-400 text-left cursor-pointer",
+                  watch("frequency") === option.id && "bg-foreground text-background font-medium",
                 )}
               >
                 {option.name}

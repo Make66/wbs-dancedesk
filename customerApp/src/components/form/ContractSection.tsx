@@ -1,7 +1,7 @@
 import { TbContract } from "react-icons/tb";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { useFormContext } from "react-hook-form";
-import type { CourseFormValues } from "../../types/form";
+import type { CourseFormValues } from "./schemas/course-schema";
 import { useEffect, useMemo, useState } from "react";
 import ContractModal from "./ContractModal";
 import type { Contract } from "../../types/course-types";
@@ -102,7 +102,10 @@ const ContractSection = () => {
 
       <div className="mt-3 col-span-1 md:col-span-2 gap-3 flex flex-col">
         {contracts.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-muted-foreground p-4 text-sm text-muted-foreground">
+          <div
+            onClick={openCreateModal}
+            className="rounded-xl border border-dashed border-muted-foreground p-4 text-sm text-muted-foreground cursor-pointer"
+          >
             Noch keine Verträge hinzugefügt.
           </div>
         ) : (

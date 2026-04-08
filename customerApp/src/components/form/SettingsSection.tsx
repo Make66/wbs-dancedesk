@@ -4,8 +4,9 @@ import { FaLock, FaLockOpen } from "react-icons/fa";
 import { HiOutlineReceiptTax, HiReceiptTax } from "react-icons/hi";
 import { ColorPicker } from "../ui/colorPicker";
 import { useFormContext } from "react-hook-form";
-import type { CourseFormValues } from "../../types/form";
+import type { CourseFormValues } from "./schemas/course-schema";
 import { Check } from "lucide-react";
+import ShiftComponent from "./ShiftComponent";
 
 const SettingsSection = () => {
   const { watch, setValue } = useFormContext<CourseFormValues>();
@@ -85,8 +86,6 @@ const SettingsSection = () => {
             </button>
           )}
         </div>
-      </div>
-      <div>
         <div className="col-span-1 gap-3 p-3 md:col-span-2 flex items-center">
           <ColorPicker
             color={backgroundColor}
@@ -123,6 +122,11 @@ const SettingsSection = () => {
               />
             </button>
           </ColorPicker>
+        </div>
+      </div>
+      <div>
+        <div>
+          <ShiftComponent />
         </div>
       </div>
     </div>
