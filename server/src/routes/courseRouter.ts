@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllCourses, getOneCourse, createCourse, updateCourse, removeCourse, getCourseDates, getWeekCourses } from '#controllers';
+import { getAllCourses, getOneCourse, createCourse, updateCourse, removeCourse, getCourseDates, getWeekCourses, getCourseParticipants } from '#controllers';
 import { courseSchema } from '#schemas';
 
 const coursesRouter = Router();
@@ -17,6 +17,10 @@ coursesRouter
 coursesRouter
   .route('/week/:number')
   .get(authenticate, getWeekCourses);
+
+coursesRouter
+  .route('/:id/participants')
+  .get(authenticate, getCourseParticipants);
 
 coursesRouter
   .route('/:id/dates')

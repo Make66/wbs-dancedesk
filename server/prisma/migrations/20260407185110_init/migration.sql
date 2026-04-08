@@ -26,7 +26,7 @@ CREATE TABLE "Course" (
     "clubRepetition" INTEGER NOT NULL DEFAULT 50,
     "courseRepetition" INTEGER NOT NULL DEFAULT 8,
     "dates" JSONB NOT NULL DEFAULT '[]',
-    "contractTypes" JSONB[] DEFAULT ARRAY[]::JSONB[],
+    "contracts" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "options" INTEGER NOT NULL DEFAULT 0,
     "seatsCurrent" INTEGER NOT NULL DEFAULT 20,
     "seatsMax" INTEGER NOT NULL DEFAULT 20,
@@ -130,6 +130,41 @@ CREATE TABLE "Module" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Module_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Participant" (
+    "firstName" TEXT DEFAULT 'John',
+    "lastName" TEXT DEFAULT 'Doe',
+    "email" TEXT DEFAULT 'john.doe@example.com',
+    "phone" TEXT DEFAULT '123-456-7890',
+    "password" TEXT NOT NULL DEFAULT 'Test123!',
+    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "refreshToken" TEXT,
+    "settings" JSONB DEFAULT '{}',
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "street" TEXT NOT NULL DEFAULT '123 Main St',
+    "city" TEXT NOT NULL DEFAULT 'Anytown',
+    "zipCode" TEXT NOT NULL DEFAULT '12345',
+    "longitude" DOUBLE PRECISION NOT NULL DEFAULT 50.0,
+    "latitude" DOUBLE PRECISION NOT NULL DEFAULT 8.0,
+    "id" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Participant_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ParticipantCourse" (
+    "participantId" UUID NOT NULL,
+    "courseId" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ParticipantCourse_pkey" PRIMARY KEY ("participantId","courseId")
 );
 
 -- CreateTable
@@ -252,6 +287,14 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "_ParticipantCourse" (
+    "A" UUID NOT NULL,
+    "B" UUID NOT NULL,
+
+    CONSTRAINT "_ParticipantCourse_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
 CREATE TABLE "_UserLocations" (
     "A" UUID NOT NULL,
     "B" UUID NOT NULL,
@@ -275,6 +318,9 @@ CREATE UNIQUE INDEX "Settings_tenantId_key" ON "Settings"("tenantId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "_ParticipantCourse_B_index" ON "_ParticipantCourse"("B");
 
 -- CreateIndex
 CREATE INDEX "_UserLocations_B_index" ON "_UserLocations"("B");
@@ -307,7 +353,19 @@ ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_customerId_fkey" FOREIGN KEY
 ALTER TABLE "Location" ADD CONSTRAINT "Location_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "Participant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Target" ADD CONSTRAINT "Target_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ParticipantCourse" ADD CONSTRAINT "_ParticipantCourse_A_fkey" FOREIGN KEY ("A") REFERENCES "Course"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ParticipantCourse" ADD CONSTRAINT "_ParticipantCourse_B_fkey" FOREIGN KEY ("B") REFERENCES "Participant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserLocations" ADD CONSTRAINT "_UserLocations_A_fkey" FOREIGN KEY ("A") REFERENCES "Location"("id") ON DELETE CASCADE ON UPDATE CASCADE;

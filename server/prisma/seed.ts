@@ -456,9 +456,52 @@ async function main() {
   await prisma.settings.deleteMany();
 
   // 2. customer
-  await prisma.customer.create({
+  const customer = await prisma.customer.create({
     data: { name: "DanceSchool Flip'n Bit", email: 'info@dancedesk.de', tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' },
   });
+
+  // 3. instructors — one per dance specialisation, funny names
+  const instructorData = [
+    { name: 'Flippy Taptoe',           skill: 'WTP-youngster',    description: 'Tiny feet, big dreams — the kids love her chaos.' },
+    { name: 'Sir Waltz von Fancyfeet', skill: 'WTP-grownups',     description: 'Wears tails on Tuesdays. Judges your posture silently.' },
+    { name: 'Rico Caliente',           skill: 'Salsa',            description: 'His hips have never lied. Not even once.' },
+    { name: 'MC Bounceback',           skill: 'HipHop',           description: 'Drops beats and occasionally students. Certified hype.' },
+    { name: 'Sweaty McBurnham',        skill: 'Fitness',          description: 'No pain, no gain. Mostly pain. Bring a towel.' },
+    { name: 'Lindy Hopalong',          skill: 'Lindy+Westcoast',  description: 'Swings both ways — Lindy and West Coast. Simultaneously.' },
+  ] as const;
+
+  type Skill = typeof instructorData[number]['skill'];
+  const instructorMap = new Map<Skill, string>(); // skill → instructor id
+
+  for (const { name, skill, description } of instructorData) {
+    const inst = await prisma.instructor.create({
+      data: {
+        name,
+        description,
+        skills: [skill],
+        customerId: customer.id,
+        tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
+      },
+    });
+    instructorMap.set(skill, inst.id);
+  }
+
+  function matchInstructor(courseName: string): string | undefined {
+    const n = courseName.toLowerCase();
+    if (n.includes('wtp') && (n.includes('kind') || n.includes('jugend') || n.includes('junior') || n.includes('young')))
+      return instructorMap.get('WTP-youngster');
+    if (n.includes('wtp'))
+      return instructorMap.get('WTP-grownups');
+    if (n.includes('salsa'))
+      return instructorMap.get('Salsa');
+    if (n.includes('hiphop') || n.includes('hip-hop') || n.includes('hip hop'))
+      return instructorMap.get('HipHop');
+    if (n.includes('fitness') || n.includes('workout'))
+      return instructorMap.get('Fitness');
+    if (n.includes('lindy') || n.includes('westcoast') || n.includes('west coast') || n.includes('swing'))
+      return instructorMap.get('Lindy+Westcoast');
+    return undefined;
+  }
 
   // 3. locations
   const locationMap = new Map<number, string>(); // citi id → prisma id
@@ -553,6 +596,7 @@ async function main() {
 
   // 7. courses
   let courseCount = 0;
+  const courseSeats: Array<{ id: string; seats: number }> = [];
   for (const loc of citiData) {
     for (const zg of loc.zielgruppen ?? []) {
       const targetId = targetMap.get(`${loc.id}:${zg.headline}`);
@@ -570,7 +614,8 @@ async function main() {
             isStart: t.is_start === 1,
           }));
 
-          await prisma.course.create({
+          const instructorId = matchInstructor(kurs.kursbezeichnung);
+          const course = await prisma.course.create({
             data: {
               name: kurs.kursbezeichnung,
               isActive: true,
@@ -585,15 +630,71 @@ async function main() {
               textTermsId: defaultTerms.id,
               textInfoId: defaultInfo.id,
               tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
+              ...(instructorId && { instructorId }),
             },
           });
+          courseSeats.push({ id: course.id, seats: course.seatsCurrent });
           courseCount++;
         }
       }
     }
   }
 
-  // 8. modules
+  // 8. participants — one per seat in each course, fetched page-by-page from dummyjson.com
+  // NOTE: requires `prisma generate` after Participant + ParticipantCourse models were added.
+  // Run: npx prisma migrate dev --name add-participant && npx prisma generate
+  interface DummyAddress { address: string; city: string; postalCode: string; coordinates: { lat: number; lng: number } }
+  interface DummyUser { firstName: string; lastName: string; email: string; phone: string; birthDate: string; image: string; address: DummyAddress }
+  interface DummyResponse { users: DummyUser[] }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const participantClient = (prisma as any).participant;
+
+  // Buffer of pre-fetched API users not yet consumed
+  const userBuffer: DummyUser[] = [];
+  let apiSkip = 0;
+  let participantCount = 0;
+
+  async function nextUser(): Promise<DummyUser | null> {
+    if (userBuffer.length === 0) {
+      const res = await fetch(
+        `https://dummyjson.com/users?limit=30&skip=${apiSkip}&select=firstName,lastName,email,phone,birthDate,image,address`
+      );
+      const json = await res.json() as DummyResponse;
+      if (!json.users?.length) return null;
+      userBuffer.push(...json.users);
+      apiSkip += json.users.length;
+    }
+    return userBuffer.shift() ?? null;
+  }
+
+  for (const { id: courseId, seats } of courseSeats) {
+    for (let i = 0; i < seats; i++) {
+      const u = await nextUser();
+      if (!u) break; // API exhausted
+
+      await participantClient.create({
+        data: {
+          firstName:  u.firstName,
+          lastName:   u.lastName,
+          email:      u.email,
+          phone:      u.phone,
+          birthDate:  u.birthDate,
+          imageUrl:   u.image,
+          street:     u.address.address,
+          city:       u.address.city,
+          zipCode:    u.address.postalCode,
+          latitude:   u.address.coordinates.lat,
+          longitude:  u.address.coordinates.lng,
+          tenantId:   'a50834f8-ad1a-46d2-836a-003d8d926dac',
+          participantCourses: { create: { courseId, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } },
+        },
+      });
+      participantCount++;
+    }
+  }
+
+  // 9. modules
   const moduleIds: string[] = [];
   for (const data of [
     { name: 'Kurse',         color: '#66ff33', isActive: true },
@@ -670,7 +771,10 @@ async function main() {
   console.log(`  ${targetMap.size} targets`);
   console.log(`  ${uniqueCategories.size} categories`);
   console.log(`  ${locationMap.size} locations`);
+  console.log(`  ${instructorData.length} instructors`);
   console.log(`  ${courseCount} courses`);
+  console.log(`  ${participantCount} participants (filling seatsCurrent per course)`);
+  console.log(`  ${participantCount} participants`);
 }
 
 main()

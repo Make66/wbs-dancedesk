@@ -146,4 +146,8 @@ GET /courses/week/:number      - all courses in week n, (54 % 53) = 1st week nex
 
 GET /courses/:id/dates         - delivers possible event dates for a course
 
+GET /courses/:id/participants  - all participants of a certain course
+
+GET /participants/:id/courses  - all courses of a certain participant
+
 GET /users/:id                 — returns user with included locations and modules

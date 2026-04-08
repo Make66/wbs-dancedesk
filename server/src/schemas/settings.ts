@@ -16,6 +16,13 @@ registrationSettingsSchema.partial({
   waitingList: true
 });
 
+export const calendarConfigSchema = z.object({
+  startHour: z.number().min(0).max(23).default(10),
+  endHour: z.number().min(1).max(24).default(20),
+  slotHeight: z.number().min(1).default(20),
+  minutesPerSlot: z.number().min(1).default(15)
+});
+
 export const settingsSchema = z.object({
   colTitles:           z.record(z.string(), z.unknown()).optional,
   holidays:            z.array(z.unknown()).optional(),
@@ -31,6 +38,7 @@ export const settingsSchema = z.object({
   legalResources:      z.string().optional(),
   contracts:           z.array(z.string()).default([]),
   registration:        registrationSettingsSchema,
+  calendarConfig: calendarConfigSchema
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

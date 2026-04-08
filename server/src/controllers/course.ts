@@ -34,7 +34,7 @@ function nextOccurrence(dateMs: number, frequency: string): number {
   const d = new Date(dateMs);
   switch (frequency) {
     case 'daily':     d.setUTCDate(d.getUTCDate() + 1);    break;
-    case 'bi-weekly': d.setUTCDate(d.getUTCDate() + 14);   break;
+    case 'biweekly':  d.setUTCDate(d.getUTCDate() + 14);   break;
     case 'monthly':   d.setUTCMonth(d.getUTCMonth() + 1);  break;
     default:          d.setUTCDate(d.getUTCDate() + 7);    break; // weekly / ongoing
   }

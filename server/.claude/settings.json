@@ -8,7 +8,8 @@
       "Bash(node --conditions development --experimental-transform-types --disable-warning=ExperimentalWarning --env-file=.env src/index.ts)",
       "Bash(python3 -c \"import json; d=json.load\\(open\\(''package.json''\\)\\); print\\(json.dumps\\(d.get\\(''imports'', {}\\), indent=2\\)\\)\")",
       "Bash(grep -n \"seq\" /Users/martin/dev/wbs/wbs-dancedesk/server/prisma/*.prisma)",
-      "Bash(grep -rn \"seq\" /Users/martin/dev/wbs/wbs-dancedesk/server/prisma/*.prisma)"
+      "Bash(grep -rn \"seq\" /Users/martin/dev/wbs/wbs-dancedesk/server/prisma/*.prisma)",
+      "WebFetch(domain:dummyjson.com)"
     ]
   }
 }

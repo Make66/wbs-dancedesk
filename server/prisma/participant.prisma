@@ -1,0 +1,30 @@
+model Participant {
+  firstName    String? @default("John")
+  lastName     String? @default("Doe")
+  email        String? @default("john.doe@example.com")
+  phone        String? @default("123-456-7890")
+  password     String  @default("Test123!")
+  imageUrl     String  @default("./assets/images/no-profile-picture")
+  birthDate    String? @default("1990-01-01")
+  refreshToken String? // bcrypt hash of current refresh token; null = logged out
+  settings     Json?   @default("{}") // JSON field for user-specific settings/preferences
+  active       Boolean @default(true)
+
+  // Common address fields
+  street    String @default("123 Main St")
+  city      String @default("Anytown")
+  zipCode   String @default("12345")
+  longitude Float  @default(50.0)
+  latitude  Float  @default(8.0)
+
+  // many-to-many
+  course             Course[]            @relation("ParticipantCourse")
+  participantCourses ParticipantCourse[]
+
+  // Common fields
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
+}

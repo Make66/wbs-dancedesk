@@ -13,6 +13,7 @@ model Settings {
   legalResources      String   @default("https://domain/fileadmin/kunden/mandant/rechtstexte/")
   contracts           String[] @default([])
   registration        Json?
+  calendarConfig      Json?    @default("{\"startHour\": 10, \"endHour\": 20, \"slotHeight\": 20, \"minutesPerSlot\": 15}")
 
   // Common fields
   id        String   @id @default(uuid()) @db.Uuid

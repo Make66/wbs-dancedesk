@@ -30,6 +30,10 @@ model Course {
   textInfo     Text?       @relation("textInfo", fields: [textInfoId], references: [id])
   textInfoId   String?     @db.Uuid
 
+  // n:m relations
+  participants       Participant[]       @relation("ParticipantCourse")
+  participantCourses ParticipantCourse[]
+
   // Common fields
   id        String   @id @default(uuid()) @db.Uuid
   tenantId  String
