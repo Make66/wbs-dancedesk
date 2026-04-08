@@ -45,6 +45,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
       color: toColorTuple(course?.color),
       seatsMax: course?.seatsMax || 0,
       seatsCurrent: course?.seatsCurrent || 0,
+      instructorId: course?.instructorId || "",
     },
   });
 
@@ -52,7 +53,6 @@ const CourseForm = ({ course }: CourseFormProps) => {
 
   useEffect(() => {
     if (!course) return;
-
     reset({
       name: course.name || "",
       description: course.description || "",
@@ -71,6 +71,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
       color: toColorTuple(course.color),
       seatsMax: course.seatsMax || 0,
       seatsCurrent: course.seatsCurrent || 0,
+      instructorId: course.instructorId || "",
     });
   }, [course, reset]);
 

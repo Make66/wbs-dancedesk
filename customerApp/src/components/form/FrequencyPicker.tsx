@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import type { CourseFrequency } from "../../types/course-types";
 import { cn } from "../../lib/utils";
 import { useFormContext } from "react-hook-form";
-import type { CourseFormValues } from "../../types/form";
+import type { CourseFormValues } from "./schemas/course-schema";
 import { useState } from "react";
 
 const frequencyOptions: { id: CourseFrequency; name: string }[] = [
