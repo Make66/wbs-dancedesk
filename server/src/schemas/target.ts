@@ -6,6 +6,7 @@ export const targetSchema = z.object({
   icon: z.string().optional(),
   color: z.array(z.string()).optional(), 
   
+  events: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   locationId: z.uuid('Location ID must be a UUID').optional(),
   categories: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   setSeqCategory: z.array(z.uuid('Id given is not a valid UUID')).optional(),

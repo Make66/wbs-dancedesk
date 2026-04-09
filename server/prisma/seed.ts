@@ -748,7 +748,72 @@ async function main() {
     }
   }
 
-  // 9. modules
+  // 9. weekly events — Tanztee (Fr+So 15:00), Tanzparty (Fr+So 18:00), DiscoParty (Sa 19:00)
+  //    distributed round-robin across all rooms of each location
+  {
+    const TENANT = 'a50834f8-ad1a-46d2-836a-003d8d926dac';
+    const today  = new Date('2026-04-09');
+    const end    = new Date(today);
+    end.setFullYear(end.getFullYear() + 1);
+
+    // Collect all rooms with their locationId, ordered by location then room
+    const allRooms: { roomId: string; locationId: string }[] = [];
+    for (const [locationId, roomIds] of roomsByLocation) {
+      for (const roomId of roomIds) {
+        allRooms.push({ roomId, locationId });
+      }
+    }
+
+    // Build a list of { date, title, hour } entries for the next year
+    type EventSpec = { title: string; hour: number; color: string };
+
+    // day-of-week → events that occur on that day
+    const byDow: Record<number, EventSpec[]> = {
+      5: [ // Friday
+        { title: 'Tanztee',    hour: 15, color: '#f59e0b' },
+        { title: 'Tanzparty',  hour: 18, color: '#8b5cf6' },
+      ],
+      6: [ // Saturday
+        { title: 'DiscoParty', hour: 19, color: '#ec4899' },
+      ],
+      0: [ // Sunday
+        { title: 'Tanztee',    hour: 15, color: '#f59e0b' },
+        { title: 'Tanzparty',  hour: 18, color: '#8b5cf6' },
+      ],
+    };
+
+    let roomIndex = 0; // cycles through allRooms round-robin
+    let eventCount = 0;
+
+    for (const d = new Date(today); d < end; d.setDate(d.getDate() + 1)) {
+      const specs = byDow[d.getDay()];
+      if (!specs) continue;
+
+      for (const spec of specs) {
+        const { roomId, locationId } = allRooms[roomIndex % allRooms.length];
+        roomIndex++;
+
+        const date = new Date(d);
+        date.setHours(spec.hour, 0, 0, 0);
+
+        await prisma.event.create({
+          data: {
+            title:      spec.title,
+            date,
+            color:      [spec.color, '#fff'],
+            icon:       'event',
+            roomId,
+            locationId,
+            tenantId:   TENANT,
+          },
+        });
+        eventCount++;
+      }
+    }
+    console.log(`  ${eventCount} events`);
+  }
+
+  // 10. modules
   const moduleIds: string[] = [];
   for (const data of [
     { name: 'Kurse',         color: '#66ff33', isActive: true },
@@ -762,7 +827,7 @@ async function main() {
     moduleIds.push(m.id);
   }
 
-  // 9. user — connected to all locations and modules
+  // 11. user — connected to all locations and modules
   await prisma.user.create({
     data: {
       firstName: 'Admin',
@@ -827,7 +892,6 @@ async function main() {
   console.log(`  ${locationMap.size} locations`);
   console.log(`  ${instructorData.length} instructors`);
   console.log(`  ${courseCount} courses`);
-  console.log(`  ${participantCount} participants (filling seatsCurrent per course)`);
   console.log(`  ${participantCount} participants`);
 }
 

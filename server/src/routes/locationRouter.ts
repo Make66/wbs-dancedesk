@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllLocations, getOneLocation, createLocation, updateLocation, removeLocation, getTargetsByLocation, getRoomsByLocation } from '#controllers';
+import { getAllLocations, getOneLocation, createLocation, updateLocation, removeLocation, getTargetsByLocation, getRoomsByLocation, getEventsByLocation } from '#controllers';
 import { locationSchema } from '#schemas';
 
 const locationsRouter = Router();
@@ -19,5 +19,6 @@ locationsRouter
 
 locationsRouter.get('/:id/targets', authenticate, getTargetsByLocation);
 locationsRouter.get('/:id/rooms', authenticate, getRoomsByLocation);
+locationsRouter.get('/:id/events', authenticate, getEventsByLocation);
 
 export default locationsRouter;

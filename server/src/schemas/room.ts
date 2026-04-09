@@ -7,6 +7,7 @@ export const roomSchema = z.object({
   capacity: z.number().optional(),
 
   courses: z.array(z.uuid('Id given is not a valid UUID')).optional(),
+  events: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   location: z.uuid('Id given is not a valid UUID').optional(),
 
   street: z.string().optional(),

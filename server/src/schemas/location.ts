@@ -8,6 +8,7 @@ export const locationSchema = z.object({
   setSeqTarget: z.array(z.uuid('Id given is not a valid UUID')),
   courses: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   customer: z.uuid('Id given is not a valid UUID').optional(), 
+  events: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   targets: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   users: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   rooms: z.array(z.uuid('Id given is not a valid UUID')).optional(),

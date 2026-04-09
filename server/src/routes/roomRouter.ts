@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllRooms, getOneRoom, createRoom, updateRoom, removeRoom } from '#controllers';
+import { getAllRooms, getOneRoom, createRoom, updateRoom, removeRoom, getEventsByRoom } from '#controllers';
 import { roomSchema } from '#schemas';
 
 const roomsRouter = Router();
@@ -16,5 +16,7 @@ roomsRouter
   .put(authenticate, validateZod(roomSchema), updateRoom)
   .patch(authenticate, validateZod(roomSchema.partial()), updateRoom)
   .delete(authenticate, removeRoom);
+
+roomsRouter.get('/:id/events', authenticate, getEventsByRoom);
 
 export default roomsRouter;

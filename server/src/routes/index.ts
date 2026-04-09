@@ -12,3 +12,4 @@ export { default as textsRouter }         from './textRouter.ts';
 export { default as usersRouter }         from './userRouter.ts';
 export { default as settingsRouter }      from './settingsRouter.ts';
 export { default as participantsRouter }  from './participantRouter.ts';
+export { default as eventsRouter }        from './eventRouter.ts';
