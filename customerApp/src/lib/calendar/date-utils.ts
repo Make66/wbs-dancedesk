@@ -1,4 +1,11 @@
-import { eachDayOfInterval, endOfWeek, format, getISOWeek, startOfWeek } from "date-fns";
+import {
+  differenceInYears,
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  getISOWeek,
+  startOfWeek,
+} from "date-fns";
 import { de } from "date-fns/locale";
 import type { CalendarHeaderDisplayData, CalendarView } from "../../types/calendar-types";
 
@@ -101,4 +108,8 @@ export function getCalendarHeaderDisplayData(
   }
 
   return getWeekHeaderDisplayData(getWeekDays(currentDate));
+}
+
+export function calculateAge(birthdate: string | Date): number {
+  return differenceInYears(new Date(), new Date(birthdate));
 }

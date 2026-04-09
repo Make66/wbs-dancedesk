@@ -11,6 +11,7 @@ import SettingsSection from "./SettingsSection";
 import { Button } from "../ui/button";
 import { updateCourseDB, createCourseDB } from "../../data/course";
 import { courseFormSchema, type CourseFormValues } from "./schemas/course-schema";
+import ParticipantsSection from "./ParticipantsSection";
 
 type CourseFormProps = {
   course?: Course;
@@ -46,6 +47,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
       seatsMax: course?.seatsMax || 0,
       seatsCurrent: course?.seatsCurrent || 0,
       instructorId: course?.instructorId || "",
+      roomId: course?.roomId || "",
     },
   });
 
@@ -72,6 +74,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
       seatsMax: course.seatsMax || 0,
       seatsCurrent: course.seatsCurrent || 0,
       instructorId: course.instructorId || "",
+      roomId: course.roomId || "",
     });
   }, [course, reset]);
 
@@ -112,7 +115,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-10 grid grid-cols-1 gap-12 xl:grid-cols-2 3xl:grid-cols-3"
+        className="mt-2 grid grid-cols-1 gap-5 xl:grid-cols-2 3xl:grid-cols-3"
       >
         <div className="col-span-3">
           <input
@@ -125,7 +128,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
             type="text"
             placeholder="Kursbeschreibung"
             {...register("description")}
-            className="mt-4 w-full text-lg focus:outline-none focus:ring-0 focus:shadow-none"
+            className="mt-1 mb-4 w-full text-lg focus:outline-none focus:ring-0 focus:shadow-none"
           />
         </div>
 
@@ -144,6 +147,9 @@ const CourseForm = ({ course }: CourseFormProps) => {
           <Button type="submit" className="col-span-3 md:col-span-1">
             Speichern
           </Button>
+        </div>
+        <div>
+          <ParticipantsSection courseId={course?.id || ""} />
         </div>
       </form>
     </FormProvider>

@@ -1,9 +1,9 @@
 import { FaCircleInfo } from "react-icons/fa6";
-import { MdMeetingRoom } from "react-icons/md";
 import SeatChart from "../charts/SeatChart";
 import type { CourseFormValues } from "./schemas/course-schema";
 import { useFormContext } from "react-hook-form";
 import InstructorPicker from "./InstructorPicker";
+import RoomsPicker from "./RoomsPicker";
 
 const DetailsSection = () => {
   const { watch } = useFormContext<CourseFormValues>();
@@ -17,19 +17,14 @@ const DetailsSection = () => {
       </div>
 
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div className="col-span-1 px-2 flex flex-col gap-3">
+        <div className="col-span-1 flex flex-col gap-3">
           <InstructorPicker />
-          <div className="h-22 w-full bg-background rounded-2xl border border-muted-foreground flex items-center text-foreground">
-            <div className="pl-2 flex items-center gap-4">
-              <MdMeetingRoom className="text-3xl ml-4" />
-              <span className="text-lg">Großer Saal</span>
-            </div>
-          </div>
+          <RoomsPicker />
         </div>
         <div className="col-span-1">
           <div className="grid grid-cols-2">
             <div className="grid-cols-1"></div>
-            <div className="col-span-1">
+            <div className="col-span-1 flex items-start justify-start">
               <SeatChart
                 seatsCurrent={watch("seatsCurrent") || 0}
                 maxSeats={watch("seatsMax") || 0}

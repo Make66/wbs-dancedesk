@@ -17,7 +17,7 @@ const FrequencyPicker = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { watch, setValue } = useFormContext<CourseFormValues>();
   return (
-    <div className="h-22 w-full bg-background rounded-2xl border border-muted-foreground flex items-center hover:bg-blue-500 transition-colors">
+    <div className="h-22 w-full bg-background/40 rounded-2xl border border-muted-foreground flex items-center hover:bg-blue-500 transition-colors">
       <Popover open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <PopoverTrigger asChild>
           <button className="w-full h-full flex items-center cursor-pointer">

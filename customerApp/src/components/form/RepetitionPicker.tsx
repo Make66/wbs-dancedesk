@@ -50,7 +50,7 @@ const RepetitionPicker = () => {
             type="text"
             value={activeValue ?? ""}
             onChange={(e) => handleChange(e.target.value)}
-            className="h-22 w-full pl-18 bg-background rounded-l-2xl border border-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none"
+            className="h-22 w-full pl-18 bg-background/40 rounded-l-2xl border border-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none"
             data-tooltip-id="tooltip"
             data-tooltip-content="Anzahl der Wiederholungen (z.B. 8 = Kurs findet 8x statt)"
             data-tooltip-place="bottom"
@@ -61,8 +61,8 @@ const RepetitionPicker = () => {
           type="button"
           onClick={handleToggleClub}
           className={cn(
-            "w-full h-22 flex items-center justify-center bg-background border-t border-b border-muted-foreground cursor-pointer overflow-hidden relative hover:bg-blue-400",
-            isClub && "bg-muted-foreground text-background",
+            "w-full h-22 flex items-center justify-center bg-background/40 border-t border-b border-muted-foreground cursor-pointer overflow-hidden relative hover:bg-blue-400",
+            isClub && "bg-muted-foreground/50 text-background",
           )}
           data-tooltip-id="tooltip"
           data-tooltip-content="Club- oder regulärer Kurs"
@@ -78,8 +78,8 @@ const RepetitionPicker = () => {
         <button
           type="button"
           className={cn(
-            "w-full h-22 flex items-center justify-center bg-background border border-muted-foreground rounded-r-2xl cursor-pointer overflow-hidden relative hover:bg-blue-400",
-            isIgnoreCalendar && "bg-muted-foreground text-background",
+            "w-full h-22 flex items-center justify-center bg-background/40 border border-muted-foreground rounded-r-2xl cursor-pointer overflow-hidden relative hover:bg-blue-400",
+            isIgnoreCalendar && "bg-muted-foreground/50 text-background",
           )}
           onClick={() => setValue("isIgnoreCalendar", !isIgnoreCalendar, { shouldDirty: true })}
           data-tooltip-id="tooltip"

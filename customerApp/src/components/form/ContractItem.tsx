@@ -25,7 +25,7 @@ const ContractItem = ({
   return (
     <div
       className={cn(
-        "w-full flex items-center justify-between rounded-2xl border border-muted-foreground bg-background p-5",
+        "w-full flex items-center justify-between rounded-2xl border border-muted-foreground bg-background/40 p-5",
         !isActive && "opacity-70",
       )}
     >

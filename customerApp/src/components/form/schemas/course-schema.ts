@@ -20,6 +20,7 @@ export const courseFormSchema = z
     seatsMax: z.number(),
     seatsCurrent: z.number(),
     instructorId: z.string().optional(),
+    roomId: z.string().optional(),
   })
   .superRefine((values, ctx) => {
     if (!values.startsAt) {

@@ -1,47 +1,47 @@
 import { useEffect, useState } from "react";
-import { getInstructors } from "../../data/instructors";
-import { FaChalkboardTeacher } from "react-icons/fa";
+import { getRooms } from "../../data/rooms";
+import { MdMeetingRoom } from "react-icons/md";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import type { Instructor } from "../../types/instructor-types";
+import type { Room } from "../../types/room-types";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormValues } from "./schemas/course-schema";
 
-const InstructorPicker = () => {
+const RoomsPicker = () => {
   const [loading, setLoading] = useState(true);
-  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const { watch, setValue } = useFormContext<CourseFormValues>();
   useEffect(() => {
-    const fetchInstructors = async () => {
-      const instructorsData = await getInstructors();
-      setInstructors(instructorsData);
+    const fetchRooms = async () => {
+      const response = await getRooms();
+      setRooms(response);
       setLoading(false);
     };
-    fetchInstructors();
+    fetchRooms();
   }, []);
+  console.log("RoomsPicker render", rooms);
   return (
     <div className="h-22 w-full bg-background/40 rounded-2xl border border-muted-foreground flex items-center text-foreground cursor-pointer hover:bg-blue-400">
       <Popover>
         <PopoverTrigger asChild>
           <button className="w-full h-full pl-2 flex items-center gap-4 cursor-pointer">
-            <FaChalkboardTeacher className="text-3xl ml-4" />
+            <MdMeetingRoom className="text-3xl ml-4" />
             <span className="text-lg">
               {loading
-                ? "Lade Tanzlehrer..."
-                : instructors.find((i) => i.id === watch("instructorId"))?.name ||
-                  "Instruktor auswählen"}
+                ? "Lade Räume..."
+                : rooms.find((r) => r.id === watch("roomId"))?.name || "Raum auswählen"}
             </span>
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-[var(--radix-popover-trigger-width)]">
           <div className="grid gap-1 p-2">
-            {instructors.map((instructor) => (
+            {rooms.map((room) => (
               <button
-                key={instructor.id}
+                key={room.id}
                 type="button"
-                className="rounded-md px-3 py-2 text-lg hover:bg-blue-400 text-left cursor-pointer"
-                onClick={() => setValue("instructorId", instructor.id)}
+                className="rounded-md px-3 py-2 text-lg  hover:bg-blue-400 text-left cursor-pointer"
+                onClick={() => setValue("roomId", room.id)}
               >
-                {instructor.name}
+                {room.name}
               </button>
             ))}
           </div>
@@ -51,4 +51,4 @@ const InstructorPicker = () => {
   );
 };
 
-export default InstructorPicker;
+export default RoomsPicker;

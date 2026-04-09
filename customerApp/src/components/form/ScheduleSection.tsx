@@ -54,7 +54,7 @@ const ScheduleSection = () => {
             setValue("endsAt", endsAt);
             trigger(["startsAt", "endsAt"]);
           }}
-          className="w-full bg-background border border-muted-foreground rounded-2xl cursor-pointer overflow-hidden"
+          className="w-full bg-background/40 border border-muted-foreground rounded-2xl cursor-pointer overflow-hidden"
         />
       </div>
       <div className="col-span-1">
