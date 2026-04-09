@@ -6,6 +6,7 @@ model Participant {
   password     String  @default("Test123!")
   imageUrl     String  @default("./assets/images/no-profile-picture")
   birthDate    String? @default("1990-01-01")
+  gender       String? @default("other")
   refreshToken String? // bcrypt hash of current refresh token; null = logged out
   settings     Json?   @default("{}") // JSON field for user-specific settings/preferences
   active       Boolean @default(true)

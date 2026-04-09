@@ -7,6 +7,7 @@ export const participantSchema = z.object({
   password: z.string().min(6).max(64).optional(),
   imageUrl: z.string().optional(),
   birthDate: z.string().optional(),
+  gender: z.enum(["male", "female", "other"]).default("other").optional(),
   refreshToken: z.string().optional(),
   settings: z.json().default({}).optional(),
   
