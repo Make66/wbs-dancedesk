@@ -1,6 +1,15 @@
 import type { RequestHandler } from 'express';
 import prisma from '#db';
 
+export const getRoomsByLocation: RequestHandler = async (req, res) => {
+  const { id: locationId } = req.params;
+  const { tenantId } = req.user!;
+  const rooms = await prisma.room.findMany({
+    where: { locationId, tenantId, isDeleted: false },
+  });
+  res.json(rooms);
+};
+
 export const getAllRooms: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const rooms = await prisma.room.findMany({

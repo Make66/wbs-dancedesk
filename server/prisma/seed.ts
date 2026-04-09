@@ -691,30 +691,32 @@ async function main() {
     }
   }
 
-  // 8. participants — one per seat in each course, fetched page-by-page from dummyjson.com
-  // NOTE: requires `prisma generate` after Participant + ParticipantCourse models were added.
-  // Run: npx prisma migrate dev --name add-participant && npx prisma generate
-  interface DummyAddress { address: string; city: string; postalCode: string; coordinates: { lat: number; lng: number } }
-  interface DummyUser { firstName: string; lastName: string; email: string; phone: string; birthDate: string; image: string; address: DummyAddress }
-  interface DummyResponse { users: DummyUser[] }
+  // 8. participants — one per seat in each course, fetched page-by-page from randomuser.me
+  interface RandomUserName { first: string; last: string; }
+  interface RandomUserStreet { number: number; name: string; }
+  interface RandomUserLocation { street: RandomUserStreet; city: string; postcode: string | number; coordinates: { latitude: string; longitude: string; } }
+  interface RandomUserPicture { thumbnail: string; }
+  interface RandomUserDob { date: string; }
+  interface RandomUser { gender: string; name: RandomUserName; email: string; phone: string; dob: RandomUserDob; picture: RandomUserPicture; location: RandomUserLocation; }
+  interface RandomUserResponse { results: RandomUser[] }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const participantClient = (prisma as any).participant;
 
   // Buffer of pre-fetched API users not yet consumed
-  const userBuffer: DummyUser[] = [];
-  let apiSkip = 0;
+  const userBuffer: RandomUser[] = [];
+  let apiPage = 1;
   let participantCount = 0;
 
-  async function nextUser(): Promise<DummyUser | null> {
+  async function nextUser(): Promise<RandomUser | null> {
     if (userBuffer.length === 0) {
       const res = await fetch(
-        `https://dummyjson.com/users?limit=30&skip=${apiSkip}&select=firstName,lastName,email,phone,birthDate,image,address`
+        `https://randomuser.me/api/?results=100&nat=de&page=${apiPage}`
       );
-      const json = await res.json() as DummyResponse;
-      if (!json.users?.length) return null;
-      userBuffer.push(...json.users);
-      apiSkip += json.users.length;
+      const json = await res.json() as RandomUserResponse;
+      if (!json.results?.length) return null;
+      userBuffer.push(...json.results);
+      apiPage++;
     }
     return userBuffer.shift() ?? null;
   }
@@ -726,17 +728,18 @@ async function main() {
 
       await participantClient.create({
         data: {
-          firstName:  u.firstName,
-          lastName:   u.lastName,
+          firstName:  u.name.first,
+          lastName:   u.name.last,
           email:      u.email,
           phone:      u.phone,
-          birthDate:  u.birthDate,
-          imageUrl:   u.image,
-          street:     u.address.address,
-          city:       u.address.city,
-          zipCode:    u.address.postalCode,
-          latitude:   u.address.coordinates.lat,
-          longitude:  u.address.coordinates.lng,
+          birthDate:  u.dob.date,
+          gender:     u.gender,
+          imageUrl:   u.picture.thumbnail,
+          street:     `${u.location.street.number} ${u.location.street.name}`,
+          city:       u.location.city,
+          zipCode:    String(u.location.postcode),
+          latitude:   parseFloat(u.location.coordinates.latitude),
+          longitude:  parseFloat(u.location.coordinates.longitude),
           tenantId:   'a50834f8-ad1a-46d2-836a-003d8d926dac',
           participantCourses: { create: { courseId, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } },
         },
