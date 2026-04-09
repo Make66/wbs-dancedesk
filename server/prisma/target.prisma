@@ -5,10 +5,11 @@ model Target {
   color       String[] @default(["#000000", "#FFFFFF"])
 
   // relations
-  setSeqCategory String[]   @db.Uuid
   categories     Category[]
+  events         Event[]    @relation("EventTargets")
   location       Location?  @relation(fields: [locationId], references: [id])
   locationId     String?    @db.Uuid
+  setSeqCategory String[]   @db.Uuid
 
   // Common fields
   id        String   @id @default(uuid()) @db.Uuid

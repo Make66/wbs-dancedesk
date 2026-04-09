@@ -8,6 +8,7 @@ model Room {
   courses    Course[]
   location   Location? @relation(fields: [locationId], references: [id])
   locationId String?   @db.Uuid
+  events     Event[]
 
   // Common address fields
   street    String @default("123 Main St")

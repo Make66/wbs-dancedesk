@@ -114,6 +114,8 @@ GET    /auth/me         (requires accessToken cookie)
 
 /customers      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
+/events         GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+
 /instructors    GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
 /locations      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
@@ -132,9 +134,11 @@ GET    /auth/me         (requires accessToken cookie)
 
 ## Nested routes
 
-GET /locations/:id/targets     — targets belonging to a location
+GET /locations/:id/events     — events belonging to a location
 
 GET /locations/:id/rooms       — rooms belonging to a location
+
+GET /locations/:id/targets     — targets belonging to a location
 
 GET /targets/:id/categories    — categories belonging to a target
 
@@ -151,5 +155,7 @@ GET /courses/:id/dates         - delivers possible event dates for a course
 GET /courses/:id/participants  - all participants of a certain course
 
 GET /participants/:id/courses  - all courses of a certain participant
+
+GET /rooms/:id/events          - all events of a certain room
 
 GET /users/:id                 — returns user with included locations and modules

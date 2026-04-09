@@ -15,6 +15,7 @@ model Location {
   courses      Course[]
   customer     Customer? @relation(fields: [customerId], references: [id])
   customerId   String?   @db.Uuid
+  events       Event[]
   targets      Target[]
   users        User[]    @relation("UserLocations") // Many-to-many relation with User
   rooms        Room[]

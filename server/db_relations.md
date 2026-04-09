@@ -55,6 +55,17 @@
     Location ──────────────────┘
     (Room belongs to Location)
 
+── Event (belongs to Room and/or Location) ─────────────────────────────
+
+╔══════════════╗   0..1:n   ╔══════════════════════════╗
+║     Room     ╠────────────╣          Event           ║
+╚══════════════╝            ╠══════════════════════════╣
+╔══════════════╗   0..1:n   ║ title, description       ║
+║   Location   ╠────────────╣ date, icon, color[]      ║
+╚══════════════╝            ║ address fields           ║
+                            ║ roomId (opt.)            ║
+                            ║ locationId (opt.)        ║
+                            ╚══════════════════════════╝
 
 ── Many-to-Many (explicit join table) ──────────────────────────────────
 
@@ -102,6 +113,8 @@
 | Category     | Course           | 1 : n          | `Course.categoryId`             | required                          |
 | Instructor   | Course           | 1 : n (opt.)   | `Course.instructorId`           |                                   |
 | Room         | Course           | 1 : n (opt.)   | `Course.roomId`                 |                                   |
+| Room         | Event            | 1 : n (opt.)   | `Event.roomId`                  |                                   |
+| Location     | Event            | 1 : n (opt.)   | `Event.locationId`              |                                   |
 | Text         | Course (terms)   | 1 : n (opt.)   | `Course.textTermsId`            | named relation `"textTerms"`      |
 | Text         | Course (info)    | 1 : n (opt.)   | `Course.textInfoId`             | named relation `"textInfo"`       |
 | Participant  | Course           | n : m          | `ParticipantCourse` join table  | explicit — carries `createdAt`, `tenantId` |
