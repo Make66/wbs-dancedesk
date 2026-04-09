@@ -32,19 +32,19 @@ const CourseInfo = ({ course, participantsStats }: CourseInfoProps) => {
       <div className="col-span-2 2xl:col-span-1 mt-2">
         <span className="text-md">Nächster Kurs</span>
         <div className="flex items-center mt-3 gap-4 text-muted-foreground">
-          <WiDaySunny className="inline mr-2 text-md" />
+          <WiDaySunny className="inline text-md" />
           <span className="text-md text-muted-foreground">
             {nextDate ? format(nextDate, "EEEE", { locale: de }) : "Kein weiterer Termin"}
           </span>
         </div>
         <div className="mt-3 flex items-center gap-4 text-muted-foreground">
-          <FaCalendarAlt className="inline mr-2 text-md" />
+          <FaCalendarAlt className="inline text-md" />
           <span className="text-md text-muted-foreground">
             {nextDate ? format(nextDate, "dd. MMMM yyyy", { locale: de }) : "Kein weiterer Termin"}
           </span>
         </div>
         <div className="mt-3 flex items-center gap-4 text-muted-foreground">
-          <FaClock className="inline mr-2 text-md" />
+          <FaClock className="inline text-md" />
           <span className="text-md text-muted-foreground">
             {nextDate && endTime
               ? `${format(nextDate, "HH:mm", { locale: de })} - ${format(endTime, "HH:mm", {
@@ -54,13 +54,13 @@ const CourseInfo = ({ course, participantsStats }: CourseInfoProps) => {
           </span>
         </div>
         <div className="mt-3 flex items-center gap-4 text-muted-foreground">
-          <FaHourglass className="inline mr-2 text-md" />
+          <FaHourglass className="inline text-md" />
           <span className="text-md text-muted-foreground">
             {minutes ? `${minutes} Minuten` : "Keine Uhrzeit verfügbar"}
           </span>
         </div>
       </div>
-      <div className="hidden 2xl:flex flex-col col-span-1 mt-2">
+      <div className="hidden 2xl:flex flex-col col-span-1 mt-2 pl-7">
         <span className="text-md">Statistiken</span>
         <span className="mt-3 text-md text-muted-foreground">
           {participantsStats.total} total &#8960; {participantsStats.totalAverage} Jahre
