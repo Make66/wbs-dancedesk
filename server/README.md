@@ -134,6 +134,8 @@ GET    /auth/me         (requires accessToken cookie)
 
 GET /locations/:id/targets     — targets belonging to a location
 
+GET /locations/:id/rooms       — rooms belonging to a location
+
 GET /targets/:id/categories    — categories belonging to a target
 
 GET /targets/:id/courses       — returns target + categories + their courses (nested)
