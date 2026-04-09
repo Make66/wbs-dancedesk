@@ -144,11 +144,11 @@ const CourseForm = ({ course }: CourseFormProps) => {
           <div className="my-6" />
           <SettingsSection />
 
-          <Button type="submit" className="col-span-3 md:col-span-1">
+          <Button type="submit" className="w-full py-12 text-2xl mt-8">
             Speichern
           </Button>
         </div>
-        <div>
+        <div className="col-span-3 lg:col-span-1">
           <ParticipantsSection courseId={course?.id || ""} />
         </div>
       </form>

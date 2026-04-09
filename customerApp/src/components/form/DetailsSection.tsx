@@ -1,9 +1,10 @@
 import { FaCircleInfo } from "react-icons/fa6";
-import SeatChart from "../charts/SeatChart";
+import SeatingChart from "../charts/SeatingChart";
 import type { CourseFormValues } from "./schemas/course-schema";
 import { useFormContext } from "react-hook-form";
 import InstructorPicker from "./InstructorPicker";
 import RoomsPicker from "./RoomsPicker";
+import GenderChart from "../charts/GenderChart";
 
 const DetailsSection = () => {
   const { watch } = useFormContext<CourseFormValues>();
@@ -21,15 +22,28 @@ const DetailsSection = () => {
           <InstructorPicker />
           <RoomsPicker />
         </div>
-        <div className="col-span-1">
-          <div className="grid grid-cols-2">
-            <div className="grid-cols-1"></div>
-            <div className="col-span-1 flex items-start justify-start">
-              <SeatChart
-                seatsCurrent={watch("seatsCurrent") || 0}
-                maxSeats={watch("seatsMax") || 0}
-              />
-            </div>
+        <div className="col-span-1">nächster Termin: Montag</div>
+        <div className="col-span-2 grid grid-cols-4">
+          <div className="col-span-1 flex items-start justify-start">
+            <SeatingChart
+              seatsCurrent={watch("seatsCurrent") || 0}
+              maxSeats={watch("seatsMax") || 0}
+            />
+          </div>
+          <div className="col-span-1 flex items-start justify-start">
+            <SeatingChart
+              seatsCurrent={watch("seatsCurrent") || 0}
+              maxSeats={watch("seatsMax") || 0}
+            />
+          </div>
+          <div className="col-span-1 flex items-start justify-start">
+            <SeatingChart
+              seatsCurrent={watch("seatsCurrent") || 0}
+              maxSeats={watch("seatsMax") || 0}
+            />
+          </div>
+          <div className="col-span-1 flex items-start justify-start">
+            <GenderChart male={9} female={19} other={2} />
           </div>
         </div>
       </div>

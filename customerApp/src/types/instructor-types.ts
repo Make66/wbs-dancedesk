@@ -2,6 +2,6 @@ export type Instructor = {
   id: string;
   name: string;
   description: string;
-  profileImageUrl: string;
+  imageUrl: string;
   skills: string[];
 };

@@ -10,7 +10,7 @@ const COLORS = {
   available: "#22c55e",
 };
 
-const SeatChart = ({ seatsCurrent, maxSeats }: CourseSeatChartProps) => {
+const SeatingChart = ({ seatsCurrent, maxSeats }: CourseSeatChartProps) => {
   const seatsMax = Math.max(maxSeats, 0);
   const occupiedSeats = Math.min(Math.max(seatsCurrent, 0), seatsMax);
   const availableSeats = Math.max(seatsMax - occupiedSeats, 0);
@@ -30,7 +30,7 @@ const SeatChart = ({ seatsCurrent, maxSeats }: CourseSeatChartProps) => {
   ];
 
   return (
-    <div className="w-full rounded-2xl p-6">
+    <div className="w-full">
       <div className="relative h-56 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -59,4 +59,4 @@ const SeatChart = ({ seatsCurrent, maxSeats }: CourseSeatChartProps) => {
   );
 };
 
-export default SeatChart;
+export default SeatingChart;
