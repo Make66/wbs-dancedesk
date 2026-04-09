@@ -11,7 +11,24 @@ function formatTime(dateString: string) {
   });
 }
 
-const WeeklyScheduleItem = ({ course, bg, text }: { course: Course; bg: string; text: string }) => {
+type WeekCourse = Omit<Course, "instructor" | "room"> & {
+  instructor: {
+    name: string;
+  } | null;
+  room: {
+    name: string;
+  } | null;
+};
+
+const WeeklyScheduleItem = ({
+  course,
+  bg,
+  text,
+}: {
+  course: WeekCourse;
+  bg: string;
+  text: string;
+}) => {
   return (
     <div
       key={course.id}
@@ -32,11 +49,15 @@ const WeeklyScheduleItem = ({ course, bg, text }: { course: Course; bg: string; 
       <div className="mt-3 text-center space-y-1">
         <div className="flex items-center justify-center gap-2">
           <MdMeetingRoom className="opacity-70" />
-          <p className="mt-1 text-xs opacity-90">Großer Saal</p>
+          <p className="mt-1 text-xs opacity-90">
+            {course.room?.name || <p className="text-red-500">unbekannt</p>}
+          </p>
         </div>
         <div className="flex items-center justify-center gap-2">
           <FaChalkboardTeacher className="opacity-70" />
-          <span className="text-xs opacity-90">Instruktor</span>
+          <span className="text-xs opacity-90">
+            {course.instructor?.name || <p className="text-red-500">unbekannt</p>}
+          </span>
         </div>
       </div>
       <div className="flex items-center justify-center gap-4">

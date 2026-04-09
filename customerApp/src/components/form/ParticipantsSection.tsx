@@ -32,7 +32,9 @@ const ParticipantsSection = ({ courseId }: ParticipantsSectionProps) => {
       </div>
       <div className="mt-6">
         {isLoading ? (
-          <p>Lade Teilnehmer...</p>
+          <div className="flex items-center justify-center h-32">
+            <p>Lade Teilnehmer...</p>
+          </div>
         ) : (
           <motion.div
             className="flex flex-col gap-3"
