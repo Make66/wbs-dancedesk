@@ -1,14 +1,17 @@
 import type { Room } from "../types/room-types";
 
-export const getRooms = async (): Promise<Room[]> => {
+export const getRooms = async (locationId: string): Promise<Room[]> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/rooms`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/locations/${locationId}/rooms`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       },
-      credentials: "include",
-    });
+    );
     console.log("Fetch rooms response:", response);
     if (!response.ok) {
       throw new Error("Fehler beim Laden der Räume");

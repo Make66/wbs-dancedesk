@@ -23,26 +23,34 @@ type ChartItem = {
 };
 
 type CustomLabelProps = {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  outerRadius: number;
-  payload: ChartItem;
+  cx?: number;
+  cy?: number;
+  midAngle?: number;
+  outerRadius?: number;
+  payload?: ChartItem;
 };
 
 const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, payload }: CustomLabelProps) => {
-  const RADIAN = Math.PI / 180;
+  if (
+    cx === undefined ||
+    cy === undefined ||
+    midAngle === undefined ||
+    outerRadius === undefined ||
+    !payload
+  ) {
+    return null;
+  }
 
-  // Position IM Kuchenstück
-  const labelRadius = outerRadius * 0.62;
+  const RADIAN = Math.PI / 180;
+  const labelRadius = outerRadius * 0.68;
 
   const x = cx + labelRadius * Math.cos(-midAngle * RADIAN);
   const y = cy + labelRadius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <foreignObject x={x - 12} y={y - 12} width={40} height={24}>
-      <div className="flex h-full w-full items-center justify-center font-bold">
-        <span className="mr-1 text-xl">{payload.value}</span>
+    <foreignObject x={x - 20} y={y - 12} width={60} height={24}>
+      <div className="flex h-full w-full items-center justify-center text-2xl font-bold">
+        <span className="mr-1 text-2xl">{payload.value}</span>
         <span>{payload.icon}</span>
       </div>
     </foreignObject>
@@ -79,7 +87,7 @@ const GenderChart = ({ male, female, other }: CourseSeatChartProps) => {
             <Pie
               data={data}
               dataKey="value"
-              innerRadius={0}
+              innerRadius={30}
               outerRadius={95}
               paddingAngle={3}
               cornerRadius={8}

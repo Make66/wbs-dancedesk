@@ -5,8 +5,22 @@ import { useFormContext } from "react-hook-form";
 import InstructorPicker from "./InstructorPicker";
 import RoomsPicker from "./RoomsPicker";
 import GenderChart from "../charts/GenderChart";
+import type { Room } from "../../types/room-types";
+import CourseInfo from "./CourseInfo";
+import type { Course } from "../../types/course-types";
+import type { Participant } from "../../types/participants-type";
+import { getParticipantStats } from "../../lib/participants";
+import SeatsPicker from "./SeatsPicker";
 
-const DetailsSection = () => {
+type DetailsSectionProps = {
+  rooms: Room[];
+  roomsLoading: boolean;
+  participants: Participant[];
+  course: Course;
+};
+
+const DetailsSection = ({ rooms, roomsLoading, participants, course }: DetailsSectionProps) => {
+  const participantsStats = getParticipantStats(participants);
   const { watch } = useFormContext<CourseFormValues>();
   return (
     <div className="p-2 rounded-2xl bg-purple-400/40 gap-3 shadow-xl">
@@ -18,11 +32,14 @@ const DetailsSection = () => {
       </div>
 
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div className="col-span-1 flex flex-col gap-3">
+        <div className="col-span-2 xl:col-span-1 flex flex-col gap-3">
           <InstructorPicker />
-          <RoomsPicker />
+          <RoomsPicker rooms={rooms} isLoading={roomsLoading} />
+          <SeatsPicker />
         </div>
-        <div className="col-span-1">nächster Termin: Montag</div>
+        <div className="col-span-1">
+          <CourseInfo course={course} participantsStats={participantsStats} />
+        </div>
         <div className="col-span-2 grid grid-cols-4">
           <div className="col-span-1 flex items-start justify-start">
             <SeatingChart
@@ -43,7 +60,11 @@ const DetailsSection = () => {
             />
           </div>
           <div className="col-span-1 flex items-start justify-start">
-            <GenderChart male={9} female={19} other={2} />
+            <GenderChart
+              male={participantsStats?.male || 0}
+              female={participantsStats?.female || 0}
+              other={participantsStats?.other || 0}
+            />
           </div>
         </div>
       </div>

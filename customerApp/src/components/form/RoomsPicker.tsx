@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { getRooms } from "../../data/rooms";
+import { useState } from "react";
 import { MdMeetingRoom } from "react-icons/md";
 import { ImUsers } from "react-icons/im";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -7,19 +6,9 @@ import type { Room } from "../../types/room-types";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormValues } from "./schemas/course-schema";
 
-const RoomsPicker = () => {
+const RoomsPicker = ({ rooms, isLoading }: { rooms: Room[]; isLoading: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [rooms, setRooms] = useState<Room[]>([]);
   const { watch, setValue } = useFormContext<CourseFormValues>();
-  useEffect(() => {
-    const fetchRooms = async () => {
-      const response = await getRooms();
-      setRooms(response);
-      setLoading(false);
-    };
-    fetchRooms();
-  }, []);
 
   const selectedRoom = rooms.find((r) => r.id === watch("roomId"));
 
@@ -29,7 +18,7 @@ const RoomsPicker = () => {
         <PopoverTrigger asChild>
           <button className="w-full h-full pl-2 flex items-center gap-6 cursor-pointer">
             <MdMeetingRoom className="text-3xl ml-4" />
-            {loading ? (
+            {isLoading ? (
               <span className="text-lg">Lade Räume...</span>
             ) : selectedRoom ? (
               <div className="w-full flex items-center justify-between">
@@ -42,8 +31,24 @@ const RoomsPicker = () => {
                   <span>{selectedRoom.description}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center mr-7">
-                  <ImUsers className="text-2xl text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
+                  <ImUsers
+                    className="text-2xl text-muted-foreground"
+                    style={{
+                      color:
+                        selectedRoom && watch("seatsMax") > selectedRoom.capacity
+                          ? "red"
+                          : undefined,
+                    }}
+                  />
+                  <span
+                    style={{
+                      color:
+                        selectedRoom && watch("seatsMax") > selectedRoom.capacity
+                          ? "red"
+                          : undefined,
+                    }}
+                    className="text-sm text-muted-foreground"
+                  >
                     max. {selectedRoom.capacity}
                   </span>
                 </div>
