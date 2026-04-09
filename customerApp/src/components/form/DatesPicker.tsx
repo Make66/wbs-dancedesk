@@ -48,8 +48,8 @@ const DatesPicker = () => {
             type="button"
             onClick={() => handleToggleStart(index)}
             className={cn(
-              "relative flex min-h-22 w-full cursor-pointer items-center justify-between rounded-2xl border border-muted-foreground bg-background px-6 py-4 text-left transition-colors hover:bg-blue-400",
-              item.isStart && "bg-muted-foreground text-background",
+              "relative flex min-h-22 w-full cursor-pointer items-center justify-between rounded-2xl border border-muted-foreground bg-background/40 px-6 py-4 text-left transition-colors hover:bg-blue-400",
+              item.isStart && "bg-muted-foreground/40 text-background",
             )}
           >
             <div className="flex flex-col">

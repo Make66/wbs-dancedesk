@@ -19,6 +19,8 @@ export const courseFormSchema = z
     color: z.tuple([z.string(), z.string()]),
     seatsMax: z.number(),
     seatsCurrent: z.number(),
+    instructorId: z.string().optional(),
+    roomId: z.string().optional(),
   })
   .superRefine((values, ctx) => {
     if (!values.startsAt) {

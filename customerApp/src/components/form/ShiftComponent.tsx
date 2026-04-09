@@ -59,7 +59,7 @@ const ShiftComponent = () => {
     <div>
       <Popover>
         <PopoverTrigger className="w-full">
-          <div className="h-22 w-full pl-6 bg-background border border-muted-foreground rounded-t-2xl flex items-center cursor-pointer">
+          <div className="h-22 w-full pl-6 bg-background/40 border border-muted-foreground rounded-t-2xl flex items-center cursor-pointer">
             {targets.find((target) => target.id === targetId)?.name || "Zielgruppe auswählen"}
           </div>
         </PopoverTrigger>
@@ -81,7 +81,7 @@ const ShiftComponent = () => {
 
       <Popover>
         <PopoverTrigger className="w-full">
-          <div className="h-22 w-full pl-6 bg-background border border-muted-foreground rounded-b-2xl flex items-center cursor-pointer">
+          <div className="h-22 w-full pl-6 bg-background/40 border border-muted-foreground rounded-b-2xl flex items-center cursor-pointer">
             {selectedCategoryName || "Kategorie auswählen"}
           </div>
         </PopoverTrigger>

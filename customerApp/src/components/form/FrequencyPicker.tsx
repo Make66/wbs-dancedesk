@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import type { CourseFrequency } from "../../types/course-types";
 import { cn } from "../../lib/utils";
 import { useFormContext } from "react-hook-form";
-import type { CourseFormValues } from "../../types/form";
+import type { CourseFormValues } from "./schemas/course-schema";
 import { useState } from "react";
 
 const frequencyOptions: { id: CourseFrequency; name: string }[] = [
@@ -17,7 +17,7 @@ const FrequencyPicker = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { watch, setValue } = useFormContext<CourseFormValues>();
   return (
-    <div className="h-22 w-full bg-background rounded-2xl border border-muted-foreground flex items-center hover:bg-blue-500 transition-colors">
+    <div className="h-22 w-full bg-background/40 rounded-2xl border border-muted-foreground flex items-center hover:bg-blue-500 transition-colors">
       <Popover open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <PopoverTrigger asChild>
           <button className="w-full h-full flex items-center cursor-pointer">
