@@ -30,6 +30,7 @@ const toColorTuple = (color?: string[]): [string, string] => [
 const CourseForm = ({ course }: CourseFormProps) => {
   const locationId = userStore((state) => state.selectedLocationId);
   const location = useLocation();
+  const categoryId = location.state?.category?.id;
   const navigate = useNavigate();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [participantsLoading, setParticipantsLoading] = useState(false);
@@ -77,7 +78,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
     defaultValues: {
       name: course?.name || "",
       description: course?.description || "",
-      categoryId: course?.categoryId || "",
+      categoryId: course?.categoryId || categoryId || "",
       contracts: course?.contracts || [],
       startsAt: course?.startsAt ? new Date(course.startsAt) : undefined,
       endsAt: course?.endsAt ? new Date(course.endsAt) : undefined,
@@ -97,14 +98,14 @@ const CourseForm = ({ course }: CourseFormProps) => {
     },
   });
 
-  const { register, handleSubmit, watch, reset } = methods;
+  const { register, handleSubmit, reset } = methods;
 
   useEffect(() => {
     if (!course) return;
     reset({
       name: course.name || "",
       description: course.description || "",
-      categoryId: course.categoryId || "",
+      categoryId: course.categoryId || categoryId || "",
       contracts: course.contracts || [],
       startsAt: course.startsAt ? new Date(course.startsAt) : undefined,
       endsAt: course.endsAt ? new Date(course.endsAt) : undefined,
@@ -124,10 +125,11 @@ const CourseForm = ({ course }: CourseFormProps) => {
     });
   }, [course, reset]);
 
-  const watchedValues = watch();
-  console.log("WATCHED VALUES:", watchedValues);
+  // const watchedValues = watch();
+  // console.log("WATCHED VALUES:", watchedValues);
 
   const onSubmit: SubmitHandler<CourseFormValues> = async (values) => {
+    console.log("Form submitted with values:", values);
     const payload = {
       ...values,
       ...(values.categoryId && { categoryId: values.categoryId }),
@@ -142,10 +144,10 @@ const CourseForm = ({ course }: CourseFormProps) => {
 
     try {
       const isEditMode = !!course?.id;
-
+      console.log("Category ID:", values.categoryId);
       const res = isEditMode
         ? await updateCourseDB(course.id, payload)
-        : await createCourseDB(location.state.category.id, payload);
+        : await createCourseDB(payload);
 
       const savedCourse = await res.json();
       console.log("SAVED COURSE:", savedCourse);
@@ -179,12 +181,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
         </div>
 
         <div className="col-span-3 lg:col-span-2">
-          <DetailsSection
-            rooms={rooms}
-            roomsLoading={roomsLoading}
-            participants={participants}
-            course={course as Course}
-          />
+          <DetailsSection rooms={rooms} roomsLoading={roomsLoading} participants={participants} />
 
           <div className="my-6" />
           <ScheduleSection />
@@ -199,9 +196,11 @@ const CourseForm = ({ course }: CourseFormProps) => {
             Speichern
           </Button>
         </div>
-        <div className="col-span-3 lg:col-span-1">
-          <ParticipantsSection participants={participants} isLoading={participantsLoading} />
-        </div>
+        {course?.id && (
+          <div className="col-span-3 lg:col-span-1">
+            <ParticipantsSection participants={participants} isLoading={participantsLoading} />
+          </div>
+        )}
       </form>
     </FormProvider>
   );
