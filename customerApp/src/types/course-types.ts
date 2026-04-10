@@ -185,6 +185,7 @@ export type UpdateCategoryInput = {
   id?: string;
   name?: string;
   color?: string[];
+  setSeqCourse?: string[];
   icon?: string;
   isActive?: boolean;
   description?: string;

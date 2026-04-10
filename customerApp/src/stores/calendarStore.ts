@@ -5,6 +5,7 @@ import type {
   CalendarEvent,
   CalendarEventResizeEndPayload,
   CalendarView,
+  DraggedEventState,
   ResizingEventState,
 } from "../types/calendar-types";
 import { DEFAULT_CALENDAR_CONFIG } from "../lib/constants/calendar-constants";
@@ -27,6 +28,18 @@ type CalendarStore = {
   selectEvent: (eventId: string) => void;
   setActiveDragEventId: (eventId: string | null) => void;
 
+  draggedEvent: DraggedEventState | null;
+
+  startDrag: (event: CalendarEvent) => void;
+  updateDrag: (start: Date, end: Date) => void;
+  endDrag: () => {
+    eventId: string;
+    originalStart: Date;
+    originalEnd: Date;
+    start: Date;
+    end: Date;
+  } | null;
+
   startResize: (event: CalendarEvent) => void;
   updateResize: (end: Date) => void;
   endResize: () => CalendarEventResizeEndPayload | null;
@@ -42,6 +55,7 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
   selectedEventId: null,
   activeDragEventId: null,
   resizingEvent: null,
+  draggedEvent: null,
 
   setCurrentView: (view) => set({ currentView: view }),
   setCurrentDate: (date) => set({ currentDate: date }),
@@ -72,6 +86,45 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
 
   selectEvent: (eventId) => set({ selectedEventId: eventId }),
   setActiveDragEventId: (eventId) => set({ activeDragEventId: eventId }),
+
+  startDrag: (event) =>
+    set({
+      draggedEvent: {
+        eventId: event.id,
+        originalStart: event.start,
+        originalEnd: event.end,
+        currentStart: event.start,
+        currentEnd: event.end,
+      },
+    }),
+
+  updateDrag: (start, end) =>
+    set((state) => {
+      if (!state.draggedEvent) return state;
+      return {
+        draggedEvent: {
+          ...state.draggedEvent,
+          currentStart: start,
+          currentEnd: end,
+        },
+      };
+    }),
+
+  endDrag: () => {
+    const draggedEvent = get().draggedEvent;
+    if (!draggedEvent) return null;
+
+    const payload = {
+      eventId: draggedEvent.eventId,
+      originalStart: draggedEvent.originalStart,
+      originalEnd: draggedEvent.originalEnd,
+      start: draggedEvent.currentStart,
+      end: draggedEvent.currentEnd,
+    };
+
+    set({ draggedEvent: null });
+    return payload;
+  },
 
   startResize: (event) =>
     set({

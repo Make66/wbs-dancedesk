@@ -10,7 +10,6 @@ import { Check } from "lucide-react";
 import { contractDraftSchema } from "./schemas/contract-schema";
 
 type ContractModalProps = {
-  isOpen: boolean;
   onClose: () => void;
   initialValues: Contract;
   onSave: (contract: Contract) => void;

@@ -5,8 +5,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { generateTimeOptions } from "../../lib/calendar/time";
 import { DEFAULT_CALENDAR_CONFIG } from "../../lib/constants/calendar-constants";
 import { useState } from "react";
-import { useFormContext } from "react-hook-form";
-import type { CourseFormValues } from "./schemas/course-schema";
 
 type FormDatePickerProps = {
   startsAt?: Date;
@@ -35,9 +33,6 @@ function combineDateAndTime(date: Date | undefined, time: string) {
 const TIME_OPTIONS = generateTimeOptions(DEFAULT_CALENDAR_CONFIG);
 
 const ScheduleDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePickerProps) => {
-  const {
-    formState: { errors },
-  } = useFormContext<CourseFormValues>();
   const [isStartTimeOpen, setIsStartTimeOpen] = useState(false);
   const [isEndTimeOpen, setIsEndTimeOpen] = useState(false);
   const selectedDate = startsAt ?? endsAt;
@@ -52,6 +47,8 @@ const ScheduleDatePicker = ({ startsAt, endsAt, onChange, className }: FormDateP
   };
 
   const handleStartTimeChange = (time: string) => {
+    if (!selectedDate) return;
+
     onChange?.({
       startsAt: combineDateAndTime(selectedDate, time),
       endsAt,
@@ -59,126 +56,112 @@ const ScheduleDatePicker = ({ startsAt, endsAt, onChange, className }: FormDateP
   };
 
   const handleEndTimeChange = (time: string) => {
+    if (!selectedDate) return;
+
     onChange?.({
       startsAt,
       endsAt: combineDateAndTime(selectedDate, time),
     });
   };
-  return (
-    <>
-      <div className={cn("grid grid-cols-1 md:grid-cols-2", className)}>
-        <DatePicker
-          value={selectedDate}
-          onChange={(date) => {
-            handleDateChange(date);
-          }}
-        >
-          <button
-            type="button"
-            className="w-full h-22 p-6 flex justify-start items-center border-r-none md:border-r border-muted-foreground cursor-pointer hover:bg-blue-500"
-          >
-            <div>
-              <FaPlay className="inline mr-4 text-2xl" />
-              <span
-                className={cn(
-                  "text-lg",
-                  selectedDate ? "text-foreground" : "text-muted-foreground",
-                )}
-              >
-                {selectedDate
-                  ? selectedDate.toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "long",
-                      year: "numeric",
-                    })
-                  : "Startdatum wählen"}
-              </span>
-            </div>
-          </button>
-        </DatePicker>
-        <div className="flex border-t border-muted-foreground md:border-t-0">
-          <Popover open={isStartTimeOpen} onOpenChange={() => setIsStartTimeOpen(true)}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className="w-full h-22 pl-7 text-foreground border-r border-muted-foreground text-left cursor-pointer hover:bg-blue-500"
-              >
-                <div>
-                  <FaClock className="inline mr-4 text-lg" />
-                  <span className="text-lg">{selectedStartTime}</span>
-                </div>
-              </button>
-            </PopoverTrigger>
 
-            <PopoverContent className="w-[var(--radix-popover-trigger-width)] h-100 overflow-y-scroll scrollbar">
-              <div className="grid gap-1">
-                {TIME_OPTIONS.map((time) => (
-                  <button
-                    key={time}
-                    type="button"
-                    onClick={() => {
-                      handleStartTimeChange(time);
-                      setIsStartTimeOpen(false);
-                    }}
-                    className={cn(
-                      "rounded-md px-3 py-2 text-lg text-center cursor-pointer hover:bg-blue-400",
-                      selectedStartTime === time && "bg-foreground text-background font-medium",
-                    )}
-                  >
-                    {time}
-                  </button>
-                ))}
+  return (
+    <div className={cn("grid grid-cols-1 md:grid-cols-2", className)}>
+      <DatePicker
+        value={selectedDate}
+        onChange={(date) => {
+          handleDateChange(date);
+        }}
+      >
+        <button
+          type="button"
+          className="w-full h-22 p-6 flex justify-start items-center border-r-none md:border-r border-muted-foreground cursor-pointer hover:bg-blue-500"
+        >
+          <div>
+            <FaPlay className="inline mr-4 text-2xl" />
+            <span
+              className={cn("text-lg", selectedDate ? "text-foreground" : "text-muted-foreground")}
+            >
+              {selectedDate
+                ? selectedDate.toLocaleDateString("de-DE", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })
+                : "Startdatum wählen"}
+            </span>
+          </div>
+        </button>
+      </DatePicker>
+      <div className="flex border-t border-muted-foreground md:border-t-0">
+        <Popover open={isStartTimeOpen} onOpenChange={(open) => setIsStartTimeOpen(open)}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="w-full h-22 pl-7 text-foreground border-r border-muted-foreground text-left cursor-pointer hover:bg-blue-500"
+            >
+              <div>
+                <FaClock className="inline mr-4 text-lg" />
+                <span className="text-lg">{selectedStartTime}</span>
               </div>
-            </PopoverContent>
-          </Popover>
-          <Popover open={isEndTimeOpen} onOpenChange={(open) => setIsEndTimeOpen(open)}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className="w-full h-22 pl-7 text-foreground text-left cursor-pointer hover:bg-blue-500"
-              >
-                <div>
-                  <FaClock className="inline mr-4 text-lg" />
-                  <span className="text-lg">{selectedEndTime}</span>
-                </div>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[var(--radix-popover-trigger-width)] h-100 overflow-y-scroll scrollbar">
-              <div className="grid gap-1">
-                {TIME_OPTIONS.map((time) => (
-                  <button
-                    key={time}
-                    type="button"
-                    onClick={() => {
-                      handleEndTimeChange(time);
-                      setIsEndTimeOpen(false);
-                    }}
-                    className={cn(
-                      "rounded-md px-3 py-2 text-lg text-center cursor-pointer hover:bg-blue-400",
-                      selectedEndTime === time && "bg-foreground text-background font-medium",
-                    )}
-                  >
-                    <span className="text-lg">{time}</span>
-                  </button>
-                ))}
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-[var(--radix-popover-trigger-width)] h-100 overflow-y-scroll scrollbar">
+            <div className="grid gap-1">
+              {TIME_OPTIONS.map((time) => (
+                <button
+                  key={time}
+                  type="button"
+                  onClick={() => {
+                    handleStartTimeChange(time);
+                    setIsStartTimeOpen(false);
+                  }}
+                  className={cn(
+                    "rounded-md px-3 py-2 text-lg text-center cursor-pointer hover:bg-blue-400",
+                    selectedStartTime === time && "bg-foreground text-background font-medium",
+                  )}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Popover open={isEndTimeOpen} onOpenChange={(open) => setIsEndTimeOpen(open)}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="w-full h-22 pl-7 text-foreground text-left cursor-pointer hover:bg-blue-500"
+            >
+              <div>
+                <FaClock className="inline mr-4 text-lg" />
+                <span className="text-lg">{selectedEndTime}</span>
               </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[var(--radix-popover-trigger-width)] h-100 overflow-y-scroll scrollbar">
+            <div className="grid gap-1">
+              {TIME_OPTIONS.map((time) => (
+                <button
+                  key={time}
+                  type="button"
+                  onClick={() => {
+                    handleEndTimeChange(time);
+                    setIsEndTimeOpen(false);
+                  }}
+                  className={cn(
+                    "rounded-md px-3 py-2 text-lg text-center cursor-pointer hover:bg-blue-400",
+                    selectedEndTime === time && "bg-foreground text-background font-medium",
+                  )}
+                >
+                  <span className="text-lg">{time}</span>
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
-      <div className="ml-4">
-        {errors.startsAt && (
-          <p className="text-sm text-destructive mt-1 md:ml-0 md:col-span-2">
-            {errors.startsAt.message}
-          </p>
-        )}
-        {errors.endsAt && (
-          <p className="text-sm text-destructive mt-1 md:ml-0 md:col-span-2">
-            {errors.endsAt.message}
-          </p>
-        )}
-      </div>
-    </>
+    </div>
   );
 };
 

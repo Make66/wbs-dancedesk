@@ -17,10 +17,10 @@ export const courseFormSchema = z
     isTaxFree: z.boolean().default(false).optional(),
     isBookedOut: z.boolean().default(false).optional(),
     color: z.tuple([z.string(), z.string()]).optional(),
-    seatsMax: z.number(),
+    seatsMax: z.number().min(1, "Bitte eine maximale Teilnehmerzahl eingeben"),
     seatsCurrent: z.number().optional(),
-    instructorId: z.string().optional(),
-    roomId: z.string().optional(),
+    instructorId: z.string().min(1, "Bitte einen Kursleiter auswählen"),
+    roomId: z.string().min(1, "Bitte einen Raum auswählen"),
   })
   .superRefine((values, ctx) => {
     if (!values.startsAt) {

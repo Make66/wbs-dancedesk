@@ -56,20 +56,11 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
     onEventResizeEnd,
   });
 
-  const renderedEvents = useMemo(() => {
-    return events
-      .map((e) => {
-        if (resizingEvent && e.id === resizingEvent.eventId) {
-          return { ...e, start: resizingEvent.currentStart, end: resizingEvent.currentEnd };
-        }
-        return e;
-      })
-      .filter((e) => isSameDay(e.start, day));
-  }, [events, resizingEvent, day]);
+  const dayEvents = useMemo(() => events.filter((e) => isSameDay(e.start, day)), [events, day]);
 
   const positionedEvents = useMemo(
-    () => getPositionedEvents(renderedEvents, config.slotHeight, config),
-    [renderedEvents, config],
+    () => getPositionedEvents(dayEvents, config.slotHeight, config),
+    [dayEvents, config],
   );
 
   const startSlot = getStartSlot(config);
@@ -78,6 +69,7 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
 
   function handleResizeMouseDown(event: CalendarEvent, e: ReactMouseEvent<HTMLDivElement>) {
     e.stopPropagation();
+    e.preventDefault();
     setResizingEventId(event.id);
     startResize(event);
   }

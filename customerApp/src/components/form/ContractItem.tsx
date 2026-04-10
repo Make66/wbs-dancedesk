@@ -34,7 +34,9 @@ const ContractItem = ({
         <span className="text-md text-muted-foreground">
           {contract.amount} € x {contract.installments} Rate(n)
           {" = "}
-          <span className="font-semibold">{contract.amount * contract.installments} €</span>
+          <span className="font-semibold">
+            {(contract.amount * contract.installments).toFixed(2)} €
+          </span>
         </span>
       </div>
 

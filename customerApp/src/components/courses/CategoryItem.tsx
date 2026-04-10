@@ -89,8 +89,11 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
 
       const newOrderedIds = categoryStore.getState().getOrderedCourseIds(category.id);
 
-      await updateTargetDB(targetId!, {
-        setSeqCategory: newOrderedIds,
+      await updateCategoryDB({
+        id: category.id,
+        data: {
+          setSeqCourse: newOrderedIds,
+        },
       });
     } catch (error) {
       console.error("Error reordering courses:", error);

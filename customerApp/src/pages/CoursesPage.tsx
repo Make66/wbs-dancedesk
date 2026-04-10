@@ -22,7 +22,6 @@ const CoursesPage = () => {
         );
         const data = await response.json();
         setWeekData(data);
-        console.log("Fetched week data:", data);
       } catch (error) {
         console.error("Error fetching week data:", error);
       }

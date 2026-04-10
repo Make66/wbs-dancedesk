@@ -14,7 +14,7 @@ export function TimeGutter({ config }: TimeGutterProps) {
   );
 
   return (
-    <div className="relative border-r bg-zinc-100 rounded-bl-3xl">
+    <div className="relative border-r bg-background rounded-bl-3xl">
       {hours.map((hour) => (
         <div
           key={hour}
