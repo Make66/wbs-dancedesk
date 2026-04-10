@@ -17,3 +17,7 @@ export const participantSchema = z.object({
 });
 
 export type Participant = z.infer<typeof participantSchema>;
+
+export const participantLoginSchema = participantSchema
+  .pick({ email: true, password: true })
+  .extend({ tenantId: z.string().min(1) });

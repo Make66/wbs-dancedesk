@@ -19,7 +19,8 @@ const authenticate: RequestHandler = (req, _res, next) => {
 
     req.user = {
       id: decoded.sub as string,
-      tenantId: decoded.tenantId as string
+      tenantId: decoded.tenantId as string,
+      role: (decoded.role ?? 'user') as 'user' | 'participant',
     };
 
     next();

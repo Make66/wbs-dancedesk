@@ -91,15 +91,19 @@ npx prisma migrate reset && npx prisma migrate dev --name init && npx prisma gen
 
 ## Auth
 
-POST   /auth/register   body: { firstName, lastName, email, password, tenantId }
+POST   /auth/register             body: { firstName, lastName, email, password, tenantId }
 
-POST   /auth/login      body: { email, password }
+POST   /auth/login                body: { email, password }
 
-POST   /auth/refresh    (reads refreshToken cookie)
+POST   /auth/refresh              (reads refreshToken cookie)
 
-DELETE /auth/logout     (reads refreshToken cookie)
+DELETE /auth/logout               (reads refreshToken cookie)
 
-GET    /auth/me         (requires accessToken cookie)
+GET    /auth/me                   (requires accessToken cookie)
+
+POST   /auth/participant-login    body: { email, password }
+
+POST   /auth/participant-me       (requires accessToken cookie)
 
 
 ## CRUD for models

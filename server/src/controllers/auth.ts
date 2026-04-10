@@ -23,21 +23,48 @@ const COOKIE_OPTS = {
 // Dummy hash prevents timing attacks when user is not found
 const DUMMY_HASH = '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012345';
 
-async function issueTokens(user: { id: string; tenantId: string }, res: Response) {
+type Role = 'user' | 'participant';
+
+function updateRefreshToken(id: string, hash: string | null, role: Role) {
+  if (role === 'user')
+    return prisma.user.updateMany({ where: { id }, data: { refreshToken: hash } });
+  return prisma.participant.updateMany({ where: { id }, data: { refreshToken: hash } });
+}
+
+function findEntityById(id: string, role: Role) {
+  if (role === 'user')
+    return prisma.user.findFirst({ where: { id, isDeleted: false } });
+  return prisma.participant.findFirst({ where: { id, isDeleted: false } });
+}
+
+async function issueTokens(entity: { id: string; tenantId: string }, role: Role, res: Response) {
   const accessToken = jwt.sign(
-    { sub: user.id, tenantId: user.tenantId }, 
-    ACCESS_SECRET!, 
-    { expiresIn: Number(process.env.ACCESS_TOKEN_TTL ?? 900) } // seconds, e.g. 900 = 15 min
+    { sub: entity.id, tenantId: entity.tenantId, role },
+    ACCESS_SECRET!,
+    { expiresIn: Number(process.env.ACCESS_TOKEN_TTL ?? 900) }
   );
   const refreshToken = jwt.sign(
-    { sub: user.id },                          
-    REFRESH_SECRET!, 
-    { expiresIn: '7d'  }
+    { sub: entity.id, role },
+    REFRESH_SECRET!,
+    { expiresIn: '7d' }
   );
   const hash = await bcrypt.hash(refreshToken, SALT_ROUNDS);
-  await prisma.user.update({ where: { id: user.id }, data: { refreshToken: hash } });
+  await updateRefreshToken(entity.id, hash, role);
   res.cookie('accessToken',  accessToken,  { ...COOKIE_OPTS, maxAge: 15 * 60 * 1000 });
   res.cookie('refreshToken', refreshToken, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+}
+
+async function performLogin<T extends { id: string; tenantId: string; password: string }>(
+  inputPassword: string,
+  find: () => Promise<T | null>,
+  role: Role,
+  res: Response
+): Promise<T> {
+  const entity = await find();
+  const match = await bcrypt.compare(inputPassword, entity?.password ?? DUMMY_HASH);
+  if (!entity || !match) throw new Error('Invalid credentials', { cause: { status: 401 } });
+  await issueTokens(entity, role, res);
+  return entity;
 }
 
 export const register: RequestHandler = async (req, res) => {
@@ -62,21 +89,31 @@ export const register: RequestHandler = async (req, res) => {
   }
 
   console.log('[register] user created:', user.id);
-  await issueTokens(user, res);
+  await issueTokens(user, 'user', res);
   res.status(201).json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
 };
 
 export const login: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
-
-  const user = await prisma.user.findFirst({ where: { email, isDeleted: false } });
-
-  // always run compare to prevent timing attacks — use dummy hash if user not found
-  const passwordMatch = await bcrypt.compare(password, user?.password ?? DUMMY_HASH);
-  if (!user || !passwordMatch) throw new Error('Invalid credentials', { cause: { status: 401 } });
-
-  await issueTokens(user, res);
+  const user = await performLogin(
+    password,
+    () => prisma.user.findFirst({ where: { email, isDeleted: false } }),
+    'user',
+    res
+  );
   res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
+};
+
+export const participantLogin: RequestHandler = async (req, res) => {
+  const { email, password, tenantId } = req.body;
+  // tenantId is required because participant email is not globally unique
+  const participant = await performLogin(
+    password,
+    () => prisma.participant.findFirst({ where: { email, tenantId, isDeleted: false } }),
+    'participant',
+    res
+  );
+  res.json({ id: participant.id, email: participant.email, firstName: participant.firstName, lastName: participant.lastName });
 };
 
 export const refresh: RequestHandler = async (req, res) => {
@@ -84,20 +121,22 @@ export const refresh: RequestHandler = async (req, res) => {
   if (!token) throw new Error('Not authenticated', { cause: { status: 401 } });
 
   let sub: string;
+  let role: Role;
   try {
     const decoded = jwt.verify(token, REFRESH_SECRET!) as jwt.JwtPayload;
     sub = decoded.sub as string;
+    role = (decoded.role ?? 'user') as Role;
   } catch {
     throw new Error('Invalid or expired refresh token', { cause: { status: 401 } });
   }
 
-  const user = await prisma.user.findFirst({ where: { id: sub, isDeleted: false } });
-  if (!user || !user.refreshToken) throw new Error('Not authenticated', { cause: { status: 401 } });
+  const entity = await findEntityById(sub, role);
+  if (!entity || !entity.refreshToken) throw new Error('Not authenticated', { cause: { status: 401 } });
 
-  const tokenMatch = await bcrypt.compare(token, user.refreshToken);
+  const tokenMatch = await bcrypt.compare(token, entity.refreshToken);
   if (!tokenMatch) throw new Error('Invalid refresh token', { cause: { status: 401 } });
 
-  await issueTokens(user, res);
+  await issueTokens(entity, role, res);
   res.json({ ok: true });
 };
 
@@ -106,10 +145,8 @@ export const logout: RequestHandler = async (req, res) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, REFRESH_SECRET!) as jwt.JwtPayload;
-      await prisma.user.updateMany({
-        where: { id: decoded.sub as string },
-        data: { refreshToken: null },
-      });
+      const role = (decoded.role ?? 'user') as Role;
+      await updateRefreshToken(decoded.sub as string, null, role);
     } catch {
       // token invalid — clear cookies anyway
     }
@@ -123,5 +160,14 @@ export const me: RequestHandler = async (req, res) => {
     select: { id: true, email: true, firstName: true, lastName: true, modules: true, imageUrl: true },
   });
   if (!user) throw new Error('User not found', { cause: { status: 404 } });
-  res.json({user});
+  res.json({ user });
+};
+
+export const participantMe: RequestHandler = async (req, res) => {
+  const participant = await prisma.participant.findFirst({
+    where: { id: req.user!.id, isDeleted: false },
+    select: { id: true, email: true, firstName: true, lastName: true, imageUrl: true, phone: true, birthDate: true, gender: true },
+  });
+  if (!participant) throw new Error('Participant not found', { cause: { status: 404 } });
+  res.json({ participant });
 };

@@ -198,3 +198,124 @@ targetSchema.partial({ description: true, ... });
 ```
 `.partial()` returns a new schema. The router correctly calls `.partial()` on its own copy, so this doesn't cause the 500, but the export is misleading.
 
+---
+
+## How do we support both User and Participant sign-in without repeating code?
+
+### The problem
+
+`issueTokens`, `login`, `refresh`, and `logout` all hardcoded `prisma.user.*`. Supporting participants requires the exact same flow — find record, compare password, sign tokens, store hash — just against a different Prisma model.
+
+### Solution: role-dispatched helpers + a shared login function
+
+**1. Add a `role` claim to both JWTs**
+
+Every access token and refresh token now carries `role: 'user' | 'participant'`. This lets `refresh` and `logout` know which table to look up without trying both.
+
+```ts
+jwt.sign({ sub: entity.id, tenantId: entity.tenantId, role }, ACCESS_SECRET!, ...)
+jwt.sign({ sub: entity.id, role }, REFRESH_SECRET!, ...)
+```
+
+**2. Two small role-dispatching helpers replace all hardcoded model calls**
+
+```ts
+function updateRefreshToken(id: string, hash: string | null, role: Role) {
+  if (role === 'user')
+    return prisma.user.updateMany({ where: { id }, data: { refreshToken: hash } });
+  return prisma.participant.updateMany({ where: { id }, data: { refreshToken: hash } });
+}
+
+function findEntityById(id: string, role: Role) {
+  if (role === 'user')
+    return prisma.user.findFirst({ where: { id, isDeleted: false } });
+  return prisma.participant.findFirst({ where: { id, isDeleted: false } });
+}
+```
+
+`updateRefreshToken` is used by `issueTokens` (to store the new hash) and `logout` (to clear it).
+`findEntityById` is used by `refresh` and `logout`.
+
+**3. `performLogin<T>` extracts the shared credential-check logic**
+
+```ts
+async function performLogin<T extends { id: string; tenantId: string; password: string }>(
+  inputPassword: string,
+  find: () => Promise<T | null>,
+  role: Role,
+  res: Response
+): Promise<T> {
+  const entity = await find();
+  const match = await bcrypt.compare(inputPassword, entity?.password ?? DUMMY_HASH);
+  if (!entity || !match) throw new Error('Invalid credentials', { cause: { status: 401 } });
+  await issueTokens(entity, role, res);
+  return entity;
+}
+```
+
+Each handler passes its own `find()` callback; `performLogin` owns the timing-safe compare, the 401, and token issuance.
+
+**4. Route handlers become thin**
+
+```ts
+export const login: RequestHandler = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await performLogin(
+    password,
+    () => prisma.user.findFirst({ where: { email, isDeleted: false } }),
+    'user', res
+  );
+  res.json({ id: user.id, email: user.email, ... });
+};
+
+export const participantLogin: RequestHandler = async (req, res) => {
+  const { email, password, tenantId } = req.body;
+  // tenantId required: participant email is not globally unique
+  const p = await performLogin(
+    password,
+    () => prisma.participant.findFirst({ where: { email, tenantId, isDeleted: false } }),
+    'participant', res
+  );
+  res.json({ id: p.id, email: p.email, ... });
+};
+```
+
+**5. `refresh` and `logout` decode `role` from the token**
+
+```ts
+const decoded = jwt.verify(token, REFRESH_SECRET!) as jwt.JwtPayload;
+const role = (decoded.role ?? 'user') as Role; // fallback for old tokens
+const entity = await findEntityById(decoded.sub, role);
+```
+
+The `?? 'user'` fallback means existing sessions keep working after the deploy.
+
+**6. `authenticate` middleware forwards `role` on `req.user`**
+
+```ts
+req.user = {
+  id: decoded.sub as string,
+  tenantId: decoded.tenantId as string,
+  role: (decoded.role ?? 'user') as 'user' | 'participant',
+};
+```
+
+This lets downstream handlers and future middleware guard routes by role.
+
+### New routes
+
+| Method | Path | Handler |
+|--------|------|---------|
+| POST | `/auth/participant-login` | `participantLogin` |
+| GET | `/auth/participant-me` | `participantMe` (behind `authenticate`) |
+
+### What is shared vs. per-entity
+
+| Concern | Shared | Per-entity |
+|---------|--------|------------|
+| Token signing | `issueTokens` | — |
+| Password check + 401 | `performLogin` | `find()` callback |
+| Refresh token store / clear | `updateRefreshToken(role)` | — |
+| Entity lookup by id | `findEntityById(role)` | — |
+| Response shape | — | each handler |
+
