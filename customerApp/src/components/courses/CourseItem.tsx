@@ -1,4 +1,4 @@
-import { RxHamburgerMenu } from "react-icons/rx";
+import { PiDotsSixVerticalBold } from "react-icons/pi";
 import { Switch } from "../ui/switch";
 import { categoryStore } from "../../stores/categoryStore";
 import type { Course } from "../../types/course-types";
@@ -85,7 +85,7 @@ const CourseItem = ({ course }: CourseItemProps) => {
               event.stopPropagation();
             }}
           >
-            <RxHamburgerMenu
+            <PiDotsSixVerticalBold
               className="inline-block dark:text-black"
               style={{ color: course.color?.[1] ?? "#000000" }}
             />

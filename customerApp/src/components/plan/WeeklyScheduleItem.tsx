@@ -1,6 +1,6 @@
 import type { Course } from "../../types/course-types";
 import SeatingItem from "../ui/SeatingItem";
-import { MdMeetingRoom } from "react-icons/md";
+import { IoLocationSharp } from "react-icons/io5";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 
@@ -48,7 +48,7 @@ const WeeklyScheduleItem = ({
       </div>
       <div className="mt-3 text-center space-y-1">
         <div className="flex items-center justify-center gap-2">
-          <MdMeetingRoom className="opacity-70" />
+          <IoLocationSharp className="opacity-70" />
           <p className="mt-1 text-xs opacity-90">
             {course.room?.name || <p className="text-red-500">unbekannt</p>}
           </p>

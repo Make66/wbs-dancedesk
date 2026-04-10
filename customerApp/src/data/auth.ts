@@ -54,4 +54,9 @@ const register = async (formData: RegisterFormState): Promise<SuccessRes> => {
   return data;
 };
 
-export { login, me, logout, register };
+// noch in Arbeit
+const keepSessionAlive = async (): Promise<void> => {
+  const tokenTTL = parseInt(import.meta.env.VITE_ACCESS_TOKEN_TTL, 10) || 900;
+};
+
+export { login, me, logout, register, keepSessionAlive };
