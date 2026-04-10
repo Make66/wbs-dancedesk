@@ -799,9 +799,11 @@ async function main() {
         await prisma.event.create({
           data: {
             title:      spec.title,
-            date,
+            startsAt:   date,
+            endsAt:     new Date(date.getTime() + 3 * 60 * 60 * 1000), // +3h
             color:      [spec.color, '#fff'],
             icon:       'event',
+            type:       'event',
             roomId,
             locationId,
             tenantId:   TENANT,
