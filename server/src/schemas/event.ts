@@ -5,9 +5,11 @@ export const eventSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
-  date: z.date().optional(),
+  startsAt: z.date().optional(),
+  endsAt: z.date().optional(),
   color: z.array(z.string()).optional(),
   icon: z.string().optional(),
+  type: z.string().optional(),
 
   street: z.string().optional(),
   city: z.string().optional(),

@@ -2,9 +2,11 @@ model Event {
   title       String?  @default("John Doe Instructor")
   description String?  @default("")
   imageUrl    String   @default("./assets/images/no-profile-picture")
-  date        DateTime @default(now())
+  startsAt    DateTime @default(now())
+  endsAt      DateTime @default(now())
   color       Json?    @default("[]")
   icon        String   @default("event")
+  type        String   @default("event")
 
   // Common address fields
   street    String @default("123 Main St")
