@@ -5,7 +5,6 @@ import { ColorPicker } from "../ui/colorPicker";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormValues } from "./schemas/course-schema";
 import { Check } from "lucide-react";
-import ShiftComponent from "./ShiftComponent";
 
 const SettingsSection = () => {
   const { watch, setValue } = useFormContext<CourseFormValues>();
@@ -22,12 +21,51 @@ const SettingsSection = () => {
           <span className="text-2xl font-semibold">Einstellungen</span>
         </div>
       </div>
-      <div className="col-span-1 p-3">
-        <div className="flex items-center gap-6">
+      <div className="col-span-1 flex items-center">
+        <div className="p-3 bg-background/40 rounded-2xl flex">
+          <ColorPicker
+            color={backgroundColor}
+            onChange={(newColor) => {
+              setValue("color", [newColor, textColor]);
+            }}
+          >
+            <button
+              type="button"
+              className="h-20 w-20 cursor-pointer rounded-l-2xl border shadow-sm"
+              style={{ backgroundColor }}
+              aria-label="Hintergrundfarbe auswählen"
+            />
+          </ColorPicker>
+
+          <ColorPicker
+            color={textColor}
+            onChange={(newColor) => {
+              setValue("color", [backgroundColor, newColor]);
+            }}
+          >
+            <button
+              type="button"
+              className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-r-2xl border bg-white shadow-sm"
+              aria-label="Textfarbe auswählen"
+            >
+              <ImFont
+                className="text-4xl"
+                style={{
+                  color: textColor,
+                  stroke: "#000",
+                  strokeWidth: "1px",
+                }}
+              />
+            </button>
+          </ColorPicker>
+        </div>
+      </div>
+      <div className="col-span-1">
+        <div className="flex items-center">
           {watch("isTaxFree") ? (
             <button
               type="button"
-              className="h-22 w-22 bg-background hover:bg-blue-400 border border-muted-foreground rounded-xl cursor-pointer flex justify-center items-center"
+              className="h-22 w-22 bg-background hover:bg-blue-400 border border-muted-foreground rounded-2x cursor-pointer flex justify-center items-center"
               onClick={() => setValue("isTaxFree", false, { shouldDirty: true })}
               data-tooltip-id="tooltip"
               data-tooltip-content="Umsatzsteuerfrei (Preisangabe ohne MwSt.)"
@@ -55,47 +93,12 @@ const SettingsSection = () => {
             </button>
           )}
         </div>
-        <div className="col-span-1 gap-3 p-3 md:col-span-2 flex items-center">
-          <ColorPicker
-            color={backgroundColor}
-            onChange={(newColor) => {
-              setValue("color", [newColor, textColor]);
-            }}
-          >
-            <button
-              type="button"
-              className="h-20 w-20 cursor-pointer rounded-md border shadow-sm"
-              style={{ backgroundColor }}
-              aria-label="Hintergrundfarbe auswählen"
-            />
-          </ColorPicker>
-
-          <ColorPicker
-            color={textColor}
-            onChange={(newColor) => {
-              setValue("color", [backgroundColor, newColor]);
-            }}
-          >
-            <button
-              type="button"
-              className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-md border bg-white shadow-sm"
-              aria-label="Textfarbe auswählen"
-            >
-              <ImFont
-                className="text-4xl"
-                style={{
-                  color: textColor,
-                  stroke: "#000",
-                  strokeWidth: "1px",
-                }}
-              />
-            </button>
-          </ColorPicker>
-        </div>
       </div>
       <div>
         <div>
-          <ShiftComponent />
+          {
+            // COL 2
+          }
         </div>
       </div>
     </div>

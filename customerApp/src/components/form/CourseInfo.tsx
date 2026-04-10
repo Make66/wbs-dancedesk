@@ -1,13 +1,12 @@
-import type { Course } from "../../types/course-types";
 import { addMinutes, format } from "date-fns";
 import { de } from "date-fns/locale";
 import { FaCalendarAlt, FaHourglass } from "react-icons/fa";
 import { FaClock } from "react-icons/fa6";
 import { WiDaySunny } from "react-icons/wi";
-import { findNextCourseDate, getCourseDuration } from "../../lib/courses/course";
 
 type CourseInfoProps = {
-  course?: Course;
+  nextDate: Date | null;
+  minutes: number;
   participantsStats: {
     total: number;
     male: number;
@@ -20,11 +19,7 @@ type CourseInfoProps = {
   };
 };
 
-const CourseInfo = ({ course, participantsStats }: CourseInfoProps) => {
-  const nextDate = findNextCourseDate(course);
-  const minutes =
-    course?.startsAt && course?.endsAt ? getCourseDuration(course.startsAt, course.endsAt) : 0;
-
+const CourseInfo = ({ nextDate, minutes, participantsStats }: CourseInfoProps) => {
   const endTime = nextDate ? addMinutes(nextDate, minutes) : null;
 
   return (

@@ -3,22 +3,22 @@ import { z } from "zod/v4";
 export const courseFormSchema = z
   .object({
     name: z.string().trim().min(1, "Bitte einen Kursnamen eingeben"),
-    description: z.string().trim(),
+    description: z.string().trim().optional(),
     categoryId: z.string().optional(),
-    contracts: z.array(z.any()),
+    contracts: z.array(z.any()).optional(),
     startsAt: z.date().optional(),
     endsAt: z.date().optional(),
     frequency: z.string(),
-    isClub: z.boolean(),
+    isClub: z.boolean().default(false).optional(),
     courseRepetition: z.number().min(1, "Es muss mindestens 1 Wiederholung eingegeben werden"),
     clubRepetition: z.number().min(1, "Es muss mindestens 1 Wiederholung eingegeben werden"),
-    isIgnoreCalendar: z.boolean(),
-    dates: z.array(z.any()),
-    isTaxFree: z.boolean(),
-    isBookedOut: z.boolean(),
-    color: z.tuple([z.string(), z.string()]),
+    isIgnoreCalendar: z.boolean().default(false).optional(),
+    dates: z.array(z.any()).optional(),
+    isTaxFree: z.boolean().default(false).optional(),
+    isBookedOut: z.boolean().default(false).optional(),
+    color: z.tuple([z.string(), z.string()]).optional(),
     seatsMax: z.number(),
-    seatsCurrent: z.number(),
+    seatsCurrent: z.number().optional(),
     instructorId: z.string().optional(),
     roomId: z.string().optional(),
   })
@@ -47,7 +47,7 @@ export const courseFormSchema = z
       });
     }
 
-    if (values.seatsCurrent > values.seatsMax) {
+    if (values.seatsCurrent && values.seatsCurrent > values.seatsMax) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["seatsCurrent"],

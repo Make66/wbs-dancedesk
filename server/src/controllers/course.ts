@@ -36,10 +36,18 @@ function isHoliday(dateMs: number, holidays: ParsedHoliday[]): boolean {
 function nextOccurrence(dateMs: number, frequency: string): number {
   const d = new Date(dateMs);
   switch (frequency) {
-    case 'daily':     d.setUTCDate(d.getUTCDate() + 1);    break;
-    case 'biweekly':  d.setUTCDate(d.getUTCDate() + 14);   break;
-    case 'monthly':   d.setUTCMonth(d.getUTCMonth() + 1);  break;
-    default:          d.setUTCDate(d.getUTCDate() + 7);    break; // weekly / ongoing
+    case "daily":
+      d.setUTCDate(d.getUTCDate() + 1);
+      break;
+    case "biweekly":
+      d.setUTCDate(d.getUTCDate() + 14);
+      break;
+    case "monthly":
+      d.setUTCMonth(d.getUTCMonth() + 1);
+      break;
+    default:
+      d.setUTCDate(d.getUTCDate() + 7);
+      break; // weekly / ongoing
   }
   return d.getTime();
 }
@@ -251,9 +259,10 @@ export const getWeekCourses: RequestHandler = async (req, res) => {
 
 function mapCourseBody(body: Record<string, unknown>) {
   const { category, room, instructor, textTerms, textInfo, ...rest } = body;
+  const mappedCategoryId = (category ?? rest.categoryId) as string | undefined;
   return {
     ...rest,
-    categoryId: category as string,
+    ...(mappedCategoryId !== undefined && { categoryId: mappedCategoryId }),
     ...(room !== undefined && { roomId: room as string }),
     ...(instructor !== undefined && { instructorId: instructor as string }),
     ...(textTerms !== undefined && { textTermsId: textTerms as string }),
@@ -290,8 +299,13 @@ export const getOneCourse: RequestHandler = async (req, res) => {
 
 export const createCourse: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
+  const mappedBody = mapCourseBody(req.body);
+  if (!mappedBody.categoryId) {
+    throw new Error("Category is required", { cause: { status: 400 } });
+  }
+  const { categoryId, ...restBody } = mappedBody;
   const course = await prisma.course.create({
-    data: { ...mapCourseBody(req.body), tenantId },
+    data: { ...restBody, categoryId, tenantId },
   });
   res.status(201).json(course);
 };
