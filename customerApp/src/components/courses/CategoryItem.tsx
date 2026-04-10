@@ -11,7 +11,7 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { RxHamburgerMenu } from "react-icons/rx";
+import { PiDotsSixVerticalBold } from "react-icons/pi";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { FaPenNib } from "react-icons/fa";
@@ -204,7 +204,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
           >
             <div className="flex items-center">
               {isEditMode && category.isActive && (
-                <RxHamburgerMenu
+                <PiDotsSixVerticalBold
                   className="mr-2 inline-block"
                   style={{ color: category.color[1] }}
                 />
