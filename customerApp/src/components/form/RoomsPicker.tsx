@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MdMeetingRoom } from "react-icons/md";
+import { IoLocationSharp } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import type { Room } from "../../types/room-types";
@@ -17,7 +17,7 @@ const RoomsPicker = ({ rooms, isLoading }: { rooms: Room[]; isLoading: boolean }
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button className="w-full h-full pl-2 flex items-center gap-6 cursor-pointer">
-            <MdMeetingRoom className="text-3xl ml-4" />
+            <IoLocationSharp className="text-3xl ml-4" />
             {isLoading ? (
               <span className="text-lg">Lade Räume...</span>
             ) : selectedRoom ? (

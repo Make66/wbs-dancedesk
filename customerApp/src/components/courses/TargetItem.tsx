@@ -1,5 +1,5 @@
 import { useSortable } from "@dnd-kit/sortable";
-import { RxHamburgerMenu } from "react-icons/rx";
+import { PiDotsSixVerticalBold } from "react-icons/pi";
 import { FaPenNib } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { CSS } from "@dnd-kit/utilities";
@@ -137,7 +137,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <RxHamburgerMenu style={{ color: target.color[1] }} />
+            <PiDotsSixVerticalBold style={{ color: target.color[1] }} />
             {target.isNew ? (
               <div className="flex items-center gap-3">
                 {formData.icon &&
