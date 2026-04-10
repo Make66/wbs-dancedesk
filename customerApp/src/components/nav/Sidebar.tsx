@@ -3,6 +3,7 @@ import { targetStore } from "../../stores/targetStore";
 import { cn } from "../../lib/utils";
 import { LuArrowLeftToLine, LuArrowRightToLine } from "react-icons/lu";
 import { FaChalkboardTeacher } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
@@ -114,6 +115,21 @@ const Sidebar = () => {
               </div>
             )}
           </div>
+          <div className="border-b border-gray-500" />
+          <NavLink
+            to="/calendar"
+            className={({ isActive }) =>
+              cn(
+                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                isActive
+                  ? "bg-gray-700 text-white"
+                  : "hover:bg-gray-700 hover:text-white text-gray-300",
+              )
+            }
+          >
+            <FaCalendarAlt className="text-2xl cursor-pointer fill-current ml-2" />
+            <span>Kalender</span>
+          </NavLink>
           <div className="border-b border-gray-500" />
           <NavLink
             to="/users"

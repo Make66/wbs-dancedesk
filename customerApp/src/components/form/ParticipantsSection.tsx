@@ -1,27 +1,15 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ImUsers } from "react-icons/im";
-import { getParticipantsByCourseId } from "../../data/participants";
-import type { Participant } from "../../types/participants-type";
 import ParticipantItem from "./ParticipantItem";
 import { containerVariants, itemVariants } from "../../lib/animations";
+import type { Participant } from "../../types/participants-type";
+import { ImUsers } from "react-icons/im";
 
 type ParticipantsSectionProps = {
-  courseId: string;
+  participants: Participant[];
+  isLoading: boolean;
 };
 
-const ParticipantsSection = ({ courseId }: ParticipantsSectionProps) => {
-  const [participants, setParticipants] = useState<Participant[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const fetchParticipants = async () => {
-      setIsLoading(true);
-      const response = await getParticipantsByCourseId(courseId);
-      setParticipants(response);
-      setIsLoading(false);
-    };
-    fetchParticipants();
-  }, [courseId]);
+const ParticipantsSection = ({ participants, isLoading }: ParticipantsSectionProps) => {
   return (
     <div className="p-2 w-full rounded-2xl bg-pink-600/40 shadow-xl">
       <div className="pt-2 pl-3 flex items-center justify-between col-span-1 md:col-span-2">

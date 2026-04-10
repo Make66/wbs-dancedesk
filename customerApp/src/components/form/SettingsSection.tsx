@@ -1,6 +1,5 @@
 import { MdOutlineSettingsInputComponent } from "react-icons/md";
 import { ImFont } from "react-icons/im";
-import { FaLock, FaLockOpen } from "react-icons/fa";
 import { HiOutlineReceiptTax, HiReceiptTax } from "react-icons/hi";
 import { ColorPicker } from "../ui/colorPicker";
 import { useFormContext } from "react-hook-form";
@@ -25,36 +24,6 @@ const SettingsSection = () => {
       </div>
       <div className="col-span-1 p-3">
         <div className="flex items-center gap-6">
-          {watch("isBookedOut") ? (
-            <button
-              type="button"
-              className="relative h-22 w-22 bg-muted-foreground text-background hover:bg-blue-400 border border-muted-foreground rounded-xl cursor-pointer flex justify-center items-center"
-              onClick={() => setValue("isBookedOut", false, { shouldDirty: true })}
-              data-tooltip-id="tooltip"
-              data-tooltip-content="Kurs öffnen (Anmeldungen möglich)"
-              data-tooltip-place="bottom"
-            >
-              <div className="flex flex-col items-center justify-center mt-2">
-                <FaLock className="text-3xl" />
-                <span className="text-sm font-medium">closed</span>
-              </div>
-              <Check className="h-4 w-4 absolute top-2 right-2" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="h-22 w-22 bg-background hover:bg-blue-400 border border-muted-foreground rounded-xl cursor-pointer flex justify-center items-center"
-              onClick={() => setValue("isBookedOut", true, { shouldDirty: true })}
-              data-tooltip-id="tooltip"
-              data-tooltip-content="Kurs schließen (keine Anmeldungen mehr möglich)"
-              data-tooltip-place="bottom"
-            >
-              <div className="flex flex-col items-center justify-center mt-2">
-                <FaLockOpen className="text-3xl" />
-                <span className="text-sm font-medium">open</span>
-              </div>
-            </button>
-          )}
           {watch("isTaxFree") ? (
             <button
               type="button"

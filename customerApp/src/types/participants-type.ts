@@ -3,6 +3,7 @@ export type Participant = {
   firstName: string;
   lastName: string;
   birthDate: string;
+  gender: "male" | "female" | "other";
   email: string;
   phone: string;
   imageUrl: string;

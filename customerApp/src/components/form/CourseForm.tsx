@@ -1,6 +1,6 @@
 import { useForm, FormProvider, type SubmitHandler } from "react-hook-form";
 import type { Course } from "../../types/course-types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router";
 
@@ -12,6 +12,11 @@ import { Button } from "../ui/button";
 import { updateCourseDB, createCourseDB } from "../../data/course";
 import { courseFormSchema, type CourseFormValues } from "./schemas/course-schema";
 import ParticipantsSection from "./ParticipantsSection";
+import type { Participant } from "../../types/participants-type";
+import { getParticipantsByCourseId } from "../../data/participants";
+import { getRooms } from "../../data/rooms";
+import type { Room } from "../../types/room-types";
+import { userStore } from "../../stores/userStore";
 
 type CourseFormProps = {
   course?: Course;
@@ -23,8 +28,49 @@ const toColorTuple = (color?: string[]): [string, string] => [
 ];
 
 const CourseForm = ({ course }: CourseFormProps) => {
+  const locationId = userStore((state) => state.selectedLocationId);
   const location = useLocation();
   const navigate = useNavigate();
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [participantsLoading, setParticipantsLoading] = useState(false);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [roomsLoading, setRoomsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!course?.id) return;
+
+    const fetchParticipants = async () => {
+      try {
+        setParticipantsLoading(true);
+        const data = await getParticipantsByCourseId(course.id);
+        setParticipants(data);
+      } catch (error) {
+        console.error("Error fetching participants:", error);
+        setParticipants([]);
+      } finally {
+        setParticipantsLoading(false);
+      }
+    };
+    fetchParticipants();
+  }, [course?.id]);
+
+  useEffect(() => {
+    if (!locationId) return;
+
+    const fetchRooms = async () => {
+      try {
+        setRoomsLoading(true);
+        const data = await getRooms(locationId);
+        setRooms(data);
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+        setRooms([]);
+      } finally {
+        setRoomsLoading(false);
+      }
+    };
+    fetchRooms();
+  }, [locationId]);
 
   const methods = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
@@ -133,7 +179,12 @@ const CourseForm = ({ course }: CourseFormProps) => {
         </div>
 
         <div className="col-span-3 lg:col-span-2">
-          <DetailsSection />
+          <DetailsSection
+            rooms={rooms}
+            roomsLoading={roomsLoading}
+            participants={participants}
+            course={course as Course}
+          />
 
           <div className="my-6" />
           <ScheduleSection />
@@ -144,12 +195,12 @@ const CourseForm = ({ course }: CourseFormProps) => {
           <div className="my-6" />
           <SettingsSection />
 
-          <Button type="submit" className="col-span-3 md:col-span-1">
+          <Button type="submit" className="w-full py-12 text-2xl mt-8">
             Speichern
           </Button>
         </div>
-        <div>
-          <ParticipantsSection courseId={course?.id || ""} />
+        <div className="col-span-3 lg:col-span-1">
+          <ParticipantsSection participants={participants} isLoading={participantsLoading} />
         </div>
       </form>
     </FormProvider>
