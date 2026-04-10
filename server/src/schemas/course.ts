@@ -14,14 +14,14 @@ export const contractSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-export const courseSchema = z.object({
+const courseBaseSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
   startsAt: z.coerce.date().default(new Date()).optional(),
   endsAt: z.coerce.date().default(new Date()),
   frequency: z.enum(["daily", "weekly", "biweekly", "monthly"]).default("weekly").optional(),
   clubRepetition: z.int().min(1).max(50).default(50).optional(),
-  courseRepetition: z.int().default(8).optional(),
+  courseRepetition: z.int().min(1).default(8).optional(),
   dates: z.array(courseDateSchema).default([]).optional(),
   contracts: z.array(contractSchema).default([]).optional(),
   options: z.int("options must be a value between 0 and 12").default(0).optional(),
@@ -44,6 +44,18 @@ export const courseSchema = z.object({
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),
 });
+
+export const courseSchema = courseBaseSchema.superRefine((values, ctx) => {
+  if (!values.courseRepetition && !values.clubRepetition) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["courseRepetition"],
+      message: "Either courseRepetition or clubRepetition is required",
+    });
+  }
+});
+
+export const courseUpdateSchema = courseBaseSchema.partial();
 
 export const courseOptions = [
   { key: 0, option: "default" },

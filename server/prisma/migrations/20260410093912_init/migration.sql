@@ -37,6 +37,7 @@ CREATE TABLE "Course" (
     "isTaxFree" BOOLEAN NOT NULL DEFAULT false,
     "categoryId" UUID NOT NULL,
     "instructorId" UUID,
+    "locationId" UUID,
     "roomId" UUID,
     "textTermsId" UUID,
     "textInfoId" UUID,
@@ -75,6 +76,33 @@ CREATE TABLE "Customer" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Event" (
+    "title" TEXT DEFAULT 'John Doe Instructor',
+    "description" TEXT DEFAULT '',
+    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "color" JSONB DEFAULT '[]',
+    "icon" TEXT NOT NULL DEFAULT 'event',
+    "type" TEXT NOT NULL DEFAULT 'event',
+    "street" TEXT NOT NULL DEFAULT '123 Main St',
+    "city" TEXT NOT NULL DEFAULT 'Anytown',
+    "zipCode" TEXT NOT NULL DEFAULT '12345',
+    "longitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "latitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "locationId" UUID,
+    "roomId" UUID,
+    "id" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -140,6 +168,8 @@ CREATE TABLE "Participant" (
     "phone" TEXT DEFAULT '123-456-7890',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "birthDate" TEXT DEFAULT '1990-01-01',
+    "gender" TEXT DEFAULT 'other',
     "refreshToken" TEXT,
     "settings" JSONB DEFAULT '{}',
     "active" BOOLEAN NOT NULL DEFAULT true,
@@ -194,6 +224,7 @@ CREATE TABLE "Room" (
     "description" TEXT DEFAULT '',
     "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
     "capacity" INTEGER NOT NULL DEFAULT 20,
+    "locationId" UUID,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
@@ -225,6 +256,7 @@ CREATE TABLE "Settings" (
     "legalResources" TEXT NOT NULL DEFAULT 'https://domain/fileadmin/kunden/mandant/rechtstexte/',
     "contracts" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "registration" JSONB,
+    "calendarConfig" JSONB DEFAULT '{"startHour": 10, "endHour": 20, "slotHeight": 20, "minutesPerSlot": 15}',
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -239,8 +271,8 @@ CREATE TABLE "Target" (
     "description" TEXT DEFAULT '',
     "icon" TEXT NOT NULL DEFAULT '',
     "color" TEXT[] DEFAULT ARRAY['#000000', '#FFFFFF']::TEXT[],
-    "setSeqCategory" UUID[],
     "locationId" UUID,
+    "setSeqCategory" UUID[],
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -295,6 +327,14 @@ CREATE TABLE "_ParticipantCourse" (
 );
 
 -- CreateTable
+CREATE TABLE "_EventTargets" (
+    "A" UUID NOT NULL,
+    "B" UUID NOT NULL,
+
+    CONSTRAINT "_EventTargets_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
 CREATE TABLE "_UserLocations" (
     "A" UUID NOT NULL,
     "B" UUID NOT NULL,
@@ -323,6 +363,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE INDEX "_ParticipantCourse_B_index" ON "_ParticipantCourse"("B");
 
 -- CreateIndex
+CREATE INDEX "_EventTargets_B_index" ON "_EventTargets"("B");
+
+-- CreateIndex
 CREATE INDEX "_UserLocations_B_index" ON "_UserLocations"("B");
 
 -- CreateIndex
@@ -338,6 +381,9 @@ ALTER TABLE "Course" ADD CONSTRAINT "Course_categoryId_fkey" FOREIGN KEY ("categ
 ALTER TABLE "Course" ADD CONSTRAINT "Course_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Course" ADD CONSTRAINT "Course_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -345,6 +391,12 @@ ALTER TABLE "Course" ADD CONSTRAINT "Course_textTermsId_fkey" FOREIGN KEY ("text
 
 -- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_textInfoId_fkey" FOREIGN KEY ("textInfoId") REFERENCES "Text"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Event" ADD CONSTRAINT "Event_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Event" ADD CONSTRAINT "Event_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -359,6 +411,9 @@ ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_participantId_
 ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Room" ADD CONSTRAINT "Room_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Target" ADD CONSTRAINT "Target_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -366,6 +421,12 @@ ALTER TABLE "_ParticipantCourse" ADD CONSTRAINT "_ParticipantCourse_A_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "_ParticipantCourse" ADD CONSTRAINT "_ParticipantCourse_B_fkey" FOREIGN KEY ("B") REFERENCES "Participant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_EventTargets" ADD CONSTRAINT "_EventTargets_A_fkey" FOREIGN KEY ("A") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_EventTargets" ADD CONSTRAINT "_EventTargets_B_fkey" FOREIGN KEY ("B") REFERENCES "Target"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserLocations" ADD CONSTRAINT "_UserLocations_A_fkey" FOREIGN KEY ("A") REFERENCES "Location"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,15 +1,9 @@
-import { parseISO, differenceInMinutes } from "date-fns";
 import type { Course } from "../../types/course-types";
 
-export const getCourseDuration = (start: string, end: string) => {
-  const startDate = parseISO(start);
-  const endDate = parseISO(end);
-
-  const minutes = differenceInMinutes(endDate, startDate);
-
-  return minutes;
+export const getCourseDuration = (start: Date, end: Date) => {
+  const diff = end.getTime() - start.getTime();
+  return Math.floor(diff / 1000 / 60); // Minuten
 };
-
 export const findNextCourseDate = (course?: Course): Date | null => {
   if (!course?.dates?.length) {
     return null;

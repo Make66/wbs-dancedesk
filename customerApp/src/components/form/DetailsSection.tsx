@@ -7,21 +7,25 @@ import RoomsPicker from "./RoomsPicker";
 import GenderChart from "../charts/GenderChart";
 import type { Room } from "../../types/room-types";
 import CourseInfo from "./CourseInfo";
-import type { Course } from "../../types/course-types";
 import type { Participant } from "../../types/participants-type";
 import { getParticipantStats } from "../../lib/participants";
 import SeatsPicker from "./SeatsPicker";
+import { getCourseDuration } from "../../lib/courses/course";
 
 type DetailsSectionProps = {
   rooms: Room[];
   roomsLoading: boolean;
   participants: Participant[];
-  course: Course;
 };
 
-const DetailsSection = ({ rooms, roomsLoading, participants, course }: DetailsSectionProps) => {
+const DetailsSection = ({ rooms, roomsLoading, participants }: DetailsSectionProps) => {
   const participantsStats = getParticipantStats(participants);
   const { watch } = useFormContext<CourseFormValues>();
+  const startsAt = watch("startsAt");
+  const endsAt = watch("endsAt");
+  const nextDate = startsAt ?? null;
+  const minutes = startsAt && endsAt ? getCourseDuration(startsAt, endsAt) : 0;
+
   return (
     <div className="p-2 rounded-2xl bg-purple-400/40 gap-3 shadow-xl">
       <div className="pt-2 pl-3 flex items-center justify-between col-span-1 md:col-span-2">
@@ -38,7 +42,7 @@ const DetailsSection = ({ rooms, roomsLoading, participants, course }: DetailsSe
           <SeatsPicker />
         </div>
         <div className="col-span-1">
-          <CourseInfo course={course} participantsStats={participantsStats} />
+          <CourseInfo nextDate={nextDate} minutes={minutes} participantsStats={participantsStats} />
         </div>
         <div className="col-span-2 grid grid-cols-4">
           <div className="col-span-1 flex items-start justify-start">

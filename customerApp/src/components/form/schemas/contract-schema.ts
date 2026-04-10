@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import type { PaymentType } from "../../../types/course-types";
 
 const numberFromString = (label: string) =>
