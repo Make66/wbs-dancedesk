@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { AuthContext } from ".";
-import { login, me, logout, register } from "../data/auth";
+import { login, me, logout, register, keepSessionAlive } from "../data/auth";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [signedIn, setSignedIn] = useState(false);
@@ -37,6 +37,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSignedIn(true);
     setCheckSession(true);
   };
+
+  useEffect(() => {
+    if (!signedIn) return;
+    return keepSessionAlive();
+  }, [signedIn]);
 
   const handleSignOut = async () => {
     await logout();

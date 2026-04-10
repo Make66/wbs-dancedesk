@@ -54,9 +54,23 @@ const register = async (formData: RegisterFormState): Promise<SuccessRes> => {
   return data;
 };
 
-// noch in Arbeit
-const keepSessionAlive = async (): Promise<void> => {
+const keepSessionAlive = (): (() => void) => {
   const tokenTTL = parseInt(import.meta.env.VITE_ACCESS_TOKEN_TTL, 10) || 900;
+  const intervalMs = tokenTTL * 0.8 * 1000;
+
+  const id = setInterval(async () => {
+    try {
+      const res = await fetch(`${authServiceURL}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) clearInterval(id);
+    } catch {
+      clearInterval(id);
+    }
+  }, intervalMs);
+
+  return () => clearInterval(id);
 };
 
 export { login, me, logout, register, keepSessionAlive };

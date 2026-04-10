@@ -21,4 +21,14 @@ Summary of first targets fetch:
 Where: CourseTargetsLoader.tsx:28
 When: The Sidebar mounts (after login), and selectedLocationId is available — either restored from localStorage (immediate) or set by the user picking a location for the first time
 
-### Q: 
+### Q:  What is the best strategy to keep a session alive between the app and the server?
+
+**Setup:** Access token (15 min, httpOnly cookie) + Refresh token (7 days, httpOnly cookie, bcrypt-hashed in DB).
+
+**Answer:** Two-layer strategy:
+
+1. **Reactive refresh (already complete):** Any request with an expired access token causes `authenticate.ts` to throw `ACCESS_TOKEN_EXPIRED` → `errorHandler.ts` sets `WWW-Authenticate: Bearer error="token_expired"` → `fetchInterceptor.ts` catches it, calls `POST /auth/refresh`, retries the original request transparently.
+
+2. **Proactive keepalive (`keepSessionAlive`):** A `setInterval` fires at 80% of `VITE_ACCESS_TOKEN_TTL` (12 min for 900s) to preemptively refresh the access token. This avoids the double-request latency when a user idles on a page for >15 min without making any API calls (e.g. filling a long form). Returns a cleanup function for use in React's `useEffect`. On failed refresh (refresh token also expired), the interval clears itself and lets the app redirect to login.
+
+The reactive interceptor alone is sufficient for typical navigation patterns. Proactive keepalive adds value only for long-idle pages.
