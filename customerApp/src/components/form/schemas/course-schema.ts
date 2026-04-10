@@ -10,8 +10,8 @@ export const courseFormSchema = z
     endsAt: z.date().optional(),
     frequency: z.string(),
     isClub: z.boolean().default(false).optional(),
-    courseRepetition: z.number().min(1, "Es muss mindestens 1 Wiederholung eingegeben werden"),
-    clubRepetition: z.number().min(1, "Es muss mindestens 1 Wiederholung eingegeben werden"),
+    courseRepetition: z.number().min(1, "Es muss mindestens 1 Wiederholung eingegeben werden").optional(),
+    clubRepetition: z.number().min(1, "Es muss mindestens 1 Wiederholung eingegeben werden").optional(),
     isIgnoreCalendar: z.boolean().default(false).optional(),
     dates: z.array(z.any()).optional(),
     isTaxFree: z.boolean().default(false).optional(),
@@ -52,6 +52,14 @@ export const courseFormSchema = z
         code: z.ZodIssueCode.custom,
         path: ["seatsCurrent"],
         message: "Belegte Plätze dürfen nicht größer als maximale Plätze sein",
+      });
+    }
+
+    if (!values.courseRepetition && !values.clubRepetition) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["courseRepetition"],
+        message: "Bitte courseRepetition oder clubRepetition angeben",
       });
     }
   });

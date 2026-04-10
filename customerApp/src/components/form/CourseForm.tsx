@@ -1,5 +1,5 @@
 import { useForm, FormProvider, type SubmitHandler } from "react-hook-form";
-import type { Course } from "../../types/course-types";
+import type { Course, CourseFrequency } from "../../types/course-types";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router";
@@ -133,8 +133,9 @@ const CourseForm = ({ course }: CourseFormProps) => {
     const payload = {
       ...values,
       ...(values.categoryId && { categoryId: values.categoryId }),
-      startsAt: values.startsAt?.toISOString() ?? null,
-      endsAt: values.endsAt?.toISOString() ?? null,
+      frequency: values.frequency as CourseFrequency,
+      startsAt: values.startsAt?.toISOString() ?? "",
+      endsAt: values.endsAt?.toISOString() ?? "",
       dates:
         values.dates?.map((item) => ({
           ...item,

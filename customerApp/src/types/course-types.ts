@@ -81,24 +81,19 @@ export type Course = {
 
 export type CreateCourseInput = {
   name: string;
-  description: string;
+  description?: string;
   startsAt: string;
   endsAt: string;
   frequency: CourseFrequency;
   clubRepetition?: number;
   courseRepetition?: number;
-  seatsCurrent: number;
+  seatsCurrent?: number;
   seatsMax: number;
-  paymentTypes: PaymentType[];
-  contractTypes: ContractType[];
-  categoryId: string;
+  categoryId?: string;
   instructorId?: string | null;
   roomId?: string | null;
-  textTermsId?: string | null;
-  textInfoId?: string | null;
   isIgnoreCalendar?: boolean;
   isTaxFree?: boolean;
-  price?: number;
   options?: number;
 };
 

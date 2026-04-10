@@ -14,36 +14,46 @@ export const contractSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-export const courseSchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
-  startsAt: z.coerce.date().default(new Date()).optional(),
-  endsAt: z.coerce.date().default(new Date()),
-  frequency: z.enum(["daily", "weekly", "biweekly", "monthly"]).default("weekly").optional(),
-  clubRepetition: z.int().min(1).max(50).default(50).optional(),
-  courseRepetition: z.int().default(8).optional(),
-  dates: z.array(courseDateSchema).default([]).optional(),
-  contracts: z.array(contractSchema).default([]).optional(),
-  options: z.int("options must be a value between 0 and 12").default(0).optional(),
-  seatsCurrent: z.number().optional(),
-  seatsMax: z.number().optional(),
-  color: z.array(z.string()).optional(),
+export const courseSchema = z
+  .object({
+    name: z.string().min(1).optional(),
+    description: z.string().optional(),
+    startsAt: z.coerce.date().default(new Date()).optional(),
+    endsAt: z.coerce.date().default(new Date()),
+    frequency: z.enum(["daily", "weekly", "biweekly", "monthly"]).default("weekly").optional(),
+    clubRepetition: z.int().min(1).max(50).default(50).optional(),
+    courseRepetition: z.int().min(1).default(8).optional(),
+    dates: z.array(courseDateSchema).default([]).optional(),
+    contracts: z.array(contractSchema).default([]).optional(),
+    options: z.int("options must be a value between 0 and 12").default(0).optional(),
+    seatsCurrent: z.number().optional(),
+    seatsMax: z.number().optional(),
+    color: z.array(z.string()).optional(),
 
-  isBookedOut: z.boolean().optional(),
-  isClub: z.boolean().optional(),
-  isIgnoreCalendar: z.boolean().optional(),
-  isTaxFree: z.boolean().optional(),
+    isBookedOut: z.boolean().optional(),
+    isClub: z.boolean().optional(),
+    isIgnoreCalendar: z.boolean().optional(),
+    isTaxFree: z.boolean().optional(),
 
-  categoryId: z.uuid("Id given is not a valid UUID").optional(),
-  instructorId: z.uuid("Id given is not a valid UUID").optional(),
-  locationId: z.uuid("Id given is not a valid UUID").optional(),
-  roomId: z.uuid("Id given is not a valid UUID").optional(),
-  textTermsId: z.uuid("Id given is not a valid UUID").optional(),
-  textInfoId: z.uuid("Id given is not a valid UUID").optional(),
+    categoryId: z.uuid("Id given is not a valid UUID").optional(),
+    instructorId: z.uuid("Id given is not a valid UUID").optional(),
+    locationId: z.uuid("Id given is not a valid UUID").optional(),
+    roomId: z.uuid("Id given is not a valid UUID").optional(),
+    textTermsId: z.uuid("Id given is not a valid UUID").optional(),
+    textInfoId: z.uuid("Id given is not a valid UUID").optional(),
 
-  isActive: z.boolean().optional(),
-  isDeleted: z.boolean().optional(),
-});
+    isActive: z.boolean().optional(),
+    isDeleted: z.boolean().optional(),
+  })
+  .superRefine((values, ctx) => {
+    if (!values.courseRepetition && !values.clubRepetition) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["courseRepetition"],
+        message: "Either courseRepetition or clubRepetition is required",
+      });
+    }
+  });
 
 export const courseOptions = [
   { key: 0, option: "default" },
