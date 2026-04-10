@@ -122,6 +122,8 @@ GET    /auth/me         (requires accessToken cookie)
 
 /modules        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
+/participants   GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+
 /registrations  GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
 /settings  GET, PUT, PATCH
@@ -134,16 +136,6 @@ GET    /auth/me         (requires accessToken cookie)
 
 ## Nested routes
 
-GET /locations/:id/events     — events belonging to a location
-
-GET /locations/:id/rooms       — rooms belonging to a location
-
-GET /locations/:id/targets     — targets belonging to a location
-
-GET /targets/:id/categories    — categories belonging to a target
-
-GET /targets/:id/courses       — returns target + categories + their courses (nested)
-
 GET /categories/:id/courses    — courses belonging to a category
 
 GET /courses/week              - all courses this week, starting with 0: monday
@@ -153,6 +145,16 @@ GET /courses/week/:number      - all courses in week n, (54 % 53) = 1st week nex
 GET /courses/:id/dates         - delivers possible event dates for a course
 
 GET /courses/:id/participants  - all participants of a certain course
+
+GET /locations/:id/events     — events belonging to a location
+
+GET /locations/:id/rooms       — rooms belonging to a location
+
+GET /locations/:id/targets     — targets belonging to a location
+
+GET /targets/:id/categories    — categories belonging to a target
+
+GET /targets/:id/courses       — returns target + categories + their courses (nested)
 
 GET /participants/:id/courses  - all courses of a certain participant
 

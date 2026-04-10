@@ -1,13 +1,57 @@
 import type { RequestHandler } from 'express';
 import prisma from '#db';
 
+export const getAllParticipants: RequestHandler = async (req, res) => {
+  const { tenantId } = req.user!;
+  const participants = await prisma.participant.findMany({
+    where: { tenantId, isDeleted: false },
+    orderBy: { lastName: 'asc' },
+  });
+  res.json(participants);
+};
+
+export const getOneParticipant: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  const participant = await prisma.participant.findFirst({
+    where: { id, tenantId, isDeleted: false },
+  });
+  if (!participant) throw new Error('Participant not found', { cause: { status: 404 } });
+  res.json(participant);
+};
+
+export const createParticipant: RequestHandler = async (req, res) => {
+  const { tenantId } = req.user!;
+  const participant = await prisma.participant.create({
+    data: { ...req.body, tenantId },
+  });
+  res.status(201).json(participant);
+};
+
+export const updateParticipant: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  const exists = await prisma.participant.findFirst({ where: { id, tenantId, isDeleted: false } });
+  if (!exists) throw new Error('Participant not found', { cause: { status: 404 } });
+  const participant = await prisma.participant.update({ where: { id }, data: req.body });
+  res.json(participant);
+};
+
+export const removeParticipant: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  const exists = await prisma.participant.findFirst({ where: { id, tenantId, isDeleted: false } });
+  if (!exists) throw new Error('Participant not found', { cause: { status: 404 } });
+  await prisma.participant.update({ where: { id }, data: { isDeleted: true } });
+  res.status(204).send();
+};
+
 export const getCourseParticipants: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;
 
   const course = await prisma.course.findFirst({
     where: { id, tenantId, isDeleted: false },
-    // @ts-expect-error — participant model available after `prisma generate`
     include: {
       participantCourses: {
         include: { participant: true },
@@ -16,9 +60,8 @@ export const getCourseParticipants: RequestHandler = async (req, res) => {
   });
   if (!course) throw new Error('Course not found', { cause: { status: 404 } });
 
-  // @ts-expect-error — participant model available after `prisma generate`
-  const participants = (course.participantCourses as { participant: unknown; createdAt: Date }[])
-    .map(pc => ({ ...pc.participant as object, enrolledAt: pc.createdAt }));
+  const participants = course.participantCourses
+    .map(pc => ({ ...pc.participant, enrolledAt: pc.createdAt }));
 
   res.json(participants);
 };
@@ -27,8 +70,7 @@ export const getParticipantCourses: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;
 
-  // @ts-expect-error — participant model available after `prisma generate`
-  const participant = await (prisma as any).participant.findFirst({
+  const participant = await prisma.participant.findFirst({
     where: { id, tenantId, isDeleted: false },
     include: {
       participantCourses: {
@@ -46,8 +88,8 @@ export const getParticipantCourses: RequestHandler = async (req, res) => {
   });
   if (!participant) throw new Error('Participant not found', { cause: { status: 404 } });
 
-  const courses = (participant.participantCourses as { course: unknown; createdAt: Date }[])
-    .map(pc => ({ ...pc.course as object, enrolledAt: pc.createdAt }));
+  const courses = participant.participantCourses
+    .map(pc => ({ ...pc.course, enrolledAt: pc.createdAt }));
 
   res.json(courses);
 };

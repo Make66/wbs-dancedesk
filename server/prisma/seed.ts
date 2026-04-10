@@ -731,6 +731,7 @@ async function main() {
           firstName:  u.name.first,
           lastName:   u.name.last,
           email:      u.email,
+          password:   await bcrypt.hash('Test123!', 10),
           phone:      u.phone,
           birthDate:  u.dob.date,
           gender:     u.gender,

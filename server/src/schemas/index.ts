@@ -11,3 +11,4 @@ export * from './room.ts';
 export * from './text.ts';
 export * from './settings.ts';
 export * from './event.ts';
+export * from './participant.ts';

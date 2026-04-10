@@ -5,20 +5,20 @@ import "#db";
 import { errorHandler } from "#middlewares";
 import {
   authRouter,
-  targetsRouter,
+  eventsRouter,
   categoriesRouter,
   coursesRouter,
   customersRouter,
   instructorsRouter,
   locationsRouter,
   modulesRouter,
+  participantsRouter,
   registrationsRouter,
   roomsRouter,
+  settingsRouter,
+  targetsRouter,
   textsRouter,
   usersRouter,
-  settingsRouter,
-  participantsRouter,
-  eventsRouter,
 } from "#routes";
 
 const app = express();
@@ -35,20 +35,20 @@ app.use(
 app.use(express.json(), cookieParser());
 
 app.use("/auth", authRouter);
-app.use("/targets", targetsRouter);
 app.use("/categories", categoriesRouter);
 app.use("/courses", coursesRouter);
 app.use("/customers", customersRouter);
+app.use("/events", eventsRouter);
 app.use("/instructors", instructorsRouter);
 app.use("/locations", locationsRouter);
 app.use("/modules", modulesRouter);
+app.use("/participants", participantsRouter);
 app.use("/registrations", registrationsRouter);
 app.use("/rooms", roomsRouter);
+app.use("/settings", settingsRouter);
+app.use("/targets", targetsRouter);
 app.use("/texts", textsRouter);
 app.use("/users", usersRouter);
-app.use("/settings", settingsRouter);
-app.use("/participants", participantsRouter);
-app.use("/events", eventsRouter);
 
 app.use("/*splat", (_req, res) => {
   res.status(404).json({ error: "Not found" });
