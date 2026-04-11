@@ -10,6 +10,15 @@ export const getAllInstructors: RequestHandler = async (req, res) => {
   res.json(instructors);
 };
 
+export const getCoursesByInstructor: RequestHandler = async (req, res) => {
+  const { id: instructorId } = req.params;
+  const { tenantId } = req.user!;
+  const courses = await prisma.course.findMany({
+    where: { instructorId, tenantId, isDeleted: false },
+  });
+  res.json(courses);
+};
+
 export const getOneInstructor: RequestHandler = async (req, res) => {
   const { id } = req.params;
   const { tenantId } = req.user!;

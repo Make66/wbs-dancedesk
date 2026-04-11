@@ -3,9 +3,9 @@ model Instructor {
   description String?  @default("")
   imageUrl    String   @default("./assets/images/no-profile-picture")
   skills      String[] @default(["Salsa", "WTP", "HipHop"])
-  courses     Course[]
 
   // relations
+  courses    Course[]
   customer   Customer @relation(fields: [customerId], references: [id])
   customerId String   @db.Uuid
 

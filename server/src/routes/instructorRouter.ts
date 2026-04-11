@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllInstructors, getOneInstructor, createInstructor, updateInstructor, removeInstructor } from '#controllers';
+import { getAllInstructors, getCoursesByInstructor, getOneInstructor, createInstructor, updateInstructor, removeInstructor } from '#controllers';
 import { instructorSchema } from '#schemas';
 
 const instructorsRouter = Router();
@@ -9,6 +9,8 @@ instructorsRouter
   .route('/')
   .get(authenticate, getAllInstructors)
   .post(authenticate, validateZod(instructorSchema), createInstructor);
+
+instructorsRouter.get('/:id/courses', authenticate, getCoursesByInstructor);
 
 instructorsRouter
   .route('/:id')

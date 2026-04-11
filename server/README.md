@@ -160,6 +160,8 @@ GET /events/month/:number      - returns events from a certain month
 
 GET /events/upcoming           - returns events where startsAt > yesterday at midnight, ordered ascending, limited to this week
 
+GET /instructors/:id/courses   - returns all non-deleted courses for the given instructor within the tenant.
+
 GET /locations/:id/events     — events belonging to a location
 
 GET /locations/:id/rooms       — rooms belonging to a location
