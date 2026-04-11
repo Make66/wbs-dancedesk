@@ -8,6 +8,7 @@ import {
   removeCourse,
   getCourseDates,
   getWeekCourses,
+  getMonthCourses,
   getCourseParticipants,
 } from "#controllers";
 import { courseSchema, courseUpdateSchema } from "#schemas";
@@ -20,8 +21,10 @@ coursesRouter
   .post(authenticate, validateZod(courseSchema), createCourse);
 
 coursesRouter.route("/week").get(authenticate, getWeekCourses);
-
 coursesRouter.route("/week/:number").get(authenticate, getWeekCourses);
+
+coursesRouter.route("/month").get(authenticate, getMonthCourses);
+coursesRouter.route("/month/:number").get(authenticate, getMonthCourses);
 
 coursesRouter.route("/:id/participants").get(authenticate, getCourseParticipants);
 

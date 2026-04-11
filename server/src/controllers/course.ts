@@ -167,6 +167,116 @@ function resolveWeekBounds(numberOfWeek?: number): { weekStart: number; weekEnd:
   return { weekStart, weekEnd: weekStart + 6 * 86_400_000 };
 }
 
+/**
+ * Returns { monthStart, monthEnd } in UTC-midnight ms.
+ * numberOfMonth undefined → current month.
+ * Otherwise: months offset from the current month (1-based: 1 = next month, etc.)
+ * Encoding: numberOfMonth is a 1-based month offset (0 = current).
+ */
+function resolveMonthBounds(numberOfMonth?: number): { monthStart: number; monthEnd: number } {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = now.getUTCMonth(); // 0-based
+  const offset = numberOfMonth ?? 0;
+  const targetYear = year + Math.floor((month + offset) / 12);
+  const targetMonth = (month + offset) % 12;
+  const monthStart = Date.UTC(targetYear, targetMonth, 1);
+  const monthEnd = Date.UTC(targetYear, targetMonth + 1, 1) - 1; // last ms of last day
+  return { monthStart, monthEnd };
+}
+
+export const getMonthCourses: RequestHandler = async (req, res) => {
+  const { tenantId } = req.user!;
+
+  const rawMonth = req.params.number;
+  const numberOfMonth = rawMonth !== undefined ? parseInt(rawMonth, 10) : undefined;
+  if (numberOfMonth !== undefined && (isNaN(numberOfMonth) || numberOfMonth < 0)) {
+    throw new Error("Invalid month number", { cause: { status: 400 } });
+  }
+
+  const { monthStart, monthEnd } = resolveMonthBounds(numberOfMonth);
+
+  const [courses, settings] = await Promise.all([
+    prisma.course.findMany({
+      where: { tenantId, isDeleted: false, isActive: true },
+      include: {
+        category: { include: { target: true } },
+        instructor: true,
+        room: true,
+      },
+    }),
+    prisma.settings.findUnique({ where: { tenantId } }),
+  ]);
+
+  // result keyed by day-of-month (1-31)
+  const result: Record<number, object[]> = {};
+
+  for (const course of courses) {
+    const storedMs = ((course.dates as { date: string }[]) ?? [])
+      .map((d) => utcMidnight(new Date(d.date)))
+      .filter((ms) => ms >= monthStart && ms <= monthEnd);
+
+    const count = course.isClub ? (course.clubRepetition ?? 50) : (course.courseRepetition ?? 8);
+    const monthMs = storedMs.length
+      ? storedMs
+      : generateDatesFromCourse(course, settings as SettingsForDates, count)
+          .map((s) => utcMidnight(new Date(s)))
+          .filter((ms) => ms >= monthStart && ms <= monthEnd);
+
+    if (monthMs.length === 0) continue;
+
+    const info = {
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      startsAt: course.startsAt,
+      endsAt: course.endsAt,
+      options: course.options,
+      seatsCurrent: course.seatsCurrent,
+      seatsMax: course.seatsMax,
+      isBookedOut: course.isBookedOut,
+      isClub: course.isClub,
+      color: course.color,
+      category: {
+        id: course.category.id,
+        name: course.category.name,
+        color: (course.category as unknown as { color: string[] }).color,
+      },
+      target: {
+        id: course.category.target.id,
+        name: course.category.target.name,
+        color: (course.category.target as unknown as { color: string[] }).color,
+      },
+      instructor: course.instructor
+        ? {
+            id: course.instructor.id,
+            name: course.instructor.name,
+            imageUrl: course.instructor.imageUrl,
+          }
+        : null,
+      room: course.room
+        ? { id: course.room.id, name: course.room.name, description: course.room.description }
+        : null,
+    };
+
+    for (const ms of monthMs) {
+      const day = new Date(ms).getUTCDate();
+      if (!result[day]) result[day] = [];
+      result[day]!.push(info);
+    }
+  }
+
+  // sort each bucket by startsAt time-of-day
+  const timeMinutes = (d: Date) => d.getUTCHours() * 60 + d.getUTCMinutes();
+  for (const bucket of Object.values(result)) {
+    (bucket as { startsAt: Date }[]).sort(
+      (a, b) => timeMinutes(a.startsAt) - timeMinutes(b.startsAt),
+    );
+  }
+
+  res.json(result);
+};
+
 export const getWeekCourses: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
 
@@ -257,6 +367,15 @@ export const getWeekCourses: RequestHandler = async (req, res) => {
   res.json(result);
 };
 
+function sortDates<T extends { dates: unknown }>(course: T): T {
+  const dates = course.dates as { date: string }[];
+  if (!Array.isArray(dates)) return course;
+  return {
+    ...course,
+    dates: [...dates].sort((a, b) => a.date.localeCompare(b.date)),
+  };
+}
+
 function mapCourseBody(body: Record<string, unknown>) {
   const { category, room, instructor, textTerms, textInfo, ...rest } = body;
   const mappedCategoryId = (category ?? rest.categoryId) as string | undefined;
@@ -276,7 +395,7 @@ export const getCoursesByCategory: RequestHandler = async (req, res) => {
   const courses = await prisma.course.findMany({
     where: { categoryId, tenantId, isDeleted: false },
   });
-  res.json(courses);
+  res.json(courses.map(sortDates));
 };
 
 export const getAllCourses: RequestHandler = async (req, res) => {
@@ -284,7 +403,7 @@ export const getAllCourses: RequestHandler = async (req, res) => {
   const courses = await prisma.course.findMany({
     where: { tenantId, isDeleted: false },
   });
-  res.json(courses);
+  res.json(courses.map(sortDates));
 };
 
 export const getOneCourse: RequestHandler = async (req, res) => {
@@ -294,7 +413,7 @@ export const getOneCourse: RequestHandler = async (req, res) => {
     where: { id, tenantId, isDeleted: false },
   });
   if (!course) throw new Error("Course not found", { cause: { status: 404 } });
-  res.json(course);
+  res.json(sortDates(course));
 };
 
 export const createCourse: RequestHandler = async (req, res) => {
@@ -307,7 +426,7 @@ export const createCourse: RequestHandler = async (req, res) => {
   const course = await prisma.course.create({
     data: { ...restBody, categoryId, tenantId },
   });
-  res.status(201).json(course);
+  res.status(201).json(sortDates(course));
 };
 
 export const updateCourse: RequestHandler = async (req, res) => {
@@ -319,7 +438,7 @@ export const updateCourse: RequestHandler = async (req, res) => {
     where: { id },
     data: mapCourseBody(req.body),
   });
-  res.json(course);
+  res.json(sortDates(course));
 };
 
 export const removeCourse: RequestHandler = async (req, res) => {

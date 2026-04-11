@@ -166,7 +166,10 @@ export const me: RequestHandler = async (req, res) => {
 export const participantMe: RequestHandler = async (req, res) => {
   const participant = await prisma.participant.findFirst({
     where: { id: req.user!.id, isDeleted: false },
-    select: { id: true, email: true, firstName: true, lastName: true, imageUrl: true, phone: true, birthDate: true, gender: true },
+    select: { 
+      id: true, email: true, firstName: true, lastName: true, imageUrl: true, phone: true, birthDate: true, 
+      gender: true, street: true, city: true, zipCode: true, longitude: true, latitude: true 
+    },
   });
   if (!participant) throw new Error('Participant not found', { cause: { status: 404 } });
   res.json({ participant });

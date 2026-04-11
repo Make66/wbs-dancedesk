@@ -1,9 +1,13 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllEvents, getOneEvent, createEvent, updateEvent, removeEvent } from '#controllers';
+import { getAllEvents, getMonthEvents, getUpcomingEvents, getOneEvent, createEvent, updateEvent, removeEvent } from '#controllers';
 import { eventSchema } from '#schemas';
 
 const eventsRouter = Router();
+
+eventsRouter.get('/upcoming', authenticate, getUpcomingEvents);
+eventsRouter.get('/month', authenticate, getMonthEvents);
+eventsRouter.get('/month/:number', authenticate, getMonthEvents);
 
 eventsRouter
   .route('/')

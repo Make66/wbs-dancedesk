@@ -7,6 +7,7 @@ model Location {
   street    String @default("123 Main St")
   city      String @default("Anytown")
   zipCode   String @default("12345")
+  state     String @default("State")
   longitude Float  @default(0.0)
   latitude  Float  @default(0.0)
 

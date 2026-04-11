@@ -142,6 +142,10 @@ POST   /auth/participant-me       (requires accessToken cookie)
 
 GET /categories/:id/courses    — courses belonging to a category
 
+GET /courses/month             - all courses this month, starting with 0: monday
+
+GET /courses/month/:number     - all courses in month n, (13 % 12) = 1st month next year
+
 GET /courses/week              - all courses this week, starting with 0: monday
 
 GET /courses/week/:number      - all courses in week n, (54 % 53) = 1st week next year
@@ -149,6 +153,12 @@ GET /courses/week/:number      - all courses in week n, (54 % 53) = 1st week nex
 GET /courses/:id/dates         - delivers possible event dates for a course
 
 GET /courses/:id/participants  - all participants of a certain course
+
+GET /events/month              - returns events where startsAt >= 1st day of month, limited to this month
+
+GET /events/month/:number      - returns events from a certain month
+
+GET /events/upcoming           - returns events where startsAt > yesterday at midnight, ordered ascending, limited to this week
 
 GET /locations/:id/events     — events belonging to a location
 
