@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getInstructors } from "../../data/instructors";
+import { getInstructors } from "../../data/instructor";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import type { Instructor } from "../../types/instructor-types";

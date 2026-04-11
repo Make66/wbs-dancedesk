@@ -13,9 +13,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { PiDotsSixVerticalBold } from "react-icons/pi";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { FaPenNib } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
 import { Switch } from "../ui/switch";
 import { cn } from "../../lib/utils";
 import { categoryStore } from "../../stores/categoryStore";
@@ -28,6 +25,9 @@ import type { Category as CourseCategoryType } from "../../types/course-types";
 import { sortEntitiesByOrderedIds } from "../../lib/courses/sorting-utils";
 import ConfirmationModal from "../ui/confirmationModal";
 import { getIconComponent } from "../../lib/constants/iconPicker-constants";
+import EditButton from "../ui/EditButton";
+import DeleteButton from "../ui/DeleteButton";
+import AddButton from "../ui/AddButton";
 
 type CategoryItemProps = {
   category: CourseCategoryType & { isNew?: boolean };
@@ -244,33 +244,24 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
               {isEditMode && (
                 <>
                   {category.isActive ? (
-                    <button
-                      type="button"
+                    <EditButton
                       onClick={(event) => {
                         event.stopPropagation();
                         setIsModalOpen((prev) => !prev);
                       }}
-                      className="cursor-pointer"
-                      data-tooltip-id="tooltip"
-                      data-tooltip-content="Kategorie bearbeiten"
-                      data-tooltip-place="top"
-                    >
-                      <FaPenNib className="text-lg" style={{ color: category.color[1] }} />
-                    </button>
+                      tooltipContent="Kategorie bearbeiten"
+                      color={category.color[1]}
+                      size="small"
+                    />
                   ) : (
-                    <button
-                      type="button"
+                    <DeleteButton
                       onClick={(event) => {
                         event.stopPropagation();
                         setIsDeleteConfirmOpen(true);
                       }}
-                      className="cursor-pointer text-2xl"
-                      data-tooltip-id="tooltip"
-                      data-tooltip-content="Kategorie löschen"
-                      data-tooltip-place="top"
-                    >
-                      <MdDelete />
-                    </button>
+                      tooltipContent={category.isNew ? "Kategorie verwerfen" : "Kategorie löschen"}
+                      color={category.color[1]}
+                    />
                   )}
 
                   <Link
@@ -281,10 +272,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
                     data-tooltip-content="Kurs hinzufügen"
                     data-tooltip-place="top"
                   >
-                    <IoMdAddCircleOutline
-                      className="text-xl"
-                      style={{ color: category.color[1] }}
-                    />
+                    <AddButton color={category.color[1]} size="medium" />
                   </Link>
 
                   <div

@@ -9,11 +9,11 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { targetStore } from "../stores/targetStore";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { userStore } from "../stores/userStore";
 import { updateLocationDB } from "../data/location";
 import { toast } from "react-toastify";
+import AddButton from "../components/ui/AddButton";
+import VisibleButton from "../components/ui/VisibleButton";
 
 const TargetsPage = () => {
   const targets = targetStore((state) => state.targets);
@@ -60,27 +60,16 @@ const TargetsPage = () => {
       <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
         <h1 className="text-3xl font-semibold">Zielgruppen</h1>
         <div className="flex items-center gap-6">
-          <button
-            type="button"
-            className="cursor-pointer"
-            onClick={() => {
-              addTarget();
-            }}
-          >
-            <IoMdAddCircleOutline className="text-3xl" />
-          </button>
+          <AddButton onClick={() => addTarget()} tooltipContent="Zielgruppe hinzufügen" />
           {hasInactiveItems && (
-            <button type="button" className="cursor-pointer" onClick={toggleInactiveVisibility}>
-              {isInactiveVisible ? (
-                <IoMdEyeOff className="text-3xl" />
-              ) : (
-                <IoMdEye className="text-3xl" />
-              )}
-            </button>
+            <VisibleButton
+              onClick={toggleInactiveVisibility}
+              isVisible={isInactiveVisible}
+              tooltipContent="Inaktive Zielgruppen anzeigen/verbergen"
+            />
           )}
         </div>
       </div>
-
       <div className="p-6 mt-3">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext

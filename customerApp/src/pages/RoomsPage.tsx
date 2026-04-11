@@ -1,20 +1,11 @@
-import { IoMdAddCircleOutline } from "react-icons/io";
+import AddButton from "../components/ui/AddButton";
 
 const RoomsPage = () => {
   return (
     <div className="w-full h-screen bg-background">
       <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
         <h1 className="text-3xl font-semibold">Räume</h1>
-        <button
-          type="button"
-          className="cursor-pointer"
-          onClick={() => {}}
-          data-tooltip-id="tooltip"
-          data-tooltip-content="Raum hinzufügen"
-          data-tooltip-place="right"
-        >
-          <IoMdAddCircleOutline className="text-3xl" />
-        </button>
+        <AddButton onClick={() => {}} tooltipContent="Raum hinzufügen" />
       </div>
       <div className="p-6 grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
         <div className="p-5 bg-zinc-400 rounded-2xl">
