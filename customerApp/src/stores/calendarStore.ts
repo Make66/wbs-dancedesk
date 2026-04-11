@@ -5,6 +5,7 @@ import type {
   CalendarEvent,
   CalendarEventResizeEndPayload,
   CalendarView,
+  DraggedEventState,
   ResizingEventState,
 } from "../types/calendar-types";
 import { DEFAULT_CALENDAR_CONFIG } from "../lib/constants/calendar-constants";
@@ -17,6 +18,10 @@ type CalendarStore = {
   selectedEventId: string | null;
   activeDragEventId: string | null;
   resizingEvent: ResizingEventState | null;
+  isEventModalOpen: boolean;
+  isEditMode: boolean;
+  setEditMode: (value: boolean) => void;
+  toggleEditMode: () => void;
 
   setCurrentView: (view: CalendarView) => void;
   setCurrentDate: (date: Date) => void;
@@ -24,8 +29,22 @@ type CalendarStore = {
   goToNext: () => void;
   goToToday: () => void;
 
-  selectEvent: (eventId: string) => void;
+  selectEvent: (eventId: string | null) => void;
+  openEventModal: (eventId?: string) => void;
+  closeEventModal: () => void;
   setActiveDragEventId: (eventId: string | null) => void;
+
+  draggedEvent: DraggedEventState | null;
+
+  startDrag: (event: CalendarEvent) => void;
+  updateDrag: (start: Date, end: Date) => void;
+  endDrag: () => {
+    eventId: string;
+    originalStart: Date;
+    originalEnd: Date;
+    start: Date;
+    end: Date;
+  } | null;
 
   startResize: (event: CalendarEvent) => void;
   updateResize: (end: Date) => void;
@@ -42,9 +61,13 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
   selectedEventId: null,
   activeDragEventId: null,
   resizingEvent: null,
-
+  draggedEvent: null,
+  isEventModalOpen: false,
+  isEditMode: false,
   setCurrentView: (view) => set({ currentView: view }),
   setCurrentDate: (date) => set({ currentDate: date }),
+  setEditMode: (value) => set({ isEditMode: value }),
+  toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
 
   goToPrevious: () =>
     set((state) => {
@@ -71,7 +94,59 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
   goToToday: () => set({ currentDate: startOfToday() }),
 
   selectEvent: (eventId) => set({ selectedEventId: eventId }),
+
+  openEventModal: (eventId) =>
+    set({
+      isEventModalOpen: true,
+      selectedEventId: eventId ?? null,
+    }),
+
+  closeEventModal: () =>
+    set({
+      isEventModalOpen: false,
+      selectedEventId: null,
+    }),
+
   setActiveDragEventId: (eventId) => set({ activeDragEventId: eventId }),
+
+  startDrag: (event) =>
+    set({
+      draggedEvent: {
+        eventId: event.id,
+        originalStart: event.start,
+        originalEnd: event.end,
+        currentStart: event.start,
+        currentEnd: event.end,
+      },
+    }),
+
+  updateDrag: (start, end) =>
+    set((state) => {
+      if (!state.draggedEvent) return state;
+      return {
+        draggedEvent: {
+          ...state.draggedEvent,
+          currentStart: start,
+          currentEnd: end,
+        },
+      };
+    }),
+
+  endDrag: () => {
+    const draggedEvent = get().draggedEvent;
+    if (!draggedEvent) return null;
+
+    const payload = {
+      eventId: draggedEvent.eventId,
+      originalStart: draggedEvent.originalStart,
+      originalEnd: draggedEvent.originalEnd,
+      start: draggedEvent.currentStart,
+      end: draggedEvent.currentEnd,
+    };
+
+    set({ draggedEvent: null });
+    return payload;
+  },
 
   startResize: (event) =>
     set({

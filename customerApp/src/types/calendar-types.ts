@@ -5,6 +5,25 @@ export type CalendarEvent = {
   title: string;
   start: Date;
   end: Date;
+  color?: string[];
+  icon?: string;
+  type?: string;
+
+  description?: string;
+  imageUrl?: string;
+
+  street?: string;
+  city?: string;
+  zipCode?: string;
+  longitude?: number;
+  latitude?: number;
+
+  roomId?: string;
+  locationId?: string;
+  targets?: string[];
+
+  isActive?: boolean;
+  isDeleted?: boolean;
 };
 
 export type PositionedCalendarEvent = {
@@ -64,4 +83,12 @@ export type CalendarDragData = {
 export type CalendarDropData = {
   type: "day-column";
   day: Date;
+};
+
+export type DraggedEventState = {
+  eventId: string;
+  originalStart: Date;
+  originalEnd: Date;
+  currentStart: Date;
+  currentEnd: Date;
 };

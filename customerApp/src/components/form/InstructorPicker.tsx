@@ -61,13 +61,12 @@ const InstructorPicker = () => {
               </div>
             ) : (
               <div className="flex items-center gap-4">
-                <FaChalkboardTeacher className="ml-4 text-3xl" />
+                <FaChalkboardTeacher className="ml-6 text-3xl" />
                 <span className="text-muted-foreground ml-2">Tanzlehrer auswählen</span>
               </div>
             )}
           </button>
         </PopoverTrigger>
-
         <PopoverContent className="w-[var(--radix-popover-trigger-width)]">
           <div className="grid">
             {instructors.map((instructor) => (
@@ -76,7 +75,11 @@ const InstructorPicker = () => {
                 type="button"
                 className="cursor-pointer rounded-md text-left text-lg hover:bg-blue-400"
                 onClick={() => {
-                  setValue("instructorId", instructor.id);
+                  setValue("instructorId", instructor.id || "", {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                    shouldTouch: true,
+                  });
                   setIsOpen(false);
                 }}
               >

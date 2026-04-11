@@ -31,8 +31,8 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
   const config = calendarStore((s) => s.config);
   const selectedEventId = calendarStore((s) => s.selectedEventId);
   const resizingEvent = calendarStore((s) => s.resizingEvent);
+  const openEventModal = calendarStore((state) => state.openEventModal);
 
-  const selectEvent = calendarStore((s) => s.selectEvent);
   const startResize = calendarStore((s) => s.startResize);
   const updateResize = calendarStore((s) => s.updateResize);
   const endResize = calendarStore((s) => s.endResize);
@@ -56,20 +56,11 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
     onEventResizeEnd,
   });
 
-  const renderedEvents = useMemo(() => {
-    return events
-      .map((e) => {
-        if (resizingEvent && e.id === resizingEvent.eventId) {
-          return { ...e, start: resizingEvent.currentStart, end: resizingEvent.currentEnd };
-        }
-        return e;
-      })
-      .filter((e) => isSameDay(e.start, day));
-  }, [events, resizingEvent, day]);
+  const dayEvents = useMemo(() => events.filter((e) => isSameDay(e.start, day)), [events, day]);
 
   const positionedEvents = useMemo(
-    () => getPositionedEvents(renderedEvents, config.slotHeight, config),
-    [renderedEvents, config],
+    () => getPositionedEvents(dayEvents, config.slotHeight, config),
+    [dayEvents, config],
   );
 
   const startSlot = getStartSlot(config);
@@ -78,6 +69,7 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
 
   function handleResizeMouseDown(event: CalendarEvent, e: ReactMouseEvent<HTMLDivElement>) {
     e.stopPropagation();
+    e.preventDefault();
     setResizingEventId(event.id);
     startResize(event);
   }
@@ -106,13 +98,13 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
       <CurrentTimeLine day={day} slotHeight={config.slotHeight} config={config} />
 
       <div className="absolute inset-0 z-10">
-        {positionedEvents.map((p) => (
+        {positionedEvents.map((positionedEvent) => (
           <WeekEventCard
-            key={p.event.id}
-            positionedEvent={p}
-            isSelected={selectedEventId === p.event.id}
-            onClick={() => selectEvent(p.event.id)}
-            onResizeMouseDown={(e) => handleResizeMouseDown(p.event, e)}
+            key={positionedEvent.event.id}
+            positionedEvent={positionedEvent}
+            isSelected={selectedEventId === positionedEvent.event.id}
+            onClick={() => openEventModal(positionedEvent.event.id)}
+            onResizeMouseDown={(e) => handleResizeMouseDown(positionedEvent.event, e)}
           />
         ))}
       </div>

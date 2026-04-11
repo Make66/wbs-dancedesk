@@ -3,7 +3,7 @@ import SeatingChart from "../charts/SeatingChart";
 import type { CourseFormValues } from "./schemas/course-schema";
 import { useFormContext } from "react-hook-form";
 import InstructorPicker from "./InstructorPicker";
-import RoomsPicker from "./RoomsPicker";
+import RoomPicker from "./RoomPicker";
 import GenderChart from "../charts/GenderChart";
 import type { Room } from "../../types/room-types";
 import CourseInfo from "./CourseInfo";
@@ -16,11 +16,18 @@ type DetailsSectionProps = {
   rooms: Room[];
   roomsLoading: boolean;
   participants: Participant[];
+  courseId?: string;
 };
 
-const DetailsSection = ({ rooms, roomsLoading, participants }: DetailsSectionProps) => {
+const DetailsSection = ({ rooms, roomsLoading, participants, courseId }: DetailsSectionProps) => {
   const participantsStats = getParticipantStats(participants);
-  const { watch } = useFormContext<CourseFormValues>();
+
+  const {
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<CourseFormValues>();
+
   const startsAt = watch("startsAt");
   const endsAt = watch("endsAt");
   const nextDate = startsAt ?? null;
@@ -38,39 +45,66 @@ const DetailsSection = ({ rooms, roomsLoading, participants }: DetailsSectionPro
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-3">
         <div className="col-span-2 xl:col-span-1 flex flex-col gap-3">
           <InstructorPicker />
-          <RoomsPicker rooms={rooms} isLoading={roomsLoading} />
-          <SeatsPicker />
+          {errors.instructorId && (
+            <p className="text-sm text-destructive ml-4">{errors.instructorId.message}</p>
+          )}
+
+          <RoomPicker
+            rooms={rooms}
+            isLoading={roomsLoading}
+            value={watch("roomId")}
+            seatsMax={watch("seatsMax")}
+            onChange={(roomId) => {
+              setValue("roomId", roomId, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+          />
+
+          {errors.roomId && (
+            <p className="text-sm text-destructive ml-4">{errors.roomId.message}</p>
+          )}
+
+          <SeatsPicker rooms={rooms} />
+          {errors.seatsMax && (
+            <p className="text-sm text-destructive ml-4">{errors.seatsMax.message}</p>
+          )}
         </div>
+
         <div className="col-span-1">
           <CourseInfo nextDate={nextDate} minutes={minutes} participantsStats={participantsStats} />
         </div>
-        <div className="col-span-2 grid grid-cols-4">
-          <div className="col-span-1 flex items-start justify-start">
-            <SeatingChart
-              seatsCurrent={watch("seatsCurrent") || 0}
-              maxSeats={watch("seatsMax") || 0}
-            />
+
+        {courseId && (
+          <div className="col-span-2 grid grid-cols-4">
+            <div className="col-span-1 flex items-start justify-start">
+              <SeatingChart
+                seatsCurrent={watch("seatsCurrent") || 0}
+                maxSeats={watch("seatsMax") || 0}
+              />
+            </div>
+            <div className="col-span-1 flex items-start justify-start">
+              <SeatingChart
+                seatsCurrent={watch("seatsCurrent") || 0}
+                maxSeats={watch("seatsMax") || 0}
+              />
+            </div>
+            <div className="col-span-1 flex items-start justify-start">
+              <SeatingChart
+                seatsCurrent={watch("seatsCurrent") || 0}
+                maxSeats={watch("seatsMax") || 0}
+              />
+            </div>
+            <div className="col-span-1 flex items-start justify-start">
+              <GenderChart
+                male={participantsStats?.male || 0}
+                female={participantsStats?.female || 0}
+                other={participantsStats?.other || 0}
+              />
+            </div>
           </div>
-          <div className="col-span-1 flex items-start justify-start">
-            <SeatingChart
-              seatsCurrent={watch("seatsCurrent") || 0}
-              maxSeats={watch("seatsMax") || 0}
-            />
-          </div>
-          <div className="col-span-1 flex items-start justify-start">
-            <SeatingChart
-              seatsCurrent={watch("seatsCurrent") || 0}
-              maxSeats={watch("seatsMax") || 0}
-            />
-          </div>
-          <div className="col-span-1 flex items-start justify-start">
-            <GenderChart
-              male={participantsStats?.male || 0}
-              female={participantsStats?.female || 0}
-              other={participantsStats?.other || 0}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

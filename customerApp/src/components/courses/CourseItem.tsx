@@ -7,28 +7,10 @@ import { CSS } from "@dnd-kit/utilities";
 import { cn } from "../../lib/utils";
 import { toast } from "react-toastify";
 import SeatingItem from "../ui/SeatingItem";
+import { updateCourseDB } from "../../data/course";
 
 type CourseItemProps = {
   course: Course;
-};
-
-const updateCourseDB = async (id: string, data: { isActive?: boolean; isDeleted?: boolean }) => {
-  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to update course: ${response.status}`);
-  }
-
-  const contentType = response.headers.get("content-type");
-  if (contentType?.includes("application/json")) {
-    return response.json();
-  }
-  return null;
 };
 
 const CourseItem = ({ course }: CourseItemProps) => {

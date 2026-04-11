@@ -10,7 +10,12 @@ import { LuRefreshCcwDot } from "react-icons/lu";
 import { useState } from "react";
 
 const ScheduleSection = () => {
-  const { watch, setValue, trigger } = useFormContext<CourseFormValues>();
+  const {
+    watch,
+    setValue,
+    trigger,
+    formState: { errors },
+  } = useFormContext<CourseFormValues>();
   const [toggleDates, setToggleDates] = useState(false);
 
   return (
@@ -56,6 +61,9 @@ const ScheduleSection = () => {
           }}
           className="w-full bg-background/40 border border-muted-foreground rounded-2xl cursor-pointer overflow-hidden"
         />
+        {errors.startsAt && (
+          <p className="text-sm text-destructive ml-4">{errors.startsAt.message}</p>
+        )}
       </div>
       <div className="col-span-1">
         <FrequencyPicker />

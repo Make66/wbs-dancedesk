@@ -28,6 +28,9 @@ const toColorTuple = (color?: string[]): [string, string] => [
 ];
 
 const CourseForm = ({ course }: CourseFormProps) => {
+  const {
+    formState: { errors },
+  } = useForm<CourseFormValues>();
   const locationId = userStore((state) => state.selectedLocationId);
   const location = useLocation();
   const categoryId = location.state?.category?.id;
@@ -75,6 +78,8 @@ const CourseForm = ({ course }: CourseFormProps) => {
 
   const methods = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       name: course?.name || "",
       description: course?.description || "",
@@ -173,6 +178,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
             {...register("name")}
             className="w-full text-2xl font-bold focus:outline-none focus:ring-0 focus:shadow-none md:text-3xl xl:text-4xl 2xl:text-5xl"
           />
+          {errors.name && <p className="text-sm text-destructive ml-4">{errors.name.message}</p>}
           <input
             type="text"
             placeholder="Kursbeschreibung"
@@ -182,7 +188,12 @@ const CourseForm = ({ course }: CourseFormProps) => {
         </div>
 
         <div className="col-span-3 lg:col-span-2">
-          <DetailsSection rooms={rooms} roomsLoading={roomsLoading} participants={participants} />
+          <DetailsSection
+            rooms={rooms}
+            roomsLoading={roomsLoading}
+            participants={participants}
+            courseId={course?.id}
+          />
 
           <div className="my-6" />
           <ScheduleSection />
@@ -197,7 +208,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
             Speichern
           </Button>
         </div>
-        {course?.id && (
+        {participants.length > 0 && (
           <div className="col-span-3 lg:col-span-1">
             <ParticipantsSection participants={participants} isLoading={participantsLoading} />
           </div>
