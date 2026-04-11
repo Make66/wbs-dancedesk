@@ -6,7 +6,9 @@ import type {
   CalendarEventResizeEndPayload,
 } from "../types/calendar-types";
 import { IoMdAddCircleOutline } from "react-icons/io";
+import { FaPenNib } from "react-icons/fa";
 import EventModal from "../components/form/EventModal";
+import { calendarStore } from "../stores/calendarStore";
 
 type DbEvent = {
   id: string;
@@ -37,7 +39,14 @@ const CalendarPage = () => {
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+
+  const isEventModalOpen = calendarStore((state) => state.isEventModalOpen);
+  const selectedEventId = calendarStore((state) => state.selectedEventId);
+  const openEventModal = calendarStore((state) => state.openEventModal);
+  const closeEventModal = calendarStore((state) => state.closeEventModal);
+
+  const isEditMode = calendarStore((state) => state.isEditMode);
+  const toggleEditMode = calendarStore((state) => state.toggleEditMode);
 
   useEffect(() => {
     async function loadEvents() {
@@ -188,18 +197,40 @@ const CalendarPage = () => {
     }
   };
 
+  const selectedCalendarEvent = calendarEvents.find((event) => event.id === selectedEventId);
+
+  const selectedEventForModal = selectedCalendarEvent
+    ? {
+        id: selectedCalendarEvent.id,
+        title: selectedCalendarEvent.title,
+        description: selectedCalendarEvent.description,
+        imageUrl: selectedCalendarEvent.imageUrl,
+        color: selectedCalendarEvent.color,
+        type: selectedCalendarEvent.type,
+        street: selectedCalendarEvent.street,
+        city: selectedCalendarEvent.city,
+        zipCode: selectedCalendarEvent.zipCode,
+        longitude: selectedCalendarEvent.longitude,
+        latitude: selectedCalendarEvent.latitude,
+        startsAt: selectedCalendarEvent.start,
+        endsAt: selectedCalendarEvent.end,
+        roomId: selectedCalendarEvent.roomId,
+      }
+    : undefined;
+
   return (
     <div className="w-full h-screen flex flex-col bg-background">
       <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
         <h1 className="text-3xl font-semibold">Kalender</h1>
-        <div className="flex items-center gap-6">
-          <button
-            type="button"
-            className="cursor-pointer"
-            onClick={() => setIsEventModalOpen(true)}
-          >
-            <IoMdAddCircleOutline className="text-3xl" />
+        <div className="flex items-center gap-7">
+          <button type="button" className="cursor-pointer" onClick={toggleEditMode}>
+            <FaPenNib className="text-2xl" />
           </button>
+          {isEditMode && (
+            <button type="button" className="cursor-pointer" onClick={() => openEventModal()}>
+              <IoMdAddCircleOutline className="text-3xl" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -214,8 +245,13 @@ const CalendarPage = () => {
           />
         )}
       </div>
+
       {isEventModalOpen && (
-        <EventModal onSaved={handleEventsRefresh} onClose={() => setIsEventModalOpen(false)} />
+        <EventModal
+          onSaved={handleEventsRefresh}
+          onClose={closeEventModal}
+          event={selectedEventForModal}
+        />
       )}
     </div>
   );

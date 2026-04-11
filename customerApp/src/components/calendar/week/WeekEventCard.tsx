@@ -1,4 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
+import { calendarStore } from "../../../stores/calendarStore";
 import type { PositionedCalendarEvent } from "../../../types/calendar-types";
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
 
 export function WeekEventCard({ positionedEvent, isSelected, onClick, onResizeMouseDown }: Props) {
   const { event, top, height, left, width } = positionedEvent;
+  const isEditMode = calendarStore((state) => state.isEditMode);
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: event.id,
@@ -19,15 +21,18 @@ export function WeekEventCard({ positionedEvent, isSelected, onClick, onResizeMo
       start: event.start,
       end: event.end,
     },
+    disabled: !isEditMode,
   });
 
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
-      {...attributes}
+      {...(isEditMode ? listeners : {})}
+      {...(isEditMode ? attributes : {})}
       onClick={() => {
-        onClick();
+        if (!isEditMode) {
+          onClick();
+        }
       }}
       className={`absolute rounded-lg border shadow-sm cursor-pointer hover:saturate-200 opacity-70 ${isSelected ? "ring-2 ring-blue-500" : ""}`}
       style={{
@@ -44,10 +49,12 @@ export function WeekEventCard({ positionedEvent, isSelected, onClick, onResizeMo
     >
       <div className="p-2 text-sm text-center font-medium">{event.title}</div>
 
-      <div
-        onMouseDown={onResizeMouseDown}
-        className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize"
-      />
+      {isEditMode && (
+        <div
+          onMouseDown={onResizeMouseDown}
+          className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize"
+        />
+      )}
     </div>
   );
 }

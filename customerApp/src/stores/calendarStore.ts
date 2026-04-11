@@ -18,6 +18,10 @@ type CalendarStore = {
   selectedEventId: string | null;
   activeDragEventId: string | null;
   resizingEvent: ResizingEventState | null;
+  isEventModalOpen: boolean;
+  isEditMode: boolean;
+  setEditMode: (value: boolean) => void;
+  toggleEditMode: () => void;
 
   setCurrentView: (view: CalendarView) => void;
   setCurrentDate: (date: Date) => void;
@@ -25,7 +29,9 @@ type CalendarStore = {
   goToNext: () => void;
   goToToday: () => void;
 
-  selectEvent: (eventId: string) => void;
+  selectEvent: (eventId: string | null) => void;
+  openEventModal: (eventId?: string) => void;
+  closeEventModal: () => void;
   setActiveDragEventId: (eventId: string | null) => void;
 
   draggedEvent: DraggedEventState | null;
@@ -56,9 +62,12 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
   activeDragEventId: null,
   resizingEvent: null,
   draggedEvent: null,
-
+  isEventModalOpen: false,
+  isEditMode: false,
   setCurrentView: (view) => set({ currentView: view }),
   setCurrentDate: (date) => set({ currentDate: date }),
+  setEditMode: (value) => set({ isEditMode: value }),
+  toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
 
   goToPrevious: () =>
     set((state) => {
@@ -85,6 +94,19 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
   goToToday: () => set({ currentDate: startOfToday() }),
 
   selectEvent: (eventId) => set({ selectedEventId: eventId }),
+
+  openEventModal: (eventId) =>
+    set({
+      isEventModalOpen: true,
+      selectedEventId: eventId ?? null,
+    }),
+
+  closeEventModal: () =>
+    set({
+      isEventModalOpen: false,
+      selectedEventId: null,
+    }),
+
   setActiveDragEventId: (eventId) => set({ activeDragEventId: eventId }),
 
   startDrag: (event) =>

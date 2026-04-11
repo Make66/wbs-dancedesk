@@ -13,11 +13,11 @@ import { eventFormSchema, type EventFormValues } from "./schemas/event-schema";
 import { userStore } from "../../stores/userStore";
 import { getRooms } from "../../data/rooms";
 import type { Room } from "../../types/room-types";
-import { createEventDB } from "../../data/event";
+import { createEventDB, deleteEventDB, updateEventDB } from "../../data/event";
 
 type EventModalProps = {
   onClose: () => void;
-  onSaved?: () => void;
+  onSaved?: () => void | Promise<void>;
   event?: Event;
 };
 
@@ -50,6 +50,8 @@ const EventModal = ({ onClose, onSaved, event }: EventModalProps) => {
 
   const [rooms, setRooms] = useState<Room[]>([]);
   const [roomsLoading, setRoomsLoading] = useState(true);
+
+  const isEditMode = !!event;
 
   useEffect(() => {
     if (!locationId) {
@@ -136,23 +138,36 @@ const EventModal = ({ onClose, onSaved, event }: EventModalProps) => {
     };
 
     try {
-      const isEditMode = !!event;
+      const response = isEditMode
+        ? await updateEventDB(event.id, payload)
+        : await createEventDB(payload);
 
-      if (isEditMode) {
-        console.log("Edit mode is not implemented yet");
-        return;
-      }
-
-      const response = await createEventDB(payload);
       const savedEvent = await response.json();
-
       console.log("Saved event:", savedEvent);
+
       if (onSaved) {
         await onSaved();
       }
+
       onClose();
     } catch (error) {
       console.error("Error saving event:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!event) return;
+
+    try {
+      await deleteEventDB(event.id);
+
+      if (onSaved) {
+        await onSaved();
+      }
+
+      onClose();
+    } catch (error) {
+      console.error("Error deleting event:", error);
     }
   };
 
@@ -163,7 +178,7 @@ const EventModal = ({ onClose, onSaved, event }: EventModalProps) => {
       <div className="absolute left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-muted-foreground bg-background p-6 shadow-2xl overflow-visible">
         <div className="mb-6 flex items-start justify-between">
           <h3 className="text-2xl font-semibold">
-            {event ? "Event bearbeiten" : "Event erstellen"}
+            {isEditMode ? "Event bearbeiten" : "Event erstellen"}
           </h3>
 
           <button
@@ -177,7 +192,13 @@ const EventModal = ({ onClose, onSaved, event }: EventModalProps) => {
         </div>
 
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+          <form
+            onSubmit={handleSubmit((data) => {
+              console.log("SUBMIT läuft", data);
+              onSubmit(data);
+            })}
+            className="flex flex-col gap-5"
+          >
             <div className="flex flex-col gap-2">
               <Input label="Titel" {...register("title")} />
               {errors.title && (
@@ -241,7 +262,7 @@ const EventModal = ({ onClose, onSaved, event }: EventModalProps) => {
               <ColorFormPicker
                 color={watch("color") ?? DEFAULT_COLORS}
                 onChange={(colors) => {
-                  setValue("color", colors as [string, string], {
+                  setValue("color", colors, {
                     shouldValidate: true,
                     shouldDirty: true,
                   });
@@ -252,7 +273,14 @@ const EventModal = ({ onClose, onSaved, event }: EventModalProps) => {
                 <p className="ml-1 text-sm text-destructive">{errors.color.message}</p>
               )}
             </div>
+
             <div className="mt-3 flex items-center justify-end gap-3">
+              {isEditMode && (
+                <Button type="button" variant="outline" onClick={handleDelete}>
+                  Löschen
+                </Button>
+              )}
+
               <Button type="submit" size="lg" disabled={isSubmitting}>
                 Speichern
               </Button>
