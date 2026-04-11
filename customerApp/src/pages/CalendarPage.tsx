@@ -5,10 +5,10 @@ import type {
   CalendarEventDragEndPayload,
   CalendarEventResizeEndPayload,
 } from "../types/calendar-types";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { FaPenNib } from "react-icons/fa";
 import EventModal from "../components/form/EventModal";
 import { calendarStore } from "../stores/calendarStore";
+import AddButton from "../components/ui/AddButton";
+import EditButton from "../components/ui/EditButton";
 
 type DbEvent = {
   id: string;
@@ -223,13 +223,9 @@ const CalendarPage = () => {
       <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
         <h1 className="text-3xl font-semibold">Kalender</h1>
         <div className="flex items-center gap-7">
-          <button type="button" className="cursor-pointer" onClick={toggleEditMode}>
-            <FaPenNib className="text-2xl" />
-          </button>
+          <EditButton onClick={() => toggleEditMode()} tooltipPlace="left" />
           {isEditMode && (
-            <button type="button" className="cursor-pointer" onClick={() => openEventModal()}>
-              <IoMdAddCircleOutline className="text-3xl" />
-            </button>
+            <AddButton onClick={() => openEventModal()} tooltipContent="Event hinzufügen" />
           )}
         </div>
       </div>

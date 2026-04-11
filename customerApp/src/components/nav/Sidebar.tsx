@@ -132,7 +132,7 @@ const Sidebar = () => {
           </NavLink>
           <div className="border-b border-gray-500" />
           <NavLink
-            to="/users"
+            to="/participants"
             className={({ isActive }) =>
               cn(
                 "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",

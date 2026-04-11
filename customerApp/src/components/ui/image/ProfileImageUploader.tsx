@@ -1,29 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ImageCropperModal from "./ImageCropperModal";
+import { cn } from "../../../lib/utils";
 
 type ImageUploaderProps = {
-  schema:
-    | "user"
-    | "location"
-    | "event"
-    | "other"
-    | "instructor"
-    | "room"
-    | "instructor"
-    | "customer";
-  uuid: string;
+  id?: string;
   aspect?: number;
   cropShape?: "rect" | "round";
+  className?: string;
+  imageUrl?: string;
+  onChange?: (file: File) => void;
 };
 
 const ProfileImageUploader = ({
-  schema,
-  uuid,
+  id,
   aspect = 1,
   cropShape = "round",
+  className,
+  imageUrl,
+  onChange,
 }: ImageUploaderProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
 
@@ -34,38 +31,48 @@ const ProfileImageUploader = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setSelectedFile(file);
+
+    const objectUrl = URL.createObjectURL(file);
+    setSelectedImageSrc(objectUrl);
     setIsCropperOpen(true);
+
     e.target.value = "";
   };
 
-  useEffect(() => {
-    if (!selectedFile) {
-      // eslint-disable-next-line
-      setPreviewUrl(null);
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(selectedFile);
-    setPreviewUrl(objectUrl);
-
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [selectedFile]);
-
   const handleCloseModal = () => {
     setIsCropperOpen(false);
+
+    if (selectedImageSrc) {
+      URL.revokeObjectURL(selectedImageSrc);
+      setSelectedImageSrc(null);
+    }
   };
 
   const handleSaveCroppedImage = async (blob: Blob) => {
-    const file = new File([blob], `${schema}-${uuid}.webp`, {
+    const file = new File([blob], id ? `${id}.webp` : "profile.webp", {
       type: "image/webp",
     });
 
-    const preview = URL.createObjectURL(file);
-    setPreviewUrl(preview);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
 
+    const newPreviewUrl = URL.createObjectURL(file);
+    setPreviewUrl(newPreviewUrl);
     setIsCropperOpen(false);
+
+    if (selectedImageSrc) {
+      URL.revokeObjectURL(selectedImageSrc);
+      setSelectedImageSrc(null);
+    }
+
+    onChange?.(file);
   };
+
+  const displayImage =
+    previewUrl ||
+    imageUrl ||
+    "https://img.freepik.com/vektoren-premium/das-profilbild-des-mannes-avatars-ist-auf-dem-hintergrund-isoliert_1293239-4841.jpg?semt=ais_hybrid&w=740&q=80";
 
   return (
     <div className="flex flex-col gap-4">
@@ -77,22 +84,19 @@ const ProfileImageUploader = ({
         onChange={handleFileChange}
       />
 
-      <button onClick={handleOpenFilePicker}>
-        <div className="flex items-center gap-4 cursor-pointer">
+      <button onClick={handleOpenFilePicker} type="button" className="w-max cursor-pointer">
+        <div className="flex items-center gap-4">
           <img
-            src={
-              previewUrl ||
-              "https://img.freepik.com/vektoren-premium/das-profilbild-des-mannes-avatars-ist-auf-dem-hintergrund-isoliert_1293239-4841.jpg?semt=ais_hybrid&w=740&q=80"
-            }
-            alt="Vorschau"
-            className="h-24 w-24 rounded-full object-cover border"
+            src={displayImage}
+            alt=""
+            className={cn("rounded-full object-cover border", className)}
           />
         </div>
       </button>
 
       <ImageCropperModal
         open={isCropperOpen}
-        imageSrc={previewUrl}
+        imageSrc={selectedImageSrc}
         onClose={handleCloseModal}
         onSave={handleSaveCroppedImage}
         aspect={aspect}

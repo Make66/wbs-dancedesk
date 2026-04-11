@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import InstructorItem from "../components/InstructorItem";
 import type { Instructor } from "../types/instructor-types";
-import { getInstructors } from "../data/instructors";
+import { getInstructors } from "../data/instructor";
 
 const InstructorsPage = () => {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
