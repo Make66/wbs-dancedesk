@@ -12,12 +12,12 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { categoryStore } from "../stores/categoryStore";
-import { FaPenNib } from "react-icons/fa";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { IoMdAddCircleOutline } from "react-icons/io";
 import { useParams } from "react-router";
 import { toast } from "react-toastify";
 import { updateTargetDB } from "../data/target";
+import EditButton from "../components/ui/EditButton";
+import AddButton from "../components/ui/AddButton";
+import VisibleButton from "../components/ui/VisibleButton";
 
 const CategoriesPage = () => {
   const { targetId } = useParams();
@@ -135,47 +135,19 @@ const CategoriesPage = () => {
           <h1 className="text-3xl font-semibold">{location.state?.target.name || ""}</h1>
         </div>
 
-        <button
-          type="button"
+        <EditButton
           onClick={() => setEditMode(!isEditMode)}
-          aria-label="Bearbeitungsmodus umschalten"
-          data-tooltip-id="tooltip"
-          data-tooltip-content={
-            isEditMode ? "Bearbeitungsmodus verlassen" : "Bearbeitungsmodus betreten"
-          }
-          data-tooltip-place="right"
-        >
-          <FaPenNib className="cursor-pointer text-xl" />
-        </button>
+          tooltipContent={isEditMode ? "Bearbeitungsmodus verlassen" : "Bearbeitungsmodus betreten"}
+        />
 
         {isEditMode && (
           <>
-            <button
-              type="button"
-              aria-label="Kategorie hinzufügen"
-              onClick={() => {
-                addCategory();
-              }}
-              data-tooltip-id="tooltip"
-              data-tooltip-content="Kategorie hinzufügen"
-              data-tooltip-place="right"
-            >
-              <IoMdAddCircleOutline className="cursor-pointer text-xl" />
-            </button>
-            <button
-              type="button"
-              className="cursor-pointer"
+            <AddButton onClick={() => addCategory()} tooltipContent="Kategorie hinzufügen" />
+            <VisibleButton
               onClick={toggleInactiveVisibility}
-              data-tooltip-id="tooltip"
-              data-tooltip-content="Inaktive Kategorien anzeigen/verbergen"
-              data-tooltip-place="right"
-            >
-              {isInactiveVisible ? (
-                <IoMdEyeOff className="text-3xl" />
-              ) : (
-                <IoMdEye className="text-3xl" />
-              )}
-            </button>
+              isVisible={isInactiveVisible}
+              tooltipContent="Inaktive Kategorien anzeigen/verbergen"
+            />
           </>
         )}
       </div>

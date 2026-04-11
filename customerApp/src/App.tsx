@@ -8,12 +8,13 @@ import {
   CategoriesPage,
   LoginPage,
   InstructorsPage,
-  UsersPage,
+  ParticipantsPage,
   TargetsPage,
   CourseDetailPage,
   RoomsPage,
   SettingsPage,
   CalendarPage,
+  InstructorDetailPage,
 } from "./pages";
 import "./App.css";
 
@@ -31,9 +32,10 @@ function App() {
             <Route path="/course" element={<CourseDetailPage />} />
             <Route path="/course/:courseId" element={<CourseDetailPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/users" element={<UsersPage />} />
+            <Route path="/participants" element={<ParticipantsPage />} />
             <Route path="/rooms" element={<RoomsPage />} />
             <Route path="/instructors" element={<InstructorsPage />} />
+            <Route path="/instructor/:instructorId" element={<InstructorDetailPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<HomePage />} />
           </Route>

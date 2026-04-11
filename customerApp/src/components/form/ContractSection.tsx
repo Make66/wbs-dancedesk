@@ -1,11 +1,11 @@
 import { TbContract } from "react-icons/tb";
-import { IoMdAddCircleOutline } from "react-icons/io";
 import { useFormContext } from "react-hook-form";
 import type { CourseFormValues } from "./schemas/course-schema";
 import { useEffect, useMemo, useState } from "react";
 import ContractModal from "./ContractModal";
 import type { Contract } from "../../types/course-types";
 import ContractItem from "./ContractItem";
+import AddButton from "../ui/AddButton";
 
 const emptyContract: Contract = {
   title: "",
@@ -94,9 +94,7 @@ const ContractSection = () => {
             <span className="text-2xl font-semibold line-clamp-1">Vertragsdaten</span>
           </div>
 
-          <button onClick={openCreateModal} type="button">
-            <IoMdAddCircleOutline className="cursor-pointer text-3xl mr-3" />
-          </button>
+          <AddButton size="medium" onClick={openCreateModal} className="mr-3" />
         </div>
       </div>
 
@@ -125,7 +123,6 @@ const ContractSection = () => {
 
       {isContractModalOpen && (
         <ContractModal
-          isOpen={isContractModalOpen}
           onClose={handleClose}
           initialValues={editingContract}
           onSave={handleSaveContract}
