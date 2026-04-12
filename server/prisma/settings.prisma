@@ -1,21 +1,14 @@
 model Settings {
-  colTitles           Json?
-  holidays            Json?
-  schoolHolidays      Json?
-  rebates             Json?
-  voucher             Json?
-  calendarPast        Boolean  @default(false)
-  calendarOccurrences Int      @default(0)
-  calendarLength      Int      @default(12)
-  formFields          Json?
-  domain              String?
-  federalState        String?
-  legalResources      String   @default("fileadmin/kunden/mandant/rechtstexte/")
-  contracts           String[] @default([])
-  registration        Json?
-  calendarConfig      Json?    @default("{\"startHour\": 10, \"endHour\": 20, \"slotHeight\": 20, \"minutesPerSlot\": 15}")
+  basic        Json?
+  calendar     Json? @default("{\"startHour\":10,\"endHour\":20,\"slotHeight\":20,\"minutesPerSlot\":15}")
+  formFields   Json?
+  registration Json?
+  contracts    Json?
+  rebates      Json?
+  voucher      Json?
+  other        Json?
 
-  // Common fields
+  // common
   id        String   @id @default(uuid()) @db.Uuid
   tenantId  String   @unique
   createdAt DateTime @default(now())

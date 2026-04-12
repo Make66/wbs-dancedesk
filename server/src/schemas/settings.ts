@@ -40,6 +40,7 @@ export const settingsSchema = z.object({
   rebates:      z.record(z.string(), z.unknown()).optional(),
   registration: registrationConfigSchema,
   voucher:      z.record(z.string(), z.unknown()).optional(),
+  other:        z.record(z.string(), z.unknown()).optional(),
 });
 
 export const federalStateSchema = z.enum([
