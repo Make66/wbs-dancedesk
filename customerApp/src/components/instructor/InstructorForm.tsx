@@ -6,7 +6,7 @@ import { Input } from "../ui/input";
 import { useEffect, useState } from "react";
 import SkillSection from "./SkillSection";
 import InstructorCoursesSection from "./InstructorCoursesSection";
-import { createInstructor } from "../../data/instructor";
+import { updateInstructor } from "../../data/instructor";
 import { getCoursesByInstructorIdDB } from "../../data/course";
 
 type InstructorFormProps = {
@@ -63,11 +63,12 @@ const InstructorForm = ({ instructor }: InstructorFormProps) => {
 
   const onSubmit = async (values: InstructorFormValues) => {
     try {
+      if (!instructor) return;
       setIsSubmitting(true);
 
       const finalImageUrl = imageFile ? undefined : values.imageUrl;
 
-      await createInstructor({
+      await updateInstructor(instructor.id, {
         name: values.name.trim(),
         description: values.description.trim(),
         skills: values.skills.map((skill) => skill.trim()).filter(Boolean),
