@@ -6,7 +6,7 @@ import { Input } from "../ui/input";
 import { useEffect, useState } from "react";
 import SkillSection from "./SkillSection";
 import InstructorCoursesSection from "./InstructorCoursesSection";
-import { updateInstructor } from "../../data/instructor";
+import { createInstructorDB, updateInstructorDB } from "../../data/instructor";
 import { getCoursesByInstructorIdDB } from "../../data/course";
 import { toast } from "react-toastify";
 
@@ -64,22 +64,27 @@ const InstructorForm = ({ instructor }: InstructorFormProps) => {
 
   const onSubmit = async (values: InstructorFormValues) => {
     try {
-      if (!instructor) return;
       setIsSubmitting(true);
 
-      const finalImageUrl = imageFile ? undefined : values.imageUrl;
-
-      await updateInstructor(instructor.id, {
+      const payload = {
         name: values.name.trim(),
         description: values.description.trim(),
         skills: values.skills.map((skill) => skill.trim()).filter(Boolean),
-        imageUrl: finalImageUrl,
+        imageUrl: imageFile ? undefined : values.imageUrl,
         imageFile,
-      });
-      toast.success("Instruktor erfolgreich aktualisiert!");
+      };
+
+      if (instructor) {
+        await updateInstructorDB(instructor.id, payload);
+        toast.success("Instruktor erfolgreich aktualisiert!");
+      } else {
+        console.log("Creating instructor with data:", payload);
+        await createInstructorDB(payload);
+        toast.success("Instruktor erfolgreich erstellt!");
+      }
     } catch (error) {
       console.error("Fehler beim Absenden des Formulars:", error);
-      toast.error("Fehler beim Aktualisieren des Instruktors. Bitte versuche es erneut.");
+      toast.error("Fehler beim Speichern des Instruktors. Bitte versuche es erneut.");
     } finally {
       setIsSubmitting(false);
     }

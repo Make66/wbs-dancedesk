@@ -11,6 +11,9 @@ import type { Participant } from "../../types/participants-type";
 import { getParticipantStats } from "../../lib/participants";
 import SeatsPicker from "./SeatsPicker";
 import { getCourseDuration } from "../../lib/courses/course";
+import type { Instructor } from "../../types/instructor-types";
+import { useEffect, useState } from "react";
+import { getInstructors } from "../../data/instructor";
 
 type DetailsSectionProps = {
   rooms: Room[];
@@ -32,6 +35,23 @@ const DetailsSection = ({ rooms, roomsLoading, participants, courseId }: Details
   const endsAt = watch("endsAt");
   const nextDate = startsAt ?? null;
   const minutes = startsAt && endsAt ? getCourseDuration(startsAt, endsAt) : 0;
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [loadingInstructors, setLoadingInstructors] = useState(true);
+
+  useEffect(() => {
+    const fetchInstructors = async () => {
+      try {
+        const instructorsData = await getInstructors();
+        setInstructors(instructorsData);
+      } catch (error) {
+        console.error("Error fetching instructors:", error);
+      } finally {
+        setLoadingInstructors(false);
+      }
+    };
+
+    fetchInstructors();
+  }, []);
 
   return (
     <div className="p-2 rounded-2xl bg-purple-400/40 gap-3 shadow-xl">
@@ -44,7 +64,7 @@ const DetailsSection = ({ rooms, roomsLoading, participants, courseId }: Details
 
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-3">
         <div className="col-span-2 xl:col-span-1 flex flex-col gap-3">
-          <InstructorPicker />
+          <InstructorPicker instructors={instructors} loading={loadingInstructors} />
           {errors.instructorId && (
             <p className="text-sm text-destructive ml-4">{errors.instructorId.message}</p>
           )}

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import InstructorItem from "../components/instructor/InstructorItem";
 import type { Instructor } from "../types/instructor-types";
 import { getInstructors } from "../data/instructor";
+import AddButton from "../components/ui/AddButton";
+import { Link } from "react-router";
 
 const InstructorsPage = () => {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
@@ -18,6 +20,9 @@ const InstructorsPage = () => {
     <div className="w-full h-screen bg-background">
       <div className="sticky top-0 flex h-20 items-center pl-6 gap-9 border-b border-muted-foreground">
         <h1 className="text-3xl font-semibold">Tanzlehrer</h1>
+        <Link to="/instructor">
+          <AddButton />
+        </Link>
       </div>
       <div className="p-6 flex flex-col gap-6">
         {instructors.length > 0 ? (

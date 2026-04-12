@@ -24,8 +24,7 @@ const ProfileImageUploader = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
 
-  const fallbackAvatar =
-    "https://img.freepik.com/premium-vector/avatar-icon-circle-male-sign-vector-illustration_276184-170.jpg?w=360";
+  const fallbackAvatar = "/assets/images/no-profile-picture.svg";
 
   const handleOpenFilePicker = () => {
     inputRef.current?.click();

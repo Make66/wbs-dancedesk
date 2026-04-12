@@ -38,6 +38,7 @@ function App() {
             <Route path="/room/:roomId" element={<RoomDetailPage />} />
             <Route path="/instructors" element={<InstructorsPage />} />
             <Route path="/instructor/:instructorId" element={<InstructorDetailPage />} />
+            <Route path="/instructor" element={<InstructorDetailPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<HomePage />} />
           </Route>
