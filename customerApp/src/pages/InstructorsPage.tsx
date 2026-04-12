@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import InstructorItem from "../components/InstructorItem";
+import InstructorItem from "../components/instructor/InstructorItem";
 import type { Instructor } from "../types/instructor-types";
 import { getInstructors } from "../data/instructor";
 
@@ -22,7 +22,9 @@ const InstructorsPage = () => {
       <div className="p-6 flex flex-col gap-6">
         {instructors.length > 0 ? (
           instructors.map((instructor: Instructor) => (
-            <InstructorItem key={instructor.id} instructor={instructor} />
+            <div key={instructor.id}>
+              <InstructorItem instructor={instructor} />
+            </div>
           ))
         ) : (
           <p key="no-instructors">Keine Tanzlehrer gefunden.</p>
