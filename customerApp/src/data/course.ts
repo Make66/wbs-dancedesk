@@ -57,7 +57,7 @@ export const createCourseDB = async (data: CreateCourseInput) => {
   }
 };
 
-export const getCourseById = async (id: string) => {
+export const getCourseByIdDB = async (id: string) => {
   const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -71,7 +71,7 @@ export const getCourseById = async (id: string) => {
   return response.json();
 };
 
-export const getCoursesByWeek = async (year: number, week: number) => {
+export const getCoursesByWeekDB = async (year: number, week: number) => {
   const response = await fetch(
     `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/week/${year}/${week}`,
     {
@@ -82,4 +82,28 @@ export const getCoursesByWeek = async (year: number, week: number) => {
   );
 
   return response.json();
+};
+
+export const getCoursesByInstructorIdDB = async (instructorId: string) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors/${instructorId}/courses`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Server error response:", errorText);
+      throw new Error(`Failed to fetch courses by instructor: ${response.status} - ${errorText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching courses by instructor:", error);
+    throw error;
+  }
 };

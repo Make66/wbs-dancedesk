@@ -1,6 +1,12 @@
 import { IoSchool } from "react-icons/io5";
+import type { Course } from "../../types/course-types";
+import CourseItem from "./CourseItem";
 
-const InstructorCoursesSection = () => {
+type InstructorCoursesSectionProps = {
+  courses: Course[];
+};
+
+const InstructorCoursesSection = ({ courses }: InstructorCoursesSectionProps) => {
   return (
     <div className="p-2 w-full rounded-2xl bg-pink-600/40 shadow-xl">
       <div className="pt-2 pl-3 flex items-center justify-between col-span-1 md:col-span-2">
@@ -10,9 +16,11 @@ const InstructorCoursesSection = () => {
         </div>
       </div>
       <div className="mt-6">
-        {
-          // Courses list
-        }
+        {courses.map((course) => (
+          <div key={course.id} className="flex flex-col gap-2">
+            <CourseItem course={course} />
+          </div>
+        ))}
       </div>
     </div>
   );
