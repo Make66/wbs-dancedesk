@@ -1,32 +1,15 @@
 import { useEffect, useState } from "react";
-import RoomItem from "../components/room/RoomItem";
 import AddButton from "../components/ui/AddButton";
-import { getRooms } from "../data/rooms";
-import { userStore } from "../stores/userStore";
+import { getAllRooms } from "../data/rooms";
 import type { Room } from "../types/room-types";
+import RoomItem from "../components/room/RoomItem";
 
 const RoomsPage = () => {
-  const locationId = userStore((state) => state.selectedLocationId);
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [roomsLoading, setRoomsLoading] = useState(true);
 
   useEffect(() => {
-    if (!locationId) return;
-
-    const fetchRooms = async () => {
-      try {
-        setRoomsLoading(true);
-        const data = await getRooms(locationId);
-        setRooms(data);
-      } catch (error) {
-        console.error("Error fetching rooms:", error);
-        setRooms([]);
-      } finally {
-        setRoomsLoading(false);
-      }
-    };
-    fetchRooms();
-  }, [locationId]);
+    getAllRooms().then(setRooms).catch(console.error);
+  }, []);
 
   return (
     <div className="w-full h-screen bg-background">

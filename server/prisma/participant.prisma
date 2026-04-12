@@ -19,13 +19,14 @@ model Participant {
   latitude  Float  @default(8.0)
 
   // many-to-many
+  attendances        Attendance[]
   course             Course[]            @relation("ParticipantCourse")
   participantCourses ParticipantCourse[]
 
   // Common fields
-  id        String   @id @default(uuid()) @db.Uuid
-  tenantId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
+  id          String       @id @default(uuid()) @db.Uuid
+  tenantId    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  isDeleted   Boolean      @default(false)
 }
