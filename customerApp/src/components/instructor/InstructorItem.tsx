@@ -17,8 +17,8 @@ const InstructorItem = ({ instructor }: InstructorItemProps) => {
           <img
             src={
               instructor?.imageUrl
-                ? "https://img.freepik.com/vektoren-premium/das-profilbild-des-mannes-avatars-ist-auf-dem-hintergrund-isoliert_1293239-4841.jpg?semt=ais_hybrid&w=740&q=80"
-                : instructor.imageUrl
+                ? instructor.imageUrl
+                : "https://img.freepik.com/vektoren-premium/das-profilbild-des-mannes-avatars-ist-auf-dem-hintergrund-isoliert_1293239-4841.jpg?semt=ais_hybrid&w=740&q=80"
             }
             alt={instructor?.name}
             className="rounded-full w-20 h-20 object-cover"

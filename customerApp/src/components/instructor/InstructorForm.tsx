@@ -8,6 +8,7 @@ import SkillSection from "./SkillSection";
 import InstructorCoursesSection from "./InstructorCoursesSection";
 import { updateInstructor } from "../../data/instructor";
 import { getCoursesByInstructorIdDB } from "../../data/course";
+import { toast } from "react-toastify";
 
 type InstructorFormProps = {
   instructor?: Instructor;
@@ -75,8 +76,10 @@ const InstructorForm = ({ instructor }: InstructorFormProps) => {
         imageUrl: finalImageUrl,
         imageFile,
       });
+      toast.success("Instruktor erfolgreich aktualisiert!");
     } catch (error) {
       console.error("Fehler beim Absenden des Formulars:", error);
+      toast.error("Fehler beim Aktualisieren des Instruktors. Bitte versuche es erneut.");
     } finally {
       setIsSubmitting(false);
     }
