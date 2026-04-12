@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate, validateZod } from '#middlewares';
+import { authenticate, validateZod, formidableMiddleware, cloudUploader } from '#middlewares';
 import { getAllEvents, getMonthEvents, getUpcomingEvents, getOneEvent, createEvent, updateEvent, removeEvent } from '#controllers';
 import { eventSchema } from '#schemas';
 
@@ -12,13 +12,13 @@ eventsRouter.get('/month/:number', authenticate, getMonthEvents);
 eventsRouter
   .route('/')
   .get(authenticate, getAllEvents)
-  .post(authenticate, validateZod(eventSchema), createEvent);
+  .post(authenticate, formidableMiddleware, cloudUploader, validateZod(eventSchema), createEvent);
 
 eventsRouter
   .route('/:id')
   .get(authenticate, getOneEvent)
-  .put(authenticate, validateZod(eventSchema), updateEvent)
-  .patch(authenticate, validateZod(eventSchema.partial()), updateEvent)
+  .put(authenticate, formidableMiddleware, cloudUploader, validateZod(eventSchema), updateEvent)
+  .patch(authenticate, formidableMiddleware, cloudUploader, validateZod(eventSchema.partial()), updateEvent)
   .delete(authenticate, removeEvent);
 
 export default eventsRouter;

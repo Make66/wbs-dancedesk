@@ -3,7 +3,7 @@ model User {
   lastName     String? @default("Doe")
   email        String  @unique @default("admin@test.de")
   password     String  @default("Test123!")
-  imageUrl     String  @default("./assets/images/no-profile-picture")
+  imageUrl     String  @default("/assets/images/no-profile-picture.svg")
   refreshToken String? // bcrypt hash of current refresh token; null = logged out
   settings     Json?   @default("{}") // JSON field for user-specific settings/preferences
 

@@ -6,8 +6,14 @@ export const roomSchema = z.object({
   imageUrl: z.string().optional(),
   capacity: z.number().optional(),
 
-  courses: z.array(z.uuid('Id given is not a valid UUID')).optional(),
-  events: z.array(z.uuid('Id given is not a valid UUID')).optional(),
+  courses: z.preprocess(
+    (val) => (Array.isArray(val) ? val : typeof val === 'string' ? [val] : []),
+    z.array(z.uuid('Id given is not a valid UUID'))
+  ).optional(),
+  events: z.preprocess(
+    (val) => (Array.isArray(val) ? val : typeof val === 'string' ? [val] : []),
+    z.array(z.uuid('Id given is not a valid UUID'))
+  ).optional(),
   location: z.uuid('Id given is not a valid UUID').optional(),
 
   street: z.string().optional(),

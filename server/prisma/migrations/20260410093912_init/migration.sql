@@ -82,7 +82,7 @@ CREATE TABLE "Customer" (
 CREATE TABLE "Event" (
     "title" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
     "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "color" JSONB DEFAULT '[]',
@@ -109,7 +109,7 @@ CREATE TABLE "Event" (
 CREATE TABLE "Instructor" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
     "skills" TEXT[] DEFAULT ARRAY['Salsa', 'WTP', 'HipHop']::TEXT[],
     "customerId" UUID NOT NULL,
     "id" UUID NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE "Instructor" (
 CREATE TABLE "Location" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
@@ -167,7 +167,7 @@ CREATE TABLE "Participant" (
     "email" TEXT DEFAULT 'john.doe@example.com',
     "phone" TEXT DEFAULT '123-456-7890',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
-    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
     "birthDate" TEXT DEFAULT '1990-01-01',
     "gender" TEXT DEFAULT 'other',
     "refreshToken" TEXT,
@@ -222,7 +222,7 @@ CREATE TABLE "Registration" (
 CREATE TABLE "Room" (
     "name" TEXT DEFAULT 'Room 1',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
     "capacity" INTEGER NOT NULL DEFAULT 20,
     "locationId" UUID,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
@@ -305,7 +305,7 @@ CREATE TABLE "User" (
     "lastName" TEXT DEFAULT 'Doe',
     "email" TEXT NOT NULL DEFAULT 'admin@test.de',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
-    "imageUrl" TEXT NOT NULL DEFAULT './assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
     "refreshToken" TEXT,
     "settings" JSONB DEFAULT '{}',
     "id" UUID NOT NULL,

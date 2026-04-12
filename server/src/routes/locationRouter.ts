@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate, validateZod } from '#middlewares';
+import { authenticate, validateZod, formidableMiddleware, cloudUploader } from '#middlewares';
 import { getAllLocations, getOneLocation, createLocation, updateLocation, removeLocation, getTargetsByLocation, getRoomsByLocation, getEventsByLocation } from '#controllers';
 import { locationSchema } from '#schemas';
 
@@ -8,13 +8,13 @@ const locationsRouter = Router();
 locationsRouter
   .route('/')
   .get(authenticate, getAllLocations)
-  .post(authenticate, validateZod(locationSchema), createLocation);
+  .post(authenticate, formidableMiddleware, cloudUploader, validateZod(locationSchema), createLocation);
 
 locationsRouter
   .route('/:id')
   .get(authenticate, getOneLocation)
-  .put(authenticate, validateZod(locationSchema), updateLocation)
-  .patch(authenticate, validateZod(locationSchema.partial()), updateLocation)
+  .put(authenticate, formidableMiddleware, cloudUploader, validateZod(locationSchema), updateLocation)
+  .patch(authenticate, formidableMiddleware, cloudUploader, validateZod(locationSchema.partial()), updateLocation)
   .delete(authenticate, removeLocation);
 
 locationsRouter.get('/:id/targets', authenticate, getTargetsByLocation);

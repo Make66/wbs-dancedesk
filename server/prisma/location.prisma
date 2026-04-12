@@ -1,7 +1,7 @@
 model Location {
   name        String? @default("John Doe Instructor")
   description String? @default("")
-  imageUrl    String  @default("./assets/images/no-profile-picture")
+  imageUrl    String  @default("/assets/images/no-profile-picture.svg")
 
   // Common address fields
   street    String @default("123 Main St")

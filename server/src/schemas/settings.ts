@@ -1,44 +1,65 @@
 import { z } from 'zod/v4';
 
-export const registrationSettingsSchema = z.object({
-  titleCol1:  z.string(),
-  titleCol2:  z.string(),
-  delTime:    z.number(),
-  checkSeats: z.boolean(),
-  waitingList:   z.boolean(),
-});
-
-registrationSettingsSchema.partial({
-  titleCol1: true,
-  titleCol2: true,
-  delTime: true,
-  checkSeats: true,
-  waitingList: true
+export const basicConfigSchema = z.object({
+  domain: z.string().optional(),
+  federalState: z.string().optional(),
+  termsUri: z.string().optional(),
+  privacyUri: z.string().optional(),
+  cancellationUri: z.string().optional(),
+  cancellationSampleUri: z.string().optional(),
 });
 
 export const calendarConfigSchema = z.object({
   startHour: z.number().min(0).max(23).default(10),
   endHour: z.number().min(1).max(24).default(20),
   slotHeight: z.number().min(1).default(20),
-  minutesPerSlot: z.number().min(1).default(15)
+  minutesPerSlot: z.number().min(1).default(15),
+  federalHolidays: z.array(z.unknown()).optional(),
+  schoolHolidays: z.record(z.string(), z.array(z.unknown())).optional(),
+});
+
+export const formFieldSchema = z.object({
+  name: z.string().min(1),
+});
+
+export const registrationConfigSchema = z.object({
+  titleCol1:    z.string().optional(),
+  titleCol2:    z.string().optional(),
+  delTime:      z.number().optional(),
+  checkSeats:   z.boolean().optional(),
+  waitingList:  z.boolean().optional(),
+  displayPastNumber: z.number().optional(),
+  displayNumberOccurrences: z.number().optional(),
 });
 
 export const settingsSchema = z.object({
-  colTitles:           z.record(z.string(), z.unknown()).optional,
-  holidays:            z.array(z.unknown()).optional(),
-  schoolHolidays:      z.record(z.string(), z.array(z.unknown())).optional(),
-  rebates:             z.record(z.string(), z.unknown()).optional(),
-  voucher:             z.record(z.string(), z.unknown()).optional(),
-  calendarPast:        z.boolean().optional(),
-  calendarOccurrences: z.number().optional(),
-  calendarLength:      z.number().optional(),
-  formFields:          z.record(z.string(), z.unknown()).optional(),
-  domain:              z.string().optional(),
-  federalState:        z.string().optional(),
-  legalResources:      z.string().optional(),
-  contracts:           z.array(z.string()).default([]),
-  registration:        registrationSettingsSchema,
-  calendarConfig: calendarConfigSchema
+  basic:        basicConfigSchema,
+  calendar:     calendarConfigSchema,
+  contracts:    z.array(z.string()).default([]),
+  formFields:   formFieldSchema,
+  rebates:      z.record(z.string(), z.unknown()).optional(),
+  registration: registrationConfigSchema,
+  voucher:      z.record(z.string(), z.unknown()).optional(),
+  other:        z.record(z.string(), z.unknown()).optional(),
 });
+
+export const federalStateSchema = z.enum([
+  'BW', // Baden-Württemberg
+  'BY', // Bayern
+  'BE', // Berlin
+  'BB', // Brandenburg
+  'HB', // Bremen
+  'HH', // Hamburg
+  'HE', // Hessen
+  'MV', // Mecklenburg-Vorpommern
+  'NI', // Niedersachsen
+  'NW', // Nordrhein-Westfalen
+  'RP', // Rheinland-Pfalz
+  'SL', // Saarland
+  'SN', // Sachsen
+  'ST', // Sachsen-Anhalt
+  'SH', // Schleswig-Holstein
+  'TH'  // Thüringen
+]);
 
 export type Settings = z.infer<typeof settingsSchema>;
