@@ -443,18 +443,21 @@ async function main() {
   const citiData: CitiLocation[] = JSON.parse(raw);
 
   // 1. clean slate — reverse dependency order
-  await prisma.course.deleteMany();
+  await prisma.attendance.deleteMany();
   await prisma.category.deleteMany();
-  await prisma.target.deleteMany();
-  await prisma.location.deleteMany();
-  await prisma.room.deleteMany();
-  await prisma.text.deleteMany();
-  await prisma.module.deleteMany();
-  await prisma.registration.deleteMany();
-  await prisma.instructor.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.course.deleteMany();
   await prisma.customer.deleteMany();
+  await prisma.event.deleteMany();
+  await prisma.instructor.deleteMany();
+  await prisma.location.deleteMany();
+  await prisma.module.deleteMany();
+  await prisma.participant.deleteMany();
+  await prisma.registration.deleteMany();
+  await prisma.room.deleteMany();
   await prisma.settings.deleteMany();
+  await prisma.target.deleteMany();
+  await prisma.text.deleteMany();
+  await prisma.user.deleteMany();
 
   // 2. customer
   const customer = await prisma.customer.create({
@@ -463,12 +466,12 @@ async function main() {
 
   // 3. instructors — one per dance specialisation, funny names
   const instructorData = [
-    { name: 'Flippy Taptoe',           skill: 'WTP-youngster',    description: 'Tiny feet, big dreams — the kids love her chaos.' },
-    { name: 'Sir Waltz von Fancyfeet', skill: 'WTP-grownups',     description: 'Wears tails on Tuesdays. Judges your posture silently.' },
-    { name: 'Rico Caliente',           skill: 'Salsa',            description: 'His hips have never lied. Not even once.' },
-    { name: 'MC Bounceback',           skill: 'HipHop',           description: 'Drops beats and occasionally students. Certified hype.' },
-    { name: 'Sweaty McBurnham',        skill: 'Fitness',          description: 'No pain, no gain. Mostly pain. Bring a towel.' },
-    { name: 'Lindy Hopalong',          skill: 'Lindy+Westcoast',  description: 'Swings both ways — Lindy and West Coast. Simultaneously.' },
+    { name: 'Flippy Taptoe',           email: 'flippy@dancedesk.de', skill: 'WTP-youngster',    description: 'Tiny feet, big dreams — the kids love her chaos.' },
+    { name: 'Sir Waltz von Fancyfeet', email: 'sir-waltz@dancedesk.de', skill: 'WTP-grownups',     description: 'Wears tails on Tuesdays. Judges your posture silently.' },
+    { name: 'Rico Caliente',           email: 'rico@dancedesk.de', skill: 'Salsa',            description: 'His hips have never lied. Not even once.' },
+    { name: 'MC Bounceback',           email: 'mc-bounceback@dancedesk.de', skill: 'HipHop',           description: 'Drops beats and occasionally students. Certified hype.' },
+    { name: 'Sweaty McBurnham',        email: 'sweaty@dancedesk.de', skill: 'Fitness',          description: 'No pain, no gain. Mostly pain. Bring a towel.' },
+    { name: 'Lindy Hopalong',          email: 'lindy@dancedesk.de', skill: 'Lindy+Westcoast',  description: 'Swings both ways — Lindy and West Coast. Simultaneously.' },
   ] as const;
 
   type Skill = typeof instructorData[number]['skill'];
@@ -708,6 +711,17 @@ async function main() {
   let apiPage = 1;
   let participantCount = 0;
 
+  const usedEmails = new Set<string>();
+  function uniqueEmail(raw: string): string {
+    if (!usedEmails.has(raw)) { usedEmails.add(raw); return raw; }
+    const [name, domain] = raw.split('@');
+    let n = 1;
+    let candidate: string;
+    do { candidate = `${name}${n}@${domain}`; n++; } while (usedEmails.has(candidate));
+    usedEmails.add(candidate);
+    return candidate;
+  }
+
   async function nextUser(): Promise<RandomUser | null> {
     if (userBuffer.length === 0) {
       const res = await fetch(
@@ -730,7 +744,7 @@ async function main() {
         data: {
           firstName:  u.name.first,
           lastName:   u.name.last,
-          email:      u.email,
+          email:      uniqueEmail(u.email),
           password:   await bcrypt.hash('Test123!', 10),
           phone:      u.phone,
           birthDate:  u.dob.date,
