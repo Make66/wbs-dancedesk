@@ -96,13 +96,13 @@ const SkillSection = () => {
                   <span className="mr-4">{skill}</span>
 
                   <div className="flex items-center gap-7 mr-3">
-                    <button type="button" onClick={() => handleEditSkill(index)} className="mt-1">
+                    <div onClick={() => handleEditSkill(index)} className="mt-1">
                       <EditButton size="small" />
-                    </button>
+                    </div>
 
-                    <button type="button" onClick={() => handleRemoveSkill(index)}>
+                    <div onClick={() => handleRemoveSkill(index)}>
                       <DeleteButton size="medium" />
-                    </button>
+                    </div>
                   </div>
                 </div>
               ))}

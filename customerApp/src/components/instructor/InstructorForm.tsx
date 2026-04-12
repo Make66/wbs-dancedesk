@@ -85,43 +85,34 @@ const InstructorForm = ({ instructor }: InstructorFormProps) => {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mt-2 grid grid-cols-1 gap-6 xl:grid-cols-2 3xl:grid-cols-3"
+        className="mt-2 grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-3 gap-6"
       >
-        <div className="col-span-1 flex items-start gap-6">
-          <div className="flex flex-col">
-            <div className="flex">
-              <ProfileImageUploader
-                id={instructor?.id}
-                className="h-60 w-60"
-                imageUrl={instructor?.imageUrl}
-                onChange={(file) => {
-                  setImageFile(file);
-                }}
-              />
-              <div className="flex w-full flex-col gap-5">
-                <Input type="text" label="Name" {...register("name")} className="w-full" />
+        <div className="col-span-1 items-start gap-6">
+          <div className="flex flex-col gap-6 items-center">
+            <ProfileImageUploader
+              id={instructor?.id}
+              className="h-80 w-80"
+              imageUrl={instructor?.imageUrl}
+              onChange={(file) => {
+                setImageFile(file);
+              }}
+            />
+            <Input type="text" label="Name" {...register("name")} className="w-full" />
 
-                <Input
-                  type="text"
-                  label="Kurzbeschreibung"
-                  {...register("description")}
-                  className="w-full"
-                />
-              </div>
-            </div>
+            <Input
+              type="text"
+              label="Kurzbeschreibung"
+              {...register("description")}
+              className="w-full"
+            />
             <SkillSection />
           </div>
-        </div>
-        <div className="col-span-1">
-          <InstructorCoursesSection courses={courses} />
-        </div>
-        <div className="col-span-1"></div>
-        <div className="col-span-1"></div>
-
-        <div className="col-span-3 lg:col-span-2">
           <Button type="submit" className="mt-8 w-full py-12 text-2xl" disabled={isSubmitting}>
             {isSubmitting ? "Speichern..." : "Speichern"}
           </Button>
+        </div>
+        <div className="col-span-1">
+          {courses.length > 0 && <InstructorCoursesSection courses={courses} />}
         </div>
       </form>
     </FormProvider>

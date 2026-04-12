@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import type { Instructor } from "../types/instructor-types";
+import type { Instructor } from "../../types/instructor-types";
 
 type InstructorItemProps = {
   instructor: Instructor;
@@ -8,7 +8,11 @@ type InstructorItemProps = {
 const InstructorItem = ({ instructor }: InstructorItemProps) => {
   return (
     <div className="p-4 bg-muted-foreground rounded-2xl cursor-pointer">
-      <Link to={`/instructor/${instructor.id}`} state={{ instructor: instructor }}>
+      <Link
+        key={instructor.id}
+        to={`/instructor/${instructor.id}`}
+        state={{ instructor: instructor }}
+      >
         <div className="flex">
           <img
             src={
@@ -25,7 +29,10 @@ const InstructorItem = ({ instructor }: InstructorItemProps) => {
           </div>
           <div className="ml-8 gap-2">
             {instructor.skills.map((skill) => (
-              <span className="px-3 py-2 bg-background text-xs font-bold text-foreground rounded-3xl">
+              <span
+                key={skill}
+                className="px-3 py-2 bg-background text-xs font-bold text-foreground rounded-3xl"
+              >
                 {skill}
               </span>
             ))}

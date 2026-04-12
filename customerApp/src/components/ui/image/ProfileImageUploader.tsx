@@ -24,6 +24,9 @@ const ProfileImageUploader = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
 
+  const fallbackAvatar =
+    "https://img.freepik.com/premium-vector/avatar-icon-circle-male-sign-vector-illustration_276184-170.jpg?w=360";
+
   const handleOpenFilePicker = () => {
     inputRef.current?.click();
   };
@@ -69,7 +72,7 @@ const ProfileImageUploader = ({
     onChange?.(file);
   };
 
-  const displayImage = previewUrl || imageUrl;
+  const displayImage = previewUrl || imageUrl || fallbackAvatar;
 
   return (
     <div className="flex flex-col gap-4">
@@ -81,11 +84,15 @@ const ProfileImageUploader = ({
         onChange={handleFileChange}
       />
 
-      <button onClick={handleOpenFilePicker} type="button" className="w-max cursor-pointer">
+      <button
+        onClick={handleOpenFilePicker}
+        type="button"
+        className="w-max cursor-pointer border border-muted-foreground rounded-full p-1"
+      >
         <div className="flex items-center gap-4">
           <img
             src={displayImage}
-            alt=""
+            alt="Profilbild"
             className={cn("rounded-full object-cover border", className)}
           />
         </div>
