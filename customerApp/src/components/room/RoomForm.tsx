@@ -8,6 +8,7 @@ import RoomCoursesSection from "./RoomCoursesSection";
 import { updateRoom } from "../../data/rooms";
 import { toast } from "react-toastify";
 import type { Course } from "../../types/course-types";
+import { FaRegAddressCard } from "react-icons/fa6";
 
 type RoomFormProps = {
   room?: Room;
@@ -63,7 +64,6 @@ const RoomForm = ({ room }: RoomFormProps) => {
 
   useEffect(() => {
     if (!room) return;
-    // TODO: wire up once GET /rooms/:id/courses exists on server
     setCourses([]);
   }, [room]);
 
@@ -117,8 +117,16 @@ const RoomForm = ({ room }: RoomFormProps) => {
               className="w-full"
             />
             <div className="p-4 w-full rounded-2xl bg-blue-400/40 shadow-xl flex flex-col gap-4">
-              <span className="text-lg font-semibold">Adresse</span>
-              <Input type="text" label="Straße" {...register("street")} className="w-full" />
+              <div className="flex items-center gap-2 mb-3">
+                <FaRegAddressCard className="inline-block text-2xl ml-2 mr-2" />
+                <span className="text-lg font-semibold">Adresse</span>
+              </div>
+              <Input
+                type="text"
+                label="Straße"
+                {...register("street")}
+                className="w-full bg-background/50"
+              />
               <div className="grid grid-cols-2 gap-4">
                 <Input type="text" label="PLZ" {...register("zipCode")} className="w-full" />
                 <Input type="text" label="Stadt" {...register("city")} className="w-full" />
