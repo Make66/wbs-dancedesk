@@ -15,11 +15,7 @@ const InstructorItem = ({ instructor }: InstructorItemProps) => {
       >
         <div className="flex">
           <img
-            src={
-              instructor?.imageUrl
-                ? instructor.imageUrl
-                : "https://img.freepik.com/vektoren-premium/das-profilbild-des-mannes-avatars-ist-auf-dem-hintergrund-isoliert_1293239-4841.jpg?semt=ais_hybrid&w=740&q=80"
-            }
+            src={instructor.imageUrl}
             alt={instructor?.name}
             className="rounded-full w-20 h-20 object-cover"
           />
@@ -27,7 +23,7 @@ const InstructorItem = ({ instructor }: InstructorItemProps) => {
             <h2 className="text-xl font-semibold">{instructor?.name}</h2>
             <p className="text-gray-600">{instructor?.description}</p>
           </div>
-          <div className="ml-8 gap-2">
+          <div className="ml-8 gap-2 flex items-center">
             {instructor.skills.map((skill) => (
               <span
                 key={skill}
