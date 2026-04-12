@@ -77,19 +77,7 @@ const DetailsSection = ({ rooms, roomsLoading, participants, courseId }: Details
         </div>
 
         {courseId && (
-          <div className="col-span-2 grid grid-cols-4">
-            <div className="col-span-1 flex items-start justify-start">
-              <SeatingChart
-                seatsCurrent={watch("seatsCurrent") || 0}
-                maxSeats={watch("seatsMax") || 0}
-              />
-            </div>
-            <div className="col-span-1 flex items-start justify-start">
-              <SeatingChart
-                seatsCurrent={watch("seatsCurrent") || 0}
-                maxSeats={watch("seatsMax") || 0}
-              />
-            </div>
+          <div className="grid-cols-1 lg:col-span-2 grid grid-cols-2">
             <div className="col-span-1 flex items-start justify-start">
               <SeatingChart
                 seatsCurrent={watch("seatsCurrent") || 0}

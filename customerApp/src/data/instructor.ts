@@ -57,7 +57,8 @@ export const getInstructorById = async (instructorId: string): Promise<Instructo
   }
 };
 
-export const createInstructor = async (
+export const updateInstructor = async (
+  instructorId: string,
   instructorData: CreateInstructorInput,
 ): Promise<Instructor> => {
   try {
@@ -87,22 +88,25 @@ export const createInstructor = async (
       imageFile: instructorData.imageFile ? instructorData.imageFile : "No file",
     });
 
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors`, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors/${instructorId}`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        body: formData,
+      },
+    );
 
     if (!response.ok) {
-      throw new Error("Instruktor konnte nicht erstellt werden.");
+      throw new Error("Instruktor konnte nicht aktualisiert werden.");
     }
 
     const data = await response.json();
-    toast.success("Instruktor erfolgreich erstellt!");
+    toast.success("Instruktor erfolgreich aktualisiert!");
     return data;
   } catch (error) {
-    console.error("Error creating instructor:", error);
-    toast.error("Fehler beim Erstellen des Instruktors.");
+    console.error("Error updating instructor:", error);
+    toast.error("Fehler beim Aktualisieren des Instruktors.");
     throw error;
   }
 };
