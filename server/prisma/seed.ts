@@ -477,10 +477,11 @@ async function main() {
   type Skill = typeof instructorData[number]['skill'];
   const instructorMap = new Map<Skill, string>(); // skill → instructor id
 
-  for (const { name, skill, description } of instructorData) {
+  for (const { name, skill, description, email } of instructorData) {
     const inst = await prisma.instructor.create({
       data: {
         name,
+        email,
         description,
         skills: [skill],
         customerId: customer.id,

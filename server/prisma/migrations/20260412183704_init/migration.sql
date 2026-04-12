@@ -126,7 +126,7 @@ CREATE TABLE "Event" (
 CREATE TABLE "Instructor" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "email" TEXT NOT NULL DEFAULT 'admin@test.de',
+    "email" TEXT NOT NULL DEFAULT 'instructor@test.de',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
     "refreshToken" TEXT,
     "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',

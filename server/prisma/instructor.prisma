@@ -1,7 +1,7 @@
 model Instructor {
   name         String?  @default("John Doe Instructor")
   description  String?  @default("")
-  email        String   @unique @default("instructor@test.de")
+  email        String   @unique
   password     String   @default("Test123!")
   refreshToken String? // bcrypt hash of current refresh token; null = logged out
   imageUrl     String   @default("/assets/images/no-profile-picture.svg")
