@@ -896,11 +896,27 @@ async function main() {
   await prisma.settings.create({
     data: {
       tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
-      calendarOccurrences: 52,
-      calendarLength: 12,
-      federalState: 'HE',
-      holidays: germanyHolidays,
-      schoolHolidays: schoolHolidays as unknown as object,
+      basic: {
+        federalState: 'HE',
+        domain: 'http://www.dancedesk.de/',
+      },
+      calendar: {
+        startHour: 10,
+        endHour: 20,
+        slotHeight: 20,
+        minutesPerSlot: 15,
+        federalHolidays: germanyHolidays,
+        schoolHolidays,
+      },
+      registration: {
+        delTime: 30,
+        checkSeats: false,
+        waitingList: true,
+        displayPastNumber: 52,
+        displayNumberOccurrences: 12,
+      },
+      formFields: [{ name: 'firstName' }, { name: 'lastName' }, { name: 'email' }, { name: 'phone' }],
+      contracts: [],
     },
   });
 
