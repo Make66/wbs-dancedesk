@@ -27,6 +27,7 @@ declare global {
         tenantId: string;
         role: 'user' | 'participant';
       };
+      imageUrl?: import('formidable').File;
     }
   }
 }

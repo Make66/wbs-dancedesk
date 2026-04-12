@@ -24,9 +24,18 @@ import {
 const app = express();
 const port = process.env.PORT || 8000;
 
+const allowedOrigins = (process.env.CORS_ORIGINS ?? process.env.CLIENT_BASE_URL ?? "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_BASE_URL,
+    origin: (origin, cb) => {
+      // allow requests with no origin (e.g. curl, mobile apps)
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      cb(new Error(`CORS: origin '${origin}' not allowed`));
+    },
     credentials: true,
     exposedHeaders: ["WWW-Authenticate"],
   }),
