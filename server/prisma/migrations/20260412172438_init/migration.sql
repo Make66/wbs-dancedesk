@@ -1,3 +1,20 @@
+-- CreateEnum
+CREATE TYPE "AttendanceStatus" AS ENUM ('PRESENT', 'ABSENT', 'EXCUSED');
+
+-- CreateTable
+CREATE TABLE "Attendance" (
+    "date" TIMESTAMP(3) NOT NULL,
+    "status" "AttendanceStatus" NOT NULL DEFAULT 'PRESENT',
+    "comment" TEXT DEFAULT '',
+    "participantId" UUID NOT NULL,
+    "courseId" UUID NOT NULL,
+    "id" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Attendance_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateTable
 CREATE TABLE "Category" (
     "name" TEXT DEFAULT 'Paare Grundkurs',
@@ -82,7 +99,7 @@ CREATE TABLE "Customer" (
 CREATE TABLE "Event" (
     "title" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
     "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "color" JSONB DEFAULT '[]',
@@ -109,7 +126,10 @@ CREATE TABLE "Event" (
 CREATE TABLE "Instructor" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
+    "email" TEXT NOT NULL DEFAULT 'admin@test.de',
+    "password" TEXT NOT NULL DEFAULT 'Test123!',
+    "refreshToken" TEXT,
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
     "skills" TEXT[] DEFAULT ARRAY['Salsa', 'WTP', 'HipHop']::TEXT[],
     "customerId" UUID NOT NULL,
     "id" UUID NOT NULL,
@@ -126,10 +146,11 @@ CREATE TABLE "Instructor" (
 CREATE TABLE "Location" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
+    "state" TEXT NOT NULL DEFAULT 'State',
     "longitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "latitude" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "setSeqTarget" UUID[],
@@ -167,7 +188,7 @@ CREATE TABLE "Participant" (
     "email" TEXT DEFAULT 'john.doe@example.com',
     "phone" TEXT DEFAULT '123-456-7890',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
-    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
     "birthDate" TEXT DEFAULT '1990-01-01',
     "gender" TEXT DEFAULT 'other',
     "refreshToken" TEXT,
@@ -222,7 +243,7 @@ CREATE TABLE "Registration" (
 CREATE TABLE "Room" (
     "name" TEXT DEFAULT 'Room 1',
     "description" TEXT DEFAULT '',
-    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
     "capacity" INTEGER NOT NULL DEFAULT 20,
     "locationId" UUID,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
@@ -242,21 +263,14 @@ CREATE TABLE "Room" (
 
 -- CreateTable
 CREATE TABLE "Settings" (
-    "colTitles" JSONB,
-    "holidays" JSONB,
-    "schoolHolidays" JSONB,
+    "basic" JSONB,
+    "calendar" JSONB DEFAULT '{"startHour":10,"endHour":20,"slotHeight":20,"minutesPerSlot":15}',
+    "formFields" JSONB,
+    "registration" JSONB,
+    "contracts" JSONB,
     "rebates" JSONB,
     "voucher" JSONB,
-    "calendarPast" BOOLEAN NOT NULL DEFAULT false,
-    "calendarOccurrences" INTEGER NOT NULL DEFAULT 0,
-    "calendarLength" INTEGER NOT NULL DEFAULT 12,
-    "formFields" JSONB,
-    "domain" TEXT,
-    "federalState" TEXT,
-    "legalResources" TEXT NOT NULL DEFAULT 'https://domain/fileadmin/kunden/mandant/rechtstexte/',
-    "contracts" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "registration" JSONB,
-    "calendarConfig" JSONB DEFAULT '{"startHour": 10, "endHour": 20, "slotHeight": 20, "minutesPerSlot": 15}',
+    "other" JSONB,
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -305,7 +319,7 @@ CREATE TABLE "User" (
     "lastName" TEXT DEFAULT 'Doe',
     "email" TEXT NOT NULL DEFAULT 'admin@test.de',
     "password" TEXT NOT NULL DEFAULT 'Test123!',
-    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture',
+    "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
     "refreshToken" TEXT,
     "settings" JSONB DEFAULT '{}',
     "id" UUID NOT NULL,
@@ -354,6 +368,9 @@ CREATE TABLE "_UserModules" (
 CREATE UNIQUE INDEX "Customer_email_key" ON "Customer"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Instructor_email_key" ON "Instructor"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Settings_tenantId_key" ON "Settings"("tenantId");
 
 -- CreateIndex
@@ -370,6 +387,12 @@ CREATE INDEX "_UserLocations_B_index" ON "_UserLocations"("B");
 
 -- CreateIndex
 CREATE INDEX "_UserModules_B_index" ON "_UserModules"("B");
+
+-- AddForeignKey
+ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "Participant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_targetId_fkey" FOREIGN KEY ("targetId") REFERENCES "Target"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

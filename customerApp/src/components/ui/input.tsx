@@ -6,7 +6,7 @@ const inputVariants = cva(
   [
     "h-22 w-full rounded-xl border border-muted-foreground px-5 py-5 text-sm outline-none text-xl",
     "text-foreground placeholder:text-zinc-400",
-    "bg-white text-zinc-900 placeholder:text-zinc-400",
+    "bg-background/40 text-zinc-900 placeholder:text-zinc-400",
     "focus:border-3",
     "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100",
     "dark:bg-background dark:text-foreground dark:placeholder:text-zinc-500",
@@ -55,7 +55,7 @@ function Input({
           className={cn(
             "absolute left-3 top-0 z-10 -translate-y-1/2 rounded-md px-2 text-xs",
             "bg-white text-zinc-900 tracking-wider",
-            "dark:bg-background dark:text-zinc-300",
+            "bg-background text-foreground",
           )}
         >
           {label}

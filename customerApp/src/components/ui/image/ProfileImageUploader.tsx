@@ -86,13 +86,20 @@ const ProfileImageUploader = ({
       <button
         onClick={handleOpenFilePicker}
         type="button"
-        className="w-max cursor-pointer border border-muted-foreground rounded-full p-1"
+        className={cn(
+          cropShape === "round" ? "rounded-full" : "rounded-md",
+          "w-max cursor-pointer border border-muted-foreground p-1",
+        )}
       >
         <div className="flex items-center gap-4">
           <img
             src={displayImage}
             alt="Profilbild"
-            className={cn("rounded-full object-cover border", className)}
+            className={cn(
+              cropShape === "round" ? "rounded-full" : "rounded-md",
+              "object-cover border",
+              className,
+            )}
           />
         </div>
       </button>

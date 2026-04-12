@@ -160,6 +160,7 @@ const Sidebar = () => {
             <FaChalkboardTeacher className="text-2xl cursor-pointer fill-current ml-2" />
             <span>Instruktoren</span>
           </NavLink>
+          <div className="border-b border-gray-500" />
           <NavLink
             to="/rooms"
             className={({ isActive }) =>
