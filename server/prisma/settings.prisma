@@ -10,7 +10,7 @@ model Settings {
   formFields          Json?
   domain              String?
   federalState        String?
-  legalResources      String   @default("https://domain/fileadmin/kunden/mandant/rechtstexte/")
+  legalResources      String   @default("fileadmin/kunden/mandant/rechtstexte/")
   contracts           String[] @default([])
   registration        Json?
   calendarConfig      Json?    @default("{\"startHour\": 10, \"endHour\": 20, \"slotHeight\": 20, \"minutesPerSlot\": 15}")

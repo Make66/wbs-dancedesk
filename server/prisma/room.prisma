@@ -1,7 +1,7 @@
 model Room {
   name        String? @default("Room 1")
   description String? @default("")
-  imageUrl    String  @default("./assets/images/no-profile-picture.svg")
+  imageUrl    String  @default("/assets/images/no-profile-picture.svg")
   capacity    Int     @default(20)
 
   // relations
