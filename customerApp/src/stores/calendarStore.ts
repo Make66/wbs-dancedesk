@@ -2,11 +2,12 @@ import { create } from "zustand";
 import { addDays, addMonths, addWeeks, startOfToday } from "date-fns";
 import type {
   CalendarConfig,
-  CalendarEvent,
-  CalendarEventResizeEndPayload,
+  CalendarItem,
+  CalendarItemDragEndPayload,
+  CalendarItemResizeEndPayload,
   CalendarView,
-  DraggedEventState,
-  ResizingEventState,
+  DraggedItemState,
+  ResizingItemState,
 } from "../types/calendar-types";
 import { DEFAULT_CALENDAR_CONFIG } from "../lib/constants/calendar-constants";
 
@@ -17,7 +18,7 @@ type CalendarStore = {
 
   selectedEventId: string | null;
   activeDragEventId: string | null;
-  resizingEvent: ResizingEventState | null;
+  resizingEvent: ResizingItemState | null;
   isEventModalOpen: boolean;
   isEditMode: boolean;
   setEditMode: (value: boolean) => void;
@@ -34,21 +35,15 @@ type CalendarStore = {
   closeEventModal: () => void;
   setActiveDragEventId: (eventId: string | null) => void;
 
-  draggedEvent: DraggedEventState | null;
+  draggedEvent: DraggedItemState | null;
 
-  startDrag: (event: CalendarEvent) => void;
+  startDrag: (item: CalendarItem) => void;
   updateDrag: (start: Date, end: Date) => void;
-  endDrag: () => {
-    eventId: string;
-    originalStart: Date;
-    originalEnd: Date;
-    start: Date;
-    end: Date;
-  } | null;
+  endDrag: () => CalendarItemDragEndPayload | null;
 
-  startResize: (event: CalendarEvent) => void;
+  startResize: (item: CalendarItem) => void;
   updateResize: (end: Date) => void;
-  endResize: () => CalendarEventResizeEndPayload | null;
+  endResize: () => CalendarItemResizeEndPayload | null;
 
   setConfig: (config: Partial<CalendarConfig>) => void;
 };
@@ -64,6 +59,7 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
   draggedEvent: null,
   isEventModalOpen: false,
   isEditMode: false,
+
   setCurrentView: (view) => set({ currentView: view }),
   setCurrentDate: (date) => set({ currentDate: date }),
   setEditMode: (value) => set({ isEditMode: value }),
@@ -109,20 +105,22 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
 
   setActiveDragEventId: (eventId) => set({ activeDragEventId: eventId }),
 
-  startDrag: (event) =>
+  startDrag: (item) =>
     set({
       draggedEvent: {
-        eventId: event.id,
-        originalStart: event.start,
-        originalEnd: event.end,
-        currentStart: event.start,
-        currentEnd: event.end,
+        itemId: item.id,
+        itemKind: item.kind,
+        originalStart: item.start,
+        originalEnd: item.end,
+        currentStart: item.start,
+        currentEnd: item.end,
       },
     }),
 
   updateDrag: (start, end) =>
     set((state) => {
       if (!state.draggedEvent) return state;
+
       return {
         draggedEvent: {
           ...state.draggedEvent,
@@ -136,8 +134,9 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
     const draggedEvent = get().draggedEvent;
     if (!draggedEvent) return null;
 
-    const payload = {
-      eventId: draggedEvent.eventId,
+    const payload: CalendarItemDragEndPayload = {
+      itemId: draggedEvent.itemId,
+      itemKind: draggedEvent.itemKind,
       originalStart: draggedEvent.originalStart,
       originalEnd: draggedEvent.originalEnd,
       start: draggedEvent.currentStart,
@@ -148,21 +147,23 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
     return payload;
   },
 
-  startResize: (event) =>
+  startResize: (item) =>
     set({
-      selectedEventId: event.id,
+      selectedEventId: item.id,
       resizingEvent: {
-        eventId: event.id,
-        originalStart: event.start,
-        originalEnd: event.end,
-        currentStart: event.start,
-        currentEnd: event.end,
+        itemId: item.id,
+        itemKind: item.kind,
+        originalStart: item.start,
+        originalEnd: item.end,
+        currentStart: item.start,
+        currentEnd: item.end,
       },
     }),
 
   updateResize: (end) =>
     set((state) => {
       if (!state.resizingEvent) return state;
+
       return {
         resizingEvent: {
           ...state.resizingEvent,
@@ -175,8 +176,9 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
     const resizingEvent = get().resizingEvent;
     if (!resizingEvent) return null;
 
-    const payload: CalendarEventResizeEndPayload = {
-      eventId: resizingEvent.eventId,
+    const payload: CalendarItemResizeEndPayload = {
+      itemId: resizingEvent.itemId,
+      itemKind: resizingEvent.itemKind,
       originalStart: resizingEvent.originalStart,
       originalEnd: resizingEvent.originalEnd,
       start: resizingEvent.currentStart,

@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarRoot } from "../components/calendar/core/CalendarRoot";
 import type {
-  CalendarEvent,
-  CalendarEventDragEndPayload,
-  CalendarEventResizeEndPayload,
+  CalendarEventItem,
+  CalendarCourseItem,
+  CalendarItem,
+  CalendarItemDragEndPayload,
+  CalendarItemResizeEndPayload,
 } from "../types/calendar-types";
-import EventModal from "../components/form/EventModal";
+import EventModal from "../components/calendar/EventModal";
 import { calendarStore } from "../stores/calendarStore";
 import AddButton from "../components/ui/AddButton";
 import EditButton from "../components/ui/EditButton";
+import { getCoursesByWeek } from "../data/course";
+import { getISOWeek, getISOWeekYear } from "date-fns";
+import { getWeekDays } from "../lib/calendar/date-utils";
 
 type DbEvent = {
   id: string;
@@ -32,14 +37,83 @@ type DbEvent = {
   targets?: string[];
 };
 
+type DbCourse = {
+  id: string;
+  name: string;
+  startsAt: string;
+  endsAt: string;
+  color?: string[];
+  room?: {
+    id: string;
+    name: string;
+    description?: string;
+  };
+};
+
+function mapWeekCoursesToCalendarItems(
+  groupedCourses: Record<string, DbCourse[]>,
+  days: Date[],
+): CalendarCourseItem[] {
+  return Object.entries(groupedCourses).flatMap(([dayIndex, courses]) => {
+    const day = days[Number(dayIndex)];
+    if (!day) return [];
+
+    return courses.map((course) => {
+      const templateStart = new Date(course.startsAt);
+      const templateEnd = new Date(course.endsAt);
+
+      const start = new Date(
+        Date.UTC(
+          day.getFullYear(),
+          day.getMonth(),
+          day.getDate(),
+          templateStart.getUTCHours(),
+          templateStart.getUTCMinutes(),
+          templateStart.getUTCSeconds(),
+          templateStart.getUTCMilliseconds(),
+        ),
+      );
+
+      const end = new Date(
+        Date.UTC(
+          day.getFullYear(),
+          day.getMonth(),
+          day.getDate(),
+          templateEnd.getUTCHours(),
+          templateEnd.getUTCMinutes(),
+          templateEnd.getUTCSeconds(),
+          templateEnd.getUTCMilliseconds(),
+        ),
+      );
+
+      return {
+        kind: "course" as const,
+        id: `course-${course.id}-${dayIndex}-${start.getTime()}`,
+        courseId: course.id,
+        title: course.name,
+        start,
+        end,
+        color: course.color,
+        roomId: course.room?.id,
+      };
+    });
+  });
+}
+
 const CalendarPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dbEvents, setDbEvents] = useState<DbEvent[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
+  const currentDate = calendarStore((state) => state.currentDate);
+  const days = useMemo(() => getWeekDays(currentDate), [currentDate]);
+
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEventItem[]>([]);
+  const [calendarCourses, setCalendarCourses] = useState<CalendarCourseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  const week = getISOWeek(currentDate);
+  const year = getISOWeekYear(currentDate);
   const isEventModalOpen = calendarStore((state) => state.isEventModalOpen);
   const selectedEventId = calendarStore((state) => state.selectedEventId);
   const openEventModal = calendarStore((state) => state.openEventModal);
@@ -69,10 +143,12 @@ const CalendarPage = () => {
         const data: DbEvent[] = await response.json();
         setDbEvents(data);
 
-        const mappedEvents: CalendarEvent[] = data
+        const mappedEvents: CalendarEventItem[] = data
           .filter((event) => event.isActive && !event.isDeleted)
           .map((event) => ({
-            id: event.id,
+            kind: "event",
+            id: `event-${event.id}`,
+            eventId: event.id,
             title: event.title,
             start: new Date(event.startsAt),
             end: new Date(event.endsAt),
@@ -104,6 +180,25 @@ const CalendarPage = () => {
     loadEvents();
   }, [refresh]);
 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const data = await getCoursesByWeek(year, week);
+
+        const mappedCourses = mapWeekCoursesToCalendarItems(
+          data as Record<string, DbCourse[]>,
+          days,
+        );
+
+        setCalendarCourses(mappedCourses);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, [week, year, days]);
+
   const handleEventsRefresh = () => {
     setRefresh((prev) => prev + 1);
   };
@@ -127,81 +222,170 @@ const CalendarPage = () => {
     }
   };
 
-  const handleEventDragEnd = async (payload: CalendarEventDragEndPayload) => {
-    const previousCalendarEvents = calendarEvents;
-
-    setCalendarEvents((prev) =>
-      prev.map((event) =>
-        event.id === payload.eventId
-          ? {
-              ...event,
-              start: payload.start,
-              end: payload.end,
-            }
-          : event,
-      ),
+  const updateCourseInDb = async (courseId: string, startsAt: Date, endsAt: Date) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${courseId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          startsAt: startsAt.toISOString(),
+          endsAt: endsAt.toISOString(),
+        }),
+      },
     );
 
-    try {
-      await updateEventInDb(payload.eventId, payload.start, payload.end);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Fehler beim Speichern des Kurses: ${response.status} - ${errorText}`);
+    }
+  };
 
-      setDbEvents((prev) =>
+  const handleItemDragEnd = async (payload: CalendarItemDragEndPayload) => {
+    if (payload.itemKind === "event") {
+      const previousCalendarEvents = calendarEvents;
+
+      setCalendarEvents((prev) =>
         prev.map((event) =>
-          event.id === payload.eventId
+          event.id === payload.itemId
             ? {
                 ...event,
-                startsAt: payload.start.toISOString(),
-                endsAt: payload.end.toISOString(),
+                start: payload.start,
+                end: payload.end,
               }
             : event,
         ),
       );
+
+      const movedEvent = calendarEvents.find((event) => event.id === payload.itemId);
+      if (!movedEvent) return;
+
+      try {
+        await updateEventInDb(movedEvent.eventId, payload.start, payload.end);
+
+        setDbEvents((prev) =>
+          prev.map((event) =>
+            event.id === movedEvent.eventId
+              ? {
+                  ...event,
+                  startsAt: payload.start.toISOString(),
+                  endsAt: payload.end.toISOString(),
+                }
+              : event,
+          ),
+        );
+      } catch (err) {
+        setCalendarEvents(previousCalendarEvents);
+        setError(err instanceof Error ? err.message : "Speichern fehlgeschlagen");
+      }
+
+      return;
+    }
+
+    const previousCalendarCourses = calendarCourses;
+
+    setCalendarCourses((prev) =>
+      prev.map((course) =>
+        course.id === payload.itemId
+          ? {
+              ...course,
+              start: payload.start,
+              end: payload.end,
+            }
+          : course,
+      ),
+    );
+
+    const movedCourse = calendarCourses.find((course) => course.id === payload.itemId);
+    if (!movedCourse) return;
+
+    try {
+      await updateCourseInDb(movedCourse.courseId, payload.start, payload.end);
     } catch (err) {
-      setCalendarEvents(previousCalendarEvents);
+      setCalendarCourses(previousCalendarCourses);
       setError(err instanceof Error ? err.message : "Speichern fehlgeschlagen");
     }
   };
 
-  const handleEventResizeEnd = async (payload: CalendarEventResizeEndPayload) => {
-    const previousCalendarEvents = calendarEvents;
+  const handleItemResizeEnd = async (payload: CalendarItemResizeEndPayload) => {
+    if (payload.itemKind === "event") {
+      const previousCalendarEvents = calendarEvents;
 
-    setCalendarEvents((prev) =>
-      prev.map((event) =>
-        event.id === payload.eventId
-          ? {
-              ...event,
-              start: payload.start,
-              end: payload.end,
-            }
-          : event,
-      ),
-    );
-
-    try {
-      await updateEventInDb(payload.eventId, payload.start, payload.end);
-
-      setDbEvents((prev) =>
+      setCalendarEvents((prev) =>
         prev.map((event) =>
-          event.id === payload.eventId
+          event.id === payload.itemId
             ? {
                 ...event,
-                startsAt: payload.start.toISOString(),
-                endsAt: payload.end.toISOString(),
+                start: payload.start,
+                end: payload.end,
               }
             : event,
         ),
       );
+
+      const resizedEvent = calendarEvents.find((event) => event.id === payload.itemId);
+      if (!resizedEvent) return;
+
+      try {
+        await updateEventInDb(resizedEvent.eventId, payload.start, payload.end);
+
+        setDbEvents((prev) =>
+          prev.map((event) =>
+            event.id === resizedEvent.eventId
+              ? {
+                  ...event,
+                  startsAt: payload.start.toISOString(),
+                  endsAt: payload.end.toISOString(),
+                }
+              : event,
+          ),
+        );
+      } catch (err) {
+        setCalendarEvents(previousCalendarEvents);
+        setError(err instanceof Error ? err.message : "Speichern fehlgeschlagen");
+      }
+
+      return;
+    }
+
+    const previousCalendarCourses = calendarCourses;
+
+    setCalendarCourses((prev) =>
+      prev.map((course) =>
+        course.id === payload.itemId
+          ? {
+              ...course,
+              start: payload.start,
+              end: payload.end,
+            }
+          : course,
+      ),
+    );
+
+    const resizedCourse = calendarCourses.find((course) => course.id === payload.itemId);
+    if (!resizedCourse) return;
+
+    try {
+      // await updateCourseInDb(resizedCourse.courseId, payload.start, payload.end);
     } catch (err) {
-      setCalendarEvents(previousCalendarEvents);
+      setCalendarCourses(previousCalendarCourses);
       setError(err instanceof Error ? err.message : "Speichern fehlgeschlagen");
     }
   };
+
+  const calendarItems: CalendarItem[] = useMemo(
+    () => [...calendarEvents, ...calendarCourses],
+    [calendarEvents, calendarCourses],
+  );
 
   const selectedCalendarEvent = calendarEvents.find((event) => event.id === selectedEventId);
 
   const selectedEventForModal = selectedCalendarEvent
     ? {
-        id: selectedCalendarEvent.id,
+        id: selectedCalendarEvent.eventId,
         title: selectedCalendarEvent.title,
         description: selectedCalendarEvent.description,
         imageUrl: selectedCalendarEvent.imageUrl,
@@ -235,9 +419,9 @@ const CalendarPage = () => {
         {error && <p className="text-red-500">{error}</p>}
         {!loading && !error && (
           <CalendarRoot
-            events={calendarEvents}
-            onEventDragEnd={handleEventDragEnd}
-            onEventResizeEnd={handleEventResizeEnd}
+            items={calendarItems}
+            onEventDragEnd={handleItemDragEnd}
+            onEventResizeEnd={handleItemResizeEnd}
           />
         )}
       </div>

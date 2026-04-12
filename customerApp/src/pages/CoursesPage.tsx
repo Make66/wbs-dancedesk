@@ -1,33 +1,29 @@
 import { useEffect, useState, type ComponentProps } from "react";
 import { GrPrevious, GrNext } from "react-icons/gr";
 import WeeklySchedule from "../components/plan/WeeklySchedule";
-import { getISOWeek } from "date-fns";
+import { getISOWeek, getISOWeekYear } from "date-fns";
+import { getCoursesByWeek } from "../data/course";
+import { toast } from "react-toastify";
 
 const CoursesPage = () => {
   const today = new Date();
   const [currentWeek, setCurrentWeek] = useState(getISOWeek(today));
+  const [currentYear] = useState(getISOWeekYear(today));
   const [weekData, setWeekData] =
     useState<ComponentProps<typeof WeeklySchedule>["data"]>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/week/${currentWeek}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-          },
-        );
-        const data = await response.json();
+        const data = await getCoursesByWeek(currentYear, currentWeek);
         setWeekData(data);
       } catch (error) {
         console.error("Error fetching week data:", error);
+        toast.error("Fehler beim Abrufen der Kursdaten für die Woche. Bitte versuche es erneut.");
       }
     };
     fetchData();
-  }, [currentWeek]);
+  }, [currentWeek, currentYear]);
 
   return (
     <div className="w-full min-h-screen bg-background">
@@ -51,7 +47,7 @@ const CoursesPage = () => {
         </div>
       </div>
       <div className="p-6 mt-1">
-        <WeeklySchedule data={weekData} week={currentWeek} year={new Date().getFullYear()} />
+        <WeeklySchedule data={weekData} week={currentWeek} year={currentYear} />
       </div>
     </div>
   );

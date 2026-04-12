@@ -3,7 +3,7 @@ import type {
   CalendarConfig,
   CalendarDragData,
   CalendarDropData,
-  CalendarEventDragEndPayload,
+  CalendarItemDragEndPayload,
 } from "../../types/calendar-types";
 import { addMinutesToDate, createDateWithTime, getDifferenceInMinutes } from "./date-utils";
 
@@ -15,7 +15,7 @@ export function getCalendarDragEndPayload(params: {
   active: Active;
   over: Over | null;
   config: CalendarConfig;
-}): CalendarEventDragEndPayload | null {
+}): CalendarItemDragEndPayload | null {
   const { active, over, config } = params;
 
   if (!over) return null;
@@ -23,7 +23,7 @@ export function getCalendarDragEndPayload(params: {
   const activeData = active.data.current as CalendarDragData | undefined;
   const overData = over.data.current as CalendarDropData | undefined;
 
-  if (!activeData || activeData.type !== "calendar-event") return null;
+  if (!activeData || activeData.type !== "calendar-item") return null;
   if (!overData || overData.type !== "day-column") return null;
 
   const translatedTop = active.rect.current.translated?.top;
@@ -57,7 +57,8 @@ export function getCalendarDragEndPayload(params: {
   const nextEnd = addMinutesToDate(nextStart, durationMinutes);
 
   return {
-    eventId: activeData.eventId,
+    itemId: activeData.itemId,
+    itemKind: activeData.itemKind,
     originalStart: activeData.start,
     originalEnd: activeData.end,
     start: nextStart,

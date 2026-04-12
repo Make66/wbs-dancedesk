@@ -5,26 +5,28 @@ import { CurrentTimeLine } from "../core/CurrentTimeLine";
 import { WeekEventCard } from "./WeekEventCard";
 import type {
   CalendarDropData,
-  CalendarEvent,
-  CalendarEventResizeEndPayload,
+  CalendarItem,
+  CalendarItemResizeEndPayload,
 } from "../../../types/calendar-types";
 import {
   getSlotsPerHour,
   getStartSlot,
   getVisibleSlotCount,
 } from "../../../lib/constants/calendar-constants";
-import { getPositionedEvents } from "../../../lib/calendar/event-layout";
+import { getPositionedCalendarItems } from "../../../lib/calendar/event-layout";
 import { isSameDay } from "../../../lib/calendar/date-utils";
 import { calendarStore } from "../../../stores/calendarStore";
 import { useDayColumnResize } from "../../../lib/calendar/hooks/useDayColumnResize";
+import { useNavigate } from "react-router";
 
 type Props = {
   day: Date;
-  events: CalendarEvent[];
-  onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
+  items: CalendarItem[];
+  onEventResizeEnd?: (payload: CalendarItemResizeEndPayload) => void;
 };
 
-export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
+export function WeekDayColumn({ day, items, onEventResizeEnd }: Props) {
+  const navigate = useNavigate();
   const columnRef = useRef<HTMLDivElement | null>(null);
   const [resizingEventId, setResizingEventId] = useState<string | null>(null);
 
@@ -56,22 +58,22 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
     onEventResizeEnd,
   });
 
-  const dayEvents = useMemo(() => events.filter((e) => isSameDay(e.start, day)), [events, day]);
+  const dayItems = useMemo(() => items.filter((item) => isSameDay(item.start, day)), [items, day]);
 
-  const positionedEvents = useMemo(
-    () => getPositionedEvents(dayEvents, config.slotHeight, config),
-    [dayEvents, config],
+  const positionedItems = useMemo(
+    () => getPositionedCalendarItems(dayItems, config.slotHeight, config),
+    [dayItems, config],
   );
 
   const startSlot = getStartSlot(config);
   const visibleSlotCount = getVisibleSlotCount(config);
   const slotsPerHour = getSlotsPerHour(config);
 
-  function handleResizeMouseDown(event: CalendarEvent, e: ReactMouseEvent<HTMLDivElement>) {
+  function handleResizeMouseDown(item: CalendarItem, e: ReactMouseEvent<HTMLDivElement>) {
     e.stopPropagation();
     e.preventDefault();
-    setResizingEventId(event.id);
-    startResize(event);
+    setResizingEventId(item.id);
+    startResize(item);
   }
 
   return (
@@ -98,13 +100,21 @@ export function WeekDayColumn({ day, events, onEventResizeEnd }: Props) {
       <CurrentTimeLine day={day} slotHeight={config.slotHeight} config={config} />
 
       <div className="absolute inset-0 z-10">
-        {positionedEvents.map((positionedEvent) => (
+        {positionedItems.map((positionedItem) => (
           <WeekEventCard
-            key={positionedEvent.event.id}
-            positionedEvent={positionedEvent}
-            isSelected={selectedEventId === positionedEvent.event.id}
-            onClick={() => openEventModal(positionedEvent.event.id)}
-            onResizeMouseDown={(e) => handleResizeMouseDown(positionedEvent.event, e)}
+            key={positionedItem.item.id}
+            positionedItem={positionedItem}
+            isSelected={selectedEventId === positionedItem.item.id}
+            onClick={() => {
+              if (positionedItem.item.kind === "event") {
+                openEventModal(positionedItem.item.id);
+              } else {
+                navigate(`/course/${positionedItem.item.courseId}`);
+              }
+            }}
+            onResizeMouseDown={(e) => {
+              handleResizeMouseDown(positionedItem.item, e);
+            }}
           />
         ))}
       </div>

@@ -10,6 +10,7 @@ import {
   getWeekCourses,
   getMonthCourses,
   getCourseParticipants,
+  getWeeekCourses,
 } from "#controllers";
 import { courseSchema, courseUpdateSchema } from "#schemas";
 
@@ -22,6 +23,8 @@ coursesRouter
 
 coursesRouter.route("/week").get(authenticate, getWeekCourses);
 coursesRouter.route("/week/:number").get(authenticate, getWeekCourses);
+
+coursesRouter.route("/week/:year/:week").get(authenticate, getWeeekCourses);
 
 coursesRouter.route("/month").get(authenticate, getMonthCourses);
 coursesRouter.route("/month/:number").get(authenticate, getMonthCourses);

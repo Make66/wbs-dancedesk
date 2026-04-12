@@ -5,9 +5,9 @@ import { CalendarHeader } from "./CalendarHeader";
 import { CalendarWeekView } from "../week/CalendarWeekView";
 
 import type {
-  CalendarEvent,
-  CalendarEventDragEndPayload,
-  CalendarEventResizeEndPayload,
+  CalendarItem,
+  CalendarItemDragEndPayload,
+  CalendarItemResizeEndPayload,
   CalendarDragData,
 } from "../../../types/calendar-types";
 
@@ -16,12 +16,12 @@ import { getCalendarDragEndPayload } from "../../../lib/calendar/calendar-dnd";
 import { calendarStore } from "../../../stores/calendarStore";
 
 type Props = {
-  events: CalendarEvent[];
-  onEventDragEnd?: (payload: CalendarEventDragEndPayload) => void;
-  onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
+  items: CalendarItem[];
+  onEventDragEnd?: (payload: CalendarItemDragEndPayload) => void;
+  onEventResizeEnd?: (payload: CalendarItemResizeEndPayload) => void;
 };
 
-export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: Props) {
+export function CalendarRoot({ items, onEventDragEnd, onEventResizeEnd }: Props) {
   const currentView = calendarStore((s) => s.currentView);
   const currentDate = calendarStore((s) => s.currentDate);
   const config = calendarStore((s) => s.config);
@@ -38,9 +38,9 @@ export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: Props
     (event: DragStartEvent) => {
       const data = event.active.data.current as CalendarDragData | undefined;
 
-      if (data?.type === "calendar-event") {
-        selectEvent(data.eventId);
-        setActiveDragEventId(data.eventId);
+      if (data?.type === "calendar-item") {
+        selectEvent(data.itemId);
+        setActiveDragEventId(data.itemId);
       }
     },
     [selectEvent, setActiveDragEventId],
@@ -76,7 +76,7 @@ export function CalendarRoot({ events, onEventDragEnd, onEventResizeEnd }: Props
         onDragCancel={handleDragCancel}
       >
         {currentView === "week" && (
-          <CalendarWeekView events={events} onEventResizeEnd={onEventResizeEnd} />
+          <CalendarWeekView items={items} onEventResizeEnd={onEventResizeEnd} />
         )}
 
         <DragOverlay>{null}</DragOverlay>

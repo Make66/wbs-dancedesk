@@ -1,7 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import type { Instructor } from "../../types/instructor-types";
-import { CgNotes } from "react-icons/cg";
 import ProfileImageUploader from "../ui/image/ProfileImageUploader";
 import { Input } from "../ui/input";
 import { useEffect, useState } from "react";
@@ -18,7 +17,6 @@ type InstructorFormValues = {
   description: string;
   imageUrl: string;
   skills: string[];
-  notes: string;
 };
 
 const InstructorForm = ({ instructor }: InstructorFormProps) => {
@@ -51,11 +49,13 @@ const InstructorForm = ({ instructor }: InstructorFormProps) => {
     try {
       setIsSubmitting(true);
 
+      const finalImageUrl = imageFile ? undefined : values.imageUrl;
+
       await createInstructor({
         name: values.name.trim(),
         description: values.description.trim(),
         skills: values.skills.map((skill) => skill.trim()).filter(Boolean),
-        imageUrl: values.imageUrl,
+        imageUrl: finalImageUrl,
         imageFile,
       });
     } catch (error) {
@@ -82,12 +82,7 @@ const InstructorForm = ({ instructor }: InstructorFormProps) => {
           />
 
           <div className="flex w-full flex-col gap-5">
-            <Input
-              type="text"
-              label="Name"
-              {...register("name")}
-              className="w-full"
-            />
+            <Input type="text" label="Name" {...register("name")} className="w-full" />
 
             <Input
               type="text"
@@ -102,29 +97,12 @@ const InstructorForm = ({ instructor }: InstructorFormProps) => {
           <div className="col-span-1">
             <SkillSection />
           </div>
-
-          <div className="col-span-1 rounded-2xl bg-sky-400/40 p-2 shadow-xl">
-            <div className="mt-2 flex items-center">
-              <CgNotes className="ml-1 mr-4 inline text-2xl" />
-              <span className="text-2xl font-semibold">Notizen</span>
-            </div>
-
-            <textarea
-              {...register("notes")}
-              className="mt-5 h-40 w-full rounded-2xl border border-muted-foreground bg-background/40 p-4 text-lg focus:outline-none focus:ring-0 focus:shadow-none"
-              placeholder="Notizen zum Instructor..."
-            />
-          </div>
         </div>
 
         <InstructorCoursesSection />
 
         <div className="col-span-3 lg:col-span-2">
-          <Button
-            type="submit"
-            className="mt-8 w-full py-12 text-2xl"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" className="mt-8 w-full py-12 text-2xl" disabled={isSubmitting}>
             {isSubmitting ? "Speichern..." : "Speichern"}
           </Button>
         </div>
