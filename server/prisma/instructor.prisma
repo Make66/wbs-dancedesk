@@ -1,7 +1,7 @@
 model Instructor {
   name        String?  @default("John Doe Instructor")
   description String?  @default("")
-  imageUrl    String   @default("./assets/images/no-profile-picture")
+  imageUrl    String   @default("./assets/images/no-profile-picture.svg")
   skills      String[] @default(["Salsa", "WTP", "HipHop"])
 
   // relations

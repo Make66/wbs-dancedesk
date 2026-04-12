@@ -7,7 +7,10 @@ export const eventSchema = z.object({
   imageUrl: z.string().optional(),
   startsAt: z.coerce.date(),
   endsAt: z.coerce.date(),
-  color: z.array(z.string()).optional(),
+  color: z.preprocess(
+    (val) => (Array.isArray(val) ? val : typeof val === 'string' ? [val] : []),
+    z.array(z.string())
+  ).optional(),
   icon: z.string().optional(),
   type: z.string().optional(),
 
@@ -19,7 +22,10 @@ export const eventSchema = z.object({
 
   roomId: z.uuid("Id given is not a valid UUID").optional(),
   locationId: z.uuid("Id given is not a valid UUID").optional(),
-  targets: z.array(z.uuid("Id given is not a valid UUID")).optional(),
+  targets: z.preprocess(
+    (val) => (Array.isArray(val) ? val : typeof val === 'string' ? [val] : []),
+    z.array(z.uuid("Id given is not a valid UUID"))
+  ).optional(),
 
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional(),

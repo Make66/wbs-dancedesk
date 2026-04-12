@@ -4,7 +4,7 @@ model Participant {
   email        String? @default("john.doe@example.com")
   phone        String? @default("123-456-7890")
   password     String  @default("Test123!")
-  imageUrl     String  @default("./assets/images/no-profile-picture")
+  imageUrl     String  @default("./assets/images/no-profile-picture.svg")
   birthDate    String? @default("1990-01-01")
   gender       String? @default("other")
   refreshToken String? // bcrypt hash of current refresh token; null = logged out

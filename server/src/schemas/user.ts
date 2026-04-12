@@ -9,8 +9,14 @@ export const userSchema = z.object({
   refreshToken: z.string().optional(),
   settings: z.json().default({}).optional(),
 
-  locations : z.array(z.string()).default([]).optional(),
-  modules: z.array(z.string()).default([]).optional(),
+  locations: z.preprocess(
+    (val) => (Array.isArray(val) ? val : typeof val === 'string' ? [val] : []),
+    z.array(z.string())
+  ).optional(),
+  modules: z.preprocess(
+    (val) => (Array.isArray(val) ? val : typeof val === 'string' ? [val] : []),
+    z.array(z.string())
+  ).optional(),
 
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional()
