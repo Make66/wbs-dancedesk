@@ -15,7 +15,8 @@
       "Bash(node -e \"const d=JSON.parse\\(require\\('fs'\\).readFileSync\\('citi.json','utf-8'\\)\\); const standorte=[...new Set\\(d.flatMap\\(l=>l.zielgruppen.flatMap\\(zg=>zg.zielseiten.flatMap\\(zs=>zs.kurse.map\\(k=>k.standort\\)\\)\\)\\)\\)]; console.log\\(standorte\\)\")",
       "Bash(node -e \"const d=JSON.parse\\(require\\('fs'\\).readFileSync\\('citi.json','utf-8'\\)\\); console.log\\(d.map\\(l=>\\({id:l.id,title:l.title}\\)\\)\\)\")",
       "Read(//Users/martin/dev/wbs/wbs-dancedesk/customerApp/src/context/**)",
-      "Read(//Users/martin/dev/wbs/wbs-dancedesk/customerApp/src/data/**)"
+      "Read(//Users/martin/dev/wbs/wbs-dancedesk/customerApp/src/data/**)",
+      "Read(//Users/martin/dev/wbs/wbs-dancedesk/customerApp/src/components/instructor/**)"
     ]
   }
 }
