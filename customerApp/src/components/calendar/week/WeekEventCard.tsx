@@ -1,40 +1,43 @@
 import { useDraggable } from "@dnd-kit/core";
 import { calendarStore } from "../../../stores/calendarStore";
-import type { PositionedCalendarEvent } from "../../../types/calendar-types";
+import type { PositionedCalendarItem } from "../../../types/calendar-types";
 
 type Props = {
-  positionedEvent: PositionedCalendarEvent;
+  positionedItem: PositionedCalendarItem;
   isSelected: boolean;
   onClick: () => void;
   onResizeMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
-export function WeekEventCard({ positionedEvent, isSelected, onClick, onResizeMouseDown }: Props) {
-  const { event, top, height, left, width } = positionedEvent;
+export function WeekEventCard({ positionedItem, isSelected, onClick, onResizeMouseDown }: Props) {
+  const { item, top, height, left, width } = positionedItem;
   const isEditMode = calendarStore((state) => state.isEditMode);
 
+  const isDraggable = isEditMode;
+
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: event.id,
+    id: item.id,
     data: {
-      type: "calendar-event",
-      eventId: event.id,
-      start: event.start,
-      end: event.end,
+      type: "calendar-item",
+      itemId: item.id,
+      itemKind: item.kind,
+      start: item.start,
+      end: item.end,
     },
-    disabled: !isEditMode,
+    disabled: !isDraggable,
   });
 
   return (
     <div
       ref={setNodeRef}
-      {...(isEditMode ? listeners : {})}
-      {...(isEditMode ? attributes : {})}
+      {...(isDraggable ? listeners : {})}
+      {...(isDraggable ? attributes : {})}
       onClick={() => {
         if (!isEditMode) {
           onClick();
         }
       }}
-      className={`absolute rounded-lg border shadow-sm cursor-pointer hover:saturate-200 opacity-70 ${isSelected ? "ring-2 ring-blue-500" : ""}`}
+      className={`absolute rounded-lg border shadow-sm cursor-pointer hover:saturate-200 ${isSelected ? "ring-2 ring-blue-500" : ""}`}
       style={{
         top,
         height,
@@ -43,11 +46,12 @@ export function WeekEventCard({ positionedEvent, isSelected, onClick, onResizeMo
         transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
         transition: isDragging ? "none" : "all 120ms ease",
         zIndex: isDragging ? 50 : 1,
-        backgroundColor: event.color?.[0] || "#3B8200",
-        color: event.color?.[1] || "#FFFFFF",
+        backgroundColor: item.color?.[0] || "#3B8200",
+        color: item.color?.[1] || "#FFFFFF",
+        opacity: item.courseId ? 0.6 : 1,
       }}
     >
-      <div className="p-2 text-sm text-center font-medium">{event.title}</div>
+      <div className="p-2 text-sm text-center font-medium">{item.courseId ? "" : item.title}</div>
 
       {isEditMode && (
         <div

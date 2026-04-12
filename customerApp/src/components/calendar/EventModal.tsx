@@ -5,11 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import ScheduleDatePicker from "./ScheduleDatePicker";
-import RoomPicker from "./RoomPicker";
-import ColorFormPicker from "./ColorFormPicker";
+import ScheduleDatePicker from "../form/ScheduleDatePicker";
+import RoomPicker from "../form/RoomPicker";
+import ColorFormPicker from "../form/ColorFormPicker";
 
-import { eventFormSchema, type EventFormValues } from "./schemas/event-schema";
+import { eventFormSchema, type EventFormValues } from "../form/schemas/event-schema";
 import { userStore } from "../../stores/userStore";
 import { getRooms } from "../../data/rooms";
 import type { Room } from "../../types/room-types";

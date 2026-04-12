@@ -25,7 +25,7 @@ const InstructorsPage = () => {
             <InstructorItem key={instructor.id} instructor={instructor} />
           ))
         ) : (
-          <p>Keine Tanzlehrer gefunden.</p>
+          <p key="no-instructors">Keine Tanzlehrer gefunden.</p>
         )}
       </div>
     </div>

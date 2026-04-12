@@ -1,11 +1,11 @@
 import type {
   CalendarConfig,
-  CalendarEvent,
-  PositionedCalendarEvent,
+  CalendarItem,
+  PositionedCalendarItem,
 } from "../../types/calendar-types";
 import { getMinutesSinceStartOfDay } from "./date-utils";
 
-function eventsOverlap(a: CalendarEvent, b: CalendarEvent) {
+function itemsOverlap(a: CalendarItem, b: CalendarItem) {
   return a.start < b.end && b.start < a.end;
 }
 
@@ -46,33 +46,33 @@ function getHeight(start: Date, end: Date, slotHeight: number, config: CalendarC
   return (durationMinutes / config.minutesPerSlot) * slotHeight;
 }
 
-function isEventVisible(event: CalendarEvent, config: CalendarConfig) {
+function isItemVisible(item: CalendarItem, config: CalendarConfig) {
   const visibleStart = getVisibleRangeStartMinutes(config);
   const visibleEnd = getVisibleRangeEndMinutes(config);
 
-  const startMinutes = getMinutesSinceStartOfDay(event.start);
-  const endMinutes = getMinutesSinceStartOfDay(event.end);
+  const startMinutes = getMinutesSinceStartOfDay(item.start);
+  const endMinutes = getMinutesSinceStartOfDay(item.end);
 
   return endMinutes > visibleStart && startMinutes < visibleEnd;
 }
 
-function groupOverlappingEvents(events: CalendarEvent[]) {
-  const groups: CalendarEvent[][] = [];
-  let currentGroup: CalendarEvent[] = [];
+function groupOverlappingItems(items: CalendarItem[]) {
+  const groups: CalendarItem[][] = [];
+  let currentGroup: CalendarItem[] = [];
 
-  for (const event of events) {
+  for (const item of items) {
     if (currentGroup.length === 0) {
-      currentGroup.push(event);
+      currentGroup.push(item);
       continue;
     }
 
-    const overlaps = currentGroup.some((existingEvent) => eventsOverlap(existingEvent, event));
+    const overlaps = currentGroup.some((existingItem) => itemsOverlap(existingItem, item));
 
     if (overlaps) {
-      currentGroup.push(event);
+      currentGroup.push(item);
     } else {
       groups.push(currentGroup);
-      currentGroup = [event];
+      currentGroup = [item];
     }
   }
 
@@ -83,51 +83,51 @@ function groupOverlappingEvents(events: CalendarEvent[]) {
   return groups;
 }
 
-function assignColumns(group: CalendarEvent[]) {
-  const columns: CalendarEvent[][] = [];
+function assignColumns(group: CalendarItem[]) {
+  const columns: CalendarItem[][] = [];
 
-  for (const event of group) {
+  for (const item of group) {
     let placed = false;
 
     for (const column of columns) {
       const last = column[column.length - 1];
 
-      if (!eventsOverlap(last, event)) {
-        column.push(event);
+      if (!itemsOverlap(last, item)) {
+        column.push(item);
         placed = true;
         break;
       }
     }
 
     if (!placed) {
-      columns.push([event]);
+      columns.push([item]);
     }
   }
 
   return columns;
 }
 
-export function getPositionedEvents(
-  events: CalendarEvent[],
+export function getPositionedCalendarItems(
+  items: CalendarItem[],
   slotHeight: number,
   config: CalendarConfig,
-): PositionedCalendarEvent[] {
-  const visibleEvents = events.filter((event) => isEventVisible(event, config));
-  const sortedEvents = [...visibleEvents].sort((a, b) => a.start.getTime() - b.start.getTime());
+): PositionedCalendarItem[] {
+  const visibleItems = items.filter((item) => isItemVisible(item, config));
+  const sortedItems = [...visibleItems].sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  const groups = groupOverlappingEvents(sortedEvents);
-  const positionedEvents: PositionedCalendarEvent[] = [];
+  const groups = groupOverlappingItems(sortedItems);
+  const positionedItems: PositionedCalendarItem[] = [];
 
   for (const group of groups) {
     const columns = assignColumns(group);
     const columnCount = columns.length;
 
     columns.forEach((column, columnIndex) => {
-      column.forEach((event) => {
-        positionedEvents.push({
-          event,
-          top: getTop(event.start, slotHeight, config),
-          height: getHeight(event.start, event.end, slotHeight, config),
+      column.forEach((item) => {
+        positionedItems.push({
+          item,
+          top: getTop(item.start, slotHeight, config),
+          height: getHeight(item.start, item.end, slotHeight, config),
           left: (100 / columnCount) * columnIndex,
           width: 100 / columnCount,
         });
@@ -135,5 +135,5 @@ export function getPositionedEvents(
     });
   }
 
-  return positionedEvents;
+  return positionedItems;
 }

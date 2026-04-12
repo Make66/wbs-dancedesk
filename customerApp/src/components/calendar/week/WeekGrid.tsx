@@ -1,15 +1,15 @@
 import { WeekDayColumn } from "./WeekDayColumn";
 import { TimeGutter } from "../core/TimeGutter";
-import type { CalendarEvent, CalendarEventResizeEndPayload } from "../../../types/calendar-types";
+import type { CalendarItem, CalendarItemResizeEndPayload } from "../../../types/calendar-types";
 import { calendarStore } from "../../../stores/calendarStore";
 
 type Props = {
   days: Date[];
-  events: CalendarEvent[];
-  onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
+  items: CalendarItem[];
+  onEventResizeEnd?: (payload: CalendarItemResizeEndPayload) => void;
 };
 
-export function WeekGrid({ days, events, onEventResizeEnd }: Props) {
+export function WeekGrid({ days, items, onEventResizeEnd }: Props) {
   const config = calendarStore((s) => s.config);
 
   return (
@@ -20,7 +20,7 @@ export function WeekGrid({ days, events, onEventResizeEnd }: Props) {
         <WeekDayColumn
           key={day.toISOString()}
           day={day}
-          events={events}
+          items={items}
           onEventResizeEnd={onEventResizeEnd}
         />
       ))}

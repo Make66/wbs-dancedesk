@@ -70,3 +70,16 @@ export const getCourseById = async (id: string) => {
 
   return response.json();
 };
+
+export const getCoursesByWeek = async (year: number, week: number) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/week/${year}/${week}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    },
+  );
+
+  return response.json();
+};

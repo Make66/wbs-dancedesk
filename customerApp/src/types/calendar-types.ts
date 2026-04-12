@@ -1,57 +1,85 @@
 export type CalendarView = "day" | "week" | "month";
 
-export type CalendarEvent = {
+export type CalendarItemKind = "event" | "course";
+
+export type CalendarEventItem = {
+  kind: "event";
   id: string;
+  eventId: string;
   title: string;
   start: Date;
   end: Date;
   color?: string[];
   icon?: string;
   type?: string;
-
   description?: string;
   imageUrl?: string;
-
   street?: string;
   city?: string;
   zipCode?: string;
   longitude?: number;
   latitude?: number;
-
   roomId?: string;
   locationId?: string;
   targets?: string[];
-
   isActive?: boolean;
   isDeleted?: boolean;
 };
 
-export type PositionedCalendarEvent = {
-  event: CalendarEvent;
+export type CalendarCourseItem = {
+  kind: "course";
+  id: string;
+  courseId: string;
+  title: string;
+  start: Date;
+  end: Date;
+  color?: string[];
+  roomId?: string;
+  slug?: string;
+  occurrenceDate: string;
+  isStart?: boolean;
+};
+
+export type CalendarItem = CalendarEventItem | CalendarCourseItem;
+
+export type PositionedCalendarItem = {
+  item: CalendarItem;
   top: number;
   height: number;
   left: number;
   width: number;
 };
 
-export type ResizingEventState = {
-  eventId: string;
+export type DraggedItemState = {
+  itemId: string;
+  itemKind: CalendarItemKind;
   originalStart: Date;
   originalEnd: Date;
   currentStart: Date;
   currentEnd: Date;
 };
 
-export type CalendarEventDragEndPayload = {
-  eventId: string;
+export type ResizingItemState = {
+  itemId: string;
+  itemKind: CalendarItemKind;
+  originalStart: Date;
+  originalEnd: Date;
+  currentStart: Date;
+  currentEnd: Date;
+};
+
+export type CalendarItemDragEndPayload = {
+  itemId: string;
+  itemKind: CalendarItemKind;
   originalStart: Date;
   originalEnd: Date;
   start: Date;
   end: Date;
 };
 
-export type CalendarEventResizeEndPayload = {
-  eventId: string;
+export type CalendarItemResizeEndPayload = {
+  itemId: string;
+  itemKind: CalendarItemKind;
   originalStart: Date;
   originalEnd: Date;
   start: Date;
@@ -74,8 +102,9 @@ export type CalendarHeaderDisplayData = {
 };
 
 export type CalendarDragData = {
-  type: "calendar-event";
-  eventId: string;
+  type: "calendar-item";
+  itemId: string;
+  itemKind: CalendarItemKind;
   start: Date;
   end: Date;
 };
@@ -83,12 +112,4 @@ export type CalendarDragData = {
 export type CalendarDropData = {
   type: "day-column";
   day: Date;
-};
-
-export type DraggedEventState = {
-  eventId: string;
-  originalStart: Date;
-  originalEnd: Date;
-  currentStart: Date;
-  currentEnd: Date;
 };
