@@ -15,11 +15,11 @@ const formidableMiddleware: RequestHandler = (req, res, next) => {
   const form = formidable({ filter, maxFileSize });
 
   form.parse(req, (err: Error | null, fields: Fields, files: Files) => {
-    if (err) {
-      next(err);
-    }
+    if (err) return next(err);
 
-    req.body = fields;
+    req.body = Object.fromEntries(
+      Object.entries(fields).map(([key, value]) => [key, value?.length === 1 ? value[0] : value])
+    );
 
     if (files?.image) {
       req.imageUrl = files.image[0];
