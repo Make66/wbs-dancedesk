@@ -102,11 +102,9 @@ export const updateInstructor = async (
     }
 
     const data = await response.json();
-    toast.success("Instruktor erfolgreich aktualisiert!");
     return data;
   } catch (error) {
     console.error("Error updating instructor:", error);
-    toast.error("Fehler beim Aktualisieren des Instruktors.");
     throw error;
   }
 };
