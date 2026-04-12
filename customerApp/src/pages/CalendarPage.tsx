@@ -11,7 +11,7 @@ import EventModal from "../components/calendar/EventModal";
 import { calendarStore } from "../stores/calendarStore";
 import AddButton from "../components/ui/AddButton";
 import EditButton from "../components/ui/EditButton";
-import { getCoursesByWeek } from "../data/course";
+import { getCoursesByWeekDB } from "../data/course";
 import { getISOWeek, getISOWeekYear } from "date-fns";
 import { getWeekDays } from "../lib/calendar/date-utils";
 
@@ -183,7 +183,7 @@ const CalendarPage = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const data = await getCoursesByWeek(year, week);
+        const data = await getCoursesByWeekDB(year, week);
 
         const mappedCourses = mapWeekCoursesToCalendarItems(
           data as Record<string, DbCourse[]>,

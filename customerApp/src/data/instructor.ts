@@ -84,6 +84,7 @@ export const createInstructor = async (
       skills: instructorData.skills,
       imageUrl: instructorData.imageUrl,
       hasImageFile: !!instructorData.imageFile,
+      imageFile: instructorData.imageFile ? instructorData.imageFile : "No file",
     });
 
     const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors`, {

@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
-import { getCourseById } from "../data/course";
+import { getCourseByIdDB } from "../data/course";
 import type { Course } from "../types/course-types";
 import CourseForm from "../components/form/CourseForm";
 
@@ -13,7 +13,7 @@ const CourseDetailPage = () => {
 
     const fetchCourse = async () => {
       try {
-        const response = await getCourseById(courseId);
+        const response = await getCourseByIdDB(courseId);
         setCourse(response ?? undefined);
       } catch (error) {
         console.error("Error fetching course:", error);

@@ -69,10 +69,7 @@ const ProfileImageUploader = ({
     onChange?.(file);
   };
 
-  const displayImage =
-    previewUrl ||
-    imageUrl ||
-    "https://img.freepik.com/vektoren-premium/das-profilbild-des-mannes-avatars-ist-auf-dem-hintergrund-isoliert_1293239-4841.jpg?semt=ais_hybrid&w=740&q=80";
+  const displayImage = previewUrl || imageUrl;
 
   return (
     <div className="flex flex-col gap-4">

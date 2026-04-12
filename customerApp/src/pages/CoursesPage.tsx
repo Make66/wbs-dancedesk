@@ -2,7 +2,7 @@ import { useEffect, useState, type ComponentProps } from "react";
 import { GrPrevious, GrNext } from "react-icons/gr";
 import WeeklySchedule from "../components/plan/WeeklySchedule";
 import { getISOWeek, getISOWeekYear } from "date-fns";
-import { getCoursesByWeek } from "../data/course";
+import { getCoursesByWeekDB } from "../data/course";
 import { toast } from "react-toastify";
 
 const CoursesPage = () => {
@@ -15,7 +15,7 @@ const CoursesPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getCoursesByWeek(currentYear, currentWeek);
+        const data = await getCoursesByWeekDB(currentYear, currentWeek);
         setWeekData(data);
       } catch (error) {
         console.error("Error fetching week data:", error);
