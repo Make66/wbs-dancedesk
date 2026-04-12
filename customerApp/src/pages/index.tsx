@@ -10,6 +10,7 @@ import RoomsPage from "./RoomsPage";
 import SettingsPage from "./SettingsPage";
 import CalendarPage from "./CalendarPage";
 import InstructorDetailPage from "./InstructorDetailPage";
+import RoomDetailPage from "./RoomDetailPage";
 
 export {
   HomePage,
@@ -24,4 +25,5 @@ export {
   SettingsPage,
   CalendarPage,
   InstructorDetailPage,
+  RoomDetailPage,
 };

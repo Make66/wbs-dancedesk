@@ -10,3 +10,7 @@ export * from '../generated/prisma/models/Registration.ts';
 export * from '../generated/prisma/models/Room.ts';
 export * from '../generated/prisma/models/Target.ts';
 export * from '../generated/prisma/models/Text.ts';
+export * from '../generated/prisma/models/Settings.ts';
+export * from '../generated/prisma/models/Event.ts';
+export * from '../generated/prisma/models/Participant.ts';
+export * from '../generated/prisma/models/Attendance.ts';   

@@ -1,6 +1,6 @@
 import { ImUsers } from "react-icons/im";
 import { IoSchool } from "react-icons/io5";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard, MdMeetingRoom } from "react-icons/md";
 import { NavLink } from "react-router";
 import { MapPin } from "lucide-react";
 import { userStore } from "../../stores/userStore";
@@ -23,6 +23,9 @@ const SidebarMin = () => {
       </NavLink>
       <NavLink to="/instructors">
         <FaChalkboardTeacher className="text-2xl cursor-pointer fill-gray-300 ml-1" />
+      </NavLink>
+      <NavLink to="/rooms">
+        <MdMeetingRoom className="text-2xl cursor-pointer fill-gray-300 ml-1" />
       </NavLink>
     </div>
   );

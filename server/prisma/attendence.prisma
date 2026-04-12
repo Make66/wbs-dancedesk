@@ -1,0 +1,23 @@
+model Attendance {
+    date       DateTime
+    status     AttendanceStatus @default(PRESENT)
+    comment    String?         @default("")
+
+    // relations
+    participant Participant     @relation(fields: [participantId], references: [id])
+    participantId String          @db.Uuid
+    
+    course     Course          @relation(fields: [courseId], references: [id])
+    courseId   String          @db.Uuid
+    
+    // Common fields
+    id        String   @id @default(uuid()) @db.Uuid
+    tenantId  String
+    createdAt DateTime @default(now())
+}
+
+enum AttendanceStatus {
+    PRESENT
+    ABSENT
+    EXCUSED
+}
