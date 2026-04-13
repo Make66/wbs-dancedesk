@@ -71,9 +71,19 @@ export const getCourseByIdDB = async (id: string) => {
   return response.json();
 };
 
-export const getCoursesByWeekDB = async (year: number, week: number) => {
+export const getCoursesByWeekDB = async (
+  year: number,
+  week: number,
+  filters?: { locationId?: string; targetId?: string },
+) => {
+  const params = new URLSearchParams();
+  if (filters?.locationId) params.set("locationId", filters.locationId);
+  if (filters?.targetId) params.set("targetId", filters.targetId);
+
+  const query = params.size > 0 ? `?${params.toString()}` : "";
+
   const response = await fetch(
-    `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/week/${year}/${week}`,
+    `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/week/${year}/${week}${query}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },

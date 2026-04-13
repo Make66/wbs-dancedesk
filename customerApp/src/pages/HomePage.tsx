@@ -5,6 +5,8 @@ import TodaysCourses from "../components/dashboard/TodaysCourses";
 import RecentRegistrations from "../components/dashboard/RecentRegistrations";
 import QuickActions from "../components/dashboard/QuickActions";
 import DashboardCharts from "../components/dashboard/DashboardCharts";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
 
 const STATS = [
   {
@@ -47,24 +49,26 @@ const HomePage = () => {
       </div>
 
       <div className="p-6 space-y-6">
-        <p className="text-muted-foreground">
-          Herzlich Willkommen, <span className="font-semibold text-foreground">{user?.firstName} {user?.lastName}</span>
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="text-muted-foreground">
+            Herzlich Willkommen,{" "}
+            <span className="font-semibold text-foreground">
+              {user?.firstName} {user?.lastName}
+            </span>
+          </p>
+          <p className="mr-3">{format(new Date(), "EEEE, d. MMMM yyyy", { locale: de })}</p>
+        </div>
 
-        {/* Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {STATS.map((stat) => (
             <StatCard key={stat.label} {...stat} />
           ))}
         </div>
 
-        {/* Heutige Kurse */}
         <TodaysCourses />
 
-        {/* Charts */}
         <DashboardCharts />
 
-        {/* Anmeldungen + Schnellzugriff */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
             <RecentRegistrations />
