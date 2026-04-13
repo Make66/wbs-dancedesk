@@ -13,3 +13,4 @@ export * from './settings.ts';
 export * from './event.ts';
 export * from './participant.ts';
 export * from './attendance.ts';
+export * from './chat.ts';
