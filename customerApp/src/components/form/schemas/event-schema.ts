@@ -15,7 +15,7 @@ export const eventFormSchema = z
       .optional()
       .or(z.literal("")),
 
-    imageUrl: z.string().trim().url("Bitte eine gültige URL eingeben").optional().or(z.literal("")),
+    imageUrl: z.string().trim().optional().or(z.literal("")),
 
     color: z.tuple([z.string(), z.string()]),
 

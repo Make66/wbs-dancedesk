@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import type { Instructor } from "../../types/instructor-types";
-import ProfileImageUploader from "../ui/image/ProfileImageUploader";
+import ProfileImageUploader from "../ui/image/ImageUploader";
 import { Input } from "../ui/input";
 import { useEffect, useState } from "react";
 import SkillSection from "./SkillSection";
