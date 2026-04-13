@@ -12,6 +12,10 @@ const filter = ({ mimetype }: Part) => {
 };
 
 const formidableMiddleware: RequestHandler = (req, res, next) => {
+  if (!req.headers['content-type']?.includes('multipart/form-data')) {
+    return next(); // body already parsed by express.json()
+  }
+
   const form = formidable({ filter, maxFileSize });
 
   form.parse(req, (err: Error | null, fields: Fields, files: Files) => {

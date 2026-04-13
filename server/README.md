@@ -142,11 +142,11 @@ POST   /auth/participant-me       (requires accessToken cookie)
 
 GET /categories/:id/courses    — courses belonging to a category
 
-POST   /chats                  { participantId, tenantId }        → { sessionId }
+POST /chats                  { participantId, tenantId }        → { sessionId }
 
-POST   /chats/messages         { sessionId, prompt }              → SSE stream + [DONE]
+POST /chats/messages         { sessionId, prompt }              → SSE stream + [DONE]
 
-GET    /chats/:sessionId                                          → { session, messages[] }
+GET  /chats/:sessionId                                          → { session, messages[] }
 
 GET /courses/month             - all courses this month, starting with 0: monday
 
@@ -161,6 +161,8 @@ GET /courses/week/:year/:week  - Hi Adrian!
 GET /courses/:id/dates         - delivers possible event dates for a course
 
 GET /courses/:id/participants  - all participants of a certain course
+
+GET /customers/by-tenant/:tenantId - no auth required, only branding fields. Created for 1st logins
 
 GET /events/month              - returns events where startsAt >= 1st day of month, limited to this month
 

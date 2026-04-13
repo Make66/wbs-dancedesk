@@ -5,6 +5,10 @@ model Registration {
   phone     String? @default("Room 1")
   active    Boolean @default(true)
 
+  // relations
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String @db.Uuid
+
   // Common address fields
   street    String @default("123 Main St")
   city      String @default("Anytown")

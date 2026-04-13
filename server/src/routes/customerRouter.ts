@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllCustomers, getOneCustomer, createCustomer, updateCustomer, removeCustomer } from '#controllers';
+import { getAllCustomers, getOneCustomer, getCustomerByTenantId, createCustomer, updateCustomer, removeCustomer } from '#controllers';
 import { customerSchema } from '#schemas';
 
 const customersRouter = Router();
+
+customersRouter.get('/by-tenant/:tenantId', getCustomerByTenantId);
 
 customersRouter
   .route('/')

@@ -12,6 +12,10 @@ export const participantSchema = z.object({
   refreshToken: z.string().optional(),
   settings: z.json().default({}).optional(),
   
+  street: z.string().optional(),
+  city: z.string().optional(),
+  zipCode: z.string().optional(),
+
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional()
 });

@@ -20,6 +20,16 @@ export const getOneCustomer: RequestHandler = async (req, res) => {
   res.json(customer);
 };
 
+export const getCustomerByTenantId: RequestHandler = async (req, res) => {
+  const { tenantId } = req.params;
+  const customer = await prisma.customer.findFirst({
+    where: { tenantId, isDeleted: false },
+    select: { id: true, name: true, logoUrl: true, primary: true, secondary: true, tertiary: true, quaternary: true, website: true }
+  });
+  if (!customer) throw new Error('Customer not found', { cause: { status: 404 } });
+  res.json(customer);
+};
+
 export const createCustomer: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const customer = await prisma.customer.create({
