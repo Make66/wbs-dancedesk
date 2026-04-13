@@ -48,14 +48,14 @@ function clearAppData(): void {
   useCourseWeekStore.getState().clearCourseWeek();
 }
 
-export async function login(email: string, password: string): Promise<void> {
+export async function login(email: string, password: string, tenantId: string): Promise<void> {
   console.log('[2] AUTH API: POST /auth/participant-login');
   const response = await authAxios.post('/auth/participant-login', {
     email,
     password,
-    tenantId: env.tmpTenantId,
+    tenantId,
   });
-  const user: AuthUser = { id: response.data.id, tenantId: env.tmpTenantId };
+  const user: AuthUser = { id: response.data.id, tenantId };
   console.log('[2] AUTH API: credentials accepted, writing auth store:', user);
   useAuthStore.getState().setAuth(user);
 
