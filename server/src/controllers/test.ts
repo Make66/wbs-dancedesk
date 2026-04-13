@@ -21,12 +21,15 @@ function getMondayOfISOWeek(year: number, week: number): number {
 export const getWeeekCourses: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
 
-  const year = parseInt(req.params.year, 10);
-  const week = parseInt(req.params.week, 10);
+  const year = parseInt(req.params.year!, 10);
+  const week = parseInt(req.params.week!, 10);
 
   if (isNaN(year) || isNaN(week) || week < 1 || week > 53) {
     throw new Error("Invalid year or week", { cause: { status: 400 } });
   }
+
+  const locationId = req.query.locationId as string | undefined;
+  const targetId = req.query.targetId as string | undefined;
 
   const weekStart = getMondayOfISOWeek(year, week);
   const weekEnd = weekStart + 6 * 86_400_000;
@@ -36,6 +39,16 @@ export const getWeeekCourses: RequestHandler = async (req, res) => {
       tenantId,
       isDeleted: false,
       isActive: true,
+      ...(locationId || targetId
+        ? {
+            category: {
+              target: {
+                ...(locationId ? { locationId } : {}),
+                ...(targetId ? { id: targetId } : {}),
+              },
+            },
+          }
+        : {}),
     },
     include: {
       category: { include: { target: true } },
@@ -64,10 +77,18 @@ export const getWeeekCourses: RequestHandler = async (req, res) => {
     const info = {
       id: course.id,
       name: course.name,
+      description: course.description,
       startsAt: course.startsAt,
       endsAt: course.endsAt,
       color: course.color,
-      room: course.room,
+      seatsCurrent: course.seatsCurrent,
+      seatsMax: course.seatsMax,
+      isBookedOut: course.isBookedOut,
+      targetId: course.category?.target?.id ?? null,
+      instructor: course.instructor
+        ? { id: course.instructor.id, name: course.instructor.name }
+        : null,
+      room: course.room ? { id: course.room.id, name: course.room.name } : null,
     };
 
     for (const ms of dates) {

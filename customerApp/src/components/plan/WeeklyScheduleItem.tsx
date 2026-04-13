@@ -61,14 +61,14 @@ const WeeklyScheduleItem = ({
         </div>
       </div>
       <div className="flex items-center justify-center gap-4">
-        <div className="grid grid-cols-3 gap-3 items-center">
+        <div className="grid grid-cols-5 gap-3 items-center">
           <div className="col-span-1"></div>
-          <div className="col-span-1 flex justify-around mt-3">
+          <div className="col-span-3 flex justify-around mt-3">
             <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
           </div>
           {course.isBookedOut && (
             <div
-              className="col-span-1flex items-center justify-center gap-2 mt-3"
+              className="col-span-1 flex items-center justify-center gap-2 mt-3"
               data-tooltip-id="tooltip"
               data-tooltip-content="Kurs ist geschlossen"
               data-tooltip-place="top"
