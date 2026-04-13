@@ -5,6 +5,7 @@ import "#db";
 import { errorHandler } from "#middlewares";
 import {
   authRouter,
+  chatRouter,
   eventsRouter,
   categoriesRouter,
   coursesRouter,
@@ -44,6 +45,7 @@ app.use(
 app.use(express.json(), cookieParser());
 
 app.use("/auth", authRouter);
+app.use("/chats", chatRouter);
 app.use("/categories", categoriesRouter);
 app.use("/courses", coursesRouter);
 app.use("/customers", customersRouter);

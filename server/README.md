@@ -142,6 +142,12 @@ POST   /auth/participant-me       (requires accessToken cookie)
 
 GET /categories/:id/courses    — courses belonging to a category
 
+POST   /chats                  { participantId, tenantId }        → { sessionId }
+
+POST   /chats/messages         { sessionId, prompt }              → SSE stream + [DONE]
+
+GET    /chats/:sessionId                                          → { session, messages[] }
+
 GET /courses/month             - all courses this month, starting with 0: monday
 
 GET /courses/month/:number     - all courses in month n, (13 % 12) = 1st month next year
@@ -149,6 +155,8 @@ GET /courses/month/:number     - all courses in month n, (13 % 12) = 1st month n
 GET /courses/week              - all courses this week, starting with 0: monday
 
 GET /courses/week/:number      - all courses in week n, (54 % 53) = 1st week next year
+
+GET /courses/week/:year/:week  - Hi Adrian!
 
 GET /courses/:id/dates         - delivers possible event dates for a course
 

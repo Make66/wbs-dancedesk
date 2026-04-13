@@ -8,3 +8,4 @@
 d2
 .d2
 ./server/prisma/migrations
+node_modules

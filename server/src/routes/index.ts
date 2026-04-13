@@ -13,3 +13,4 @@ export { default as settingsRouter }      from './settingsRouter.ts';
 export { default as targetsRouter }       from './targetRouter.ts';
 export { default as textsRouter }         from './textRouter.ts';
 export { default as usersRouter }         from './userRouter.ts';
+export { default as chatRouter }          from './chatRouter.ts';
