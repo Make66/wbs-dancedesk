@@ -24,8 +24,8 @@ const STATS = [
     sub: "4 Kategorien",
   },
   {
-    label: "Trainer",
-    value: 8,
+    label: "Aktive Instruktoren",
+    value: 6,
     icon: <LuUserCheck />,
     iconBg: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
     sub: "2 heute aktiv",

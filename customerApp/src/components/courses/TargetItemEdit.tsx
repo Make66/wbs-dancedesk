@@ -83,7 +83,7 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsModalOpen }: Targe
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/60" onClick={() => setIsModalOpen(false)} />
 
-      <div className="absolute left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-2xl overflow-visible">
+      <div className="absolute left-1/2 top-1/2 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-background p-6 shadow-2xl overflow-visible border border-muted-foreground z-90">
         <div className="mb-6 flex items-start justify-between">
           <h3 className="text-2xl font-semibold">
             {target.isNew ? "Neue Zielgruppe" : "Zielgruppe bearbeiten"}
