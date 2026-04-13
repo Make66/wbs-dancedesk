@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Consumer App Starter V2",
+    "slug": "consumer-app-starter-v2",
+    "scheme": "consumerstarterv2",
+    "jsEngine": "hermes",
+    "plugins": ["expo-router", "expo-dev-client"],
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "jsEngine": "jsc",
+      "bundleIdentifier": "com.example.consumerstarterv2",
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "usesAppleSignIn": true,
+      "entitlements": {
+        "aps-environment": "production"
+      },
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"],
+        "NSCameraUsageDescription": "We use the camera for capturing profile and app content.",
+        "NSLocationWhenInUseUsageDescription": "We use your location to power nearby and local features.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location for background location features when enabled."
+      }
+    },
+    "android": {
+      "package": "com.example.consumerstarterv2",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.POST_NOTIFICATIONS"
+      ]
+    },
+    "extra": {
+      "apiBaseUrl": "https://jsonplaceholder.typicode.com"
+    }
+  }
+}
