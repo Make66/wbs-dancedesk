@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import type { Room } from "../../types/room-types";
-import ProfileImageUploader from "../ui/image/ProfileImageUploader";
+import ImageUploader from "../ui/image/ImageUploader";
 import { Input } from "../ui/input";
 import { useEffect, useState } from "react";
 import RoomCoursesSection from "./RoomCoursesSection";
@@ -101,13 +101,14 @@ const RoomForm = ({ room }: RoomFormProps) => {
       >
         <div className="col-span-1 items-start gap-6">
           <div className="flex flex-col gap-6 items-center">
-            <ProfileImageUploader
+            <ImageUploader
               id={room?.id}
               className="h-60 w-80"
               aspect={4 / 3}
               cropShape="rect"
               imageUrl={room?.imageUrl}
               onChange={(file) => setImageFile(file)}
+              fallbackSrc="/assets/images/no-room.jpg"
             />
             <Input type="text" label="Name" {...register("name")} className="w-full" />
             <Input

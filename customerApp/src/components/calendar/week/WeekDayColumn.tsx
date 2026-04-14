@@ -22,10 +22,14 @@ import { useNavigate } from "react-router";
 type Props = {
   day: Date;
   items: CalendarItem[];
+  /** undefined = alle Items, null = Items ohne Raum (inkl. unbekannter Raum-IDs), string = Items dieses Raums */
+  roomId?: string | null;
+  /** Set aller bekannten Raum-IDs – Items mit fremden IDs landen in der "Kein Raum"-Spalte */
+  knownRoomIds?: Set<string>;
   onEventResizeEnd?: (payload: CalendarItemResizeEndPayload) => void;
 };
 
-export function WeekDayColumn({ day, items, onEventResizeEnd }: Props) {
+export function WeekDayColumn({ day, items, roomId, knownRoomIds, onEventResizeEnd }: Props) {
   const navigate = useNavigate();
   const columnRef = useRef<HTMLDivElement | null>(null);
   const [resizingEventId, setResizingEventId] = useState<string | null>(null);
@@ -41,8 +45,13 @@ export function WeekDayColumn({ day, items, onEventResizeEnd }: Props) {
 
   const dropData: CalendarDropData = { type: "day-column", day };
 
+  const droppableId =
+    roomId !== undefined
+      ? `day-${day.toISOString()}-room-${roomId ?? "none"}`
+      : `day-${day.toISOString()}`;
+
   const { setNodeRef } = useDroppable({
-    id: `day-${day.toISOString()}`,
+    id: droppableId,
     data: dropData,
   });
 
@@ -58,7 +67,15 @@ export function WeekDayColumn({ day, items, onEventResizeEnd }: Props) {
     onEventResizeEnd,
   });
 
-  const dayItems = useMemo(() => items.filter((item) => isSameDay(item.start, day)), [items, day]);
+  const dayItems = useMemo(() => {
+    const sameDay = items.filter((item) => isSameDay(item.start, day));
+    if (roomId === undefined) return sameDay;
+    if (roomId === null)
+      return sameDay.filter(
+        (item) => !item.roomId || (knownRoomIds ? !knownRoomIds.has(item.roomId) : false),
+      );
+    return sameDay.filter((item) => item.roomId === roomId);
+  }, [items, day, roomId, knownRoomIds]);
 
   const positionedItems = useMemo(
     () => getPositionedCalendarItems(dayItems, config.slotHeight, config),

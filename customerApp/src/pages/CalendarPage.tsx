@@ -9,9 +9,12 @@ import type {
 } from "../types/calendar-types";
 import EventModal from "../components/calendar/EventModal";
 import { calendarStore } from "../stores/calendarStore";
+import { userStore } from "../stores/userStore";
 import AddButton from "../components/ui/AddButton";
 import EditButton from "../components/ui/EditButton";
 import { getCoursesByWeekDB } from "../data/course";
+import { getRooms } from "../data/rooms";
+import type { Room } from "../types/room-types";
 import { getISOWeek, getISOWeekYear } from "date-fns";
 import { getWeekDays } from "../lib/calendar/date-utils";
 
@@ -103,6 +106,7 @@ function mapWeekCoursesToCalendarItems(
 const CalendarPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dbEvents, setDbEvents] = useState<DbEvent[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const currentDate = calendarStore((state) => state.currentDate);
   const days = useMemo(() => getWeekDays(currentDate), [currentDate]);
 
@@ -111,6 +115,8 @@ const CalendarPage = () => {
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
   const [error, setError] = useState<string | null>(null);
+
+  const selectedLocationId = userStore((state) => state.selectedLocationId);
 
   const week = getISOWeek(currentDate);
   const year = getISOWeekYear(currentDate);
@@ -121,6 +127,16 @@ const CalendarPage = () => {
 
   const isEditMode = calendarStore((state) => state.isEditMode);
   const toggleEditMode = calendarStore((state) => state.toggleEditMode);
+
+  useEffect(() => {
+    if (!selectedLocationId) {
+      setRooms([]);
+      return;
+    }
+    getRooms(selectedLocationId)
+      .then((data) => setRooms(data.filter((r) => !r.isDeleted && r.isActive)))
+      .catch(console.error);
+  }, [selectedLocationId]);
 
   useEffect(() => {
     async function loadEvents() {
@@ -381,26 +397,33 @@ const CalendarPage = () => {
     [calendarEvents, calendarCourses],
   );
 
-  const selectedCalendarEvent = calendarEvents.find((event) => event.id === selectedEventId);
+  const selectedCalendarEvent = useMemo(
+    () => calendarEvents.find((event) => event.id === selectedEventId),
+    [calendarEvents, selectedEventId],
+  );
 
-  const selectedEventForModal = selectedCalendarEvent
-    ? {
-        id: selectedCalendarEvent.eventId,
-        title: selectedCalendarEvent.title,
-        description: selectedCalendarEvent.description,
-        imageUrl: selectedCalendarEvent.imageUrl,
-        color: selectedCalendarEvent.color,
-        type: selectedCalendarEvent.type,
-        street: selectedCalendarEvent.street,
-        city: selectedCalendarEvent.city,
-        zipCode: selectedCalendarEvent.zipCode,
-        longitude: selectedCalendarEvent.longitude,
-        latitude: selectedCalendarEvent.latitude,
-        startsAt: selectedCalendarEvent.start,
-        endsAt: selectedCalendarEvent.end,
-        roomId: selectedCalendarEvent.roomId,
-      }
-    : undefined;
+  const selectedEventForModal = useMemo(
+    () =>
+      selectedCalendarEvent
+        ? {
+            id: selectedCalendarEvent.eventId,
+            title: selectedCalendarEvent.title,
+            description: selectedCalendarEvent.description,
+            imageUrl: selectedCalendarEvent.imageUrl,
+            color: selectedCalendarEvent.color,
+            type: selectedCalendarEvent.type,
+            street: selectedCalendarEvent.street,
+            city: selectedCalendarEvent.city,
+            zipCode: selectedCalendarEvent.zipCode,
+            longitude: selectedCalendarEvent.longitude,
+            latitude: selectedCalendarEvent.latitude,
+            startsAt: selectedCalendarEvent.start,
+            endsAt: selectedCalendarEvent.end,
+            roomId: selectedCalendarEvent.roomId,
+          }
+        : undefined,
+    [selectedCalendarEvent],
+  );
 
   return (
     <div className="w-full h-screen flex flex-col bg-background">
@@ -420,6 +443,7 @@ const CalendarPage = () => {
         {!loading && !error && (
           <CalendarRoot
             items={calendarItems}
+            rooms={rooms}
             onEventDragEnd={handleItemDragEnd}
             onEventResizeEnd={handleItemResizeEnd}
           />
