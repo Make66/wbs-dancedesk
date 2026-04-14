@@ -9,16 +9,17 @@ import { targetStore } from "../stores/targetStore";
 
 const CoursesPage = () => {
   const today = new Date();
+  const user = userStore((state) => state.user);
+  const setSelectedLocationId = userStore((state) => state.setSelectedLocationId);
   const [currentWeek, setCurrentWeek] = useState(getISOWeek(today));
   const [currentYear] = useState(getISOWeekYear(today));
   const [weekData, setWeekData] =
     useState<ComponentProps<typeof WeeklySchedule>["data"]>(undefined);
 
-  const [filterLocationId, setFilterLocationId] = useState<string | null>(null);
+  const [filterLocationId, setFilterLocationId] = useState<string | null>(
+    userStore.getState().selectedLocationId,
+  );
   const [filterTargetId, setFilterTargetId] = useState<string | null>(null);
-
-  const user = userStore((state) => state.user);
-  const setSelectedLocationId = userStore((state) => state.setSelectedLocationId);
 
   const locations = useMemo(() => {
     if (!user) return [];

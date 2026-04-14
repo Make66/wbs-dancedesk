@@ -109,7 +109,7 @@ export function WeekDayColumn({
         columnRef.current = node;
         setNodeRef(node);
       }}
-      className={cn("relative last:border-r-0", isLastRoomOfDay ? "border-r-4" : "border-r")}
+      className={cn("relative last:border-r-0", isLastRoomOfDay ? "border-r-5" : "border-r")}
     >
       {Array.from({ length: visibleSlotCount }, (_, i) => {
         const slotIndex = startSlot + i;

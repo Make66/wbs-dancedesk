@@ -45,6 +45,27 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Tooltip id="tooltip" className="custom-tooltip z-[200]" delayShow={200} delayHide={200} />
+      <Tooltip
+        id="calendar-item-tooltip"
+        className="z-300 p-0! rounded-xl! bg-popover! text-popover-foreground! shadow-xl border! border-border!"
+        delayShow={400}
+        delayHide={100}
+        render={({ activeAnchor }) => {
+          const title = activeAnchor?.getAttribute("data-item-title");
+          const time = activeAnchor?.getAttribute("data-item-time");
+          const description = activeAnchor?.getAttribute("data-item-description");
+          const location = activeAnchor?.getAttribute("data-item-location");
+          if (!title) return null;
+          return (
+            <div className="p-3 min-w-50 max-w-70 flex flex-col gap-1">
+              <p className="font-semibold text-sm leading-tight">{title}</p>
+              {time && <p className="text-xs text-muted-foreground">{time}</p>}
+              {description && <p className="text-xs mt-1 leading-snug">{description}</p>}
+              {location && <p className="text-xs text-muted-foreground mt-1">{location}</p>}
+            </div>
+          );
+        }}
+      />
     </>
   );
 }

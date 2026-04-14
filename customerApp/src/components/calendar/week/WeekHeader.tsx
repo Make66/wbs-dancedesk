@@ -38,7 +38,7 @@ export function WeekHeader({ days, rooms = [] }: WeekHeaderProps) {
               key={day.toISOString()}
               style={{ gridColumn: `span ${numRooms}` }}
               className={cn(
-                "flex items-center justify-center gap-1 border-r-4 px-2 py-3 first:border-l-0 last:border-r-0",
+                "flex items-center justify-center gap-1 border-r-5 px-2 py-3 first:border-l-0 last:border-r-0",
                 today && "bg-foreground/50 text-background",
               )}
             >
@@ -78,10 +78,12 @@ export function WeekHeader({ days, rooms = [] }: WeekHeaderProps) {
                 <div
                   key={`${day.toISOString()}-${roomCol.id ?? "none"}`}
                   className={cn(
-                    "px-2 py-1 text-center last:border-r-0",
-                    isLastRoom ? "border-r-4" : "border-r",
+                    "px-2 py-1 text-center last:border-r-0 cursor-pointer",
+                    isLastRoom ? "border-r-5" : "border-r",
                     isLastRoom && "text-muted-foreground/50",
                   )}
+                  data-tooltip-id="tooltip"
+                  data-tooltip-content={roomCol.name}
                 >
                   <div className="flex flex-col items-center gap-0.5">
                     <span className="text-xs font-bold text-muted-foreground">
