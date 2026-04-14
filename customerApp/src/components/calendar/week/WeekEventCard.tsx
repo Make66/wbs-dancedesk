@@ -1,4 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
 import { calendarStore } from "../../../stores/calendarStore";
 import type { PositionedCalendarItem } from "../../../types/calendar-types";
 
@@ -27,6 +29,10 @@ export function WeekEventCard({ positionedItem, isSelected, onClick, onResizeMou
     disabled: !isDraggable,
   });
 
+  const timeLabel = `${format(item.start, "HH:mm", { locale: de })} – ${format(item.end, "HH:mm", { locale: de })} Uhr`;
+  const description = item.kind === "event" ? (item.description ?? "") : "";
+  const location = item.kind === "event" ? [item.street, item.city].filter(Boolean).join(", ") : "";
+
   return (
     <div
       ref={setNodeRef}
@@ -37,6 +43,12 @@ export function WeekEventCard({ positionedItem, isSelected, onClick, onResizeMou
           onClick();
         }
       }}
+      data-tooltip-id="calendar-item-tooltip"
+      data-tooltip-hidden={isDragging}
+      data-item-title={item.title}
+      data-item-time={timeLabel}
+      data-item-description={description}
+      data-item-location={location}
       className={`absolute rounded-lg border shadow-sm cursor-pointer hover:saturate-200 ${isSelected ? "ring-2 ring-blue-500" : ""}`}
       style={{
         top,
@@ -48,7 +60,7 @@ export function WeekEventCard({ positionedItem, isSelected, onClick, onResizeMou
         zIndex: isDragging ? 50 : 1,
         backgroundColor: item.color?.[0] || "#3B8200",
         color: item.color?.[1] || "#FFFFFF",
-        opacity: item.courseId ? 0.6 : 1,
+        opacity: item.courseId ? 0.9 : 1,
       }}
     >
       <div className="p-2 text-sm text-center font-medium">{item.courseId ? "" : item.title}</div>

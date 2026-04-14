@@ -114,97 +114,99 @@ const TargetItem = ({ target }: TargetItemProps) => {
   });
 
   return (
-    <div
-      className={cn(
-        isDragging && "z-20 opacity-60",
-        "w-full max-w-200 hover:saturate-150 hover:scale-y-110 transition-all",
-      )}
-    >
+    <>
       <div
-        ref={setNodeRef}
-        style={{
-          ...style,
-          backgroundColor: target.isActive ? target?.color[0] : target.color[0] + "80",
-        }}
-        {...attributes}
-        {...listeners}
         className={cn(
-          "rounded-2xl p-5",
           isDragging && "z-20 opacity-60",
-          "cursor-grab touch-none active:cursor-grabbing",
-          !target.isActive && "cursor-not-allowed opacity-50",
+          "w-full max-w-200 hover:saturate-150 hover:scale-y-110 transition-all",
         )}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-5">
-            <PiDotsSixVerticalBold style={{ color: target.color[1] }} />
-            {target.isNew ? (
-              <div className="flex items-center gap-3">
-                {formData.icon &&
-                  (() => {
-                    const Icon = getIconComponent(formData.icon);
-                    return <Icon className="text-lg" style={{ color: formData.color[1] }} />;
-                  })()}
-                <span style={{ color: formData.color[1] }}>
-                  {formData.name || "Neue Zielgruppe"}
-                </span>
-              </div>
-            ) : (
-              <Link
-                to={`/courses/${target.id}`}
-                state={{ target: target }}
-                className="flex items-center"
-              >
-                {formData.icon &&
-                  (() => {
-                    const Icon = getIconComponent(formData.icon);
-                    return <Icon className="text-lg mr-2" style={{ color: formData.color[1] }} />;
-                  })()}
-                <span style={{ color: formData.color[1] }}>{formData.name}</span>
-                {formData.description && (
-                  <>
-                    <span style={{ color: formData.color[1] }} className="mx-2">
-                      -
-                    </span>
-                    <span style={{ color: formData.color[1] }} className="text-xs">
-                      {formData.description}
-                    </span>
-                  </>
-                )}
-              </Link>
-            )}
-          </div>
-
-          <div className="flex items-center gap-7">
-            {target.isActive ? (
-              <button
-                type="button"
-                className="cursor-pointer"
-                onClick={() => setIsModalOpen(!isModalOpen)}
-              >
-                <div className="rounded-full bg-transparent p-2">
-                  <FaPenNib style={{ color: target.color[1] }} />
+        <div
+          ref={setNodeRef}
+          style={{
+            ...style,
+            backgroundColor: target.isActive ? target?.color[0] : target.color[0] + "80",
+          }}
+          {...attributes}
+          {...listeners}
+          className={cn(
+            "rounded-2xl p-5",
+            isDragging && "z-20 opacity-60",
+            "cursor-grab touch-none active:cursor-grabbing",
+            !target.isActive && "cursor-not-allowed opacity-50",
+          )}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <PiDotsSixVerticalBold style={{ color: target.color[1] }} />
+              {target.isNew ? (
+                <div className="flex items-center gap-3">
+                  {formData.icon &&
+                    (() => {
+                      const Icon = getIconComponent(formData.icon);
+                      return <Icon className="text-lg" style={{ color: formData.color[1] }} />;
+                    })()}
+                  <span style={{ color: formData.color[1] }}>
+                    {formData.name || "Neue Zielgruppe"}
+                  </span>
                 </div>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="cursor-pointer text-2xl"
-                onClick={() => setIsDeleteConfirmOpen(true)}
-              >
-                <MdDelete />
-              </button>
-            )}
-            <Switch
-              className="cursor-pointer"
-              checked={target.isActive}
-              onCheckedChange={(checked) => {
-                handleToggleActive(checked);
-                setIsModalOpen(false);
-              }}
-              color={target.color[1]}
-              color2={target.color[0]}
-            />
+              ) : (
+                <Link
+                  to={`/courses/${target.id}`}
+                  state={{ target: target }}
+                  className="flex items-center"
+                >
+                  {formData.icon &&
+                    (() => {
+                      const Icon = getIconComponent(formData.icon);
+                      return <Icon className="text-lg mr-2" style={{ color: formData.color[1] }} />;
+                    })()}
+                  <span style={{ color: formData.color[1] }}>{formData.name}</span>
+                  {formData.description && (
+                    <>
+                      <span style={{ color: formData.color[1] }} className="mx-2">
+                        -
+                      </span>
+                      <span style={{ color: formData.color[1] }} className="text-xs">
+                        {formData.description}
+                      </span>
+                    </>
+                  )}
+                </Link>
+              )}
+            </div>
+
+            <div className="flex items-center gap-7">
+              {target.isActive ? (
+                <button
+                  type="button"
+                  className="cursor-pointer"
+                  onClick={() => setIsModalOpen(!isModalOpen)}
+                >
+                  <div className="rounded-full bg-transparent p-2">
+                    <FaPenNib style={{ color: target.color[1] }} />
+                  </div>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="cursor-pointer text-2xl"
+                  onClick={() => setIsDeleteConfirmOpen(true)}
+                >
+                  <MdDelete />
+                </button>
+              )}
+              <Switch
+                className="cursor-pointer"
+                checked={target.isActive}
+                onCheckedChange={(checked) => {
+                  handleToggleActive(checked);
+                  setIsModalOpen(false);
+                }}
+                color={target.color[1]}
+                color2={target.color[0]}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -232,7 +234,7 @@ const TargetItem = ({ target }: TargetItemProps) => {
         onConfirm={handleDelete}
         onCancel={() => setIsDeleteConfirmOpen(false)}
       />
-    </div>
+    </>
   );
 };
 

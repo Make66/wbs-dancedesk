@@ -5,6 +5,7 @@ export type CalendarItemKind = "event" | "course";
 export type CalendarEventItem = {
   kind: "event";
   id: string;
+  courseId?: string;
   eventId: string;
   title: string;
   start: Date;

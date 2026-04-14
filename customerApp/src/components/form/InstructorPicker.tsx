@@ -59,7 +59,7 @@ const InstructorPicker = ({ instructors = [], loading }: InstructorPickerProps) 
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-[var(--radix-popover-trigger-width)]">
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] overflow-y-scroll scrollbar">
           <div className="grid">
             {instructors.map((instructor) => (
               <button
@@ -84,8 +84,8 @@ const InstructorPicker = ({ instructors = [], loading }: InstructorPickerProps) 
                         alt={instructor.name}
                       />
                       <div className="flex flex-col items-start">
-                        <span>{instructor.name}</span>
-                        <span className="pr-3 text-left text-sm text-muted-foreground">
+                        <span className="line-clamp-1">{instructor.name}</span>
+                        <span className="pr-3 text-left text-sm text-muted-foreground line-clamp-2">
                           {instructor.description}
                         </span>
                       </div>

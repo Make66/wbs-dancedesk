@@ -18,6 +18,7 @@ import { isSameDay } from "../../../lib/calendar/date-utils";
 import { calendarStore } from "../../../stores/calendarStore";
 import { useDayColumnResize } from "../../../lib/calendar/hooks/useDayColumnResize";
 import { useNavigate } from "react-router";
+import { cn } from "../../../lib/utils";
 
 type Props = {
   day: Date;
@@ -26,10 +27,19 @@ type Props = {
   roomId?: string | null;
   /** Set aller bekannten Raum-IDs – Items mit fremden IDs landen in der "Kein Raum"-Spalte */
   knownRoomIds?: Set<string>;
+  /** Letzte Raumspalte des Tages → dicke Tages-Trennlinie */
+  isLastRoomOfDay?: boolean;
   onEventResizeEnd?: (payload: CalendarItemResizeEndPayload) => void;
 };
 
-export function WeekDayColumn({ day, items, roomId, knownRoomIds, onEventResizeEnd }: Props) {
+export function WeekDayColumn({
+  day,
+  items,
+  roomId,
+  knownRoomIds,
+  isLastRoomOfDay = true,
+  onEventResizeEnd,
+}: Props) {
   const navigate = useNavigate();
   const columnRef = useRef<HTMLDivElement | null>(null);
   const [resizingEventId, setResizingEventId] = useState<string | null>(null);
@@ -99,7 +109,7 @@ export function WeekDayColumn({ day, items, roomId, knownRoomIds, onEventResizeE
         columnRef.current = node;
         setNodeRef(node);
       }}
-      className="relative border-r last:border-r-0"
+      className={cn("relative last:border-r-0", isLastRoomOfDay ? "border-r-5" : "border-r")}
     >
       {Array.from({ length: visibleSlotCount }, (_, i) => {
         const slotIndex = startSlot + i;
@@ -108,7 +118,7 @@ export function WeekDayColumn({ day, items, roomId, knownRoomIds, onEventResizeE
         return (
           <div
             key={slotIndex}
-            className={isHour ? "border-t" : ""}
+            className={cn(isHour && "border-t")}
             style={{ height: `${config.slotHeight}px` }}
           />
         );

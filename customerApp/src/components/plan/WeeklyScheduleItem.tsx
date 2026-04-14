@@ -61,9 +61,9 @@ const WeeklyScheduleItem = ({
         </div>
       </div>
       <div className="flex items-center justify-center gap-4">
-        <div className="grid grid-cols-5 gap-3 items-center">
+        <div className="grid grid-cols-7 gap-3 items-center">
           <div className="col-span-1"></div>
-          <div className="col-span-3 flex justify-around mt-3">
+          <div className="col-span-5 flex justify-around mt-3">
             <SeatingItem seatsCurrent={course.seatsCurrent} seatsMax={course.seatsMax} />
           </div>
           {course.isBookedOut && (
