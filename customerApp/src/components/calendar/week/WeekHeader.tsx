@@ -10,6 +10,12 @@ type WeekHeaderProps = {
   rooms?: Room[];
 };
 
+function getRoomInitials(name: string): string {
+  const words = name.trim().split(/\s+/);
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return name.slice(0, 2).toUpperCase();
+}
+
 export function WeekHeader({ days, rooms = [] }: WeekHeaderProps) {
   const roomColumns: RoomColumn[] | null =
     rooms.length > 0
@@ -32,8 +38,8 @@ export function WeekHeader({ days, rooms = [] }: WeekHeaderProps) {
               key={day.toISOString()}
               style={{ gridColumn: `span ${numRooms}` }}
               className={cn(
-                "flex items-center justify-center gap-1 border-r px-2 py-3 last:border-r-0",
-                today && "bg-foreground/50 text-background rounded-b-2xl",
+                "flex items-center justify-center gap-1 border-r-4 px-2 py-3 first:border-l-0 last:border-r-0",
+                today && "bg-foreground/50 text-background",
               )}
             >
               <span
@@ -66,19 +72,25 @@ export function WeekHeader({ days, rooms = [] }: WeekHeaderProps) {
           <div className="border-r" />
 
           {days.flatMap((day) =>
-            roomColumns.map((roomCol, rIdx) => (
-              <div
-                key={`${day.toISOString()}-${roomCol.id ?? "none"}`}
-                className={cn(
-                  "px-2 py-1 text-center border-r last:border-r-0",
-                  rIdx === roomColumns.length - 1 && "text-muted-foreground/50",
-                )}
-              >
-                <span className="text-xs font-medium text-muted-foreground truncate block">
-                  {roomCol.name}
-                </span>
-              </div>
-            )),
+            roomColumns.map((roomCol, rIdx) => {
+              const isLastRoom = rIdx === roomColumns.length - 1;
+              return (
+                <div
+                  key={`${day.toISOString()}-${roomCol.id ?? "none"}`}
+                  className={cn(
+                    "px-2 py-1 text-center last:border-r-0",
+                    isLastRoom ? "border-r-4" : "border-r",
+                    isLastRoom && "text-muted-foreground/50",
+                  )}
+                >
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-xs font-bold text-muted-foreground">
+                      {getRoomInitials(roomCol.name)}
+                    </span>
+                  </div>
+                </div>
+              );
+            }),
           )}
         </div>
       )}

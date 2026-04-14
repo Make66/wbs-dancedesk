@@ -4,7 +4,7 @@ import type { Participant } from "../types/participants-type";
 import { Input } from "../components/ui/input";
 import { IoIosSearch } from "react-icons/io";
 
-const LIMIT = 20;
+const LIMIT = 25;
 const DEBOUNCE_MS = 400;
 
 const ParticipantsPage = () => {
@@ -68,7 +68,7 @@ const ParticipantsPage = () => {
           fetchParticipants(nextCursor, debouncedSearch);
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "200px" },
     );
 
     observer.observe(sentinel);
@@ -81,18 +81,22 @@ const ParticipantsPage = () => {
         <h1 className="text-3xl font-semibold">Teilnehmer</h1>
       </div>
       <div className="p-6 w-full">
-        <div className="w-full relative mb-4">
-          <Input
-            className="h-15 w-[35%] pl-14"
-            placeholder="Teilnehmer suchen..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          <IoIosSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 text-2xl" />
+        <div className="w-full flex justify-end">
+          <div className="relative mb-4">
+            <Input
+              className="h-15 w-full pl-14"
+              placeholder="Teilnehmer suchen..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+            <IoIosSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 text-2xl" />
+          </div>
         </div>
         {participants.length === 0 && !isFetching ? (
           <p className="text-gray-500">
-            {debouncedSearch ? `Keine Ergebnisse für „${debouncedSearch}".` : "Keine Teilnehmer gefunden."}
+            {debouncedSearch
+              ? `Keine Ergebnisse für „${debouncedSearch}".`
+              : "Keine Teilnehmer gefunden."}
           </p>
         ) : (
           <div className="space-y-1">
@@ -102,7 +106,9 @@ const ParticipantsPage = () => {
           </div>
         )}
         <div ref={sentinelRef} className="py-4 flex justify-center">
-          {isFetching && <p className="text-sm text-muted-foreground">Lade weitere Teilnehmer...</p>}
+          {isFetching && (
+            <p className="text-sm text-muted-foreground">Lade weitere Teilnehmer...</p>
+          )}
         </div>
       </div>
     </div>

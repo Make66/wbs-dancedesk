@@ -34,13 +34,14 @@ export function WeekGrid({ days, items, rooms = [], onEventResizeEnd }: Props) {
 
       {roomColumns
         ? days.flatMap((day) =>
-            roomColumns.map((roomCol) => (
+            roomColumns.map((roomCol, rIdx) => (
               <WeekDayColumn
                 key={`${day.toISOString()}-${roomCol.id ?? "none"}`}
                 day={day}
                 items={items}
                 roomId={roomCol.id}
                 knownRoomIds={knownRoomIds}
+                isLastRoomOfDay={rIdx === roomColumns.length - 1}
                 onEventResizeEnd={onEventResizeEnd}
               />
             )),
