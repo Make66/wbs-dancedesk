@@ -3,11 +3,31 @@ import prisma from '#db';
 
 export const getAllParticipants: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
+  const { cursor, limit = '20', search } = req.query;
+  const take = Math.min(parseInt(limit as string), 100);
+  const searchTerm = typeof search === 'string' && search.trim() ? search.trim() : undefined;
+
   const participants = await prisma.participant.findMany({
-    where: { tenantId, isDeleted: false },
-    orderBy: { lastName: 'asc' },
+    where: {
+      tenantId,
+      isDeleted: false,
+      ...(searchTerm && {
+        OR: [
+          { firstName: { contains: searchTerm, mode: 'insensitive' } },
+          { lastName: { contains: searchTerm, mode: 'insensitive' } },
+        ],
+      }),
+    },
+    orderBy: [{ lastName: 'asc' }, { id: 'asc' }],
+    take: take + 1,
+    ...(cursor ? { cursor: { id: cursor as string }, skip: 1 } : {}),
   });
-  res.json(participants);
+
+  const hasMore = participants.length > take;
+  const data = hasMore ? participants.slice(0, take) : participants;
+  const nextCursor = hasMore ? data[data.length - 1].id : null;
+
+  res.json({ data, nextCursor });
 };
 
 export const getOneParticipant: RequestHandler = async (req, res) => {
