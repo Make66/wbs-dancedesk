@@ -9,22 +9,24 @@ type ImageUploaderProps = {
   className?: string;
   imageUrl?: string;
   onChange?: (file: File) => void;
+  fallbackSrc?: string;
 };
 
-const ProfileImageUploader = ({
+const ImageUploader = ({
   id,
   aspect = 1,
   cropShape = "round",
   className,
   imageUrl,
   onChange,
+  fallbackSrc,
 }: ImageUploaderProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
 
-  const fallbackAvatar = "/assets/images/no-profile-picture.svg";
+  const fallbackAvatar = fallbackSrc || "/assets/images/no-profile-picture.svg";
 
   const handleOpenFilePicker = () => {
     inputRef.current?.click();
@@ -117,4 +119,4 @@ const ProfileImageUploader = ({
   );
 };
 
-export default ProfileImageUploader;
+export default ImageUploader;

@@ -461,7 +461,12 @@ async function main() {
 
   // 2. customer
   const customer = await prisma.customer.create({
-    data: { name: "DanceSchool Flip'n Bit", email: 'info@dancedesk.de', tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' },
+    data: { 
+      name: "DanceSchool Flip'n Bit", 
+      email: 'info@dancedesk.de', 
+      logoUrl: 'http://localhost:8000/assets/images/flipnbit2_xs.png',
+      tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
+     },
   });
 
   // 3. instructors — one per dance specialisation, funny names

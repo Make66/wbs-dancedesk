@@ -1,6 +1,10 @@
 import cors from "cors";
 import express from "express";
 import cookieParser from "cookie-parser";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 import "#db";
 import { errorHandler } from "#middlewares";
 import {
@@ -60,6 +64,8 @@ app.use("/settings", settingsRouter);
 app.use("/targets", targetsRouter);
 app.use("/texts", textsRouter);
 app.use("/users", usersRouter);
+
+app.use("/assets", express.static(join(__dirname, "..", "assets")));
 
 app.use("/*splat", (_req, res) => {
   res.status(404).json({ error: "Not found" });

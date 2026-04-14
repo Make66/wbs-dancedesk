@@ -138,12 +138,11 @@ const EventModal = ({ onClose, onSaved, event }: EventModalProps) => {
     };
 
     try {
-      const response = isEditMode
-        ? await updateEventDB(event.id, payload)
-        : await createEventDB(payload);
-
-      const savedEvent = await response.json();
-      console.log("Saved event:", savedEvent);
+      if (isEditMode) {
+        await updateEventDB(event.id, payload);
+      } else {
+        await createEventDB(payload);
+      }
 
       if (onSaved) {
         await onSaved();

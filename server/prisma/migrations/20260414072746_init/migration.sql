@@ -34,6 +34,31 @@ CREATE TABLE "Category" (
 );
 
 -- CreateTable
+CREATE TABLE "ChatSession" (
+    "participantId" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "domain" TEXT,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "id" UUID NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ChatSession_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ChatMessage" (
+    "role" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
+    "sessionId" UUID NOT NULL,
+    "id" UUID NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ChatMessage_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Course" (
     "name" TEXT DEFAULT 'Grundkurs 1',
     "description" TEXT DEFAULT '',
@@ -126,7 +151,7 @@ CREATE TABLE "Event" (
 CREATE TABLE "Instructor" (
     "name" TEXT DEFAULT 'John Doe Instructor',
     "description" TEXT DEFAULT '',
-    "email" TEXT NOT NULL DEFAULT 'instructor@test.de',
+    "email" TEXT NOT NULL,
     "password" TEXT NOT NULL DEFAULT 'Test123!',
     "refreshToken" TEXT,
     "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
@@ -225,6 +250,7 @@ CREATE TABLE "Registration" (
     "email" TEXT DEFAULT 'Room 1',
     "phone" TEXT DEFAULT 'Room 1',
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "courseId" UUID NOT NULL,
     "street" TEXT NOT NULL DEFAULT '123 Main St',
     "city" TEXT NOT NULL DEFAULT 'Anytown',
     "zipCode" TEXT NOT NULL DEFAULT '12345',
@@ -398,6 +424,9 @@ ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_courseId_fkey" FOREIGN KEY (
 ALTER TABLE "Category" ADD CONSTRAINT "Category_targetId_fkey" FOREIGN KEY ("targetId") REFERENCES "Target"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "ChatMessage" ADD CONSTRAINT "ChatMessage_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "ChatSession"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Course" ADD CONSTRAINT "Course_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -432,6 +461,9 @@ ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_participantId_
 
 -- AddForeignKey
 ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Registration" ADD CONSTRAINT "Registration_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Room" ADD CONSTRAINT "Room_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE SET NULL ON UPDATE CASCADE;

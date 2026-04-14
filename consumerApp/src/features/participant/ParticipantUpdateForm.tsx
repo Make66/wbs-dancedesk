@@ -20,14 +20,27 @@ function germanToIso(value: string): string {
   return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
 }
 
+/* birthDate validation
+  Format check — regex ^\d{2}\.\d{2}\.\d{4}$ ensures exactly DD.MM.YYYY (no partial input passes)
+  Calendar check — constructs a real Date and compares back, which rejects impossible dates like 31.02.2024 or 29.02.2023 (non-leap year)
+  An empty/untouched field passes both checks since the field is optional.
+*/
 const schema = z.object({
-  firstName: z.string().min(1, 'Pflichtfeld'),
-  lastName: z.string().min(1, 'Pflichtfeld'),
-  phone: z.string().optional(),
-  birthDate: z.string().optional(),
-  street: z.string().optional(),
-  city: z.string().optional(),
-  zipCode: z.string().optional(),
+  firstName: z.string().min(2, 'Pflichtfeld'),
+  lastName: z.string().min(2, 'Pflichtfeld'),
+  phone: z.string().max(20).optional(),
+  birthDate: z.string()
+    .optional()
+    .refine((val) => {
+      if (!val) return true;
+      if (!/^\d{2}\.\d{2}\.\d{4}$/.test(val)) return false;
+      const [d, m, y] = val.split('.').map(Number);
+      const date = new Date(y, m - 1, d);
+      return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+    }, 'Kein gültiges Datum (TT.MM.JJJJ)'),
+  street: z.string().min(2).max(100).optional(),
+  city: z.string().min(2).max(100).optional(),
+  zipCode: z.string().min(5).max(5).optional(),
 });
 
 type FormData = z.infer<typeof schema>;

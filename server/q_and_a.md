@@ -319,3 +319,17 @@ This lets downstream handlers and future middleware guard routes by role.
 | Entity lookup by id | `findEntityById(role)` | — |
 | Response shape | — | each handler |
 
+## How do I access static web content from the server?
+
+### Using express.static
+
+app.use("/assets", express.static(join(__dirname, "..", "assets")));
+
+=> http://localhost:8000/assets/images/flipnbit2_xs.png
+
+How it resolves in both modes:
+
+dev (src/index.ts) — __dirname → server/src/, ../assets → server/assets/ ✓
+
+prod (dist/index.js) — __dirname → server/dist/, ../assets → server/assets/ ✓
+

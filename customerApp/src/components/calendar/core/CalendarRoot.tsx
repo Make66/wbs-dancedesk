@@ -3,6 +3,7 @@ import { DndContext, DragOverlay, type DragEndEvent, type DragStartEvent } from 
 
 import { CalendarHeader } from "./CalendarHeader";
 import { CalendarWeekView } from "../week/CalendarWeekView";
+import { CalendarDayView } from "../day/CalendarDayView";
 
 import type {
   CalendarItem,
@@ -10,6 +11,7 @@ import type {
   CalendarItemResizeEndPayload,
   CalendarDragData,
 } from "../../../types/calendar-types";
+import type { Room } from "../../../types/room-types";
 
 import { getCalendarHeaderDisplayData } from "../../../lib/calendar/date-utils";
 import { getCalendarDragEndPayload } from "../../../lib/calendar/calendar-dnd";
@@ -17,11 +19,12 @@ import { calendarStore } from "../../../stores/calendarStore";
 
 type Props = {
   items: CalendarItem[];
+  rooms?: Room[];
   onEventDragEnd?: (payload: CalendarItemDragEndPayload) => void;
   onEventResizeEnd?: (payload: CalendarItemResizeEndPayload) => void;
 };
 
-export function CalendarRoot({ items, onEventDragEnd, onEventResizeEnd }: Props) {
+export function CalendarRoot({ items, rooms, onEventDragEnd, onEventResizeEnd }: Props) {
   const currentView = calendarStore((s) => s.currentView);
   const currentDate = calendarStore((s) => s.currentDate);
   const config = calendarStore((s) => s.config);
@@ -75,8 +78,12 @@ export function CalendarRoot({ items, onEventDragEnd, onEventResizeEnd }: Props)
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
+        {currentView === "day" && (
+          <CalendarDayView items={items} rooms={rooms} onEventResizeEnd={onEventResizeEnd} />
+        )}
+
         {currentView === "week" && (
-          <CalendarWeekView items={items} onEventResizeEnd={onEventResizeEnd} />
+          <CalendarWeekView items={items} rooms={rooms} onEventResizeEnd={onEventResizeEnd} />
         )}
 
         <DragOverlay>{null}</DragOverlay>

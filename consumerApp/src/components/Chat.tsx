@@ -49,7 +49,7 @@ function parseSseTokens(chunk: string): string {
  * participant confirms they want to enroll in a course. This helper strips
  * those markers from the visible text and returns the extracted course IDs.
  */
-const REGISTER_RE = /\[REGISTER:([a-zA-Z0-9-]+)\]/g;
+const REGISTER_RE = /\[REGISTER:([^\]]+)\]/g;
 
 function extractRegistrations(text: string): { cleanText: string; courseIds: string[] } {
   const courseIds: string[] = [];
@@ -60,6 +60,14 @@ function extractRegistrations(text: string): { cleanText: string; courseIds: str
     })
     .trim();
   return { cleanText, courseIds };
+}
+
+/** Strips complete markers and any trailing partial marker (mid-stream). */
+function stripForDisplay(text: string): string {
+  return text
+    .replace(REGISTER_RE, '')
+    .replace(/\[REGISTER:[^\]]*$/, '')
+    .trim();
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -75,6 +83,7 @@ export function Chat() {
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [pendingRegistration, setPendingRegistration] = useState<string | null>(null);
   const [expired, setExpired] = useState(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
 
@@ -148,7 +157,7 @@ export function Chat() {
    */
   const performRegistration = useCallback(
     async (courseId: string) => {
-      if (!participant) return;
+      if (!participant || !user) return;
       setRegistering(true);
 
       try {
@@ -160,11 +169,12 @@ export function Chat() {
             firstName: participant.firstName,
             lastName: participant.lastName,
             email: participant.email,
+            tenantId: user.tenantId,
+            courseId,
             ...(participant.phone ? { phone: participant.phone } : {}),
             ...(participant.street ? { street: participant.street } : {}),
             ...(participant.city ? { city: participant.city } : {}),
             ...(participant.zipCode ? { zipCode: participant.zipCode } : {}),
-            courseId,
           }),
         });
 
@@ -191,7 +201,7 @@ export function Chat() {
         setRegistering(false);
       }
     },
-    [participant]
+    [participant, user]
   );
 
   // ── Messaging ──────────────────────────────────────────────────────────────
@@ -222,7 +232,7 @@ export function Chat() {
       const tokens = parseSseTokens(chunk);
       if (!tokens) return;
       assembled += tokens;
-      const snapshot = assembled;
+      const snapshot = stripForDisplay(assembled);
       setMessages((prev) =>
         prev.map((m) => (m.id === assistantId ? { ...m, content: snapshot } : m))
       );
@@ -236,13 +246,13 @@ export function Chat() {
         setSessionError(`Fehler ${xhr.status}. Bitte erneut versuchen.`);
         setMessages((prev) => prev.filter((m) => m.id !== assistantId));
       } else {
-        // Strip action markers from display text, then trigger side-effects
+        // Strip action markers from display text, then await user confirmation
         const { cleanText, courseIds } = extractRegistrations(assembled);
         if (courseIds.length > 0) {
           setMessages((prev) =>
             prev.map((m) => (m.id === assistantId ? { ...m, content: cleanText } : m))
           );
-          courseIds.forEach((id) => performRegistration(id));
+          setPendingRegistration(courseIds[0]);
         }
       }
       setStreaming(false);
@@ -261,7 +271,7 @@ export function Chat() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
-  const canSend = !!sessionId && !!input.trim() && !streaming && !expired && !registering;
+  const canSend = !!sessionId && !!input.trim() && !streaming && !expired && !registering && !pendingRegistration;
   const busy = streaming || registering;
 
   return (
@@ -353,6 +363,24 @@ export function Chat() {
         />
       )}
 
+      {/* Registration confirmation bar */}
+      {pendingRegistration && (
+        <View style={[styles.confirmBar, { backgroundColor: colors.primaryMuted, borderColor: colors.primary }]}>
+          <Text style={{ color: colors.primary, fontSize: 14, flex: 1 }}>
+            Kurs jetzt verbindlich anmelden?
+          </Text>
+          <Pressable
+            onPress={() => { setPendingRegistration(null); performRegistration(pendingRegistration); }}
+            style={[styles.confirmBtn, { backgroundColor: colors.primary }]}
+          >
+            <Text style={{ color: '#fff', fontWeight: '600', fontSize: 13 }}>Ja, anmelden</Text>
+          </Pressable>
+          <Pressable onPress={() => setPendingRegistration(null)}>
+            <Text style={{ color: colors.primary, fontWeight: '600', fontSize: 13 }}>Abbrechen</Text>
+          </Pressable>
+        </View>
+      )}
+
       {/* Input bar */}
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View
@@ -372,7 +400,7 @@ export function Chat() {
             onChangeText={setInput}
             multiline
             maxLength={2000}
-            editable={!!sessionId && !expired && !registering}
+            editable={!!sessionId && !expired && !registering && !pendingRegistration}
             returnKeyType="send"
             blurOnSubmit
             onSubmitEditing={sendMessage}
@@ -457,4 +485,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sendIcon: { color: '#fff', fontSize: 20, fontWeight: '700', lineHeight: 24 },
+
+  confirmBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+  },
+  confirmBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+  },
 });
