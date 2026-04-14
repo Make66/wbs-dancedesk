@@ -595,6 +595,7 @@ async function main() {
 
   // 5. categories — deduplicated by targetId + headline
   const categoryMap = new Map<string, string>(); // `${targetId}:${headline}` → prisma id
+  const categoryColorMap = new Map<string, string[]>(); // category id → color
 
   const uniqueCategories = new Map<string, { name: string; isActive: boolean; targetId: string; color: string[] }>();
   for (const loc of citiData) {
@@ -619,6 +620,7 @@ async function main() {
   for (const [key, data] of uniqueCategories) {
     const category = await prisma.category.create({ data: { ...data, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
     categoryMap.set(key, category.id);
+    categoryColorMap.set(category.id, data.color);
   }
 
   // 6. texts — must come before courses (textTermsId / textInfoId are required FKs)
@@ -685,6 +687,7 @@ async function main() {
               seatsMax: 20,
               dates,
               categoryId,
+              color: categoryColorMap.get(categoryId) ?? [],
               textTermsId: defaultTerms.id,
               textInfoId: defaultInfo.id,
               tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',

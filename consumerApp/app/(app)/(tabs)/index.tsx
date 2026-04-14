@@ -1,4 +1,4 @@
-import { FlatList, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card } from '@/components/Card';
@@ -48,18 +48,10 @@ export default function HomeTab() {
         {courses.map((course) => (
           <View key={course.id}>
             <ThemedText>{course.name}</ThemedText>
-            <FlatList
-              data={[...course.dates].sort(
-                (a, b) =>
-                  new Date(a.date).getTime() - new Date(b.date).getTime(),
-              )}
-              keyExtractor={(item) => item.date}
-              renderItem={({
-                item,
-              }: {
-                item: { date: string; isStart: boolean };
-              }) => (
-                <View style={styles.dateRow}>
+            {[...course.dates]
+              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+              .map((item) => (
+                <View key={item.date} style={styles.dateRow}>
                   <ThemedText style={styles.bullet}>•</ThemedText>
                   <ThemedText style={styles.dateText}>
                     {new Date(item.date)
@@ -74,8 +66,7 @@ export default function HomeTab() {
                     {item.isStart ? " (Start)" : ""}
                   </ThemedText>
                 </View>
-              )}
-            />
+              ))}
           </View>
         ))}
       </Card>

@@ -1,21 +1,39 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Camera, useCodeScanner, useCameraPermission, useCameraDevice } from 'react-native-vision-camera';
 import { login } from '@/features/auth/authApi';
 import { fetchCustomerByTenant } from '@/features/auth/customerApi';
 import { useTenantStore } from '@/store/tenant';
 import { useAppTheme } from '@/theme/ThemeProvider';
 import { ThemedText } from '@/components/ThemedText';
 
-const schema = z.object({
+// ─── Schemas ────────────────────────────────────────────────────────────────
+
+const tenantSchema = z.object({
   tenantId: z.string().min(1, 'Studio ID is required'),
+});
+
+const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
-type FormData = z.infer<typeof schema>;
+type TenantFormData = z.infer<typeof tenantSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
+
+// ─── Web form wrapper ────────────────────────────────────────────────────────
 
 function FormWrapper({ onSubmit, children }: { onSubmit: () => void; children: React.ReactNode }) {
   if (Platform.OS !== 'web') return <>{children}</>;
@@ -25,79 +43,280 @@ function FormWrapper({ onSubmit, children }: { onSubmit: () => void; children: R
       style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}
     >
       {children}
-      {/* hidden submit button enables Enter-key submission */}
       <button type="submit" style={{ display: 'none' }} />
     </form>
   );
 }
 
-export default function LoginScreen() {
-  const { colors } = useAppTheme();
-  const [error, setError] = useState<string | null>(null);
-  const { customer, hydrated, setCustomer, clearCustomer } = useTenantStore();
+// ─── QR Scanner overlay ──────────────────────────────────────────────────────
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { tenantId: '', email: '', password: '' },
+function QrScannerModal({
+  visible,
+  onScanned,
+  onClose,
+}: {
+  visible: boolean;
+  onScanned: (tenantId: string) => void;
+  onClose: () => void;
+}) {
+  const { colors } = useAppTheme();
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const device = useCameraDevice('back');
+  const scannedRef = useRef(false);
+
+  // Reset guard each time the modal opens
+  useEffect(() => {
+    if (visible) scannedRef.current = false;
+  }, [visible]);
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr'],
+    onCodeScanned: (codes) => {
+      if (scannedRef.current) return;
+      const value = codes[0]?.value;
+      if (value) {
+        scannedRef.current = true;
+        onScanned(value);
+      }
+    },
   });
 
-  useEffect(() => {
-    if (hydrated && customer) {
-      setValue('tenantId', customer.tenantId);
-    }
-  }, [hydrated, customer]);
+  return (
+    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+      <View style={styles.scannerContainer}>
+        {!hasPermission ? (
+          <View style={[styles.permissionBox, { backgroundColor: colors.surface }]}>
+            <ThemedText style={styles.permissionText}>
+              Kamerazugriff wird für den QR-Scan benötigt.
+            </ThemedText>
+            <Pressable
+              style={[styles.permissionButton, { backgroundColor: colors.primary }]}
+              onPress={requestPermission}
+            >
+              <ThemedText style={styles.permissionButtonText}>Kamera freigeben</ThemedText>
+            </Pressable>
+          </View>
+        ) : device ? (
+          <Camera
+            style={StyleSheet.absoluteFillObject}
+            device={device}
+            isActive={visible}
+            codeScanner={codeScanner}
+          />
+        ) : null}
 
-  const onSubmit = async (data: FormData) => {
-    setError(null);
-    let tenantId: string;
+        {/* Close button */}
+        <Pressable
+          style={[styles.scannerClose, { backgroundColor: colors.surface }]}
+          onPress={onClose}
+        >
+          <ThemedText style={{ color: colors.text }}>Abbrechen</ThemedText>
+        </Pressable>
 
-    if (!customer) {
-      try {
-        const tenantCustomer = await fetchCustomerByTenant(data.tenantId);
-        setCustomer(tenantCustomer);
-        tenantId = tenantCustomer.tenantId;
-      } catch {
-        setError('Studio not found. Please check your Studio ID.');
-        return;
-      }
-    } else {
-      tenantId = customer.tenantId;
-    }
+        {/* Viewfinder hint */}
+        {hasPermission && (
+          <View style={styles.viewfinderWrapper} pointerEvents="none">
+            <View style={[styles.viewfinder, { borderColor: colors.primary }]} />
+            <ThemedText style={[styles.scanHint, { color: '#fff' }]}>
+              QR-Code in den Rahmen halten
+            </ThemedText>
+          </View>
+        )}
+      </View>
+    </Modal>
+  );
+}
 
+// ─── Main screen ─────────────────────────────────────────────────────────────
+
+export default function LoginScreen() {
+  const { colors } = useAppTheme();
+  const { customer, hydrated, setCustomer, clearCustomer } = useTenantStore();
+
+  const [tenantError, setTenantError] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [tenantLoading, setTenantLoading] = useState(false);
+
+  // Tenant-setup form (step 1)
+  const {
+    control: tenantControl,
+    handleSubmit: handleTenantSubmit,
+    setValue: setTenantValue,
+    formState: { errors: tenantErrors },
+  } = useForm<TenantFormData>({
+    resolver: zodResolver(tenantSchema),
+    defaultValues: { tenantId: '' },
+  });
+
+  // Login form (step 2)
+  const {
+    control: loginControl,
+    handleSubmit: handleLoginSubmit,
+    formState: { errors: loginErrors, isSubmitting: isLoginSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  // Resolve a tenantId string → fetch TenantCustomer and persist it
+  const resolveTenant = async (tenantId: string) => {
+    setTenantError(null);
+    setTenantLoading(true);
     try {
-      await login(data.email, data.password, tenantId);
+      const tenantCustomer = await fetchCustomerByTenant(tenantId);
+      setCustomer(tenantCustomer);
+    } catch {
+      setTenantError('Studio nicht gefunden. Bitte Studio-ID prüfen.');
+    } finally {
+      setTenantLoading(false);
+    }
+  };
+
+  const onTenantSubmit = async (data: TenantFormData) => {
+    await resolveTenant(data.tenantId);
+  };
+
+  const onQrScanned = async (value: string) => {
+    setScannerOpen(false);
+    setTenantValue('tenantId', value);
+    await resolveTenant(value);
+  };
+
+  const onLoginSubmit = async (data: LoginFormData) => {
+    if (!customer) return;
+    setLoginError(null);
+    try {
+      await login(data.email, data.password, customer.tenantId);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Login failed. Please try again.');
+      setLoginError(e instanceof Error ? e.message : 'Login fehlgeschlagen. Bitte erneut versuchen.');
     }
   };
 
   const handleClearTenant = () => {
     clearCustomer();
-    setValue('tenantId', '');
   };
 
+  // ── Loading (hydration) ────────────────────────────────────────────────────
   if (!hydrated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ActivityIndicator color={colors.primary} />
+      <View style={styles.bg}>
+        <Image source={require('../../assets/login-bg.jpg')} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
+        <View style={styles.container}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
       </View>
     );
   }
 
-  return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ThemedText style={styles.title}>Anmelden</ThemedText>
-      <ThemedText style={[styles.subtitle, { color: colors.textMuted }]}>
-        Geben Sie Ihre E-Mail und Ihr Passwort ein, um fortzufahren.
-      </ThemedText>
+  // ── Step 1: Tenant setup ───────────────────────────────────────────────────
+  if (!customer) {
+    return (
+      <View style={styles.bg}>
+        <Image source={require('../../assets/login-bg.jpg')} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
+        <View style={styles.container}>
+          <ThemedText style={styles.title}>Studio finden</ThemedText>
+          <ThemedText style={[styles.subtitle, { color: colors.textMuted }]}>
+            Gib deine Studio-ID ein oder scanne den QR-Code deines Studios.
+          </ThemedText>
 
-      <FormWrapper onSubmit={handleSubmit(onSubmit)}>
-        {customer ? (
+          <FormWrapper onSubmit={handleTenantSubmit(onTenantSubmit)}>
+            <Controller
+              control={tenantControl}
+              name="tenantId"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: colors.surface,
+                      borderColor: tenantErrors.tenantId ? colors.danger : colors.border,
+                      color: colors.text,
+                    },
+                  ]}
+                  placeholder="Studio ID"
+                  placeholderTextColor={colors.textMuted}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            {tenantErrors.tenantId && (
+              <ThemedText style={[styles.fieldError, { color: colors.danger }]}>
+                {tenantErrors.tenantId.message}
+              </ThemedText>
+            )}
+
+            <View style={styles.dividerRow}>
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+              <ThemedText style={[styles.dividerLabel, { color: colors.textMuted }]}>oder</ThemedText>
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+            </View>
+
+            <Pressable
+              style={[styles.qrButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              onPress={() => setScannerOpen(true)}
+            >
+              <ThemedText style={[styles.qrButtonText, { color: colors.text }]}>
+                QR-Code scannen
+              </ThemedText>
+            </Pressable>
+
+            {tenantError && (
+              <ThemedText style={[styles.error, { color: colors.danger }]}>
+                {tenantError}
+              </ThemedText>
+            )}
+
+            <Pressable
+              style={[styles.button, { backgroundColor: colors.primary }, tenantLoading && styles.buttonDisabled]}
+              onPress={handleTenantSubmit(onTenantSubmit)}
+              disabled={tenantLoading}
+            >
+              {tenantLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <ThemedText style={styles.buttonText}>Weiter</ThemedText>
+              )}
+            </Pressable>
+          </FormWrapper>
+        </View>
+
+        <QrScannerModal
+          visible={scannerOpen}
+          onScanned={onQrScanned}
+          onClose={() => setScannerOpen(false)}
+        />
+      </View>
+    );
+  }
+
+  // ── Step 2: Login (customer already stored) ────────────────────────────────
+  return (
+    <View style={styles.bg}>
+      <Image
+        source={require("../../assets/login-bg.jpg")}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode="cover"
+      />
+      <View style={styles.container}>
+        <ThemedText style={styles.title}>Anmelden</ThemedText>
+        <ThemedText style={[styles.subtitle, { color: colors.textMuted }]}>
+          Geben Sie Ihre E-Mail und Ihr Passwort ein, um fortzufahren.
+        </ThemedText>
+        <Pressable onPress={handleClearTenant} style={styles.changeButton}>
+          <ThemedText
+            style={[styles.changeButtonText, { color: colors.textMuted }]}
+          >
+            Nicht Deins?
+          </ThemedText>
+        </Pressable>
+
+        <FormWrapper onSubmit={handleLoginSubmit(onLoginSubmit)}>
+          {/* Tenant card */}
           <View
             style={[
               styles.tenantCard,
@@ -120,145 +339,108 @@ export default function LoginScreen() {
                   {customer.email}
                 </ThemedText>
               ) : null}
-              {customer.website ? (
-                <ThemedText
-                  style={[styles.tenantMeta, { color: colors.textMuted }]}
-                >
-                  {customer.website}
-                </ThemedText>
-              ) : null}
+             
             </View>
-            <Pressable onPress={handleClearTenant} style={styles.changeButton}>
-              <ThemedText
-                style={[styles.changeButtonText, { color: colors.textMuted }]}
-              >
-                Nicht Deins?
-              </ThemedText>
-            </Pressable>
           </View>
-        ) : (
-          <>
-            <Controller
-              control={control}
-              name="tenantId"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: colors.surface,
-                      borderColor: errors.tenantId
-                        ? colors.danger
-                        : colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  placeholder="Studio ID"
-                  placeholderTextColor={colors.textMuted}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              )}
-            />
-            {errors.tenantId && (
-              <ThemedText style={[styles.fieldError, { color: colors.danger }]}>
-                {errors.tenantId.message}
-              </ThemedText>
+
+          {/* Email */}
+          <Controller
+            control={loginControl}
+            name="email"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: loginErrors.email
+                      ? colors.danger
+                      : colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="Email"
+                placeholderTextColor={colors.textMuted}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete="email"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
             )}
-          </>
-        )}
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: errors.email ? colors.danger : colors.border,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="Email"
-              placeholderTextColor={colors.textMuted}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoComplete="email"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
+          />
+          {loginErrors.email && (
+            <ThemedText style={[styles.fieldError, { color: colors.danger }]}>
+              {loginErrors.email.message}
+            </ThemedText>
           )}
-        />
-        {errors.email && (
-          <ThemedText style={[styles.fieldError, { color: colors.danger }]}>
-            {errors.email.message}
-          </ThemedText>
-        )}
 
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: errors.password ? colors.danger : colors.border,
-                  color: colors.text,
-                },
-              ]}
-              placeholder="Password"
-              placeholderTextColor={colors.textMuted}
-              secureTextEntry
-              autoComplete="password"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-            />
+          {/* Password */}
+          <Controller
+            control={loginControl}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: loginErrors.password
+                      ? colors.danger
+                      : colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="Password"
+                placeholderTextColor={colors.textMuted}
+                secureTextEntry
+                autoComplete="password"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+          {loginErrors.password && (
+            <ThemedText style={[styles.fieldError, { color: colors.danger }]}>
+              {loginErrors.password.message}
+            </ThemedText>
           )}
-        />
-        {errors.password && (
-          <ThemedText style={[styles.fieldError, { color: colors.danger }]}>
-            {errors.password.message}
-          </ThemedText>
-        )}
 
-        {error && (
-          <ThemedText style={[styles.error, { color: colors.danger }]}>
-            {error}
-          </ThemedText>
-        )}
-
-        <Pressable
-          style={[
-            styles.button,
-            { backgroundColor: colors.primary },
-            isSubmitting && styles.buttonDisabled,
-          ]}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <ThemedText style={styles.buttonText}>Sign in</ThemedText>
+          {loginError && (
+            <ThemedText style={[styles.error, { color: colors.danger }]}>
+              {loginError}
+            </ThemedText>
           )}
-        </Pressable>
-      </FormWrapper>
+
+          <Pressable
+            style={[
+              styles.button,
+              { backgroundColor: colors.primary },
+              isLoginSubmitting && styles.buttonDisabled,
+            ]}
+            onPress={handleLoginSubmit(onLoginSubmit)}
+            disabled={isLoginSubmitting}
+          >
+            {isLoginSubmitting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <ThemedText style={styles.buttonText}>Sign in</ThemedText>
+            )}
+          </Pressable>
+        </FormWrapper>
+      </View>
     </View>
   );
 }
 
+// ─── Styles ──────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, gap: 12 },
-  title: { fontSize: 30, fontWeight: '700' },
+  bg: { flex: 1 },
+  container: { flex: 1, justifyContent: 'center', padding: 24, gap: 12, backgroundColor: 'rgba(0,0,0,0.45)' },
+  title: { fontSize: 30, fontWeight: '700', color: '#CCC' },
   subtitle: { fontSize: 16, marginBottom: 12 },
   input: { padding: 16, borderRadius: 14, borderWidth: 1, fontSize: 16 },
   fieldError: { fontSize: 13, marginTop: -6 },
@@ -273,4 +455,44 @@ const styles = StyleSheet.create({
   tenantMeta: { fontSize: 13 },
   changeButton: { padding: 4 },
   changeButtonText: { fontSize: 13 },
+  // Tenant-setup specific
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  dividerLine: { flex: 1, height: 1 },
+  dividerLabel: { fontSize: 13 },
+  qrButton: { padding: 16, borderRadius: 14, borderWidth: 1, alignItems: 'center' },
+  qrButtonText: { fontSize: 16, fontWeight: '600' },
+  // Scanner
+  scannerContainer: { flex: 1, backgroundColor: '#000' },
+  scannerClose: {
+    position: 'absolute',
+    bottom: 48,
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 24,
+  },
+  viewfinderWrapper: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+  },
+  viewfinder: {
+    width: 220,
+    height: 220,
+    borderWidth: 2,
+    borderRadius: 16,
+  },
+  scanHint: { fontSize: 14 },
+  // Permission
+  permissionBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    padding: 32,
+  },
+  permissionText: { fontSize: 16, textAlign: 'center' },
+  permissionButton: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 },
+  permissionButtonText: { color: '#fff', fontWeight: '600' },
 });
