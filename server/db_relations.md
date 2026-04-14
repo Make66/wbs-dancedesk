@@ -23,9 +23,9 @@
        │ 1:n                   ║ startsAt / endsAt                     ║
        │                       ║ frequency, dates (JSON)               ║
        ▼                       ║ seatsCurrent / seatsMax               ║
-╔══════════════╗               ║ isClub, isBookedOut, isIgnoreCalendar ║
-║    Target    ║               ╚═╤══╤══╤════╤═════════════╤════════════╝
-╠══════════════╣                 │  │  │    │             │
+╔══════════════╗               ║ color (JSON?)                         ║
+║    Target    ║               ║ isClub, isBookedOut, isIgnoreCalendar ║
+╠══════════════╣               ╚═╤══╤══╤════╤═════════════╤════════════╝
 ║ name         ║  1:n            │  │  │    │             │
 ║ color[]      ╠─────────────────┘  │  │    │             │
 ╚══════╤═══════╝                    │  │    │             │
@@ -55,7 +55,7 @@
     Location ──────────────────┘
     (Room belongs to Location)
 
-── Event (belongs to Room and/or Location) ─────────────────────────────
+── Event (belongs to Room, Location, and Target) ───────────────────────
 
 ╔══════════════╗   0..1:n   ╔══════════════════════════╗
 ║     Room     ╠────────────╣          Event           ║
@@ -63,9 +63,20 @@
 ╔══════════════╗   0..1:n   ║ title, description       ║
 ║   Location   ╠────────────╣ date, icon, color[]      ║
 ╚══════════════╝            ║ address fields           ║
-                            ║ roomId (opt.)            ║
-                            ║ locationId (opt.)        ║
-                            ╚══════════════════════════╝
+╔══════════════╗   n:m      ║ roomId (opt.)            ║
+║    Target    ╠────────────╣ locationId (opt.)        ║
+╚══════════════╝            ╚══════════════════════════╝
+ ("EventTargets")
+
+── Attendance (join: Participant × Course × date) ──────────────────────
+
+╔═══════════════╗  1:n  ╔══════════════════════╗  n:1  ╔══════════════╗
+║  Participant  ╠───────╣      Attendance       ╠───────╣    Course    ║
+╚═══════════════╝       ╠══════════════════════╣       ╚══════════════╝
+                        ║ date                 ║
+                        ║ status (enum)        ║
+                        ║ comment              ║
+                        ╚══════════════════════╝
 
 ── Many-to-Many (explicit join table) ──────────────────────────────────
 
@@ -89,11 +100,13 @@
 ║   User   ╠────────────╣  Module  ║   @relation("UserModules")
 ╚══════════╝            ╚══════════╝
 
-── Standalone (no FK relations) ────────────────────────────────────────
+── FK relations (no back-relation shown above) ──────────────────────────
 
-╔════════════════╗
-║  Registration  ║   (no relations — stores raw form submissions)
-╚════════════════╝
+╔══════════════╗  n:1  ╔══════════╗
+║ Registration ╠───────╣  Course  ║   courseId FK (raw form submissions)
+╚══════════════╝       ╚══════════╝
+
+── Standalone (no FK relations) ────────────────────────────────────────
 
 ╔════════════════╗
 ║    Settings    ║   (singleton per tenant — no FK, keyed by tenantId)
@@ -109,16 +122,19 @@
 | Location     | Target           | 1 : n (opt.)   | `Target.locationId`             |                                   |
 | Location     | Room             | 1 : n (opt.)   | `Room.locationId`               |                                   |
 | Location     | Course           | 1 : n (opt.)   | `Course.locationId`             |                                   |
+| Location     | Event            | 1 : n (opt.)   | `Event.locationId`              |                                   |
 | Target       | Category         | 1 : n          | `Category.targetId`             |                                   |
+| Target       | Event            | n : m          | Prisma implicit table           | `@relation("EventTargets")`       |
 | Category     | Course           | 1 : n          | `Course.categoryId`             | required                          |
 | Instructor   | Course           | 1 : n (opt.)   | `Course.instructorId`           |                                   |
 | Room         | Course           | 1 : n (opt.)   | `Course.roomId`                 |                                   |
 | Room         | Event            | 1 : n (opt.)   | `Event.roomId`                  |                                   |
-| Location     | Event            | 1 : n (opt.)   | `Event.locationId`              |                                   |
 | Text         | Course (terms)   | 1 : n (opt.)   | `Course.textTermsId`            | named relation `"textTerms"`      |
 | Text         | Course (info)    | 1 : n (opt.)   | `Course.textInfoId`             | named relation `"textInfo"`       |
+| Course       | Attendance       | 1 : n          | `Attendance.courseId`           |                                   |
+| Participant  | Attendance       | 1 : n          | `Attendance.participantId`      |                                   |
 | Participant  | Course           | n : m          | `ParticipantCourse` join table  | explicit — carries `createdAt`, `tenantId` |
+| Registration | Course           | n : 1          | `Registration.courseId`         | raw form submissions              |
 | User         | Location         | n : m          | Prisma implicit table           | `@relation("UserLocations")`      |
 | User         | Module           | n : m          | Prisma implicit table           | `@relation("UserModules")`        |
-| Registration | —                | none           | —                               | standalone, no FK relations       |
 | Settings     | —                | none           | —                               | singleton per tenant              |
