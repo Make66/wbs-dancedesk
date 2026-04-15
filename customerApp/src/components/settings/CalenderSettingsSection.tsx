@@ -54,9 +54,7 @@ const CalenderSettingsSection = () => {
         <div className="relative">
           <Sunrise className="absolute top-1/2 -translate-y-1/2 left-6 text-xl w-5 h-5" />
           <input
-            type="number"
-            min={0}
-            max={23}
+            type="text"
             value={calendar.startHour}
             onChange={(e) => handleHourChange("startHour", e.target.value)}
             className="h-16 w-full rounded-2xl border border-muted-foreground bg-background/40 pl-16 pr-4 text-lg focus:outline-none focus:ring-0"
@@ -64,7 +62,7 @@ const CalenderSettingsSection = () => {
             data-tooltip-content="Startzeit des Kalenders (Stunde)"
             data-tooltip-place="bottom"
           />
-          <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm text-muted-foreground">
+          <span className="absolute top-1/2 -translate-y-1/2 left-24 text-lg text-muted-foreground">
             Uhr
           </span>
         </div>
@@ -79,7 +77,7 @@ const CalenderSettingsSection = () => {
             data-tooltip-content="Endzeit des Kalenders (Stunde)"
             data-tooltip-place="bottom"
           />
-          <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm text-muted-foreground">
+          <span className="absolute top-1/2 -translate-y-1/2 left-24 text-lg text-muted-foreground">
             Uhr
           </span>
         </div>
