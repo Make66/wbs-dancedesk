@@ -25,7 +25,7 @@ export const getAllParticipants: RequestHandler = async (req, res) => {
 
   const hasMore = participants.length > take;
   const data = hasMore ? participants.slice(0, take) : participants;
-  const nextCursor = hasMore ? data[data.length - 1].id : null;
+  const nextCursor = hasMore ? data[data.length - 1]?.id : null;
 
   res.json({ data, nextCursor });
 };
