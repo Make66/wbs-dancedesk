@@ -9,7 +9,6 @@ import {
   LoginPage,
   InstructorsPage,
   ParticipantsPage,
-  TargetsPage,
   CourseDetailPage,
   RoomsPage,
   SettingsPage,
@@ -27,7 +26,6 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
-            <Route path="/targets" element={<TargetsPage />} />
             <Route path="/courses" element={<CoursesPage />} />
             <Route path="/courses/:targetId" element={<CategoriesPage />} />
             <Route path="/course" element={<CourseDetailPage />} />

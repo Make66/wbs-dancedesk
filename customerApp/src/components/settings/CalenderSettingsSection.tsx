@@ -45,9 +45,9 @@ const CalenderSettingsSection = () => {
 
   return (
     <div className="p-4 bg-blue-400/60 rounded-2xl">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 ml-2">
         <FaCalendarAlt className="text-2xl" />
-        <h3 className="font-semibold text-2xl">Kalender-Einstellungen</h3>
+        <h3 className="font-semibold text-2xl">Kalender</h3>
       </div>
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -71,9 +71,7 @@ const CalenderSettingsSection = () => {
         <div className="relative">
           <Sunset className="absolute top-1/2 -translate-y-1/2 left-6 text-xl w-5 h-5" />
           <input
-            type="number"
-            min={1}
-            max={24}
+            type="text"
             value={calendar.endHour}
             onChange={(e) => handleHourChange("endHour", e.target.value)}
             className="h-16 w-full rounded-2xl border border-muted-foreground bg-background/40 pl-16 pr-4 text-lg focus:outline-none focus:ring-0"
