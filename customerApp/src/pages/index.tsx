@@ -4,7 +4,6 @@ import CategoriesPage from "./CategoriesPage";
 import LoginPage from "./LoginPage";
 import InstructorsPage from "./InstructorsPage";
 import ParticipantsPage from "./ParticipantsPage";
-import TargetsPage from "./TargetsPage";
 import CourseDetailPage from "./CourseDetailPage";
 import RoomsPage from "./RoomsPage";
 import SettingsPage from "./SettingsPage";
@@ -19,7 +18,6 @@ export {
   LoginPage,
   InstructorsPage,
   ParticipantsPage,
-  TargetsPage,
   CourseDetailPage,
   RoomsPage,
   SettingsPage,

@@ -1,4 +1,4 @@
-import TargetItem from "../components/courses/TargetItem";
+import TargetItem from "../courses/TargetItem";
 import {
   DndContext,
   closestCenter,
@@ -8,12 +8,13 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { targetStore } from "../stores/targetStore";
-import { userStore } from "../stores/userStore";
-import { updateLocationDB } from "../data/location";
+import { targetStore } from "../../stores/targetStore";
+import { userStore } from "../../stores/userStore";
+import { updateLocationDB } from "../../data/location";
 import { toast } from "react-toastify";
-import AddButton from "../components/ui/AddButton";
-import VisibleButton from "../components/ui/VisibleButton";
+import AddButton from "../ui/AddButton";
+import VisibleButton from "../ui/VisibleButton";
+import { MdGroups } from "react-icons/md";
 
 const TargetsPage = () => {
   const targets = targetStore((state) => state.targets);
@@ -56,9 +57,12 @@ const TargetsPage = () => {
   };
 
   return (
-    <div className="w-full h-screen bg-background">
-      <div className="sticky top-0 flex h-20 items-center gap-9 border-b border-gray-400 dark:border-gray-700 pl-6 z-20">
-        <h1 className="text-3xl font-semibold">Zielgruppen</h1>
+    <div className="p-4 bg-red-400/60 rounded-2xl">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4 ml-2">
+          <MdGroups className="text-2xl" />
+          <h3 className="text-2xl font-semibold">Zielgruppen</h3>
+        </div>
         <div className="flex items-center gap-6">
           <AddButton onClick={() => addTarget()} tooltipContent="Zielgruppe hinzufügen" />
           {hasInactiveItems && (
@@ -70,7 +74,7 @@ const TargetsPage = () => {
           )}
         </div>
       </div>
-      <div className="p-6 mt-3">
+      <div className="mt-5">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext
             items={visibleTargets.map((target) => target.id)}
