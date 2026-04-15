@@ -919,9 +919,12 @@ async function main() {
         endHour: 20,
         slotHeight: 20,
         minutesPerSlot: 15,
-        federalHolidays: germanyHolidays,
-        schoolHolidays,
       },
+      holidays: {
+        federal: germanyHolidays,
+        school: schoolHolidays,
+      },
+
       registration: {
         delTime: 30,
         checkSeats: false,

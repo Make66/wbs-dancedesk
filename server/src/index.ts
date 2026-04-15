@@ -73,4 +73,5 @@ app.use("/*splat", (_req, res) => {
 
 app.use(errorHandler);
 
+app.listen(port, "localhost", () => console.log(`Server listening on http://localhost:${port}`));
 app.listen(port, "192.168.178.52", () => console.log(`Server listening on http://192.168.178.52:${port}`));

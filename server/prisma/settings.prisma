@@ -1,11 +1,13 @@
 model Settings {
   basic        Json? @default("{\"domain\":\"\",\"federalState\":\"\",\"termsUri\":\"\",\"privacyUri\":\"\",\"cancellationUri\":\"\", \"cancellationSampleUri\":\"\"}")
   calendar     Json? @default("{\"startHour\":10,\"endHour\":20,\"slotHeight\":20,\"minutesPerSlot\":15, \"federalHolidays\":[], \"schoolHolidays\":[]}")
-  formFields   Json?
-  registration Json? @default("{\"titleCol1\":\"\", \"titleCol2\":\"\",\"delTime\":90,\"checkSeats\":false,"waitingList",\"displayPastNumber\":7,\"displayNumberOccurrences\":7}")}")
   contracts    Json?
+  formFields   Json?
+  holidays     Json?
   rebates      Json?
-  voucher      Json?
+  registration Json? @default("{\"titleCol1\":\"\", \"titleCol2\":\"\",\"delTime\":90,\"checkSeats\":false,"waitingList",\"displayPastNumber\":7,\"displayNumberOccurrences\":7}")}")
+  terms         Json? @default("{\"title\":\"\", \"content\":\"\"}")
+  voucher       Json? @default("{\"title\":\"\", \"content\":\"\"}")
   other        Json?
 
   // common

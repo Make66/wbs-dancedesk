@@ -15,8 +15,6 @@ export const calendarConfigSchema = z.object({
   endHour: z.number().min(1).max(24).default(20),
   slotHeight: z.number().min(1).default(20),
   minutesPerSlot: z.number().min(1).default(15),
-  federalHolidays: z.array(z.unknown()).optional(),
-  schoolHolidays: z.record(z.string(), z.array(z.unknown())).optional(),
 });
 
 export const contractSchema = z.array(z.string().min(1)).min(1).default([]);
@@ -26,6 +24,11 @@ export const formFieldSchema = z.array(z.object({
   display: z.boolean().default(true),
   default: z.string().optional()
 })).optional();
+
+export const holidays = {
+  federal: z.array(z.unknown()).optional(),
+  school: z.record(z.string(), z.array(z.unknown())).optional(),
+};
 
 export const rebateConfigSchema = z.array(z.object({
   title: z.string().min(1),
@@ -62,10 +65,6 @@ export const voucherConfigSchema = z.object({
 });
 
 export const settingsSchema = z.object({
-  id:           z.string().uuid(),
-  tenantId:     z.string(),
-  createdAt:    z.coerce.date(),
-  updatedAt:    z.coerce.date(),
   basic:        basicConfigSchema,
   calendar:     calendarConfigSchema,
   contracts:    contractSchema,
@@ -75,6 +74,11 @@ export const settingsSchema = z.object({
   terms:        termsConfigSchema,
   voucher:      voucherConfigSchema,
   other:        z.record(z.string(), z.unknown()).optional(),
+
+  id: z.string().uuid(),
+  tenantId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export const federalStateSchema = z.enum([

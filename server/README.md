@@ -320,6 +320,8 @@ GET /locations/:id/rooms       — rooms belonging to a location
 
 GET /locations/:id/targets     — targets belonging to a location
 
+GET /settings/holidays/:state  - official school holidays of a given state (2-letter capital)
+
 GET /targets/:id/categories    — categories belonging to a target
 
 GET /targets/:id/courses       — returns target + categories + their courses (nested)
