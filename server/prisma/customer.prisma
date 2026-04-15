@@ -2,11 +2,13 @@ model Customer {
   name       String  @default("DanceSchool Flip'n Bit")
   email      String  @unique @default("noreply@email.de")
   website    String  @default("https://www.wbscodingschool.com")
-  logoUrl    String  @default("./assets/images/logo.webp")
-  primary    String  @default("#B5252B")
-  secondary  String  @default("#858384")
-  tertiary   String  @default("#858384")
-  quaternary String  @default("#858384")
+  logoUrl    String  @default("https://gui4.kurstool.de/assets/images/logo.webp")
+  primary    String  @default("#B80000")
+  secondary  String  @default("#5F0000")
+  tertiary   String  @default("#565656")
+  quaternary String  @default("#BABABA")
+  signInKey String  @default("") @unique
+  code      String  @unique @default("")
   active     Boolean @default(true)
 
   // relations

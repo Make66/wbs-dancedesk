@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Consumer App Starter V2",
-    "slug": "consumer-app-starter-v2",
-    "scheme": "consumerstarterv2",
+    "name": "Taketool DancePilot",
+    "slug": "taketool-dancepilot",
+    "scheme": "taketool-dancepilot",
     "jsEngine": "hermes",
     "plugins": ["expo-router", "expo-dev-client"],
     "userInterfaceStyle": "automatic",
     "ios": {
       "jsEngine": "jsc",
-      "bundleIdentifier": "com.example.consumerstarterv2",
+      "bundleIdentifier": "com.taketool.dancepilot",
       "supportsTablet": true,
       "usesAppleSignIn": true,
       "infoPlist": {

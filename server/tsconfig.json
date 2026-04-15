@@ -26,6 +26,7 @@
     "baseUrl": "./src",
     "paths": {
       "#prisma": ["../generated/prisma"],
+      "#utils": ["utils/logger.ts"],
       "#*": ["*"]
     }
   },

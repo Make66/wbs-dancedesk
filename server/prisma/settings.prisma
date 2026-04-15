@@ -1,8 +1,8 @@
 model Settings {
-  basic        Json?
-  calendar     Json? @default("{\"startHour\":10,\"endHour\":20,\"slotHeight\":20,\"minutesPerSlot\":15}")
+  basic        Json? @default("{\"domain\":\"\",\"federalState\":\"\",\"termsUri\":\"\",\"privacyUri\":\"\",\"cancellationUri\":\"\", \"cancellationSampleUri\":\"\"}")
+  calendar     Json? @default("{\"startHour\":10,\"endHour\":20,\"slotHeight\":20,\"minutesPerSlot\":15, \"federalHolidays\":[], \"schoolHolidays\":[]}")
   formFields   Json?
-  registration Json?
+  registration Json? @default("{\"titleCol1\":\"\", \"titleCol2\":\"\",\"delTime\":90,\"checkSeats\":false,"waitingList",\"displayPastNumber\":7,\"displayNumberOccurrences\":7}")}")
   contracts    Json?
   rebates      Json?
   voucher      Json?

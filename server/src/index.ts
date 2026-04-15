@@ -27,7 +27,7 @@ import {
 } from "#routes";
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = Number(process.env.PORT) || 8000;
 
 const allowedOrigins = (process.env.CORS_ORIGINS ?? process.env.CLIENT_BASE_URL ?? "")
   .split(",")
@@ -73,4 +73,4 @@ app.use("/*splat", (_req, res) => {
 
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`Server listening on http://localhost:${port}`));
+app.listen(port, "192.168.178.52", () => console.log(`Server listening on http://192.168.178.52:${port}`));

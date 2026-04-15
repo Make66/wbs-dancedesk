@@ -68,6 +68,10 @@
     "#db": {
       "development": "./src/db/index.ts",
       "default": "./dist/db/index.js"
+    },
+    "#utils": {
+      "development": "./src/utils/logger.ts",
+      "default": "./dist/utils/logger.js"
     }
   }
 }

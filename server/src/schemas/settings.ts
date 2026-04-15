@@ -1,3 +1,4 @@
+import { title } from 'process';
 import { z } from 'zod/v4';
 
 export const basicConfigSchema = z.object({
@@ -18,9 +19,22 @@ export const calendarConfigSchema = z.object({
   schoolHolidays: z.record(z.string(), z.array(z.unknown())).optional(),
 });
 
-export const formFieldSchema = z.object({
-  name: z.string().min(1),
-});
+export const contractSchema = z.array(z.string().min(1)).min(1).default([]);
+
+export const formFieldSchema = z.array(z.object({
+  field: z.string().min(1),
+  display: z.boolean().default(true),
+  default: z.string().optional()
+})).optional();
+
+export const rebateConfigSchema = z.array(z.object({
+  title: z.string().min(1),
+  tn1Percent: z.number().min(0).max(100).optional(),
+  tn1Value: z.number().min(0).max(100).optional(),
+  tn2Percent: z.number().min(0).max(100).optional(),
+  tn2Value: z.number().min(0).max(100).optional(),
+  category: z.string().optional(),
+})).optional();
 
 export const registrationConfigSchema = z.object({
   titleCol1:    z.string().optional(),
@@ -32,14 +46,30 @@ export const registrationConfigSchema = z.object({
   displayNumberOccurrences: z.number().optional(),
 });
 
+export const termsConfigSchema = z.array(z.object({
+  title: z.string().min(1),
+  text: z.string().min(1).optional(),
+})).optional();
+
+export const voucherConfigSchema = z.object({
+  description: z.string().min(1),
+  vouchers: z.array(z.object({
+    name: z.string().min(1),
+    value: z.number().min(0).optional(),
+    acceptForClub: z.boolean().default(false),
+    acceptForCourse: z.boolean().default(false),
+  })).optional(),
+});
+
 export const settingsSchema = z.object({
   basic:        basicConfigSchema,
   calendar:     calendarConfigSchema,
-  contracts:    z.array(z.string()).default([]),
+  contracts:    contractSchema,
   formFields:   formFieldSchema,
-  rebates:      z.record(z.string(), z.unknown()).optional(),
+  rebates:      rebateConfigSchema,
   registration: registrationConfigSchema,
-  voucher:      z.record(z.string(), z.unknown()).optional(),
+  terms:        termsConfigSchema,
+  voucher:      voucherConfigSchema,
   other:        z.record(z.string(), z.unknown()).optional(),
 });
 

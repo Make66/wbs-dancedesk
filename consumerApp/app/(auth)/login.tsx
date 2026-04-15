@@ -179,8 +179,15 @@ export default function LoginScreen() {
 
   const onQrScanned = async (value: string) => {
     setScannerOpen(false);
-    setTenantValue('tenantId', value);
-    await resolveTenant(value);
+    let tenantId = value;
+    try {
+      const url = new URL(value);
+      tenantId = url.searchParams.get('tenantId') ?? value;
+    } catch {
+      // not a URL — use raw value as tenantId
+    }
+    setTenantValue('tenantId', tenantId);
+    await resolveTenant(tenantId);
   };
 
   const onLoginSubmit = async (data: LoginFormData) => {
