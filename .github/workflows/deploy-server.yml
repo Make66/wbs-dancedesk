@@ -41,7 +41,7 @@ jobs:
             set -e
             cd /srv/dancedesk/server
 
-            # Pull latest code
+            # Pull latest codes
             git pull git@github.com:Make66/wbs-dancedesk.git main
 
             # Install production dependencies
