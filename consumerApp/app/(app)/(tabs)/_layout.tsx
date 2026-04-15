@@ -45,7 +45,6 @@ export default function TabsLayout() {
       <Tabs.Screen name="forms" options={{ href: null }} />
       <Tabs.Screen name="explore" options={{ href: null }} />
       <Tabs.Screen name="settings" options={{ href: null }} />
-      <Tabs.Screen name="post" options={{ href: null }} />
       <Tabs.Screen name="post/[id]" options={{ href: null }} />
     </Tabs>
   );

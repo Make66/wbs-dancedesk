@@ -5,10 +5,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   TextInput,
   View,
+  ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { env } from '@/config/env';
@@ -22,6 +24,31 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 type Message = { id: string; role: 'user' | 'assistant'; content: string };
 
 type Settings = { basic?: { domain?: string } };
+
+// RN 0.81's bundled FlatList.d.ts doesn't propagate all ScrollViewProps
+// (contentContainerStyle, ListEmptyComponent, onContentSizeChange, …) through
+// its VirtualizedListProps inheritance chain. This explicit props type and alias
+// restores the missing props while keeping full type safety for our usage.
+type MessageListProps = {
+  // data widened to match FlatList's actual signature so ref variance checks pass
+  data?: ArrayLike<Message> | null;
+  keyExtractor?: (item: Message, index: number) => string;
+  renderItem?: (info: { item: Message; index: number; separators: any }) => React.ReactElement | null;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
+  onContentSizeChange?: (w: number, h: number) => void;
+};
+const MessageList = FlatList as unknown as React.ComponentClass<MessageListProps>;
+
+// RN 0.81 class component render() types conflict with @types/react@19 JSX expectations
+// (TS2786). Casting to React.FC tells the JSX checker the component is valid.
+const KAV = KeyboardAvoidingView as unknown as React.FC<{
+  behavior?: 'height' | 'position' | 'padding';
+  keyboardVerticalOffset?: number;
+  enabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  children?: React.ReactNode;
+}>;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -87,7 +114,7 @@ export function Chat() {
   const [expired, setExpired] = useState(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
 
-  const listRef = useRef<FlatList<Message>>(null);
+  const listRef = useRef<FlatList<Message>>(null!);
   const xhrRef = useRef<XMLHttpRequest | null>(null);
 
   // ── Session ────────────────────────────────────────────────────────────────
@@ -322,7 +349,7 @@ export function Chat() {
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : (
-        <FlatList
+        <MessageList
           ref={listRef}
           data={messages}
           keyExtractor={(m) => m.id}
@@ -349,7 +376,7 @@ export function Chat() {
               </View>
             );
           }}
-          contentContainerStyle={[styles.list, messages.length === 0 && styles.listEmpty]}
+          contentContainerStyle={[styles.list, messages.length === 0 ? styles.listEmpty : null]}
           ListEmptyComponent={
             <View style={styles.center}>
               <Text
@@ -382,7 +409,7 @@ export function Chat() {
       )}
 
       {/* Input bar */}
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KAV behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View
           style={[
             styles.inputBar,
@@ -417,7 +444,7 @@ export function Chat() {
             )}
           </Pressable>
         </View>
-      </KeyboardAvoidingView>
+      </KAV>
     </SafeAreaView>
   );
 }

@@ -1,6 +1,5 @@
 import { Platform, PermissionsAndroid } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import messaging from '@react-native-firebase/messaging';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,28 +12,13 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotificationsAsync() {
-  if (Platform.OS === 'ios') {
-    await messaging().requestPermission();
-  }
-
   if (Platform.OS === 'android' && Platform.Version >= 33) {
     await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
   }
 
-  await messaging().registerDeviceForRemoteMessages();
-  const fcmToken = await messaging().getToken();
-  return { fcmToken };
-}
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') return null;
 
-export function subscribeForegroundMessages() {
-  return messaging().onMessage(async (remoteMessage) => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: remoteMessage.notification?.title ?? 'New message',
-        body: remoteMessage.notification?.body ?? 'You have a new notification.',
-        data: remoteMessage.data,
-      },
-      trigger: null,
-    });
-  });
+  const token = await Notifications.getDevicePushTokenAsync();
+  return { pushToken: token.data };
 }

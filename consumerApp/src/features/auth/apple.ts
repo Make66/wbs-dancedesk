@@ -1,4 +1,3 @@
-import auth from '@react-native-firebase/auth';
 import appleAuth from '@invertase/react-native-apple-authentication';
 
 export async function signInWithApple() {
@@ -8,6 +7,5 @@ export async function signInWithApple() {
   });
   const { identityToken, nonce } = response;
   if (!identityToken) throw new Error('Apple Sign-In failed - no identity token returned');
-  const credential = auth.AppleAuthProvider.credential(identityToken, nonce);
-  return auth().signInWithCredential(credential);
+  return { identityToken, nonce };
 }
