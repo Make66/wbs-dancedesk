@@ -3,6 +3,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { PrismaClientKnownRequestError } from '../../generated/prisma/internal/prismaNamespace.ts';
 import prisma from '#db';
+import { log } from '#utils';
+
+const SRC = 'controllers/auth.ts';
 
 const ACCESS_SECRET  = process.env.ACCESS_JWT_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_JWT_SECRET;
@@ -68,8 +71,8 @@ async function performLogin<T extends { id: string; tenantId: string; password: 
 }
 
 export const register: RequestHandler = async (req, res) => {
-  console.log('[register] body:', { ...req.body, password: '***' });
-  const { firstName, lastName, email, password, tenantId } = req.body;
+  const { firstName, lastName, email, tenantId, password } = req.body;
+  log(SRC, 'register', 'Registering new user', { email, tenantId });
 
   const existing = await prisma.user.findFirst({ where: { email, tenantId, isDeleted: false } });
   if (existing) throw new Error('Email already in use', { cause: { status: 409 } });
@@ -88,35 +91,40 @@ export const register: RequestHandler = async (req, res) => {
     throw e;
   }
 
-  console.log('[register] user created:', user.id);
+  log(SRC, 'register', 'User created', { id: user.id, email: user.email });
   await issueTokens(user, 'user', res);
   res.status(201).json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
 };
 
 export const login: RequestHandler = async (req, res) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
+  log(SRC, 'login', 'Login attempt', { email });
   const user = await performLogin(
-    password,
+    req.body.password,
     () => prisma.user.findFirst({ where: { email, isDeleted: false } }),
     'user',
     res
   );
+  log(SRC, 'login', 'Login successful', { id: user.id, email: user.email });
   res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
 };
 
 export const participantLogin: RequestHandler = async (req, res) => {
-  const { email, password, tenantId } = req.body;
+  const { email, tenantId } = req.body;
+  log(SRC, 'participantLogin', 'Participant login attempt', { email, tenantId });
   // tenantId is required because participant email is not globally unique
   const participant = await performLogin(
-    password,
+    req.body.password,
     () => prisma.participant.findFirst({ where: { email, tenantId, isDeleted: false } }),
     'participant',
     res
   );
+  log(SRC, 'participantLogin', 'Participant login successful', { id: participant.id, email: participant.email });
   res.json({ id: participant.id, email: participant.email, firstName: participant.firstName, lastName: participant.lastName });
 };
 
 export const refresh: RequestHandler = async (req, res) => {
+  log(SRC, 'refresh', 'Token refresh attempt');
   const token = req.cookies.refreshToken as string | undefined;
   if (!token) throw new Error('Not authenticated', { cause: { status: 401 } });
 
@@ -137,16 +145,19 @@ export const refresh: RequestHandler = async (req, res) => {
   if (!tokenMatch) throw new Error('Invalid refresh token', { cause: { status: 401 } });
 
   await issueTokens(entity, role, res);
+  log(SRC, 'refresh', 'Token refreshed', { id: sub, role });
   res.json({ ok: true });
 };
 
 export const logout: RequestHandler = async (req, res) => {
+  log(SRC, 'logout', 'Logout request');
   const token = req.cookies.refreshToken as string | undefined;
   if (token) {
     try {
       const decoded = jwt.verify(token, REFRESH_SECRET!) as jwt.JwtPayload;
       const role = (decoded.role ?? 'user') as Role;
       await updateRefreshToken(decoded.sub as string, null, role);
+      log(SRC, 'logout', 'Refresh token invalidated', { id: decoded.sub, role });
     } catch {
       // token invalid — clear cookies anyway
     }
@@ -155,8 +166,10 @@ export const logout: RequestHandler = async (req, res) => {
 };
 
 export const me: RequestHandler = async (req, res) => {
+  const { id } = req.user!;
+  log(SRC, 'me', 'Fetching current user', { id });
   const user = await prisma.user.findFirst({
-    where: { id: req.user!.id, isDeleted: false },
+    where: { id, isDeleted: false },
     select: { id: true, email: true, firstName: true, lastName: true, modules: true, imageUrl: true },
   });
   if (!user) throw new Error('User not found', { cause: { status: 404 } });
@@ -164,11 +177,13 @@ export const me: RequestHandler = async (req, res) => {
 };
 
 export const participantMe: RequestHandler = async (req, res) => {
+  const { id } = req.user!;
+  log(SRC, 'participantMe', 'Fetching current participant', { id });
   const participant = await prisma.participant.findFirst({
-    where: { id: req.user!.id, isDeleted: false },
-    select: { 
-      id: true, email: true, firstName: true, lastName: true, imageUrl: true, phone: true, birthDate: true, 
-      gender: true, street: true, city: true, zipCode: true, longitude: true, latitude: true 
+    where: { id, isDeleted: false },
+    select: {
+      id: true, email: true, firstName: true, lastName: true, imageUrl: true, phone: true, birthDate: true,
+      gender: true, street: true, city: true, zipCode: true, longitude: true, latitude: true
     },
   });
   if (!participant) throw new Error('Participant not found', { cause: { status: 404 } });

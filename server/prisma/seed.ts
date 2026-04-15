@@ -7,6 +7,11 @@ import { dirname, join } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const CODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+function generateCode(): string {
+  return Array.from({ length: 5 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
+}
+
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
@@ -461,11 +466,12 @@ async function main() {
 
   // 2. customer
   const customer = await prisma.customer.create({
-    data: { 
-      name: "DanceSchool Flip'n Bit", 
-      email: 'info@dancedesk.de', 
+    data: {
+      name: "DanceSchool Flip'n Bit",
+      email: 'info@dancedesk.de',
       logoUrl: 'http://localhost:8000/assets/images/flipnbit2_xs.png',
       tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
+      code: generateCode(),
      },
   });
 
@@ -913,9 +919,12 @@ async function main() {
         endHour: 20,
         slotHeight: 20,
         minutesPerSlot: 15,
-        federalHolidays: germanyHolidays,
-        schoolHolidays,
       },
+      holidays: {
+        federal: germanyHolidays,
+        school: schoolHolidays,
+      },
+
       registration: {
         delTime: 30,
         checkSeats: false,

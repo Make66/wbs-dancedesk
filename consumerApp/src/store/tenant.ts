@@ -13,6 +13,7 @@ export type TenantCustomer = {
   street: string;
   zipCode: string;
   city: string;
+  signInKey: string;
 };
 
 type TenantState = {

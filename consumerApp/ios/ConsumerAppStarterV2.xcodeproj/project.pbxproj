@@ -26,7 +26,7 @@
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = ConsumerAppStarterV2/SplashScreen.storyboard; sourceTree = "<group>"; };
 		AC438E2DCF71E18AF546D63D /* Pods-ConsumerAppStarterV2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ConsumerAppStarterV2.release.xcconfig"; path = "Target Support Files/Pods-ConsumerAppStarterV2/Pods-ConsumerAppStarterV2.release.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		BCE46414C2270DE4383BE12E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = ConsumerAppStarterV2/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BCE46414C2270DE4383BE12E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = ConsumerAppStarterV2/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ConsumerAppStarterV2/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* ConsumerAppStarterV2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ConsumerAppStarterV2-Bridging-Header.h"; path = "ConsumerAppStarterV2/ConsumerAppStarterV2-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -119,7 +119,6 @@
 				225013E1141485714CBF41EA /* Pods-ConsumerAppStarterV2.debug.xcconfig */,
 				AC438E2DCF71E18AF546D63D /* Pods-ConsumerAppStarterV2.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -359,12 +358,15 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ConsumerAppStarterV2/ConsumerAppStarterV2.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVJ764E262;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = ConsumerAppStarterV2/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Dancepilot;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -377,7 +379,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.consumerstarterv2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.taketool.dancepilot;
 				PRODUCT_NAME = ConsumerAppStarterV2;
 				SWIFT_OBJC_BRIDGING_HEADER = "ConsumerAppStarterV2/ConsumerAppStarterV2-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -395,7 +397,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ConsumerAppStarterV2/ConsumerAppStarterV2.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FVJ764E262;
 				INFOPLIST_FILE = ConsumerAppStarterV2/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Dancepilot;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -408,7 +413,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.consumerstarterv2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.taketool.dancepilot;
 				PRODUCT_NAME = ConsumerAppStarterV2;
 				SWIFT_OBJC_BRIDGING_HEADER = "ConsumerAppStarterV2/ConsumerAppStarterV2-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

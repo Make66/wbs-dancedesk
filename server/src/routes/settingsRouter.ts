@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getSettings, upsertSettings } from '#controllers';
+import { getSettings, upsertSettings, getHolidays } from '#controllers';
 import { settingsSchema } from '#schemas';
 
 const settingsInputSchema = settingsSchema.omit({ id: true, tenantId: true });
 
 const settingsRouter = Router();
+
+settingsRouter.get('/holidays/:state', getHolidays);
 
 settingsRouter
   .route('/')

@@ -1,3 +1,4 @@
+import { title } from 'process';
 import { z } from 'zod/v4';
 
 export const basicConfigSchema = z.object({
@@ -14,13 +15,39 @@ export const calendarConfigSchema = z.object({
   endHour: z.number().min(1).max(24).default(20),
   slotHeight: z.number().min(1).default(20),
   minutesPerSlot: z.number().min(1).default(15),
-  federalHolidays: z.array(z.unknown()).optional(),
-  schoolHolidays: z.record(z.string(), z.array(z.unknown())).optional(),
 });
 
-export const formFieldSchema = z.object({
-  name: z.string().min(1),
-});
+export const contractConfigSchema = z.array(z.string().min(1)).min(1).default([]);
+
+export const formFieldConfigSchema = z.array(z.object({
+  field: z.string().min(1),
+  display: z.boolean().default(true),
+  default: z.string().optional()
+})).optional();
+
+export const schoolHolidaysSchema = z.record(z.string(), z.array(z.object({
+  start: z.object({
+    dateTime: z.string(),
+  }),
+  end: z.object({
+    dateTime: z.string(),
+  }),
+  title: z.string(),
+}))).optional();
+
+export const holidays = {
+  federal: z.array(z.unknown()).optional(),
+  school: schoolHolidaysSchema,
+};
+
+export const rebateConfigSchema = z.array(z.object({
+  title: z.string().min(1),
+  tn1Percent: z.number().min(0).max(100).optional(),
+  tn1Value: z.number().min(0).max(100).optional(),
+  tn2Percent: z.number().min(0).max(100).optional(),
+  tn2Value: z.number().min(0).max(100).optional(),
+  category: z.string().optional(),
+})).optional();
 
 export const registrationConfigSchema = z.object({
   titleCol1:    z.string().optional(),
@@ -32,19 +59,36 @@ export const registrationConfigSchema = z.object({
   displayNumberOccurrences: z.number().optional(),
 });
 
+export const termsConfigSchema = z.array(z.object({
+  title: z.string().min(1),
+  text: z.string().min(1).optional(),
+})).optional();
+
+export const voucherConfigSchema = z.object({
+  description: z.string().min(1),
+  vouchers: z.array(z.object({
+    name: z.string().min(1),
+    value: z.number().min(0).optional(),
+    acceptForClub: z.boolean().default(false),
+    acceptForCourse: z.boolean().default(false),
+  })).optional(),
+});
+
 export const settingsSchema = z.object({
-  id:           z.string().uuid(),
-  tenantId:     z.string(),
-  createdAt:    z.coerce.date(),
-  updatedAt:    z.coerce.date(),
   basic:        basicConfigSchema,
   calendar:     calendarConfigSchema,
-  contracts:    z.array(z.string()).default([]),
-  formFields:   formFieldSchema,
-  rebates:      z.record(z.string(), z.unknown()).optional(),
+  contracts:    contractConfigSchema,
+  formFields:   formFieldConfigSchema,
+  rebates:      rebateConfigSchema,
   registration: registrationConfigSchema,
-  voucher:      z.record(z.string(), z.unknown()).optional(),
+  terms:        termsConfigSchema,
+  voucher:      voucherConfigSchema,
   other:        z.record(z.string(), z.unknown()).optional(),
+
+  id: z.string().uuid(),
+  tenantId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export const federalStateSchema = z.enum([
@@ -67,3 +111,13 @@ export const federalStateSchema = z.enum([
 ]);
 
 export type Settings = z.infer<typeof settingsSchema>;
+export type BasicConfig = z.infer<typeof basicConfigSchema>;
+export type CalendarConfig = z.infer<typeof calendarConfigSchema>;
+export type ContractConfig = z.infer<typeof contractConfigSchema>;
+export type FormFieldConfig = z.infer<typeof formFieldConfigSchema>;
+export type RebateConfig = z.infer<typeof rebateConfigSchema>;
+export type RegistrationConfig = z.infer<typeof registrationConfigSchema>;
+export type TermsConfig = z.infer<typeof termsConfigSchema>;
+export type VoucherConfig = z.infer<typeof voucherConfigSchema>;
+export type FederalState = z.infer<typeof federalStateSchema>;
+export type SchoolHolidays = z.infer<typeof schoolHolidaysSchema>;
