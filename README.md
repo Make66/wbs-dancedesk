@@ -19,10 +19,10 @@ Main goal of the redesign is to offer a clean, modern interface with minimum of 
 
 ## Milestones
 
-### Milestone 1
+### Milestone 1 - reached!
 ![Minimum setup](./documentation/resources/images/Stufe-1.svg)
 
-### Milestone 2
+### Milestone 2 - mostly reached!
 ![Adding consumer app](./documentation/resources/images/Stufe-2.svg)
 
 ### Milestone 3
