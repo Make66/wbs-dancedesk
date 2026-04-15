@@ -331,3 +331,196 @@ GET /participants/:id/courses  - all courses of a certain participant
 GET /rooms/:id/events          - all events of a certain room
 
 GET /users/:id                 — returns user with included locations and modules
+
+
+# Deployment
+
+## Server code location
+
+Place the server code at `/srv/dancedesk/server` — the `/srv` directory is defined by the Linux FHS specifically for data served by the system.
+
+```
+/srv/dancedesk/
+  server/          ← Express app
+  logs/            ← created automatically by the logger
+```
+
+## Creating a dedicated system user on Ubuntu
+
+### 1. Create the user
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin dancedesk
+```
+- `--system` — marks it as a system account (UID < 1000, no password, no aging)
+- `--no-create-home` — no `/home/dancedesk` directory
+- `--shell /usr/sbin/nologin` — nobody can log in as this user interactively
+
+### 2. Create and own the app directory
+```bash
+sudo mkdir -p /srv/dancedesk/server
+sudo chown -R dancedesk:dancedesk /srv/dancedesk
+```
+
+### 3. Create the systemd service
+```bash
+sudo nano /etc/systemd/system/dancedesk.service
+```
+
+```ini
+[Unit]
+Description=DanceDesk API Server
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=dancedesk
+Group=dancedesk
+WorkingDirectory=/srv/dancedesk/server
+EnvironmentFile=/srv/dancedesk/server/.env
+ExecStart=/usr/bin/node --env-file=.env dist/index.js
+Restart=on-failure
+RestartSec=5
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/srv/dancedesk/server/logs
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 4. Enable and start
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable dancedesk    # start on boot
+sudo systemctl start dancedesk
+sudo systemctl status dancedesk
+```
+
+### 5. View logs
+```bash
+# File-based logs (written by the app logger):
+tail -f /srv/dancedesk/server/logs/$(date +%F).log
+
+# systemd also captures stdout/stderr:
+sudo journalctl -u dancedesk -f
+```
+
+### Security benefits
+
+| What | Why |
+|------|-----|
+| No login shell | Even if compromised, attacker can't get an interactive shell |
+| `NoNewPrivileges` | Process can't escalate to root via setuid binaries |
+| `ProtectSystem=strict` | Filesystem is read-only except for `ReadWritePaths` |
+| `PrivateTmp` | Isolated `/tmp`, invisible to other processes |
+
+### Deploying updates
+```bash
+# As your personal user (has sudo), not as dancedesk:
+cd /srv/dancedesk/server
+sudo -u dancedesk git pull
+sudo -u dancedesk npm ci
+sudo -u dancedesk npm run build
+sudo systemctl restart dancedesk
+```
+
+## GitHub Actions — Automated Deploy
+
+The workflow at [`.github/workflows/deploy-server.yml`](../.github/workflows/deploy-server.yml) triggers on every push to `main` that touches the `server/` directory. It builds the project locally on the runner, then SSHs into the production host and runs the deploy steps there.
+
+### Prerequisites on the remote host
+
+1. The `dancedesk` user and `/srv/dancedesk/server` directory are set up (see above)
+2. The repo is cloned into `/srv/dancedesk/server` and the `dancedesk` user owns it:
+   ```bash
+   sudo -u dancedesk git clone git@github.com:Make66/wbs-dancedesk.git /srv/dancedesk
+   ```
+3. The `.env` file is in place at `/srv/dancedesk/server/.env`
+4. The `dancedesk` user can run `systemctl restart dancedesk` without a password prompt:
+   ```bash
+   # Add this line via: sudo visudo
+   dancedesk ALL=(ALL) NOPASSWD: /bin/systemctl restart dancedesk, /bin/systemctl status dancedesk
+   ```
+
+### GitHub repository variables (`Settings → Secrets and variables → Actions → Variables`)
+
+| Variable | Value |
+|----------|-------|
+| `DEPLOY_HOST` | `gui4.kurstool.de` |
+| `DEPLOY_USER` | `dancedesk` |
+| `DEPLOY_PORT` | `22` |
+
+### GitHub repository secrets (`Settings → Secrets and variables → Actions → Secrets`)
+
+| Secret | Description |
+|--------|-------------|
+| `SSH_PRIVATE_KEY` | Private SSH key whose public key is in `/home/dancedesk/.ssh/authorized_keys` on the host |
+
+### `.env` file on the production host
+
+The following variables must be set in `/srv/dancedesk/server/.env`:
+
+```bash
+NODE_ENV=production
+PORT=8000
+
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/dancedesk"
+
+# CORS — comma-separated list of allowed origins
+CORS_ORIGINS="https://yourdomain.com"
+
+# JWT — generate with: openssl rand -base64 32
+ACCESS_JWT_SECRET=
+REFRESH_JWT_SECRET=
+REFRESH_TOKEN_TTL=86400
+ACCESS_TOKEN_TTL=900
+SALT_ROUNDS=10
+
+# Cloudinary (image uploads)
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+# OpenAI (chat feature)
+OPENAI_API_URL=https://api.openai.com/v1
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+```
+
+### Generating the SSH key pair
+
+`dancedesk` is a system user with no home directory, so `ssh-copy-id` won't work. Place the key manually.
+
+```bash
+# 1. On your local machine — generate a dedicated deploy key
+ssh-keygen -t ed25519 -C "github-deploy-dancedesk" -f ~/.ssh/dancedesk_deploy
+
+# 2. Print the public key and copy it to your clipboard
+cat ~/.ssh/dancedesk_deploy.pub
+
+# 3. On the remote host (as a sudo user) — create the .ssh dir for the system user
+sudo mkdir -p /srv/dancedesk/.ssh
+sudo touch /srv/dancedesk/.ssh/authorized_keys
+sudo chmod 700 /srv/dancedesk/.ssh
+sudo chmod 600 /srv/dancedesk/.ssh/authorized_keys
+sudo chown -R dancedesk:dancedesk /srv/dancedesk/.ssh
+
+# 4. Paste the public key into authorized_keys
+sudo nano /srv/dancedesk/.ssh/authorized_keys
+
+# 5. Tell sshd where to find the key (since there is no /home/dancedesk).
+#    Add this block to /etc/ssh/sshd_config:
+#
+#      Match User dancedesk
+#        AuthorizedKeysFile /srv/dancedesk/.ssh/authorized_keys
+#
+sudo nano /etc/ssh/sshd_config
+sudo systemctl reload sshd
+
+# 6. Copy the private key content into the GitHub secret SSH_PRIVATE_KEY
+cat ~/.ssh/dancedesk_deploy
+```
