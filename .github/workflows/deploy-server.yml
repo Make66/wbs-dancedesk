@@ -53,6 +53,9 @@ jobs:
             # Apply any pending DB migrations (never resets data)
             npx prisma migrate deploy
 
+            # Generate Prisma client
+            npx prisma generate
+
             # Reload service
             sudo systemctl restart dancedesk
             sudo systemctl status dancedesk --no-pager
