@@ -1,7 +1,12 @@
 import type { RequestHandler } from 'express';
 import prisma from '#db';
+import type { federalStateSchema } from '#schemas';
+import type { z } from 'zod/v4';
 
-const schoolHolidays: SchoolHolidays = {
+type FederalState = z.infer<typeof federalStateSchema>;
+type Holiday = { start: { dateTime: string }; end: { dateTime: string }; title: string };
+
+const schoolHolidays: Record<FederalState, Holiday[]> = {
   BW: [
     // 2026
     { start: { dateTime: '2026-01-01' }, end: { dateTime: '2026-01-06' }, title: 'Weihnachtsferien' },

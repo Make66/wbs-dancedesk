@@ -1,3 +1,5 @@
+import type { SchoolHolidays } from './settings.ts';
+
 export * from './user.ts';
 export * from './category.ts';
 export * from './course.ts';

@@ -17,17 +17,27 @@ export const calendarConfigSchema = z.object({
   minutesPerSlot: z.number().min(1).default(15),
 });
 
-export const contractSchema = z.array(z.string().min(1)).min(1).default([]);
+export const contractConfigSchema = z.array(z.string().min(1)).min(1).default([]);
 
-export const formFieldSchema = z.array(z.object({
+export const formFieldConfigSchema = z.array(z.object({
   field: z.string().min(1),
   display: z.boolean().default(true),
   default: z.string().optional()
 })).optional();
 
+export const schoolHolidaysSchema = z.record(z.string(), z.array(z.object({
+  start: z.object({
+    dateTime: z.string(),
+  }),
+  end: z.object({
+    dateTime: z.string(),
+  }),
+  title: z.string(),
+}))).optional();
+
 export const holidays = {
   federal: z.array(z.unknown()).optional(),
-  school: z.record(z.string(), z.array(z.unknown())).optional(),
+  school: schoolHolidaysSchema,
 };
 
 export const rebateConfigSchema = z.array(z.object({
@@ -67,8 +77,8 @@ export const voucherConfigSchema = z.object({
 export const settingsSchema = z.object({
   basic:        basicConfigSchema,
   calendar:     calendarConfigSchema,
-  contracts:    contractSchema,
-  formFields:   formFieldSchema,
+  contracts:    contractConfigSchema,
+  formFields:   formFieldConfigSchema,
   rebates:      rebateConfigSchema,
   registration: registrationConfigSchema,
   terms:        termsConfigSchema,
@@ -101,3 +111,13 @@ export const federalStateSchema = z.enum([
 ]);
 
 export type Settings = z.infer<typeof settingsSchema>;
+export type BasicConfig = z.infer<typeof basicConfigSchema>;
+export type CalendarConfig = z.infer<typeof calendarConfigSchema>;
+export type ContractConfig = z.infer<typeof contractConfigSchema>;
+export type FormFieldConfig = z.infer<typeof formFieldConfigSchema>;
+export type RebateConfig = z.infer<typeof rebateConfigSchema>;
+export type RegistrationConfig = z.infer<typeof registrationConfigSchema>;
+export type TermsConfig = z.infer<typeof termsConfigSchema>;
+export type VoucherConfig = z.infer<typeof voucherConfigSchema>;
+export type FederalState = z.infer<typeof federalStateSchema>;
+export type SchoolHolidays = z.infer<typeof schoolHolidaysSchema>;
