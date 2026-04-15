@@ -88,13 +88,10 @@ export default function WeeklySchedule({ data, week }: WeeklyScheduleProps) {
                   .slice()
                   .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
                   .map((course) => {
-                    const bgColor = course.color?.[0] ?? "#f3f4f6";
-                    const textColor = course.color?.[1] ?? "#111827";
-
                     return (
                       <div className="mb-2" key={course.id}>
                         <Link to={`/course/${course.id}`}>
-                          <WeeklyScheduleItem course={course} bg={bgColor} text={textColor} />
+                          <WeeklyScheduleItem course={course} />
                         </Link>
                       </div>
                     );

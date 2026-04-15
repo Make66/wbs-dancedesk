@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { addDays, addMonths, addWeeks, startOfToday } from "date-fns";
 import type {
-  CalendarConfig,
   CalendarItem,
   CalendarItemDragEndPayload,
   CalendarItemResizeEndPayload,
@@ -9,12 +8,10 @@ import type {
   DraggedItemState,
   ResizingItemState,
 } from "../types/calendar-types";
-import { DEFAULT_CALENDAR_CONFIG } from "../lib/constants/calendar-constants";
 
 type CalendarStore = {
   currentView: CalendarView;
   currentDate: Date;
-  config: CalendarConfig;
 
   selectedEventId: string | null;
   activeDragEventId: string | null;
@@ -45,13 +42,11 @@ type CalendarStore = {
   updateResize: (end: Date) => void;
   endResize: () => CalendarItemResizeEndPayload | null;
 
-  setConfig: (config: Partial<CalendarConfig>) => void;
 };
 
 export const calendarStore = create<CalendarStore>((set, get) => ({
   currentView: "week",
   currentDate: startOfToday(),
-  config: DEFAULT_CALENDAR_CONFIG,
 
   selectedEventId: null,
   activeDragEventId: null,
@@ -189,11 +184,4 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
     return payload;
   },
 
-  setConfig: (config) =>
-    set((state) => ({
-      config: {
-        ...state.config,
-        ...config,
-      },
-    })),
 }));

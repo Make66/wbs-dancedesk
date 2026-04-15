@@ -16,6 +16,7 @@ import type { Room } from "../../../types/room-types";
 import { getCalendarHeaderDisplayData } from "../../../lib/calendar/date-utils";
 import { getCalendarDragEndPayload } from "../../../lib/calendar/calendar-dnd";
 import { calendarStore } from "../../../stores/calendarStore";
+import { settingsStore } from "../../../stores/settingsStore";
 
 type Props = {
   items: CalendarItem[];
@@ -27,7 +28,7 @@ type Props = {
 export function CalendarRoot({ items, rooms, onEventDragEnd, onEventResizeEnd }: Props) {
   const currentView = calendarStore((s) => s.currentView);
   const currentDate = calendarStore((s) => s.currentDate);
-  const config = calendarStore((s) => s.config);
+  const config = settingsStore((s) => s.settings.calendar);
 
   const setActiveDragEventId = calendarStore((s) => s.setActiveDragEventId);
   const selectEvent = calendarStore((s) => s.selectEvent);

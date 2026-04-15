@@ -20,29 +20,24 @@ type WeekCourse = Omit<Course, "instructor" | "room"> & {
   } | null;
 };
 
-const WeeklyScheduleItem = ({
-  course,
-  bg,
-  text,
-}: {
-  course: WeekCourse;
-  bg: string;
-  text: string;
-}) => {
+const WeeklyScheduleItem = ({ course }: { course: WeekCourse }) => {
   return (
     <div
       key={course.id}
       className="rounded-lg p-3 shadow-sm hover:saturate-200 hover:scale-105 transition-shadow duration-300"
       style={{
-        backgroundColor: bg,
-        color: text,
+        backgroundColor: course.color?.[0],
+        color: course.color?.[1],
       }}
     >
-      <div className="text-center" style={{ color: text }}>
+      <div className="text-center" style={{ color: course.color?.[1] }}>
         <p className="my-1 text-sm opacity-90">
           {formatTime(course.startsAt)} – {formatTime(course.endsAt)}
         </p>
-        <div className="w-full my-2" style={{ borderBottom: `1px solid ${text}`, opacity: 0.7 }} />
+        <div
+          className="w-full my-2"
+          style={{ borderBottom: `1px solid ${course.color?.[1]}`, opacity: 0.7 }}
+        />
         <p className="text-sm font-semibold leading-snug line-clamp-1">{course.name}</p>
         <p className="text-xs opacity-90 line-clamp-1">{course.description}</p>
       </div>
