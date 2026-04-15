@@ -62,6 +62,10 @@ export const voucherConfigSchema = z.object({
 });
 
 export const settingsSchema = z.object({
+  id:           z.string().uuid(),
+  tenantId:     z.string(),
+  createdAt:    z.coerce.date(),
+  updatedAt:    z.coerce.date(),
   basic:        basicConfigSchema,
   calendar:     calendarConfigSchema,
   contracts:    contractSchema,

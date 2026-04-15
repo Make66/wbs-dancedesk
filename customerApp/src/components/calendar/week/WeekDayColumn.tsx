@@ -8,14 +8,10 @@ import type {
   CalendarItem,
   CalendarItemResizeEndPayload,
 } from "../../../types/calendar-types";
-import {
-  getSlotsPerHour,
-  getStartSlot,
-  getVisibleSlotCount,
-} from "../../../lib/constants/calendar-constants";
 import { getPositionedCalendarItems } from "../../../lib/calendar/event-layout";
 import { isSameDay } from "../../../lib/calendar/date-utils";
 import { calendarStore } from "../../../stores/calendarStore";
+import { settingsStore } from "../../../stores/settingsStore";
 import { useDayColumnResize } from "../../../lib/calendar/hooks/useDayColumnResize";
 import { useNavigate } from "react-router";
 import { cn } from "../../../lib/utils";
@@ -44,7 +40,10 @@ export function WeekDayColumn({
   const columnRef = useRef<HTMLDivElement | null>(null);
   const [resizingEventId, setResizingEventId] = useState<string | null>(null);
 
-  const config = calendarStore((s) => s.config);
+  const config = settingsStore((s) => s.settings.calendar);
+  const getSlotsPerHour = settingsStore((s) => s.getSlotsPerHour);
+  const getStartSlot = settingsStore((s) => s.getStartSlot);
+  const getVisibleSlotCount = settingsStore((s) => s.getVisibleSlotCount);
   const selectedEventId = calendarStore((s) => s.selectedEventId);
   const resizingEvent = calendarStore((s) => s.resizingEvent);
   const openEventModal = calendarStore((state) => state.openEventModal);
@@ -92,9 +91,9 @@ export function WeekDayColumn({
     [dayItems, config],
   );
 
-  const startSlot = getStartSlot(config);
-  const visibleSlotCount = getVisibleSlotCount(config);
-  const slotsPerHour = getSlotsPerHour(config);
+  const startSlot = getStartSlot();
+  const visibleSlotCount = getVisibleSlotCount();
+  const slotsPerHour = getSlotsPerHour();
 
   function handleResizeMouseDown(item: CalendarItem, e: ReactMouseEvent<HTMLDivElement>) {
     e.stopPropagation();

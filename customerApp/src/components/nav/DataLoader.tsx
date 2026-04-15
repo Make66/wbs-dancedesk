@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { userStore } from "../../stores/userStore";
 import { targetStore } from "../../stores/targetStore";
+import { settingsStore } from "../../stores/settingsStore";
 import { useAuth } from "../../context";
 
 const DataLoader = () => {
@@ -14,6 +15,33 @@ const DataLoader = () => {
   const clearTargets = targetStore((state) => state.clearTargets);
   const setLoading = targetStore((state) => state.setLoading);
   const setError = targetStore((state) => state.setError);
+
+  const setSettings = settingsStore((state) => state.setSettings);
+  const setSettingsLoading = settingsStore((state) => state.setLoading);
+  const setSettingsError = settingsStore((state) => state.setError);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        setSettingsLoading(true);
+        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/settings`);
+
+        if (!response.ok) {
+          throw new Error("Fehler beim Laden der Einstellungen.");
+        }
+
+        const data = await response.json();
+        setSettings(data);
+      } catch (error) {
+        console.error("Error fetching settings:", error);
+        setSettingsError(error instanceof Error ? error.message : "Fehler beim Laden der Einstellungen.");
+      } finally {
+        setSettingsLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, [setSettings, setSettingsLoading, setSettingsError]);
 
   useEffect(() => {
     const fetchUserData = async () => {

@@ -1,16 +1,13 @@
 import { format, setHours, setMinutes } from "date-fns";
-import type { CalendarConfig } from "../../../types/calendar-types";
-import { getSlotsPerHour } from "../../../lib/constants/calendar-constants";
+import { settingsStore } from "../../../stores/settingsStore";
 
-type TimeGutterProps = {
-  config: CalendarConfig;
-};
+export function TimeGutter() {
+  const calendar = settingsStore((state) => state.settings.calendar);
+  const slotsPerHour = settingsStore((state) => state.getSlotsPerHour)();
 
-export function TimeGutter({ config }: TimeGutterProps) {
-  const slotsPerHour = getSlotsPerHour(config);
   const hours = Array.from(
-    { length: config.endHour - config.startHour },
-    (_, i) => i + config.startHour,
+    { length: calendar.endHour - calendar.startHour },
+    (_, i) => i + calendar.startHour,
   );
 
   return (
@@ -19,7 +16,7 @@ export function TimeGutter({ config }: TimeGutterProps) {
         <div
           key={hour}
           className="relative px-3"
-          style={{ height: `${config.slotHeight * slotsPerHour}px` }}
+          style={{ height: `${calendar.slotHeight * slotsPerHour}px` }}
         >
           <span className="absolute -top-2 right-4 text-xs text-muted-foreground">
             {format(setMinutes(setHours(new Date(), hour), 0), "HH:mm")}

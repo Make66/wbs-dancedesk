@@ -1,3 +1,4 @@
+import CalendarSettingsSection from "../components/settings/CalenderSettingsSection";
 import { Link } from "react-router";
 
 const SettingsPage = () => {
@@ -13,6 +14,7 @@ const SettingsPage = () => {
         <Link to="/rooms" className="flex items-center gap-2 text-blue-500 mt-3">
           RÄUME VERWALTEN
         </Link>
+        <CalendarSettingsSection />
       </div>
     </div>
   );

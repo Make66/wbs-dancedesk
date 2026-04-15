@@ -3,8 +3,8 @@ import { DatePicker } from "../ui/DatePicker";
 import { cn } from "../../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { generateTimeOptions } from "../../lib/calendar/time";
-import { DEFAULT_CALENDAR_CONFIG } from "../../lib/constants/calendar-constants";
-import { useState } from "react";
+import { settingsStore } from "../../stores/settingsStore";
+import { useMemo, useState } from "react";
 
 type FormDatePickerProps = {
   startsAt?: Date;
@@ -30,9 +30,9 @@ function combineDateAndTime(date: Date | undefined, time: string) {
   return nextDate;
 }
 
-const TIME_OPTIONS = generateTimeOptions(DEFAULT_CALENDAR_CONFIG);
-
 const ScheduleDatePicker = ({ startsAt, endsAt, onChange, className }: FormDatePickerProps) => {
+  const calendar = settingsStore((s) => s.settings.calendar);
+  const timeOptions = useMemo(() => generateTimeOptions(calendar), [calendar]);
   const [isStartTimeOpen, setIsStartTimeOpen] = useState(false);
   const [isEndTimeOpen, setIsEndTimeOpen] = useState(false);
   const selectedDate = startsAt ?? endsAt;
@@ -108,7 +108,7 @@ const ScheduleDatePicker = ({ startsAt, endsAt, onChange, className }: FormDateP
 
           <PopoverContent className="w-[var(--radix-popover-trigger-width)] h-100 overflow-y-scroll scrollbar">
             <div className="grid gap-1">
-              {TIME_OPTIONS.map((time) => (
+              {timeOptions.map((time) => (
                 <button
                   key={time}
                   type="button"
@@ -141,7 +141,7 @@ const ScheduleDatePicker = ({ startsAt, endsAt, onChange, className }: FormDateP
           </PopoverTrigger>
           <PopoverContent className="w-[var(--radix-popover-trigger-width)] h-100 overflow-y-scroll scrollbar">
             <div className="grid gap-1">
-              {TIME_OPTIONS.map((time) => (
+              {timeOptions.map((time) => (
                 <button
                   key={time}
                   type="button"

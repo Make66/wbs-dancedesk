@@ -2,7 +2,6 @@ import { WeekDayColumn } from "../week/WeekDayColumn";
 import { TimeGutter } from "../core/TimeGutter";
 import type { CalendarItem, CalendarItemResizeEndPayload } from "../../../types/calendar-types";
 import type { Room } from "../../../types/room-types";
-import { calendarStore } from "../../../stores/calendarStore";
 
 type RoomColumn = { id: string | null; name: string };
 
@@ -14,8 +13,6 @@ type Props = {
 };
 
 export function DayGrid({ day, items, rooms = [], onEventResizeEnd }: Props) {
-  const config = calendarStore((s) => s.config);
-
   const roomColumns: RoomColumn[] | null =
     rooms.length > 0
       ? [...rooms.map((r) => ({ id: r.id, name: r.name })), { id: null, name: "Kein Raum" }]
@@ -30,7 +27,7 @@ export function DayGrid({ day, items, rooms = [], onEventResizeEnd }: Props) {
 
   return (
     <div style={{ display: "grid", gridTemplateColumns }}>
-      <TimeGutter config={config} />
+      <TimeGutter />
 
       {roomColumns
         ? roomColumns.map((roomCol) => (
