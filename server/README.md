@@ -233,104 +233,104 @@ npx prisma migrate reset && npx prisma migrate dev --name init && npx prisma gen
 
 ## Auth
 
-POST   /auth/register             body: { firstName, lastName, email, password, tenantId }
+POST   /api/auth/register             body: { firstName, lastName, email, password, tenantId }
 
-POST   /auth/login                body: { email, password }
+POST   /api/auth/login                body: { email, password }
 
-POST   /auth/refresh              (reads refreshToken cookie)
+POST   /api/auth/refresh              (reads refreshToken cookie)
 
-DELETE /auth/logout               (reads refreshToken cookie)
+DELETE /api/auth/logout               (reads refreshToken cookie)
 
-GET    /auth/me                   (requires accessToken cookie)
+GET    /api/auth/me                   (requires accessToken cookie)
 
-POST   /auth/participant-login    body: { email, password }
+POST   /api/auth/participant-login    body: { email, password }
 
-POST   /auth/participant-me       (requires accessToken cookie)
+POST   /api/auth/participant-me       (requires accessToken cookie)
 
 
 ## CRUD for models
 
-/auth           POST register, login, refresh  |  DELETE logout  |  GET me
+/api/auth           POST register, login, refresh  |  DELETE logout  |  GET me
 
-/targets        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/targets        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/categories     GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/categories     GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/courses        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/courses        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/customers      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/customers      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/events         GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/events         GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/instructors    GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/instructors    GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/locations      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/locations      GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/modules        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/modules        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/participants   GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/participants   GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/registrations  GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/registrations  GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/settings  GET, PUT, PATCH
+/api/settings       GET, PUT, PATCH
 
-/rooms          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/rooms          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/texts          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/texts          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
-/user          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
+/api/user           GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 
 ## Nested routes
 
-GET /categories/:id/courses    — courses belonging to a category
+GET /api/categories/:id/courses    — courses belonging to a category
 
-POST /chats                  { participantId, tenantId }        → { sessionId }
+POST /api/chats                  { participantId, tenantId }        → { sessionId }
 
-POST /chats/messages         { sessionId, prompt }              → SSE stream + [DONE]
+POST /api/chats/messages         { sessionId, prompt }              → SSE stream + [DONE]
 
-GET  /chats/:sessionId                                          → { session, messages[] }
+GET /api/chats/:sessionId                                          → { session, messages[] }
 
-GET /courses/month             - all courses this month, starting with 0: monday
+GET /api/courses/month             - all courses this month, starting with 0: monday
 
-GET /courses/month/:number     - all courses in month n, (13 % 12) = 1st month next year
+GET /api/courses/month/:number     - all courses in month n, (13 % 12) = 1st month next year
 
-GET /courses/week              - all courses this week, starting with 0: monday
+GET /api/courses/week              - all courses this week, starting with 0: monday
 
-GET /courses/week/:number      - all courses in week n, (54 % 53) = 1st week next year
+GET /api/courses/week/:number      - all courses in week n, (54 % 53) = 1st week next year
 
-GET /courses/week/:year/:week  - Hi Adrian!
+GET /api/courses/week/:year/:week  - Hi Adrian!
 
-GET /courses/:id/dates         - delivers possible event dates for a course
+GET /api/courses/:id/dates         - delivers possible event dates for a course
 
-GET /courses/:id/participants  - all participants of a certain course
+GET /api/courses/:id/participants  - all participants of a certain course
 
-GET /customers/by-tenant/:tenantId - no auth required, only branding fields. Created for 1st logins
+GET /api/customers/by-tenant/:tenantId - no auth required, only branding fields. Created for 1st logins
 
-GET /events/month              - returns events where startsAt >= 1st day of month, limited to this month
+GET /api/events/month              - returns events where startsAt >= 1st day of month, limited to this month
 
-GET /events/month/:number      - returns events from a certain month
+GET /api/events/month/:number      - returns events from a certain month
 
-GET /events/upcoming           - returns events where startsAt > yesterday at midnight, ordered ascending, limited to this week
+GET /api/events/upcoming           - returns events where startsAt > yesterday at midnight, ordered ascending, limited to this week
 
-GET /instructors/:id/courses   - returns all non-deleted courses for the given instructor within the tenant.
+GET /api/instructors/:id/courses   - returns all non-deleted courses for the given instructor within the tenant.
 
-GET /locations/:id/events     — events belonging to a location
+GET /api/locations/:id/events     — events belonging to a location
 
-GET /locations/:id/rooms       — rooms belonging to a location
+GET /api/locations/:id/rooms       — rooms belonging to a location
 
-GET /locations/:id/targets     — targets belonging to a location
+GET /api/locations/:id/targets     — targets belonging to a location
 
-GET /settings/holidays/:state  - official school holidays of a given state (2-letter capital)
+GET /api/settings/holidays/:state  - official school holidays of a given state (2-letter capital)
 
-GET /targets/:id/categories    — categories belonging to a target
+GET /api/targets/:id/categories    — categories belonging to a target
 
-GET /targets/:id/courses       — returns target + categories + their courses (nested)
+GET /api/targets/:id/courses       — returns target + categories + their courses (nested)
 
-GET /participants/:id/courses  - all courses of a certain participant
+GET /api/participants/:id/courses  - all courses of a certain participant
 
-GET /rooms/:id/events          - all events of a certain room
+GET /api/rooms/:id/events          - all events of a certain room
 
-GET /users/:id                 — returns user with included locations and modules
+GET /api/users/:id                 — returns user with included locations and modules
 
 
 # Deployment
