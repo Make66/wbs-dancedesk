@@ -9,7 +9,7 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "node --env-file=.env dist/index.js"
+    "start": "node --env-file=.env dist/src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -43,11 +43,11 @@
   "imports": {
     "#controllers": {
       "development": "./src/controllers/index.ts",
-      "default": "./dist/controllers/index.js"
+      "default": "./dist/src/controllers/index.js"
     },
     "#middlewares": {
       "development": "./src/middlewares/index.ts",
-      "default": "./dist/middlewares/index.js"
+      "default": "./dist/src/middlewares/index.js"
     },
     "#models": {
       "development": "./prisma",
@@ -55,23 +55,23 @@
     },
     "#routes": {
       "development": "./src/routes/index.ts",
-      "default": "./dist/routes/index.js"
+      "default": "./dist/src/routes/index.js"
     },
     "#schemas": {
       "development": "./src/schemas/index.ts",
-      "default": "./dist/schemas/index.js"
+      "default": "./dist/src/schemas/index.js"
     },
     "#schemas/*": {
       "development": "./src/schemas/*.ts",
-      "default": "./dist/schemas/*.js"
+      "default": "./dist/src/schemas/*.js"
     },
     "#db": {
       "development": "./src/db/index.ts",
-      "default": "./dist/db/index.js"
+      "default": "./dist/src/db/index.js"
     },
     "#utils": {
       "development": "./src/utils/logger.ts",
-      "default": "./dist/utils/logger.js"
+      "default": "./dist/src/utils/logger.js"
     }
   }
 }

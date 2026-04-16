@@ -15,14 +15,14 @@ Main goal of the redesign is to offer a clean, modern interface with minimum of 
 * animated sidebar menu on the left with tabbed main menu points: registration, course, customer, instructor, room, info, term, settings. Tabs can be dragged to new positions. Allow creation of new items
 * course menu offers a design mode: a) options on hover: like hovering over target group to inactivate b) dragging it to a new position; in design mode, target groups can be reactivated. Open/close state of menu is being stored in a state and in local storage on change
 * registrations: allow manual registration of a new participant (re-uses registration component)
-
+* a powerful calendar gives full overview over unused rooms
 
 ## Milestones
 
-### Milestone 1
+### Milestone 1 - reached!
 ![Minimum setup](./documentation/resources/images/Stufe-1.svg)
 
-### Milestone 2
+### Milestone 2 - mostly reached!
 ![Adding consumer app](./documentation/resources/images/Stufe-2.svg)
 
 ### Milestone 3

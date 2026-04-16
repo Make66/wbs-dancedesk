@@ -1,7 +1,7 @@
 import type { RequestHandler, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { PrismaClientKnownRequestError } from '../../generated/prisma/internal/prismaNamespace.ts';
+import { Prisma } from '../../generated/prisma/client.ts';
 import prisma from '#db';
 import { log } from '#utils';
 
@@ -57,7 +57,7 @@ async function issueTokens(entity: { id: string; tenantId: string }, role: Role,
   res.cookie('refreshToken', refreshToken, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 * 1000 });
 }
 
-async function performLogin<T extends { id: string; tenantId: string; password: string }>(
+async function performLogin<T extends { id: string; tenantId: string; password: string; email: string | null; firstName: string | null; lastName: string | null }>(
   inputPassword: string,
   find: () => Promise<T | null>,
   role: Role,
@@ -85,7 +85,7 @@ export const register: RequestHandler = async (req, res) => {
       data: { firstName, lastName, email, password: hash, tenantId },
     });
   } catch (e) {
-    if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002') {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
       throw new Error('Email already in use', { cause: { status: 409 } });
     }
     throw e;

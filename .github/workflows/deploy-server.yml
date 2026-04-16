@@ -1,0 +1,67 @@
+name: Deploy Server
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy-server.yml'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Build
+        working-directory: server
+        run: npm run build
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ vars.DEPLOY_PORT }}
+          script: |
+            set -e
+            cd /srv/dancedesk
+
+            # Pull latest code
+            git pull git@github.com:Make66/wbs-dancedesk.git main
+
+            # this is where we deploy to
+            cd server
+
+            # Install all dependencies (dev deps needed for tsc)
+            npm ci
+
+            # Build TypeScript
+            npm run build
+
+            # Prune to production dependencies only
+            npm prune --omit=dev
+
+            # Apply any pending DB migrations (never resets data)
+            npx prisma migrate deploy
+
+            # Generate Prisma client
+            npx prisma generate
+
+            # Reload service
+            sudo systemctl restart dancedesk
+            sudo systemctl status dancedesk --no-pager
