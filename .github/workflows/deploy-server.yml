@@ -39,16 +39,22 @@ jobs:
           port: ${{ vars.DEPLOY_PORT }}
           script: |
             set -e
-            cd /srv/dancedesk/server
+            cd /srv/dancedesk
 
-            # Pull latest codes
+            # Pull latest code
             git pull git@github.com:Make66/wbs-dancedesk.git main
 
-            # Install production dependencies
-            npm ci --omit=dev
+            # this is where we deploy to
+            cd server
+
+            # Install all dependencies (dev deps needed for tsc)
+            npm ci
 
             # Build TypeScript
             npm run build
+
+            # Prune to production dependencies only
+            npm prune --omit=dev
 
             # Apply any pending DB migrations (never resets data)
             npx prisma migrate deploy
