@@ -144,7 +144,7 @@ const CalendarPage = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/events`, {
+        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/events`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -220,17 +220,20 @@ const CalendarPage = () => {
   };
 
   const updateEventInDb = async (eventId: string, startsAt: Date, endsAt: Date) => {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/events/${eventId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/events/${eventId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          startsAt: startsAt.toISOString(),
+          endsAt: endsAt.toISOString(),
+        }),
       },
-      credentials: "include",
-      body: JSON.stringify({
-        startsAt: startsAt.toISOString(),
-        endsAt: endsAt.toISOString(),
-      }),
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -240,7 +243,7 @@ const CalendarPage = () => {
 
   const updateCourseInDb = async (courseId: string, startsAt: Date, endsAt: Date) => {
     const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${courseId}`,
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses/${courseId}`,
       {
         method: "PATCH",
         headers: {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
+import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { Sunrise, Sunset, Timer, Ruler, Check, Save } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { settingsStore } from "../../stores/settingsStore";
@@ -12,6 +13,7 @@ const CalenderSettingsSection = () => {
   const calendar = settingsStore((s) => s.settings.calendar);
   const setSettings = settingsStore((s) => s.setSettings);
 
+  const [isOpen, setIsOpen] = useState(false);
   const [minutesOpen, setMinutesOpen] = useState(false);
   const [slotHeightOpen, setSlotHeightOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -28,7 +30,7 @@ const CalenderSettingsSection = () => {
     setSaveError(null);
     setSaved(false);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/settings`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ calendar }),
@@ -45,12 +47,15 @@ const CalenderSettingsSection = () => {
 
   return (
     <div className="p-4 bg-blue-400/60 rounded-2xl">
-      <div className="flex items-center gap-4 ml-2">
-        <FaCalendarAlt className="text-2xl" />
-        <h3 className="font-semibold text-2xl">Kalender</h3>
+      <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsOpen((o) => !o)}>
+        <div className="flex items-center gap-4 ml-2">
+          <FaCalendarAlt className="text-2xl" />
+          <h3 className="font-semibold text-2xl">Kalender</h3>
+        </div>
+        {isOpen ? <RiArrowUpSLine className="text-2xl mr-2" /> : <RiArrowDownSLine className="text-2xl mr-2" />}
       </div>
 
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+      {isOpen && <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="relative">
           <Sunrise className="absolute top-1/2 -translate-y-1/2 left-6 text-xl w-5 h-5" />
           <input
@@ -167,7 +172,7 @@ const CalenderSettingsSection = () => {
           </button>
           {saveError && <span className="text-sm text-red-500">{saveError}</span>}
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

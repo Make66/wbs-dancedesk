@@ -46,6 +46,7 @@ export type CustomerMinAggregateOutputType = {
   tertiary: string | null
   quaternary: string | null
   signInKey: string | null
+  code: string | null
   active: boolean | null
   street: string | null
   city: string | null
@@ -69,6 +70,7 @@ export type CustomerMaxAggregateOutputType = {
   tertiary: string | null
   quaternary: string | null
   signInKey: string | null
+  code: string | null
   active: boolean | null
   street: string | null
   city: string | null
@@ -92,6 +94,7 @@ export type CustomerCountAggregateOutputType = {
   tertiary: number
   quaternary: number
   signInKey: number
+  code: number
   active: number
   setSeqInstructor: number
   setSeqTarget: number
@@ -129,6 +132,7 @@ export type CustomerMinAggregateInputType = {
   tertiary?: true
   quaternary?: true
   signInKey?: true
+  code?: true
   active?: true
   street?: true
   city?: true
@@ -152,6 +156,7 @@ export type CustomerMaxAggregateInputType = {
   tertiary?: true
   quaternary?: true
   signInKey?: true
+  code?: true
   active?: true
   street?: true
   city?: true
@@ -175,6 +180,7 @@ export type CustomerCountAggregateInputType = {
   tertiary?: true
   quaternary?: true
   signInKey?: true
+  code?: true
   active?: true
   setSeqInstructor?: true
   setSeqTarget?: true
@@ -287,6 +293,7 @@ export type CustomerGroupByOutputType = {
   tertiary: string
   quaternary: string
   signInKey: string
+  code: string
   active: boolean
   setSeqInstructor: string[]
   setSeqTarget: string[]
@@ -335,6 +342,7 @@ export type CustomerWhereInput = {
   tertiary?: Prisma.StringFilter<"Customer"> | string
   quaternary?: Prisma.StringFilter<"Customer"> | string
   signInKey?: Prisma.StringFilter<"Customer"> | string
+  code?: Prisma.StringFilter<"Customer"> | string
   active?: Prisma.BoolFilter<"Customer"> | boolean
   setSeqInstructor?: Prisma.StringNullableListFilter<"Customer">
   setSeqTarget?: Prisma.StringNullableListFilter<"Customer">
@@ -362,6 +370,7 @@ export type CustomerOrderByWithRelationInput = {
   tertiary?: Prisma.SortOrder
   quaternary?: Prisma.SortOrder
   signInKey?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   active?: Prisma.SortOrder
   setSeqInstructor?: Prisma.SortOrder
   setSeqTarget?: Prisma.SortOrder
@@ -381,6 +390,8 @@ export type CustomerOrderByWithRelationInput = {
 
 export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   email?: string
+  signInKey?: string
+  code?: string
   id?: string
   AND?: Prisma.CustomerWhereInput | Prisma.CustomerWhereInput[]
   OR?: Prisma.CustomerWhereInput[]
@@ -392,7 +403,6 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   secondary?: Prisma.StringFilter<"Customer"> | string
   tertiary?: Prisma.StringFilter<"Customer"> | string
   quaternary?: Prisma.StringFilter<"Customer"> | string
-  signInKey?: Prisma.StringFilter<"Customer"> | string
   active?: Prisma.BoolFilter<"Customer"> | boolean
   setSeqInstructor?: Prisma.StringNullableListFilter<"Customer">
   setSeqTarget?: Prisma.StringNullableListFilter<"Customer">
@@ -407,7 +417,7 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   isDeleted?: Prisma.BoolFilter<"Customer"> | boolean
   instructors?: Prisma.InstructorListRelationFilter
   locations?: Prisma.LocationListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "signInKey" | "code">
 
 export type CustomerOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
@@ -419,6 +429,7 @@ export type CustomerOrderByWithAggregationInput = {
   tertiary?: Prisma.SortOrder
   quaternary?: Prisma.SortOrder
   signInKey?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   active?: Prisma.SortOrder
   setSeqInstructor?: Prisma.SortOrder
   setSeqTarget?: Prisma.SortOrder
@@ -452,6 +463,7 @@ export type CustomerScalarWhereWithAggregatesInput = {
   tertiary?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   quaternary?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   signInKey?: Prisma.StringWithAggregatesFilter<"Customer"> | string
+  code?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   active?: Prisma.BoolWithAggregatesFilter<"Customer"> | boolean
   setSeqInstructor?: Prisma.StringNullableListFilter<"Customer">
   setSeqTarget?: Prisma.StringNullableListFilter<"Customer">
@@ -477,6 +489,7 @@ export type CustomerCreateInput = {
   tertiary?: string
   quaternary?: string
   signInKey?: string
+  code?: string
   active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
@@ -504,6 +517,7 @@ export type CustomerUncheckedCreateInput = {
   tertiary?: string
   quaternary?: string
   signInKey?: string
+  code?: string
   active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
@@ -531,6 +545,7 @@ export type CustomerUpdateInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -558,6 +573,7 @@ export type CustomerUncheckedUpdateInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -585,6 +601,7 @@ export type CustomerCreateManyInput = {
   tertiary?: string
   quaternary?: string
   signInKey?: string
+  code?: string
   active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
@@ -610,6 +627,7 @@ export type CustomerUpdateManyMutationInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -635,6 +653,7 @@ export type CustomerUncheckedUpdateManyInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -660,6 +679,7 @@ export type CustomerCountOrderByAggregateInput = {
   tertiary?: Prisma.SortOrder
   quaternary?: Prisma.SortOrder
   signInKey?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   active?: Prisma.SortOrder
   setSeqInstructor?: Prisma.SortOrder
   setSeqTarget?: Prisma.SortOrder
@@ -690,6 +710,7 @@ export type CustomerMaxOrderByAggregateInput = {
   tertiary?: Prisma.SortOrder
   quaternary?: Prisma.SortOrder
   signInKey?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   active?: Prisma.SortOrder
   street?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -713,6 +734,7 @@ export type CustomerMinOrderByAggregateInput = {
   tertiary?: Prisma.SortOrder
   quaternary?: Prisma.SortOrder
   signInKey?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   active?: Prisma.SortOrder
   street?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -807,6 +829,7 @@ export type CustomerCreateWithoutInstructorsInput = {
   tertiary?: string
   quaternary?: string
   signInKey?: string
+  code?: string
   active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
@@ -833,6 +856,7 @@ export type CustomerUncheckedCreateWithoutInstructorsInput = {
   tertiary?: string
   quaternary?: string
   signInKey?: string
+  code?: string
   active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
@@ -875,6 +899,7 @@ export type CustomerUpdateWithoutInstructorsInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -901,6 +926,7 @@ export type CustomerUncheckedUpdateWithoutInstructorsInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -927,6 +953,7 @@ export type CustomerCreateWithoutLocationsInput = {
   tertiary?: string
   quaternary?: string
   signInKey?: string
+  code?: string
   active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
@@ -953,6 +980,7 @@ export type CustomerUncheckedCreateWithoutLocationsInput = {
   tertiary?: string
   quaternary?: string
   signInKey?: string
+  code?: string
   active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
@@ -995,6 +1023,7 @@ export type CustomerUpdateWithoutLocationsInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -1021,6 +1050,7 @@ export type CustomerUncheckedUpdateWithoutLocationsInput = {
   tertiary?: Prisma.StringFieldUpdateOperationsInput | string
   quaternary?: Prisma.StringFieldUpdateOperationsInput | string
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
@@ -1087,6 +1117,7 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tertiary?: boolean
   quaternary?: boolean
   signInKey?: boolean
+  code?: boolean
   active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
@@ -1115,6 +1146,7 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tertiary?: boolean
   quaternary?: boolean
   signInKey?: boolean
+  code?: boolean
   active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
@@ -1140,6 +1172,7 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tertiary?: boolean
   quaternary?: boolean
   signInKey?: boolean
+  code?: boolean
   active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
@@ -1165,6 +1198,7 @@ export type CustomerSelectScalar = {
   tertiary?: boolean
   quaternary?: boolean
   signInKey?: boolean
+  code?: boolean
   active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
@@ -1180,7 +1214,7 @@ export type CustomerSelectScalar = {
   isDeleted?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"name" | "email" | "website" | "logoUrl" | "primary" | "secondary" | "tertiary" | "quaternary" | "signInKey" | "active" | "setSeqInstructor" | "setSeqTarget" | "street" | "city" | "zipCode" | "longitude" | "latitude" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isDeleted", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"name" | "email" | "website" | "logoUrl" | "primary" | "secondary" | "tertiary" | "quaternary" | "signInKey" | "code" | "active" | "setSeqInstructor" | "setSeqTarget" | "street" | "city" | "zipCode" | "longitude" | "latitude" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isDeleted", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   instructors?: boolean | Prisma.Customer$instructorsArgs<ExtArgs>
   locations?: boolean | Prisma.Customer$locationsArgs<ExtArgs>
@@ -1205,6 +1239,7 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     tertiary: string
     quaternary: string
     signInKey: string
+    code: string
     active: boolean
     setSeqInstructor: string[]
     setSeqTarget: string[]
@@ -1652,6 +1687,7 @@ export interface CustomerFieldRefs {
   readonly tertiary: Prisma.FieldRef<"Customer", 'String'>
   readonly quaternary: Prisma.FieldRef<"Customer", 'String'>
   readonly signInKey: Prisma.FieldRef<"Customer", 'String'>
+  readonly code: Prisma.FieldRef<"Customer", 'String'>
   readonly active: Prisma.FieldRef<"Customer", 'Boolean'>
   readonly setSeqInstructor: Prisma.FieldRef<"Customer", 'String[]'>
   readonly setSeqTarget: Prisma.FieldRef<"Customer", 'String[]'>

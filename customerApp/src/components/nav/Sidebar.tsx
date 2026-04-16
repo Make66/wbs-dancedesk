@@ -146,36 +146,7 @@ const Sidebar = () => {
             <span>Teilnehmer</span>
           </NavLink>
           <div className="border-b border-gray-500" />
-          <NavLink
-            to="/instructors"
-            className={({ isActive }) =>
-              cn(
-                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
-                isActive
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700 hover:text-white text-gray-300",
-              )
-            }
-          >
-            <FaChalkboardTeacher className="text-2xl cursor-pointer fill-current ml-2" />
-            <span>Instruktoren</span>
-          </NavLink>
-          <div className="border-b border-gray-500" />
-          <NavLink
-            to="/rooms"
-            className={({ isActive }) =>
-              cn(
-                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
-                isActive
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700 hover:text-white text-gray-300",
-              )
-            }
-          >
-            <MdMeetingRoom className="text-2xl cursor-pointer fill-current ml-2" />
-            <span>Räume</span>
-          </NavLink>
-          <div className="border-b border-gray-500" />
+
           <NavLink
             to="/settings"
             className={({ isActive }) =>

@@ -28,7 +28,7 @@ const ParticipantsPage = () => {
 
     setIsFetching(true);
     try {
-      const url = new URL(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/participants`);
+      const url = new URL(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/participants`);
       url.searchParams.set("limit", String(LIMIT));
       if (cursor) url.searchParams.set("cursor", cursor);
       if (search) url.searchParams.set("search", search);

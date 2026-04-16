@@ -41,10 +41,12 @@ export type SettingsMaxAggregateOutputType = {
 export type SettingsCountAggregateOutputType = {
   basic: number
   calendar: number
-  formFields: number
-  registration: number
   contracts: number
+  formFields: number
+  holidays: number
   rebates: number
+  registration: number
+  terms: number
   voucher: number
   other: number
   id: number
@@ -72,10 +74,12 @@ export type SettingsMaxAggregateInputType = {
 export type SettingsCountAggregateInputType = {
   basic?: true
   calendar?: true
-  formFields?: true
-  registration?: true
   contracts?: true
+  formFields?: true
+  holidays?: true
   rebates?: true
+  registration?: true
+  terms?: true
   voucher?: true
   other?: true
   id?: true
@@ -160,10 +164,12 @@ export type SettingsGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type SettingsGroupByOutputType = {
   basic: runtime.JsonValue | null
   calendar: runtime.JsonValue | null
-  formFields: runtime.JsonValue | null
-  registration: runtime.JsonValue | null
   contracts: runtime.JsonValue | null
+  formFields: runtime.JsonValue | null
+  holidays: runtime.JsonValue | null
   rebates: runtime.JsonValue | null
+  registration: runtime.JsonValue | null
+  terms: runtime.JsonValue | null
   voucher: runtime.JsonValue | null
   other: runtime.JsonValue | null
   id: string
@@ -196,10 +202,12 @@ export type SettingsWhereInput = {
   NOT?: Prisma.SettingsWhereInput | Prisma.SettingsWhereInput[]
   basic?: Prisma.JsonNullableFilter<"Settings">
   calendar?: Prisma.JsonNullableFilter<"Settings">
-  formFields?: Prisma.JsonNullableFilter<"Settings">
-  registration?: Prisma.JsonNullableFilter<"Settings">
   contracts?: Prisma.JsonNullableFilter<"Settings">
+  formFields?: Prisma.JsonNullableFilter<"Settings">
+  holidays?: Prisma.JsonNullableFilter<"Settings">
   rebates?: Prisma.JsonNullableFilter<"Settings">
+  registration?: Prisma.JsonNullableFilter<"Settings">
+  terms?: Prisma.JsonNullableFilter<"Settings">
   voucher?: Prisma.JsonNullableFilter<"Settings">
   other?: Prisma.JsonNullableFilter<"Settings">
   id?: Prisma.UuidFilter<"Settings"> | string
@@ -211,10 +219,12 @@ export type SettingsWhereInput = {
 export type SettingsOrderByWithRelationInput = {
   basic?: Prisma.SortOrderInput | Prisma.SortOrder
   calendar?: Prisma.SortOrderInput | Prisma.SortOrder
-  formFields?: Prisma.SortOrderInput | Prisma.SortOrder
-  registration?: Prisma.SortOrderInput | Prisma.SortOrder
   contracts?: Prisma.SortOrderInput | Prisma.SortOrder
+  formFields?: Prisma.SortOrderInput | Prisma.SortOrder
+  holidays?: Prisma.SortOrderInput | Prisma.SortOrder
   rebates?: Prisma.SortOrderInput | Prisma.SortOrder
+  registration?: Prisma.SortOrderInput | Prisma.SortOrder
+  terms?: Prisma.SortOrderInput | Prisma.SortOrder
   voucher?: Prisma.SortOrderInput | Prisma.SortOrder
   other?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
@@ -231,10 +241,12 @@ export type SettingsWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SettingsWhereInput | Prisma.SettingsWhereInput[]
   basic?: Prisma.JsonNullableFilter<"Settings">
   calendar?: Prisma.JsonNullableFilter<"Settings">
-  formFields?: Prisma.JsonNullableFilter<"Settings">
-  registration?: Prisma.JsonNullableFilter<"Settings">
   contracts?: Prisma.JsonNullableFilter<"Settings">
+  formFields?: Prisma.JsonNullableFilter<"Settings">
+  holidays?: Prisma.JsonNullableFilter<"Settings">
   rebates?: Prisma.JsonNullableFilter<"Settings">
+  registration?: Prisma.JsonNullableFilter<"Settings">
+  terms?: Prisma.JsonNullableFilter<"Settings">
   voucher?: Prisma.JsonNullableFilter<"Settings">
   other?: Prisma.JsonNullableFilter<"Settings">
   createdAt?: Prisma.DateTimeFilter<"Settings"> | Date | string
@@ -244,10 +256,12 @@ export type SettingsWhereUniqueInput = Prisma.AtLeast<{
 export type SettingsOrderByWithAggregationInput = {
   basic?: Prisma.SortOrderInput | Prisma.SortOrder
   calendar?: Prisma.SortOrderInput | Prisma.SortOrder
-  formFields?: Prisma.SortOrderInput | Prisma.SortOrder
-  registration?: Prisma.SortOrderInput | Prisma.SortOrder
   contracts?: Prisma.SortOrderInput | Prisma.SortOrder
+  formFields?: Prisma.SortOrderInput | Prisma.SortOrder
+  holidays?: Prisma.SortOrderInput | Prisma.SortOrder
   rebates?: Prisma.SortOrderInput | Prisma.SortOrder
+  registration?: Prisma.SortOrderInput | Prisma.SortOrder
+  terms?: Prisma.SortOrderInput | Prisma.SortOrder
   voucher?: Prisma.SortOrderInput | Prisma.SortOrder
   other?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
@@ -265,10 +279,12 @@ export type SettingsScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SettingsScalarWhereWithAggregatesInput | Prisma.SettingsScalarWhereWithAggregatesInput[]
   basic?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
   calendar?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
-  formFields?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
-  registration?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
   contracts?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
+  formFields?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
+  holidays?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
   rebates?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
+  registration?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
+  terms?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
   voucher?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
   other?: Prisma.JsonNullableWithAggregatesFilter<"Settings">
   id?: Prisma.UuidWithAggregatesFilter<"Settings"> | string
@@ -280,10 +296,12 @@ export type SettingsScalarWhereWithAggregatesInput = {
 export type SettingsCreateInput = {
   basic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   calendar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contracts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  holidays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rebates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  terms?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   voucher?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   other?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
@@ -295,10 +313,12 @@ export type SettingsCreateInput = {
 export type SettingsUncheckedCreateInput = {
   basic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   calendar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contracts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  holidays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rebates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  terms?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   voucher?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   other?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
@@ -310,10 +330,12 @@ export type SettingsUncheckedCreateInput = {
 export type SettingsUpdateInput = {
   basic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   calendar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contracts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  holidays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rebates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  terms?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   voucher?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   other?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -325,10 +347,12 @@ export type SettingsUpdateInput = {
 export type SettingsUncheckedUpdateInput = {
   basic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   calendar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contracts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  holidays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rebates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  terms?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   voucher?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   other?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -340,10 +364,12 @@ export type SettingsUncheckedUpdateInput = {
 export type SettingsCreateManyInput = {
   basic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   calendar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contracts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  holidays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rebates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  terms?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   voucher?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   other?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
@@ -355,10 +381,12 @@ export type SettingsCreateManyInput = {
 export type SettingsUpdateManyMutationInput = {
   basic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   calendar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contracts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  holidays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rebates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  terms?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   voucher?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   other?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -370,10 +398,12 @@ export type SettingsUpdateManyMutationInput = {
 export type SettingsUncheckedUpdateManyInput = {
   basic?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   calendar?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contracts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  formFields?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  holidays?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rebates?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  registration?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  terms?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   voucher?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   other?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -385,10 +415,12 @@ export type SettingsUncheckedUpdateManyInput = {
 export type SettingsCountOrderByAggregateInput = {
   basic?: Prisma.SortOrder
   calendar?: Prisma.SortOrder
-  formFields?: Prisma.SortOrder
-  registration?: Prisma.SortOrder
   contracts?: Prisma.SortOrder
+  formFields?: Prisma.SortOrder
+  holidays?: Prisma.SortOrder
   rebates?: Prisma.SortOrder
+  registration?: Prisma.SortOrder
+  terms?: Prisma.SortOrder
   voucher?: Prisma.SortOrder
   other?: Prisma.SortOrder
   id?: Prisma.SortOrder
@@ -416,10 +448,12 @@ export type SettingsMinOrderByAggregateInput = {
 export type SettingsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   basic?: boolean
   calendar?: boolean
-  formFields?: boolean
-  registration?: boolean
   contracts?: boolean
+  formFields?: boolean
+  holidays?: boolean
   rebates?: boolean
+  registration?: boolean
+  terms?: boolean
   voucher?: boolean
   other?: boolean
   id?: boolean
@@ -431,10 +465,12 @@ export type SettingsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type SettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   basic?: boolean
   calendar?: boolean
-  formFields?: boolean
-  registration?: boolean
   contracts?: boolean
+  formFields?: boolean
+  holidays?: boolean
   rebates?: boolean
+  registration?: boolean
+  terms?: boolean
   voucher?: boolean
   other?: boolean
   id?: boolean
@@ -446,10 +482,12 @@ export type SettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type SettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   basic?: boolean
   calendar?: boolean
-  formFields?: boolean
-  registration?: boolean
   contracts?: boolean
+  formFields?: boolean
+  holidays?: boolean
   rebates?: boolean
+  registration?: boolean
+  terms?: boolean
   voucher?: boolean
   other?: boolean
   id?: boolean
@@ -461,10 +499,12 @@ export type SettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type SettingsSelectScalar = {
   basic?: boolean
   calendar?: boolean
-  formFields?: boolean
-  registration?: boolean
   contracts?: boolean
+  formFields?: boolean
+  holidays?: boolean
   rebates?: boolean
+  registration?: boolean
+  terms?: boolean
   voucher?: boolean
   other?: boolean
   id?: boolean
@@ -473,7 +513,7 @@ export type SettingsSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"basic" | "calendar" | "formFields" | "registration" | "contracts" | "rebates" | "voucher" | "other" | "id" | "tenantId" | "createdAt" | "updatedAt", ExtArgs["result"]["settings"]>
+export type SettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"basic" | "calendar" | "contracts" | "formFields" | "holidays" | "rebates" | "registration" | "terms" | "voucher" | "other" | "id" | "tenantId" | "createdAt" | "updatedAt", ExtArgs["result"]["settings"]>
 
 export type $SettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Settings"
@@ -481,10 +521,12 @@ export type $SettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     basic: runtime.JsonValue | null
     calendar: runtime.JsonValue | null
-    formFields: runtime.JsonValue | null
-    registration: runtime.JsonValue | null
     contracts: runtime.JsonValue | null
+    formFields: runtime.JsonValue | null
+    holidays: runtime.JsonValue | null
     rebates: runtime.JsonValue | null
+    registration: runtime.JsonValue | null
+    terms: runtime.JsonValue | null
     voucher: runtime.JsonValue | null
     other: runtime.JsonValue | null
     id: string
@@ -916,10 +958,12 @@ export interface Prisma__SettingsClient<T, Null = never, ExtArgs extends runtime
 export interface SettingsFieldRefs {
   readonly basic: Prisma.FieldRef<"Settings", 'Json'>
   readonly calendar: Prisma.FieldRef<"Settings", 'Json'>
-  readonly formFields: Prisma.FieldRef<"Settings", 'Json'>
-  readonly registration: Prisma.FieldRef<"Settings", 'Json'>
   readonly contracts: Prisma.FieldRef<"Settings", 'Json'>
+  readonly formFields: Prisma.FieldRef<"Settings", 'Json'>
+  readonly holidays: Prisma.FieldRef<"Settings", 'Json'>
   readonly rebates: Prisma.FieldRef<"Settings", 'Json'>
+  readonly registration: Prisma.FieldRef<"Settings", 'Json'>
+  readonly terms: Prisma.FieldRef<"Settings", 'Json'>
   readonly voucher: Prisma.FieldRef<"Settings", 'Json'>
   readonly other: Prisma.FieldRef<"Settings", 'Json'>
   readonly id: Prisma.FieldRef<"Settings", 'String'>

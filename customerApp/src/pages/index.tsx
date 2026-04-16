@@ -5,7 +5,6 @@ import LoginPage from "./LoginPage";
 import InstructorsPage from "./InstructorsPage";
 import ParticipantsPage from "./ParticipantsPage";
 import CourseDetailPage from "./CourseDetailPage";
-import RoomsPage from "./RoomsPage";
 import SettingsPage from "./SettingsPage";
 import CalendarPage from "./CalendarPage";
 import InstructorDetailPage from "./InstructorDetailPage";
@@ -19,7 +18,6 @@ export {
   InstructorsPage,
   ParticipantsPage,
   CourseDetailPage,
-  RoomsPage,
   SettingsPage,
   CalendarPage,
   InstructorDetailPage,

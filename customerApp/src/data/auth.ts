@@ -5,7 +5,7 @@ type LoginInput = { email: string; password: string };
 type SuccessRes = { message: string };
 
 const login = async (formData: LoginInput): Promise<SuccessRes> => {
-  const res = await fetch(`${authServiceURL}/auth/login`, {
+  const res = await fetch(`${authServiceURL}/api/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -20,7 +20,7 @@ const login = async (formData: LoginInput): Promise<SuccessRes> => {
 };
 
 const me = async (): Promise<User> => {
-  const res = await fetch(`${authServiceURL}/auth/me`, {
+  const res = await fetch(`${authServiceURL}/api/auth/me`, {
     credentials: "include",
   });
   if (!res.ok) throw new Error(`${res.status}. Something went wrong!`);
@@ -31,7 +31,7 @@ const me = async (): Promise<User> => {
 };
 
 const logout = async (): Promise<void> => {
-  const res = await fetch(`${authServiceURL}/auth/logout`, {
+  const res = await fetch(`${authServiceURL}/api/auth/logout`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -39,7 +39,7 @@ const logout = async (): Promise<void> => {
 };
 
 const register = async (formData: RegisterFormState): Promise<SuccessRes> => {
-  const res = await fetch(`${authServiceURL}/auth/register`, {
+  const res = await fetch(`${authServiceURL}/api/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +60,7 @@ const keepSessionAlive = (): (() => void) => {
 
   const id = setInterval(async () => {
     try {
-      const res = await fetch(`${authServiceURL}/auth/refresh`, {
+      const res = await fetch(`${authServiceURL}/api/auth/refresh`, {
         method: "POST",
         credentials: "include",
       });

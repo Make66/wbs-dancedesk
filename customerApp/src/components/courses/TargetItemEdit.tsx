@@ -128,39 +128,41 @@ const TargetItemEdit = ({ target, formData, setFormData, setIsModalOpen }: Targe
 
             <div className="flex w-full items-center justify-between gap-4">
               <div className="relative flex items-center gap-7 overflow-visible">
-                <ColorPicker
-                  color={formData.color[0]}
-                  onChange={(newColor) => {
-                    setFormData((prev) => ({ ...prev, color: [newColor, formData.color[1]] }));
-                    updateColor(target.id, [newColor, formData.color[1]]);
-                  }}
-                >
-                  <button
-                    type="button"
-                    className="h-10 w-10 cursor-pointer rounded-md border shadow-sm"
-                    style={{ backgroundColor: formData.color[0] }}
-                    aria-label="Hintergrundfarbe auswählen"
-                  />
-                </ColorPicker>
-
-                <ColorPicker
-                  color={formData.color[1]}
-                  onChange={(newColor) => {
-                    setFormData((prev) => ({ ...prev, color: [prev.color[0], newColor] }));
-                    updateColor(target.id, [formData.color[0], newColor]);
-                  }}
-                >
-                  <button
-                    type="button"
-                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border bg-white shadow-sm"
-                    aria-label="Textfarbe auswählen"
+                <div className="flex">
+                  <ColorPicker
+                    color={formData.color[0]}
+                    onChange={(newColor) => {
+                      setFormData((prev) => ({ ...prev, color: [newColor, formData.color[1]] }));
+                      updateColor(target.id, [newColor, formData.color[1]]);
+                    }}
                   >
-                    <ImFont
-                      className="text-2xl"
-                      style={{ color: formData.color[1], stroke: "#000", strokeWidth: "1px" }}
+                    <button
+                      type="button"
+                      className="h-22 w-22 cursor-pointer rounded-l-2xl border shadow-sm"
+                      style={{ backgroundColor: formData.color[0] }}
+                      aria-label="Hintergrundfarbe auswählen"
                     />
-                  </button>
-                </ColorPicker>
+                  </ColorPicker>
+
+                  <ColorPicker
+                    color={formData.color[1]}
+                    onChange={(newColor) => {
+                      setFormData((prev) => ({ ...prev, color: [prev.color[0], newColor] }));
+                      updateColor(target.id, [formData.color[0], newColor]);
+                    }}
+                  >
+                    <button
+                      type="button"
+                      className="flex h-22 w-22 cursor-pointer items-center justify-center rounded-r-2xl border bg-white shadow-sm"
+                      aria-label="Textfarbe auswählen"
+                    >
+                      <ImFont
+                        className="text-2xl"
+                        style={{ color: formData.color[1], stroke: "#000", strokeWidth: "1px" }}
+                      />
+                    </button>
+                  </ColorPicker>
+                </div>
 
                 <IconPicker
                   value={formData.icon}

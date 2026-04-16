@@ -18,7 +18,7 @@ type EventPayload = {
 
 export const createEventDB = async (data: EventPayload) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/events`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/events`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -41,12 +41,15 @@ export const createEventDB = async (data: EventPayload) => {
 
 export const updateEventDB = async (eventId: string, data: EventPayload) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/events/${eventId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/events/${eventId}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      },
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -65,10 +68,13 @@ export const updateEventDB = async (eventId: string, data: EventPayload) => {
 
 export const deleteEventDB = async (eventId: string) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/events/${eventId}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/events/${eventId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
 
     if (!response.ok) {
       const errorText = await response.text();

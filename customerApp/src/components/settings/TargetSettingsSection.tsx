@@ -1,3 +1,4 @@
+import { useState } from "react";
 import TargetItem from "../courses/TargetItem";
 import {
   DndContext,
@@ -15,6 +16,7 @@ import { toast } from "react-toastify";
 import AddButton from "../ui/AddButton";
 import VisibleButton from "../ui/VisibleButton";
 import { MdGroups } from "react-icons/md";
+import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 
 const TargetsPage = () => {
   const targets = targetStore((state) => state.targets);
@@ -25,6 +27,7 @@ const TargetsPage = () => {
   const selectedLocationId = userStore((state) => state.selectedLocationId);
   const getOrderedTargetIds = targetStore((state) => state.getOrderedTargetIds);
 
+  const [isOpen, setIsOpen] = useState(false);
   const hasInactiveItems = targets.some((target) => !target.isActive);
   const visibleTargets = isInactiveVisible ? targets : targets.filter((target) => target.isActive);
 
@@ -58,36 +61,60 @@ const TargetsPage = () => {
 
   return (
     <div className="p-4 bg-red-400/60 rounded-2xl">
-      <div className="flex items-center justify-between">
+      <div
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setIsOpen((o) => !o)}
+      >
         <div className="flex items-center gap-4 ml-2">
           <MdGroups className="text-2xl" />
           <h3 className="text-2xl font-semibold">Zielgruppen</h3>
         </div>
         <div className="flex items-center gap-6">
-          <AddButton onClick={() => addTarget()} tooltipContent="Zielgruppe hinzufügen" />
+          {isOpen && (
+            <div onClick={(e) => e.stopPropagation()} className="mt-1">
+              <AddButton
+                onClick={() => addTarget()}
+                tooltipContent="Zielgruppe hinzufügen"
+                size="medium"
+              />
+            </div>
+          )}
           {hasInactiveItems && (
-            <VisibleButton
-              onClick={toggleInactiveVisibility}
-              isVisible={isInactiveVisible}
-              tooltipContent="Inaktive Zielgruppen anzeigen/verbergen"
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <VisibleButton
+                onClick={toggleInactiveVisibility}
+                isVisible={isInactiveVisible}
+                tooltipContent="Inaktive Zielgruppen anzeigen/verbergen"
+              />
+            </div>
+          )}
+          {isOpen ? (
+            <RiArrowUpSLine className="text-2xl mr-2" />
+          ) : (
+            <RiArrowDownSLine className="text-2xl mr-2" />
           )}
         </div>
       </div>
-      <div className="mt-5">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={visibleTargets.map((target) => target.id)}
-            strategy={verticalListSortingStrategy}
+      {isOpen && (
+        <div className="mt-5">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            <div className="flex flex-col gap-2">
-              {visibleTargets.map((target) => (
-                <TargetItem key={target.id} target={target} />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      </div>
+            <SortableContext
+              items={visibleTargets.map((target) => target.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="flex flex-col gap-2">
+                {visibleTargets.map((target) => (
+                  <TargetItem key={target.id} target={target} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
+      )}
     </div>
   );
 };
