@@ -345,10 +345,91 @@ const schoolHolidays: Record<FederalState, Holiday[]> = {
   ],
 };
 
+type FederalHoliday = { start: { dateTime: string }; title: string };
+
+const national: FederalHoliday[] = [
+  // 2026 — Easter: April 5
+  { start: { dateTime: '2026-01-01' }, title: 'Neujahr' },
+  { start: { dateTime: '2026-04-03' }, title: 'Karfreitag' },
+  { start: { dateTime: '2026-04-06' }, title: 'Ostermontag' },
+  { start: { dateTime: '2026-05-01' }, title: 'Tag der Arbeit' },
+  { start: { dateTime: '2026-05-14' }, title: 'Christi Himmelfahrt' },
+  { start: { dateTime: '2026-05-25' }, title: 'Pfingstmontag' },
+  { start: { dateTime: '2026-10-03' }, title: 'Tag der deutschen Einheit' },
+  { start: { dateTime: '2026-12-25' }, title: '1. Weihnachtstag' },
+  { start: { dateTime: '2026-12-26' }, title: '2. Weihnachtstag' },
+  // 2027 — Easter: March 28
+  { start: { dateTime: '2027-01-01' }, title: 'Neujahr' },
+  { start: { dateTime: '2027-03-26' }, title: 'Karfreitag' },
+  { start: { dateTime: '2027-03-29' }, title: 'Ostermontag' },
+  { start: { dateTime: '2027-05-01' }, title: 'Tag der Arbeit' },
+  { start: { dateTime: '2027-05-06' }, title: 'Christi Himmelfahrt' },
+  { start: { dateTime: '2027-05-17' }, title: 'Pfingstmontag' },
+  { start: { dateTime: '2027-10-03' }, title: 'Tag der deutschen Einheit' },
+  { start: { dateTime: '2027-12-25' }, title: '1. Weihnachtstag' },
+  { start: { dateTime: '2027-12-26' }, title: '2. Weihnachtstag' },
+  // 2028 — Easter: April 16
+  { start: { dateTime: '2028-01-01' }, title: 'Neujahr' },
+  { start: { dateTime: '2028-04-14' }, title: 'Karfreitag' },
+  { start: { dateTime: '2028-04-17' }, title: 'Ostermontag' },
+  { start: { dateTime: '2028-05-01' }, title: 'Tag der Arbeit' },
+  { start: { dateTime: '2028-05-25' }, title: 'Christi Himmelfahrt' },
+  { start: { dateTime: '2028-06-05' }, title: 'Pfingstmontag' },
+  { start: { dateTime: '2028-10-03' }, title: 'Tag der deutschen Einheit' },
+  { start: { dateTime: '2028-12-25' }, title: '1. Weihnachtstag' },
+  { start: { dateTime: '2028-12-26' }, title: '2. Weihnachtstag' },
+];
+
+const dreiKoenige:      FederalHoliday[] = ['2026','2027','2028'].map(y => ({ start: { dateTime: `${y}-01-06` }, title: 'Heilige Drei Könige' }));
+const frauentag:        FederalHoliday[] = ['2026','2027','2028'].map(y => ({ start: { dateTime: `${y}-03-08` }, title: 'Internationaler Frauentag' }));
+const fronleichnam:     FederalHoliday[] = [
+  { start: { dateTime: '2026-06-04' }, title: 'Fronleichnam' },
+  { start: { dateTime: '2027-05-27' }, title: 'Fronleichnam' },
+  { start: { dateTime: '2028-06-15' }, title: 'Fronleichnam' },
+];
+const mariaeHimmelfahrt: FederalHoliday[] = ['2026','2027','2028'].map(y => ({ start: { dateTime: `${y}-08-15` }, title: 'Mariä Himmelfahrt' }));
+const weltkindertag:    FederalHoliday[] = ['2026','2027','2028'].map(y => ({ start: { dateTime: `${y}-09-20` }, title: 'Weltkindertag' }));
+const reformationstag:  FederalHoliday[] = ['2026','2027','2028'].map(y => ({ start: { dateTime: `${y}-10-31` }, title: 'Reformationstag' }));
+const allerheiligen:    FederalHoliday[] = ['2026','2027','2028'].map(y => ({ start: { dateTime: `${y}-11-01` }, title: 'Allerheiligen' }));
+const bussBettag:       FederalHoliday[] = [
+  { start: { dateTime: '2026-11-18' }, title: 'Buß- und Bettag' },
+  { start: { dateTime: '2027-11-17' }, title: 'Buß- und Bettag' },
+  { start: { dateTime: '2028-11-22' }, title: 'Buß- und Bettag' },
+];
+
+const merge = (...groups: FederalHoliday[][]): FederalHoliday[] =>
+  ([] as FederalHoliday[]).concat(...groups).sort((a, b) => a.start.dateTime.localeCompare(b.start.dateTime));
+
+const federalHolidays: Record<FederalState, FederalHoliday[]> = {
+  BW: merge(national, dreiKoenige, fronleichnam, allerheiligen),
+  BY: merge(national, dreiKoenige, fronleichnam, mariaeHimmelfahrt, allerheiligen),
+  BE: merge(national, frauentag),
+  BB: merge(national, reformationstag),
+  HB: merge(national, reformationstag),
+  HH: merge(national, reformationstag),
+  HE: merge(national, fronleichnam),
+  MV: merge(national, frauentag, reformationstag),
+  NI: merge(national, reformationstag),
+  NW: merge(national, fronleichnam, allerheiligen),
+  RP: merge(national, fronleichnam, allerheiligen),
+  SL: merge(national, fronleichnam, mariaeHimmelfahrt, allerheiligen),
+  SN: merge(national, reformationstag, bussBettag),
+  ST: merge(national, dreiKoenige, reformationstag),
+  SH: merge(national, reformationstag),
+  TH: merge(national, weltkindertag, reformationstag),
+};
+
 export const getHolidays: RequestHandler = async (req, res) => {
   const state = String(req.params['state']) as keyof typeof schoolHolidays;
   const holidays = schoolHolidays[state];
   if (!holidays) throw new Error(`No holiday data for state '${state}'`, { cause: { status: 404 } });
+  res.json(holidays);
+};
+
+export const getFederalHolidays: RequestHandler = async (req, res) => {
+  const state = String(req.params['state']) as keyof typeof federalHolidays;
+  const holidays = federalHolidays[state];
+  if (!holidays) throw new Error(`No federal holiday data for state '${state}'`, { cause: { status: 404 } });
   res.json(holidays);
 };
 
