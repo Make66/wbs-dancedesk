@@ -17,14 +17,14 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex h-11 w-11 bg-transparent cursor-pointer items-center justify-center rounded-md border shadow-sm"
+          className="flex h-22 w-22 bg-transparent cursor-pointer items-center justify-center rounded-2xl border border-muted-foreground shadow-sm"
           aria-label="Textfarbe auswählen"
         >
-          <SelectedIcon className="text-xl" />
+          <SelectedIcon className="text-3xl" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-100 p-4">
-        <div className="flex gap-2 overflow-y-auto">
+      <PopoverContent className="p-4">
+        <div className="flex flex-wrap items-center gap-6">
           {ICONS.map((item) => {
             const Icon = item.icon;
             const isSelected = item.name === value;
@@ -37,12 +37,12 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
                   onChange(item.name);
                 }}
                 className={cn(
-                  "relative cursor-pointer flex h-6 w-6 items-center justify-center rounded-xl border transition hover:bg-gray-50",
+                  "relative cursor-pointer flex flex-wrap items-center justify-center rounded-xl transition hover:bg-gray-50",
                   isSelected && "border-black bg-gray-100",
                 )}
                 title={item.name}
               >
-                <Icon className="text-lg" />
+                <Icon className="text-3xl" />
               </button>
             );
           })}

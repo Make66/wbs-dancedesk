@@ -98,11 +98,13 @@ CREATE TABLE "Customer" (
     "name" TEXT NOT NULL DEFAULT 'DanceSchool Flip''n Bit',
     "email" TEXT NOT NULL DEFAULT 'noreply@email.de',
     "website" TEXT NOT NULL DEFAULT 'https://www.wbscodingschool.com',
-    "logoUrl" TEXT NOT NULL DEFAULT './assets/images/logo.webp',
-    "primary" TEXT NOT NULL DEFAULT '#B5252B',
-    "secondary" TEXT NOT NULL DEFAULT '#858384',
-    "tertiary" TEXT NOT NULL DEFAULT '#858384',
-    "quaternary" TEXT NOT NULL DEFAULT '#858384',
+    "logoUrl" TEXT NOT NULL DEFAULT 'https://gui4.kurstool.de/assets/images/logo.webp',
+    "primary" TEXT NOT NULL DEFAULT '#B80000',
+    "secondary" TEXT NOT NULL DEFAULT '#5F0000',
+    "tertiary" TEXT NOT NULL DEFAULT '#565656',
+    "quaternary" TEXT NOT NULL DEFAULT '#BABABA',
+    "signInKey" TEXT NOT NULL DEFAULT '',
+    "code" TEXT NOT NULL DEFAULT '',
     "active" BOOLEAN NOT NULL DEFAULT true,
     "setSeqInstructor" UUID[],
     "setSeqTarget" UUID[],
@@ -289,13 +291,15 @@ CREATE TABLE "Room" (
 
 -- CreateTable
 CREATE TABLE "Settings" (
-    "basic" JSONB,
-    "calendar" JSONB DEFAULT '{"startHour":10,"endHour":20,"slotHeight":20,"minutesPerSlot":15}',
-    "formFields" JSONB,
-    "registration" JSONB,
+    "basic" JSONB DEFAULT '{"domain":"","federalState":"","termsUri":"","privacyUri":"","cancellationUri":"", "cancellationSampleUri":""}',
+    "calendar" JSONB DEFAULT '{"startHour":10,"endHour":20,"slotHeight":20,"minutesPerSlot":15, "federalHolidays":[], "schoolHolidays":[]}',
     "contracts" JSONB,
+    "formFields" JSONB,
+    "holidays" JSONB,
     "rebates" JSONB,
-    "voucher" JSONB,
+    "registration" JSONB DEFAULT '{"titleCol1":"", "titleCol2":"","delTime":90,"checkSeats":false,"waitingList":false,"displayPastNumber":7,"displayNumberOccurrences":7}',
+    "terms" JSONB DEFAULT '{"title":"", "content":""}',
+    "voucher" JSONB DEFAULT '{"title":"", "content":""}',
     "other" JSONB,
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
@@ -392,6 +396,12 @@ CREATE TABLE "_UserModules" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer_email_key" ON "Customer"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Customer_signInKey_key" ON "Customer"("signInKey");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Customer_code_key" ON "Customer"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Instructor_email_key" ON "Instructor"("email");

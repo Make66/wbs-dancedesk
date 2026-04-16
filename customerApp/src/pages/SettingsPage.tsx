@@ -1,4 +1,5 @@
 import CalendarSettingsSection from "../components/settings/CalenderSettingsSection";
+import HolidaySettingSection from "../components/settings/HolidaySettingSection";
 import TargetSettingsSection from "../components/settings/TargetSettingsSection";
 import { Link } from "react-router";
 
@@ -15,6 +16,7 @@ const SettingsPage = () => {
         <div className="flex flex-col gap-4">
           <TargetSettingsSection />
           <CalendarSettingsSection />
+          <HolidaySettingSection />
         </div>
       </div>
     </div>

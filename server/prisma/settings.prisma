@@ -5,7 +5,7 @@ model Settings {
   formFields   Json?
   holidays     Json?
   rebates      Json?
-  registration Json? @default("{\"titleCol1\":\"\", \"titleCol2\":\"\",\"delTime\":90,\"checkSeats\":false,"waitingList",\"displayPastNumber\":7,\"displayNumberOccurrences\":7}")}")
+  registration Json? @default("{\"titleCol1\":\"\", \"titleCol2\":\"\",\"delTime\":90,\"checkSeats\":false,\"waitingList\":false,\"displayPastNumber\":7,\"displayNumberOccurrences\":7}")
   terms         Json? @default("{\"title\":\"\", \"content\":\"\"}")
   voucher       Json? @default("{\"title\":\"\", \"content\":\"\"}")
   other        Json?
