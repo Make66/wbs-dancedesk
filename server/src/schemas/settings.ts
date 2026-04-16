@@ -1,4 +1,3 @@
-import { title } from 'process';
 import { z } from 'zod/v4';
 
 export const basicConfigSchema = z.object({
@@ -35,10 +34,10 @@ export const schoolHolidaysSchema = z.record(z.string(), z.array(z.object({
   title: z.string(),
 }))).optional();
 
-export const holidays = {
+export const holidaysSchema = z.object({
   federal: z.array(z.unknown()).optional(),
   school: schoolHolidaysSchema,
-};
+}).optional();
 
 export const rebateConfigSchema = z.array(z.object({
   title: z.string().min(1),
@@ -79,6 +78,7 @@ export const settingsSchema = z.object({
   calendar:     calendarConfigSchema,
   contracts:    contractConfigSchema,
   formFields:   formFieldConfigSchema,
+  holidays:     holidaysSchema,
   rebates:      rebateConfigSchema,
   registration: registrationConfigSchema,
   terms:        termsConfigSchema,
@@ -111,6 +111,7 @@ export const federalStateSchema = z.enum([
 ]);
 
 export type Settings = z.infer<typeof settingsSchema>;
+export type Holidays = z.infer<typeof holidaysSchema>;
 export type BasicConfig = z.infer<typeof basicConfigSchema>;
 export type CalendarConfig = z.infer<typeof calendarConfigSchema>;
 export type ContractConfig = z.infer<typeof contractConfigSchema>;

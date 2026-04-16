@@ -1,7 +1,9 @@
 import CalendarSettingsSection from "../components/settings/CalenderSettingsSection";
 import HolidaySettingSection from "../components/settings/HolidaySettingSection";
+import FederalHolidaySettingsSection from "../components/settings/FederalHolidaySettingsSection";
 import TargetSettingsSection from "../components/settings/TargetSettingsSection";
-import { Link } from "react-router";
+import RoomSettingsSection from "../components/settings/RoomSettingsSection";
+import InstructorSettingsSection from "../components/settings/InstructorSettingsSection";
 
 const SettingsPage = () => {
   return (
@@ -10,12 +12,12 @@ const SettingsPage = () => {
         <h1 className="text-3xl font-semibold">Einstellungen</h1>
       </div>
       <div className="p-6">
-        <Link to="/rooms" className="flex items-center gap-2 text-blue-500 mt-3">
-          RÄUME VERWALTEN
-        </Link>
         <div className="flex flex-col gap-4">
           <TargetSettingsSection />
+          <RoomSettingsSection />
+          <InstructorSettingsSection />
           <CalendarSettingsSection />
+          <FederalHolidaySettingsSection />
           <HolidaySettingSection />
         </div>
       </div>

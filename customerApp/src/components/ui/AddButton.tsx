@@ -29,7 +29,12 @@ const AddButton = ({
       data-tooltip-place={tooltipPlace || "right"}
     >
       <IoMdAddCircleOutline
-        className={cn("text-3xl", size === "small" && "text-lg", size === "large" && "text-4xl")}
+        className={cn(
+          "text-3xl",
+          size === "small" && "text-lg",
+          size === "medium" && "text-2xl",
+          size === "large" && "text-4xl",
+        )}
         style={{ color: color }}
       />
     </button>

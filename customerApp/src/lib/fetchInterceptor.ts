@@ -25,7 +25,7 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   const authHeader = res.headers.get("www-authenticate");
 
   if (authHeader?.includes("token_expired")) {
-    const refreshRes = await originalFetch(`${authServiceURL}/auth/refresh`, {
+    const refreshRes = await originalFetch(`${authServiceURL}/api/auth/refresh`, {
       method: "POST",
       credentials: "include",
     });
