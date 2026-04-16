@@ -65,7 +65,14 @@ async function performLogin<T extends { id: string; tenantId: string; password: 
 ): Promise<T> {
   const entity = await find();
   const match = await bcrypt.compare(inputPassword, entity?.password ?? DUMMY_HASH);
-  if (!entity || !match) throw new Error('Invalid credentials', { cause: { status: 401 } });
+  if (!entity) {
+    log(SRC, 'performLogin', 'Login failed: entity not found', { role });
+    throw new Error('Invalid credentials', { cause: { status: 401 } });
+  }
+  if (!match) {
+    log(SRC, 'performLogin', 'Login failed: password mismatch', { role, id: entity.id });
+    throw new Error('Invalid credentials', { cause: { status: 401 } });
+  }
   await issueTokens(entity, role, res);
   return entity;
 }
@@ -84,13 +91,15 @@ export const register: RequestHandler = async (req, res) => {
     user = await prisma.user.create({
       data: { firstName, lastName, email, password: hash, tenantId },
     });
+    log(SRC, 'register', 'Registering successful', { email, tenantId });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+      log(SRC, 'register', 'Registering not possible, email already in use', { email, tenantId });
       throw new Error('Email already in use', { cause: { status: 409 } });
     }
+    log(SRC, 'register', 'Registering error', { email, tenantId });
     throw e;
   }
-
   log(SRC, 'register', 'User created', { id: user.id, email: user.email });
   await issueTokens(user, 'user', res);
   res.status(201).json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });

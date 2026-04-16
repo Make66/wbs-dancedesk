@@ -1,8 +1,9 @@
 import { appendFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
-const isProd = process.env.NODE_ENV === 'production';
+// logs will be written to ./server/logs/YYYY-MM-DD.log in production, and to console in development
 const LOG_DIR = join(process.cwd(), 'logs');
+const isProd = process.env.NODE_ENV === 'production';
 
 function formatEntry(src: string, fn: string, message: string, data?: unknown): string {
   const ts = new Date().toISOString();
