@@ -1,0 +1,55 @@
+name: Deploy Customer App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'customerApp/**'
+      - '.github/workflows/deploy-customer-app.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+          cache-dependency-path: customerApp/package-lock.json
+
+      - name: Install dependencies
+        working-directory: customerApp
+        run: npm ci
+
+      - name: Build
+        working-directory: customerApp
+        run: npm run build
+
+      - name: Deploy static files via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ vars.DEPLOY_PORT }}
+          script: |
+            set -e
+            cd /srv/dancedesk
+
+            # Pull latest code
+            git pull git@github.com:Make66/wbs-dancedesk.git main
+
+            cd customerApp
+
+            # Install dependencies and build
+            npm ci
+            npm run build
+
+            # Nginx serves from customerApp/dist — no service restart needed
+            echo "Customer app deployed to /srv/dancedesk/customerApp/dist"
