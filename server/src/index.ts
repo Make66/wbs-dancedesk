@@ -48,22 +48,22 @@ app.use(
 
 app.use(express.json(), cookieParser());
 
-app.use("/auth", authRouter);
-app.use("/chats", chatRouter);
-app.use("/categories", categoriesRouter);
-app.use("/courses", coursesRouter);
-app.use("/customers", customersRouter);
-app.use("/events", eventsRouter);
-app.use("/instructors", instructorsRouter);
-app.use("/locations", locationsRouter);
-app.use("/modules", modulesRouter);
-app.use("/participants", participantsRouter);
-app.use("/registrations", registrationsRouter);
-app.use("/rooms", roomsRouter);
-app.use("/settings", settingsRouter);
-app.use("/targets", targetsRouter);
-app.use("/texts", textsRouter);
-app.use("/users", usersRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/chats", chatRouter);
+app.use("/api/categories", categoriesRouter);
+app.use("/api/courses", coursesRouter);
+app.use("/api/customers", customersRouter);
+app.use("/api/events", eventsRouter);
+app.use("/api/instructors", instructorsRouter);
+app.use("/api/locations", locationsRouter);
+app.use("/api/modules", modulesRouter);
+app.use("/api/participants", participantsRouter);
+app.use("/api/registrations", registrationsRouter);
+app.use("/api/rooms", roomsRouter);
+app.use("/api/settings", settingsRouter);
+app.use("/api/targets", targetsRouter);
+app.use("/api/texts", textsRouter);
+app.use("/api/users", usersRouter);
 
 app.use("/assets", express.static(join(__dirname, "..", "assets")));
 
