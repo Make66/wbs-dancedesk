@@ -319,6 +319,52 @@ This lets downstream handlers and future middleware guard routes by role.
 | Entity lookup by id | `findEntityById(role)` | — |
 | Response shape | — | each handler |
 
+## How to deal with Prisma error P3009 (failed migration)?
+
+Prisma records the migration as failed in `_prisma_migrations` and won't proceed until resolved.
+
+**Option A — Dev database: reset everything**
+```sh
+npx prisma migrate reset
+```
+Drops and recreates the DB, re-runs all migrations from scratch.
+
+**Option B — Production / keep data**
+
+Check whether the migration actually applied:
+```sh
+psql $DATABASE_URL -c "\dt"
+```
+
+- Schema **did not apply** (tables missing) — mark as rolled back and re-run:
+  ```sh
+  npx prisma migrate resolve --rolled-back <migration_name>
+  npx prisma migrate deploy
+  ```
+- Schema **did apply** (tables exist despite the error) — mark as applied:
+  ```sh
+  npx prisma migrate resolve --applied <migration_name>
+  ```
+
+For an `_init` migration on a fresh database, Option A is almost always the right call.
+
+---
+
+## What is `$DATABASE_URL`?
+
+It's the full PostgreSQL connection string from your `.env` file — the value of `DATABASE_URL`:
+```
+postgresql://user:password@localhost:5432/dbname?schema=public
+```
+
+Use the variable directly in commands (as long as `.env` is loaded in your shell):
+```sh
+psql $DATABASE_URL -c "\dt"
+```
+If the env var isn't loaded, substitute the actual values from `.env`.
+
+---
+
 ## How do I access static web content from the server?
 
 ### Using express.static
