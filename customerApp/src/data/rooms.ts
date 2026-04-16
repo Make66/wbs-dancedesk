@@ -16,7 +16,7 @@ type RoomInput = {
 export const getRooms = async (locationId: string): Promise<Room[]> => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/locations/${locationId}/rooms`,
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/locations/${locationId}/rooms`,
       {
         method: "GET",
         headers: {
@@ -38,7 +38,7 @@ export const getRooms = async (locationId: string): Promise<Room[]> => {
 
 export const getAllRooms = async (): Promise<Room[]> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/rooms`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/rooms`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -58,13 +58,16 @@ export const getAllRooms = async (): Promise<Room[]> => {
 
 export const getRoomById = async (roomId: string): Promise<Room> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/rooms/${roomId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/rooms/${roomId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       },
-      credentials: "include",
-    });
+    );
     if (!response.ok) {
       throw new Error("Raum konnte nicht geladen werden.");
     }
@@ -98,11 +101,14 @@ const buildRoomFormData = (roomData: RoomInput): FormData => {
 export const updateRoom = async (roomId: string, roomData: RoomInput): Promise<Room> => {
   try {
     const formData = buildRoomFormData(roomData);
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/rooms/${roomId}`, {
-      method: "PATCH",
-      credentials: "include",
-      body: formData,
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/rooms/${roomId}`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        body: formData,
+      },
+    );
     if (!response.ok) {
       throw new Error("Raum konnte nicht aktualisiert werden.");
     }
@@ -117,7 +123,7 @@ export const updateRoom = async (roomId: string, roomData: RoomInput): Promise<R
 export const createRoom = async (roomData: RoomInput): Promise<Room> => {
   try {
     const formData = buildRoomFormData(roomData);
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/rooms`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/rooms`, {
       method: "POST",
       credentials: "include",
       body: formData,
@@ -135,10 +141,13 @@ export const createRoom = async (roomData: RoomInput): Promise<Room> => {
 
 export const deleteRoom = async (roomId: string): Promise<void> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/rooms/${roomId}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/rooms/${roomId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
     if (!response.ok) {
       throw new Error("Raum konnte nicht gelöscht werden.");
     }

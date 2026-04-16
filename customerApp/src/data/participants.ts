@@ -3,7 +3,7 @@ import type { Participant } from "../types/participants-type";
 export const getParticipantsByCourseId = async (courseId: string): Promise<Participant[]> => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${courseId}/participants`,
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses/${courseId}/participants`,
       {
         method: "GET",
         headers: {

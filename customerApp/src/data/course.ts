@@ -11,7 +11,7 @@ export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
   console.log("updateCourseDB id, payload", id, data);
   console.log("updateCourseDB payload", JSON.stringify(data));
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -36,7 +36,7 @@ export const createCourseDB = async (data: CreateCourseInput) => {
   console.log("createCourseDB payload", data);
   console.log("createCourseDB payload", JSON.stringify(data));
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -58,7 +58,7 @@ export const createCourseDB = async (data: CreateCourseInput) => {
 };
 
 export const getCourseByIdDB = async (id: string) => {
-  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/${id}`, {
+  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses/${id}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -83,7 +83,7 @@ export const getCoursesByWeekDB = async (
   const query = params.size > 0 ? `?${params.toString()}` : "";
 
   const response = await fetch(
-    `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/courses/week/${year}/${week}${query}`,
+    `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses/week/${year}/${week}${query}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -97,7 +97,7 @@ export const getCoursesByWeekDB = async (
 export const getCoursesByInstructorIdDB = async (instructorId: string) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors/${instructorId}/courses`,
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/instructors/${instructorId}/courses`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

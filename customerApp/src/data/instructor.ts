@@ -11,7 +11,7 @@ type CreateInstructorInput = {
 
 export const getInstructors = async (): Promise<Instructor[]> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/instructors`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const getInstructors = async (): Promise<Instructor[]> => {
 export const getInstructorById = async (instructorId: string): Promise<Instructor> => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors/${instructorId}`,
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/instructors/${instructorId}`,
       {
         method: "GET",
         headers: {
@@ -79,7 +79,7 @@ export const updateInstructorDB = async (
     }
 
     const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors/${instructorId}`,
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/instructors/${instructorId}`,
       {
         method: "PATCH",
         credentials: "include",
@@ -120,7 +120,7 @@ export const createInstructorDB = async (
       formData.append("image", instructorData.imageFile);
     }
 
-    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/instructors`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/instructors`, {
       method: "POST",
       credentials: "include",
       body: formData,

@@ -2,7 +2,7 @@ import type { CreateTargetInput, UpdateTargetInput } from "../types/course-types
 
 export const createTargetDB = async (data: CreateTargetInput) => {
   console.log("createTargetDB payload", data);
-  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets`, {
+  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/targets`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export const createTargetDB = async (data: CreateTargetInput) => {
 
 export const updateTargetDB = async (id: string, data: UpdateTargetInput) => {
   console.log("updateTargetDB payload", id, data);
-  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${id}`, {
+  const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/targets/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

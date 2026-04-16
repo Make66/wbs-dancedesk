@@ -92,7 +92,7 @@ const CategoriesPage = () => {
         setError(null);
 
         const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${targetId}/courses`,
+          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/targets/${targetId}/courses`,
         );
 
         if (!response.ok) {

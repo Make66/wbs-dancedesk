@@ -28,7 +28,7 @@ const ShiftComponent = () => {
     const fetchCategories = async (targetId: string) => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/targets/${targetId}/courses`,
+          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/targets/${targetId}/courses`,
           {
             method: "GET",
             headers: {

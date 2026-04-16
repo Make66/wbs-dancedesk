@@ -10,7 +10,7 @@ type Location = {
 export const updateLocationDB = async (locationId: string, data: Partial<Location>) => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/locations/${locationId}`,
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/locations/${locationId}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

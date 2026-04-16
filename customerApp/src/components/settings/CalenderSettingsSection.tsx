@@ -28,7 +28,7 @@ const CalenderSettingsSection = () => {
     setSaveError(null);
     setSaved(false);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/settings`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ calendar }),

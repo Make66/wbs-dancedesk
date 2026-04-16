@@ -52,9 +52,10 @@ const HolidaySettingSection = () => {
   const setSettings = settingsStore((s) => s.setSettings);
 
   const availableStates = Object.keys(holidays?.school ?? {});
-  const defaultState = federalState && availableStates.includes(federalState)
-    ? federalState
-    : (availableStates[0] ?? "HE");
+  const defaultState =
+    federalState && availableStates.includes(federalState)
+      ? federalState
+      : (availableStates[0] ?? "HE");
 
   const [selectedState, setSelectedState] = useState(defaultState);
   const [statePickerOpen, setStatePickerOpen] = useState(false);
@@ -86,9 +87,7 @@ const HolidaySettingSection = () => {
 
   const handleEditSave = () => {
     if (editingIndex === null) return;
-    const next = items.map((item, i) =>
-      i === editingIndex ? fromEditForm(editForm) : item,
-    );
+    const next = items.map((item, i) => (i === editingIndex ? fromEditForm(editForm) : item));
     updateHolidays(next);
     setEditingIndex(null);
   };
@@ -110,7 +109,7 @@ const HolidaySettingSection = () => {
     setSaveError(null);
     setSaved(false);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/settings`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ holidays: { ...holidays, school: schoolHolidays } }),
@@ -133,7 +132,6 @@ const HolidaySettingSection = () => {
       </div>
 
       <div className="mt-4 flex flex-col gap-3">
-
         {/* Bundesland-Selector */}
         <Popover open={statePickerOpen} onOpenChange={setStatePickerOpen}>
           <PopoverTrigger asChild>
@@ -299,7 +297,10 @@ const HolidaySettingSection = () => {
               </button>
               <button
                 type="button"
-                onClick={() => { setIsAdding(false); setAddForm(emptyForm()); }}
+                onClick={() => {
+                  setIsAdding(false);
+                  setAddForm(emptyForm());
+                }}
                 className="h-10 px-5 rounded-xl border border-muted-foreground bg-background/40 flex items-center gap-2 cursor-pointer hover:bg-background/60 transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -309,7 +310,10 @@ const HolidaySettingSection = () => {
         ) : (
           <button
             type="button"
-            onClick={() => { setIsAdding(true); setEditingIndex(null); }}
+            onClick={() => {
+              setIsAdding(true);
+              setEditingIndex(null);
+            }}
             className="h-12 px-6 rounded-2xl border border-dashed border-muted-foreground bg-background/20 flex items-center gap-3 text-muted-foreground cursor-pointer hover:bg-pink-500 hover:text-foreground hover:border-solid transition-colors"
           >
             <Plus className="w-4 h-4" />
@@ -330,7 +334,6 @@ const HolidaySettingSection = () => {
           </button>
           {saveError && <span className="text-sm text-red-500">{saveError}</span>}
         </div>
-
       </div>
     </div>
   );

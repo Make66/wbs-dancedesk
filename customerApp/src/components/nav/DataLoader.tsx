@@ -24,7 +24,7 @@ const DataLoader = () => {
     const fetchSettings = async () => {
       try {
         setSettingsLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/settings`);
+        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings`);
 
         if (!response.ok) {
           throw new Error("Fehler beim Laden der Einstellungen.");
@@ -34,7 +34,9 @@ const DataLoader = () => {
         setSettings(data);
       } catch (error) {
         console.error("Error fetching settings:", error);
-        setSettingsError(error instanceof Error ? error.message : "Fehler beim Laden der Einstellungen.");
+        setSettingsError(
+          error instanceof Error ? error.message : "Fehler beim Laden der Einstellungen.",
+        );
       } finally {
         setSettingsLoading(false);
       }
@@ -53,7 +55,7 @@ const DataLoader = () => {
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/users/${authUser.id}`,
+          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/users/${authUser.id}`,
         );
 
         if (!response.ok) {
@@ -84,7 +86,7 @@ const DataLoader = () => {
         clearTargets();
 
         const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/locations/${selectedLocationId}/targets`,
+          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/locations/${selectedLocationId}/targets`,
         );
 
         if (!response.ok) {
