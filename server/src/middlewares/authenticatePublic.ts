@@ -8,10 +8,10 @@ const authenticatePublic: RequestHandler = async (req, _res, next) => {
 
     const customer = await prisma.customer.findUnique({
       where: { apiKey },
-      select: { id: true, tenantId: true, active: true, isDeleted: true }
+      select: { id: true, tenantId: true, isActive: true, isDeleted: true }
     });
 
-    if (!customer || !customer.active || customer.isDeleted) {
+    if (!customer || !customer.isActive || customer.isDeleted) {
       throw new Error('Invalid API key', { cause: { status: 401 } });
     }
 

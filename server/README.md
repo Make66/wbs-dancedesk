@@ -361,9 +361,12 @@ RestartSec=5
 
 # Security hardening
 NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=strict
-ReadWritePaths=/srv/dancedesk/server/logs
+# PrivateTmp and ProtectSystem require Linux user-namespace support.
+# Remove the comment on a host that supports it (bare-metal, full VM).
+# Leave commented on VPS / LXC containers — they cause exit status 226/NAMESPACE.
+#PrivateTmp=true
+#ProtectSystem=strict
+#ReadWritePaths=/srv/dancedesk/server/logs
 
 [Install]
 WantedBy=multi-user.target
@@ -392,8 +395,8 @@ sudo journalctl -u dancedesk -f
 |------|-----|
 | No login shell | Even if compromised, attacker can't get an interactive shell |
 | `NoNewPrivileges` | Process can't escalate to root via setuid binaries |
-| `ProtectSystem=strict` | Filesystem is read-only except for `ReadWritePaths` |
-| `PrivateTmp` | Isolated `/tmp`, invisible to other processes |
+| `ProtectSystem=strict` | Filesystem is read-only except for `ReadWritePaths` — requires namespace support (bare-metal/full VM only) |
+| `PrivateTmp` | Isolated `/tmp` — requires namespace support; omit on VPS/LXC or you get exit 226/NAMESPACE |
 
 ### Deploying updates
 ```bash
