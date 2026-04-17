@@ -1,4 +1,5 @@
 export { default as authRouter }          from './auth.route.ts';
+export { default as publicRouter }        from './publicRouter.ts';
 export { default as categoriesRouter }    from './categoryRouter.ts';
 export { default as coursesRouter }       from './courseRouter.ts';
 export { default as customersRouter }     from './customerRouter.ts';

@@ -10,6 +10,7 @@ export const customerSchema = z.object({
   tertiary: z.string().default("#858384").optional(),
   quaternary: z.string().default("#858384").optional(),
   signInKey: z.string().max(5).optional(),
+  apiKey: z.string().optional(),
   
   setSeqLocation: z.array(z.uuid('Id given is not a valid UUID')).optional(),
   setSeqInstructor: z.array(z.uuid('Id given is not a valid UUID')).optional(),

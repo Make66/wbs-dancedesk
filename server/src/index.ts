@@ -19,6 +19,7 @@ import {
   locationsRouter,
   modulesRouter,
   participantsRouter,
+  publicRouter,
   registrationsRouter,
   roomsRouter,
   settingsRouter,
@@ -50,6 +51,7 @@ app.use(
 app.use(express.json(), cookieParser());
 
 app.use("/api/auth", authRouter);
+app.use("/api/public", publicRouter);
 app.use("/api/chats", chatRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/courses", coursesRouter);

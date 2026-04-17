@@ -14,6 +14,31 @@
 
 ---
 
+### Q: How does the customerApp access the server API in production?
+
+**Setup:** customerApp is a Vite/React SPA. Server runs Express on `http://127.0.0.1:8000`. Both live on the same host behind nginx.
+
+**How API calls are made:** All API calls use `import.meta.env.VITE_APP_AUTH_SERVER_URL` as the base URL (e.g. `${VITE_APP_AUTH_SERVER_URL}/api/courses`). Vite bakes this variable into the JS bundle at build time.
+
+**Which .env files are read:**
+- `.env` — always loaded (dev + build). Contains `http://localhost:8000` for local dev.
+- `.env.production` — loaded only during `vite build`, takes priority over `.env`. Should contain the production base URL.
+
+**nginx role:** nginx terminates TLS on port 443 and proxies `location /api/` to `http://127.0.0.1:8000`. The browser never talks to port 8000 directly.
+
+**Why a direct connection (bypassing nginx) isn't practical in production:**
+- The app is served over HTTPS. A direct call to `http://...:8000` would be blocked by browsers as mixed content.
+- Port 8000 isn't publicly reachable.
+- Alternatives (TLS on Express, Express serving static files) add complexity with no real benefit.
+
+**Bug fixed:** `.env.production` had `VITE_APP_AUTH_SERVER_URL=https://admin.kurstool.de:8000` — two problems:
+1. Wrong hostname (`admin.kurstool.de` instead of `gui4.kurstool.de`)
+2. Wrong port (`:8000` is internal; nginx handles routing via standard port 443)
+
+**Fixed value:** `VITE_APP_AUTH_SERVER_URL=https://gui4.kurstool.de`
+
+---
+
 ### Q: Where in the code gets targets data fetched for the first time?
 
 The trigger chain is:

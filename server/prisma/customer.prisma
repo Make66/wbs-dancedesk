@@ -1,15 +1,15 @@
 model Customer {
-  name       String  @default("DanceSchool Flip'n Bit")
-  email      String  @unique @default("noreply@email.de")
-  website    String  @default("https://www.wbscodingschool.com")
-  logoUrl    String  @default("https://gui4.kurstool.de/assets/images/logo.webp")
-  primary    String  @default("#B80000")
-  secondary  String  @default("#5F0000")
-  tertiary   String  @default("#565656")
-  quaternary String  @default("#BABABA")
-  signInKey String  @default("") @unique
-  code      String  @unique @default("")
-  active     Boolean @default(true)
+  name       String @default("DanceSchool Flip'n Bit")
+  email      String @unique @default("noreply@email.de")
+  website    String @default("https://www.wbscodingschool.com")
+  logoUrl    String @default("https://gui4.kurstool.de/assets/images/logo.webp")
+  primary    String @default("#B80000")
+  secondary  String @default("#5F0000")
+  tertiary   String @default("#565656")
+  quaternary String @default("#BABABA")
+  signInKey  String @unique @default("")
+  code       String @unique @default("")
+  apiKey     String @unique @default("")
 
   // relations
   setSeqInstructor String[]     @db.Uuid
@@ -29,5 +29,6 @@ model Customer {
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
   isDeleted Boolean  @default(false)
 }

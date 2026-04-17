@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate, validateZod } from '#middlewares';
-import { getAllCustomers, getOneCustomer, getCustomerBySignInKey, createCustomer, updateCustomer, removeCustomer } from '#controllers';
+import { getAllCustomers, getOneCustomer, getCustomerBySignInKey, createCustomer, updateCustomer, removeCustomer, rotateApiKey } from '#controllers';
 import { customerSchema } from '#schemas';
 
 const customersRouter = Router();
@@ -18,5 +18,7 @@ customersRouter
   .put(authenticate, validateZod(customerSchema), updateCustomer)
   .patch(authenticate, validateZod(customerSchema.partial()), updateCustomer)
   .delete(authenticate, removeCustomer);
+
+customersRouter.post('/:id/rotate-api-key', authenticate, rotateApiKey);
 
 export default customersRouter;
