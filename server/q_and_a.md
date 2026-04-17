@@ -365,6 +365,63 @@ If the env var isn't loaded, substitute the actual values from `.env`.
 
 ---
 
+## How do I make the `dancedesk` deploy user (no shell, system user) use Node 24 by default?
+
+The user has no login shell, so `.bashrc` / `.zshrc` are never sourced. Options ranked by simplicity:
+
+### Option 1 — Replace system Node via NodeSource (simplest)
+
+```bash
+# on the server as root
+curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+apt-get install -y nodejs
+node --version   # v24.x
+```
+
+Replaces the system-wide `node` binary. Works for all users including no-shell system users. No per-user config needed.
+
+### Option 2 — Install nvm system-wide, prepend path in `/etc/environment`
+
+```bash
+export NVM_DIR="/usr/local/nvm"
+mkdir -p $NVM_DIR
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | NVM_DIR=$NVM_DIR bash
+source $NVM_DIR/nvm.sh
+nvm install 24
+nvm alias default 24
+```
+
+Then in `/etc/environment`:
+```
+PATH="/usr/local/nvm/versions/node/v24.x.x/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+```
+
+### Option 3 — Set `Environment=` in the systemd unit file
+
+```ini
+[Service]
+User=dancedesk
+Environment=PATH=/usr/local/nvm/versions/node/v24.x.x/bin:/usr/bin:/bin
+ExecStart=node /app/server.js
+```
+
+```bash
+systemctl daemon-reload && systemctl restart dancedesk
+```
+
+### Option 4 — Set PATH in `~dancedesk/.profile`
+
+Works when deploy commands are run via `ssh dancedesk@host cmd` or `sudo -u dancedesk cmd`:
+
+```bash
+# /home/dancedesk/.profile
+export PATH="/usr/local/nvm/versions/node/v24.x.x/bin:$PATH"
+```
+
+**Recommendation:** Option 1 (NodeSource) is the cleanest if only one Node version is needed on the machine. Use Option 3 if you need Node 20 for other services.
+
+---
+
 ## How do I access static web content from the server?
 
 ### Using express.static
@@ -379,3 +436,167 @@ dev (src/index.ts) — __dirname → server/src/, ../assets → server/assets/ �
 
 prod (dist/index.js) — __dirname → server/dist/, ../assets → server/assets/ ✓
 
+## Q: how can I manage the postgres db on the server?
+
+### A: install pgadmin4 with gunicorn to tunnel it to your PC (is this information anywhere else in the docs?)
+````
+# pgadmin requires python
+python3 --version
+    sudo apt update
+    sudo apt install -y python3-pip python3-venv nginx git
+
+    # create system user
+    sudo useradd --system --no-create-home --shell /usr/sbin/nologin pgadmin
+
+    # add pgadmin to package repo
+    curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
+    sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] \
+    https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" \
+    > /etc/apt/sources.list.d/pgadmin4.list && apt update'
+
+    # install and configure pgadmin
+    sudo apt install pgadmin4-web
+    sudo mkdir -p /var/log/pgadmin4
+    sudo mkdir -p /var/lib/pgadmin4/sessions
+    sudo mkdir -p /var/lib/pgadmin4/storage
+    sudo chown -R pgadmin:pgadmin /var/log/pgadmin4
+    sudo chown -R pgadmin:pgadmin /var/lib/pgadmin4
+    sudo chmod 700 /var/lib/pgadmin4/sessions
+    sudo vim /opt/pgadmin4/venv/lib/python3.x/site-packages/pgadmin4/config_local.py
+    cd /opt/
+    mkdir -p import os
+    SERVER_MODE = True                          # required for multi-user web deployment
+    DEFAULT_SERVER = '127.0.0.1'               # listen locally only (nginx proxies)
+    DATA_DIR = '/var/lib/pgadmin4'
+    LOG_FILE = '/var/log/pgadmin4/pgadmin4.log'
+    SQLITE_PATH = '/var/lib/pgadmin4/pgadmin4.db'
+    SESSION_DB_PATH = '/var/lib/pgadmin4/sessions'
+    STORAGE_DIR = '/var/lib/pgadmin4/storage'
+    # Security
+    MAX_LOGIN_ATTEMPTS = 5
+    ENHANCED_COOKIE_PROTECTION = True
+    SESSION_COOKIE_SECURE = True               # set False if not using HTTPS locally
+    ENABLE_PSQL = False                        # disable shell access in server mode
+    ALLOW_SAVE_PASSWORD = True
+    python -v
+    py -v
+    python3 --version
+    sudo /usr/pgadmin4/bin/setup-web.sh
+    cd /usr/pgadmin4/web/
+    sudo vim /usr/pgadmin4/web/config_local.py
+
+    # setup pgadmin for postgres and start
+    sudo -u pgadmin /usr/pgadmin4/venv/bin/python   /usr/pgadmin4/web/setup.py setup-db
+    sudo vim /etc/systemd/system/pgadmin4.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable pgadmin4
+    sudo systemctl start pgadmin4
+    sudo systemctl status pgadmin4
+
+  # 
+    sudo ls /usr/pgadmin4/venv/bin/gunicorn
+    sudo /usr/pgadmin4/venv/bin/pip install gunicorn
+    sudo ls /usr/pgadmin4/venv/bin/gunicorn
+    sudo systemctl start pgadmin4
+    sudo systemctl status pgadmin4
+    sudo vim /etc/systemd/system/pgadmin4.service
+    sudo systemctl daemon-reload
+    sudo systemctl restart pgadmin4
+    sudo systemctl status pgadmin4
+  ````
+
+## Q: How can I configure pgadmin4 to be available as service?
+
+### A: create a service configuration and start it...
+
+sudo vim /etc/systemd/system/pgadmin4.service
+
+´´´´
+[Unit]
+Description=pgAdmin 4 web interface
+After=network.target
+
+[Service]
+User=pgadmin
+Group=pgadmin
+Environment=HOME=/var/lib/pgadmin4
+ExecStart=/usr/pgadmin4/venv/bin/gunicorn \
+    --workers=1 \
+    --threads=25 \
+    --bind=unix:/run/pgadmin4/pgadmin4.sock \
+    --chdir /usr/pgadmin4/web \
+    pgAdmin4:app
+RuntimeDirectory=pgadmin4
+RuntimeDirectoryMode=0755
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+´´´´
+
+## Q: How do I use pgadmin4 securely over the internet?
+
+### A: Using a tunnel avoids exposing pgadmin4 to the internet and makes it available on your local machine.
+
+* On the server, create a nginx config for the tunnel and activate it:
+````
+# /etc/nginx/sites-available/pgadmin4 
+server {
+    listen 127.0.0.1:5050;   # localhost only — accessed via SSH tunnel
+    server_name localhost;
+
+    location /pgadmin4/ {
+        proxy_pass       http://unix:/run/pgadmin4/pgadmin4.sock;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Script-Name /pgadmin4;
+        proxy_redirect   off;
+    }
+}
+````
+
+activate config, test it and reload nginx:
+`````
+sudo ln -s /etc/nginx/sites-available/pgadmin4 /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+`````
+
+* On MacOS, create a file ~/Library/LaunchAgents/local.pgadmin.tunnel.plist
+````
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.pgadmin.tunnel</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/autossh</string>
+        <string>-M</string><string>0</string>
+        <string>-o</string><string>ServerAliveInterval=30</string>
+        <string>-o</string><string>ServerAliveCountMax=3</string>
+        <string>-o</string><string>ExitOnForwardFailure=yes</string>
+        <string>-o</string><string>StrictHostKeyChecking=no</string>
+        <string>-N</string>
+        <string>-L</string><string>5050:127.0.0.1:5050</string>
+        <string>-p 222 -i ~/cert/h18_ed25519 martin@gui4.kurstool.de</string>
+    </array>
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key><true/>
+</dict>
+</plist>
+```
+Then, to start the tunnel (survives temporary offline times and system restart)
+```
+launchctl load ~/Library/LaunchAgents/local.pgadmin.tunnel.plist  
+```
+To stop the tunnel, use 
+```
+launchctl unload ~/Library/LaunchAgents/local.pgadmin.tunnel.plist  
+```
+To test communication over the tunnel use: (answers a HTTP code, 000 means fail)
+```
+curl -s -o /dev/null -w "%{http_code}" http://localhost:5050/pgadmin4/
+```
