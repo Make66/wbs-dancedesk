@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import type {
   CalendarConfig,
   CalendarEventDragEndPayload,
-  DraggedEventState,
+  DraggedItemState,
 } from "../../../types/calendar-types";
 import { getDraggedEventTimes } from "../calendar-interactions";
 
@@ -10,7 +10,7 @@ type UseDayColumnDragParams = {
   day: Date;
   columnRef: React.RefObject<HTMLDivElement | null>;
   config: CalendarConfig;
-  draggedEvent: DraggedEventState | null;
+  draggedEvent: DraggedItemState | null;
   updateDrag: (start: Date, end: Date) => void;
   endDrag: () => CalendarEventDragEndPayload | null;
   onEventDragEnd?: (payload: CalendarEventDragEndPayload) => void;

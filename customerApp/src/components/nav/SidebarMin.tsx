@@ -1,7 +1,7 @@
 import { ImUsers } from "react-icons/im";
 import { IoSchool, IoSettingsSharp } from "react-icons/io5";
-import { MdDashboard, MdMeetingRoom } from "react-icons/md";
-import { FaCalendarAlt, FaChalkboardTeacher } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
+import { FaCalendarAlt } from "react-icons/fa";
 import { NavLink } from "react-router";
 import { MapPin } from "lucide-react";
 import { userStore } from "../../stores/userStore";
@@ -24,8 +24,6 @@ const SidebarMin = () => {
         { to: "/courses", icon: <IoSchool className={iconClass} /> },
         { to: "/calendar", icon: <FaCalendarAlt className={iconClass} /> },
         { to: "/participants", icon: <ImUsers className={iconClass} /> },
-        { to: "/instructors", icon: <FaChalkboardTeacher className={iconClass} /> },
-        { to: "/rooms", icon: <MdMeetingRoom className={iconClass} /> },
         { to: "/settings", icon: <IoSettingsSharp className={iconClass} /> },
       ].map(({ to, icon }) => (
         <NavLink
@@ -34,7 +32,9 @@ const SidebarMin = () => {
           className={({ isActive }) =>
             cn(
               "p-2 rounded-xl transition-all duration-200",
-              isActive ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white",
+              isActive
+                ? "bg-gray-700 text-white"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white",
               "py-3 px-2",
             )
           }
