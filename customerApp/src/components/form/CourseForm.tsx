@@ -196,7 +196,7 @@ const CourseForm = ({ course }: CourseFormProps) => {
           />
 
           <div className="my-6" />
-          <ScheduleSection courseId={course?.id} />
+          <ScheduleSection />
 
           <div className="my-6" />
           <ContractSection />
