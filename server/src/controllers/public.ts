@@ -78,7 +78,21 @@ export const bootstrapHandler: RequestHandler = async (req, res) => {
     }),
   ]);
 
-  res.json({ customer, locations, targets, categories });
+  const categoriesByTarget = categories.reduce<Record<string, typeof categories>>((acc, c) => {
+    (acc[c.targetId] ??= []).push(c);
+    return acc;
+  }, {});
+  const enrichedTargets = targets.map((t) => ({ ...t, categories: categoriesByTarget[t.id] ?? [] }));
+  const targetsByLocation = enrichedTargets.reduce<Record<string, typeof enrichedTargets>>((acc, t) => {
+    if (t.locationId) (acc[t.locationId] ??= []).push(t);
+    return acc;
+  }, {});
+  const locationsTree = locations.map((l) => ({
+    ...l,
+    targets: targetsByLocation[l.id] ?? [],
+  }));
+
+  res.json({ customer, locations: locationsTree });
 };
 
 export const coursesHandler: RequestHandler = async (req, res) => {

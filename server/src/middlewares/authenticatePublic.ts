@@ -23,7 +23,7 @@ const authenticatePublic: RequestHandler = async (req, _res, next) => {
     req.publicTenant = { tenantId: customer.tenantId, customerId: customer.id };
     next();
   } catch (error) {
-    log
+    log(SRC, 'authenticatePublic', 'Public authentication error', { error: (error as Error).message });
     next(error);
   }
 };
