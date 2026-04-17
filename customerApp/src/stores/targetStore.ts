@@ -248,6 +248,7 @@ export const targetStore = create<TargetStore>()(
           const newTarget: Target = {
             id: crypto.randomUUID(),
             name: input?.name?.trim() || "Neue Zielgruppe",
+            description: input?.description || "",
             color: input?.color || DEFAULT_TARGET_COLORS,
             icon: input?.icon || "",
             isActive: true,

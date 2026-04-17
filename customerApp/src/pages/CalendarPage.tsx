@@ -98,6 +98,7 @@ function mapWeekCoursesToCalendarItems(
         end,
         color: course.color,
         roomId: course.room?.id,
+        occurrenceDate: day.toISOString().slice(0, 10),
       };
     });
   });
