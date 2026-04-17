@@ -34,7 +34,7 @@ type CalendarStore = {
 
   draggedEvent: DraggedItemState | null;
 
-  startDrag: (item: CalendarItem) => void;
+  startDrag: (item: CalendarItem, pointerOffsetY: number) => void;
   updateDrag: (start: Date, end: Date) => void;
   endDrag: () => CalendarItemDragEndPayload | null;
 
@@ -100,7 +100,7 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
 
   setActiveDragEventId: (eventId) => set({ activeDragEventId: eventId }),
 
-  startDrag: (item) =>
+  startDrag: (item, pointerOffsetY) =>
     set({
       draggedEvent: {
         itemId: item.id,
@@ -109,6 +109,7 @@ export const calendarStore = create<CalendarStore>((set, get) => ({
         originalEnd: item.end,
         currentStart: item.start,
         currentEnd: item.end,
+        pointerOffsetY,
       },
     }),
 

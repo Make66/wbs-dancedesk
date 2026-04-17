@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type {
   CalendarConfig,
-  CalendarEventResizeEndPayload,
+  CalendarItemResizeEndPayload,
   ResizingItemState,
 } from "../../../types/calendar-types";
 import { getResizedEventEnd } from "../calendar-interactions";
@@ -14,8 +14,8 @@ type UseDayColumnResizeParams = {
   resizingEventId: string | null;
   setResizingEventId: (id: string | null) => void;
   updateResize: (end: Date) => void;
-  endResize: () => CalendarEventResizeEndPayload | null;
-  onEventResizeEnd?: (payload: CalendarEventResizeEndPayload) => void;
+  endResize: () => CalendarItemResizeEndPayload | null;
+  onEventResizeEnd?: (payload: CalendarItemResizeEndPayload) => void;
 };
 
 export function useDayColumnResize({

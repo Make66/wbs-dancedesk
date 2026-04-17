@@ -105,8 +105,6 @@ function mapWeekCoursesToCalendarItems(
 }
 
 const CalendarPage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [dbEvents, setDbEvents] = useState<DbEvent[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const currentDate = calendarStore((state) => state.currentDate);
   const days = useMemo(() => getWeekDays(currentDate), [currentDate]);
@@ -158,7 +156,6 @@ const CalendarPage = () => {
         }
 
         const data: DbEvent[] = await response.json();
-        setDbEvents(data);
 
         const mappedEvents: CalendarEventItem[] = data
           .filter((event) => event.isActive && !event.isDeleted)
@@ -285,18 +282,6 @@ const CalendarPage = () => {
 
       try {
         await updateEventInDb(movedEvent.eventId, payload.start, payload.end);
-
-        setDbEvents((prev) =>
-          prev.map((event) =>
-            event.id === movedEvent.eventId
-              ? {
-                  ...event,
-                  startsAt: payload.start.toISOString(),
-                  endsAt: payload.end.toISOString(),
-                }
-              : event,
-          ),
-        );
       } catch (err) {
         setCalendarEvents(previousCalendarEvents);
         setError(err instanceof Error ? err.message : "Speichern fehlgeschlagen");
@@ -351,18 +336,6 @@ const CalendarPage = () => {
 
       try {
         await updateEventInDb(resizedEvent.eventId, payload.start, payload.end);
-
-        setDbEvents((prev) =>
-          prev.map((event) =>
-            event.id === resizedEvent.eventId
-              ? {
-                  ...event,
-                  startsAt: payload.start.toISOString(),
-                  endsAt: payload.end.toISOString(),
-                }
-              : event,
-          ),
-        );
       } catch (err) {
         setCalendarEvents(previousCalendarEvents);
         setError(err instanceof Error ? err.message : "Speichern fehlgeschlagen");

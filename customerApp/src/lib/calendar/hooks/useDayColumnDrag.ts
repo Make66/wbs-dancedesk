@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type {
   CalendarConfig,
-  CalendarEventDragEndPayload,
+  CalendarItemDragEndPayload,
   DraggedItemState,
 } from "../../../types/calendar-types";
 import { getDraggedEventTimes } from "../calendar-interactions";
@@ -12,8 +12,8 @@ type UseDayColumnDragParams = {
   config: CalendarConfig;
   draggedEvent: DraggedItemState | null;
   updateDrag: (start: Date, end: Date) => void;
-  endDrag: () => CalendarEventDragEndPayload | null;
-  onEventDragEnd?: (payload: CalendarEventDragEndPayload) => void;
+  endDrag: () => CalendarItemDragEndPayload | null;
+  onEventDragEnd?: (payload: CalendarItemDragEndPayload) => void;
 };
 
 export function useDayColumnDrag({
