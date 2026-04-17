@@ -1,3 +1,19 @@
+### Q: How do we deploy the customerApp (React/Vite SPA)?
+
+**Setup:** Monorepo at `/srv/dancedesk` on a Linux server. Backend already deployed via `.github/workflows/deploy-server.yml` using `appleboy/ssh-action`.
+
+**Answer:** A matching workflow `.github/workflows/deploy-customer-app.yml` triggers on push to `main` when files under `customerApp/**` change. It SSHs into the server, runs `git pull`, then `npm ci && npm run build` inside `customerApp/`. The output lands in `/srv/dancedesk/customerApp/dist`.
+
+**Serving:** Nginx serves the static files at `https://admin.kurstool.de` (port 443, Let's Encrypt TLS). Key Nginx config:
+- `root /srv/dancedesk/customerApp/dist`
+- `try_files $uri $uri/ /index.html` — required for React Router SPA fallback
+- `location /api/` proxied to `http://localhost:8000/api/` (the backend service)
+- Port 80 redirects to 443
+
+**API URL:** Was hardcoded to `http://localhost:8000` in `.env`. Fixed by adding `.env.production` with `VITE_APP_AUTH_SERVER_URL=https://admin.kurstool.de`. Vite automatically picks this up during `npm run build`, so local dev keeps using localhost and production builds use the live domain.
+
+---
+
 ### Q: Where in the code gets targets data fetched for the first time?
 
 The trigger chain is:

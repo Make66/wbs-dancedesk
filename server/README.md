@@ -320,7 +320,9 @@ GET /api/locations/:id/rooms       — rooms belonging to a location
 
 GET /api/locations/:id/targets     — targets belonging to a location
 
-GET /api/settings/holidays/:state  - official school holidays of a given state (2-letter capital)
+GET /api/settings//holidays/federal/:state'  - official state holidays of a given state (2-letter capital)
+
+GET /api/settings//holidays/school/:state'  - official school holidays of a given state (2-letter capital)
 
 GET /api/targets/:id/categories    — categories belonging to a target
 
