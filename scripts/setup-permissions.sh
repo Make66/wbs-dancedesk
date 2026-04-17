@@ -97,7 +97,7 @@ info "server/.env — group readable by service"
 [[ -f "$ROOT/server/.env" ]] && chmod 640 "$ROOT/server/.env"
 
 # ── 6. server/assets and server/generated — service writes here ───────────────
-for WRITE_DIR in "$ROOT/server/assets" "$ROOT/server/generated" "$ROOT/server/prisma/generated"; do
+for WRITE_DIR in "$ROOT/server/assets" "$ROOT/server/generated" "$ROOT/server/prisma/generated" "$ROOT/server/logs"; do
     [[ -d "$WRITE_DIR" ]] || { warn "  $WRITE_DIR not found, skipping"; continue; }
     info "$(realpath --relative-to="$ROOT" "$WRITE_DIR")/ — group-writable (service writes)"
     chown -R "$DEPLOY_USER:$SVC_GROUP" "$WRITE_DIR"

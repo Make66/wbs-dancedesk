@@ -49,7 +49,8 @@ automatically belong to the `dancedesk` group without requiring `martin` to manu
 │   ├── node_modules/              martin:dancedesk  2750
 │   ├── prisma/                    martin:dancedesk  2750   ← martin runs migrations
 │   ├── generated/                 martin:dancedesk  2770   ← prisma generate writes here
-│   └── assets/images/             martin:dancedesk  2770   ← service writes uploads here
+│   ├── assets/images/             martin:dancedesk  2770   ← service writes uploads here
+│   └── logs/                      martin:dancedesk  2770   ← service writes dated log files here
 │
 ├── customerApp/                   martin:dancedesk  2750
 │   ACL: u:www-data:x (traverse only)
@@ -76,6 +77,7 @@ automatically belong to the `dancedesk` group without requiring `martin` to manu
 | `server/dist/` files | rw- (owner) | r-- (group) | none |
 | `server/assets/images/` | rwx (owner) | rwx (group) | none |
 | `server/generated/` | rwx (owner) | rwx (group) | none |
+| `server/logs/` | rwx (owner) | rwx (group) | none |
 | `customerApp/` | rwx (owner) | r-x (group) | --x (ACL, traverse only) |
 | `customerApp/dist/` | rwx (owner) | none | r-x (group owner) |
 | `customerApp/dist/` files | rw- (owner) | none | r-- (group) |
