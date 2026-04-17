@@ -4,6 +4,7 @@ import FederalHolidaySettingsSection from "../components/settings/FederalHoliday
 import TargetSettingsSection from "../components/settings/TargetSettingsSection";
 import RoomSettingsSection from "../components/settings/RoomSettingsSection";
 import InstructorSettingsSection from "../components/settings/InstructorSettingsSection";
+import OtherSettingsSection from "../components/settings/OtherSettingsSection";
 
 const SettingsPage = () => {
   return (
@@ -19,6 +20,7 @@ const SettingsPage = () => {
           <CalendarSettingsSection />
           <FederalHolidaySettingsSection />
           <HolidaySettingSection />
+          <OtherSettingsSection />
         </div>
       </div>
     </div>
