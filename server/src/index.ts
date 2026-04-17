@@ -71,7 +71,7 @@ app.use("/api/users", usersRouter);
 app.use("/assets", express.static(join(__dirname, "..", "assets")));
 
 app.use("/*splat", (_req, res) => {
-  res.status(404).json({ error: "Not found" });
+  res.status(404).json({ error: "Not found (splat)" });
 });
 
 app.use(errorHandler);
