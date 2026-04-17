@@ -11,16 +11,7 @@ function formatTime(dateString: string) {
   });
 }
 
-type WeekCourse = Omit<Course, "instructor" | "room"> & {
-  instructor: {
-    name: string;
-  } | null;
-  room: {
-    name: string;
-  } | null;
-};
-
-const WeeklyScheduleItem = ({ course }: { course: WeekCourse }) => {
+const WeeklyScheduleItem = ({ course }: { course: Course }) => {
   return (
     <div
       key={course.id}

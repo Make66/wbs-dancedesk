@@ -74,6 +74,8 @@ export type Course = {
   }[];
   instructorId?: string | null;
   roomId?: string | null;
+  instructor?: { name: string } | null;
+  room?: { name: string } | null;
   textTermsId?: string | null;
   textInfoId?: string | null;
   tenantId?: string;

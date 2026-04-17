@@ -58,6 +58,7 @@ export type DraggedItemState = {
   originalEnd: Date;
   currentStart: Date;
   currentEnd: Date;
+  pointerOffsetY: number;
 };
 
 export type ResizingItemState = {

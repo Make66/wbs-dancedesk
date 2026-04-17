@@ -22,7 +22,7 @@ type FormField = {
   name: string;
 };
 
-type Holiday = {
+export type Holiday = {
   start: { dateTime: string };
   end: { dateTime: string };
   title: string;

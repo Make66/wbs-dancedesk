@@ -5,6 +5,7 @@ import { Flag, Pencil, Trash2, Plus, Check, Save, X, RefreshCw, CalendarIcon } f
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { DatePicker } from "../ui/DatePicker";
 import { settingsStore } from "../../stores/settingsStore";
+import type { Holiday } from "../../stores/settingsStore";
 
 const dateToString = (d: Date): string => format(d, "yyyy-MM-dd");
 const stringToDate = (s: string): Date | undefined => {
@@ -20,26 +21,22 @@ const formatDisplay = (s: string): string => {
   return d ? format(d, "dd. MMM yyyy", { locale: de }) : "Datum wählen";
 };
 
-type FederalHoliday = {
-  title: string;
-  start: { dateTime: string };
-};
-
 type EditForm = { title: string; date: string };
 
 const emptyForm = (): EditForm => ({ title: "", date: "" });
 
-const toEditForm = (h: FederalHoliday): EditForm => ({
+const toEditForm = (h: Holiday): EditForm => ({
   title: h.title,
   date: h.start.dateTime,
 });
 
-const fromEditForm = (f: EditForm): FederalHoliday => ({
+const fromEditForm = (f: EditForm): Holiday => ({
   title: f.title,
   start: { dateTime: f.date },
+  end: { dateTime: f.date },
 });
 
-const FederalHolidaySettingsSection = () => {
+const HolidaySettingsSection = () => {
   const holidays = settingsStore((s) => s.settings.holidays);
   const federalState = settingsStore((s) => s.settings.basic.federalState ?? "HE");
   const setSettings = settingsStore((s) => s.setSettings);
@@ -55,9 +52,9 @@ const FederalHolidaySettingsSection = () => {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const items: FederalHoliday[] = (holidays?.federal as FederalHoliday[] | undefined) ?? [];
+  const items: Holiday[] = (holidays?.federal as Holiday[] | undefined) ?? [];
 
-  const updateItems = (nextItems: FederalHoliday[]) => {
+  const updateItems = (nextItems: Holiday[]) => {
     setSettings({ holidays: { ...holidays, federal: nextItems } });
   };
 
@@ -69,7 +66,7 @@ const FederalHolidaySettingsSection = () => {
         `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings/holidays/federal/${federalState}`,
       );
       if (!response.ok) throw new Error(`Fehler beim Laden (${response.status}).`);
-      const data: FederalHoliday[] = await response.json();
+      const data: Holiday[] = await response.json();
       updateItems(data);
     } catch (error) {
       setGenerateError(error instanceof Error ? error.message : "Unbekannter Fehler.");
@@ -235,8 +232,6 @@ const FederalHolidaySettingsSection = () => {
               )}
             </div>
           ))}
-
-          {/* Hinzufügen */}
           {isAdding ? (
             <div className="rounded-2xl border border-muted-foreground bg-background/40 p-4 flex flex-col gap-3">
               <input
@@ -316,4 +311,4 @@ const FederalHolidaySettingsSection = () => {
   );
 };
 
-export default FederalHolidaySettingsSection;
+export default HolidaySettingsSection;

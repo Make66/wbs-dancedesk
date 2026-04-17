@@ -1,7 +1,7 @@
 import type {
   CalendarConfig,
-  DraggedEventState,
-  ResizingEventState,
+  DraggedItemState,
+  ResizingItemState,
 } from "../../types/calendar-types";
 import {
   addMinutesToDate,
@@ -20,7 +20,7 @@ export function getDraggedEventTimes(params: {
   day: Date;
   rect: DOMRect;
   config: CalendarConfig;
-  draggedEvent: DraggedEventState;
+  draggedEvent: DraggedItemState;
 }) {
   const { clientX, clientY, day, rect, config, draggedEvent } = params;
 
@@ -66,7 +66,7 @@ export function getResizedEventEnd(params: {
   day: Date;
   rect: DOMRect;
   config: CalendarConfig;
-  resizingEvent: ResizingEventState;
+  resizingEvent: ResizingItemState;
 }) {
   const { clientX, clientY, day, rect, config, resizingEvent } = params;
 

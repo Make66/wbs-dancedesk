@@ -5,8 +5,7 @@ import { useAuth } from "../../context";
 import { ThemeToggle } from "./ThemeToggle";
 
 const Navbar = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { handleSignOut, signedIn, user } = useAuth();
+  const { handleSignOut } = useAuth();
 
   const handleLogout = async () => {
     try {
