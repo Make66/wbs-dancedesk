@@ -48,7 +48,6 @@ export type CustomerMinAggregateOutputType = {
   signInKey: string | null
   code: string | null
   apiKey: string | null
-  active: boolean | null
   street: string | null
   city: string | null
   zipCode: string | null
@@ -58,6 +57,7 @@ export type CustomerMinAggregateOutputType = {
   tenantId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  isActive: boolean | null
   isDeleted: boolean | null
 }
 
@@ -73,7 +73,6 @@ export type CustomerMaxAggregateOutputType = {
   signInKey: string | null
   code: string | null
   apiKey: string | null
-  active: boolean | null
   street: string | null
   city: string | null
   zipCode: string | null
@@ -83,6 +82,7 @@ export type CustomerMaxAggregateOutputType = {
   tenantId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  isActive: boolean | null
   isDeleted: boolean | null
 }
 
@@ -98,7 +98,6 @@ export type CustomerCountAggregateOutputType = {
   signInKey: number
   code: number
   apiKey: number
-  active: number
   setSeqInstructor: number
   setSeqTarget: number
   street: number
@@ -110,6 +109,7 @@ export type CustomerCountAggregateOutputType = {
   tenantId: number
   createdAt: number
   updatedAt: number
+  isActive: number
   isDeleted: number
   _all: number
 }
@@ -137,7 +137,6 @@ export type CustomerMinAggregateInputType = {
   signInKey?: true
   code?: true
   apiKey?: true
-  active?: true
   street?: true
   city?: true
   zipCode?: true
@@ -147,6 +146,7 @@ export type CustomerMinAggregateInputType = {
   tenantId?: true
   createdAt?: true
   updatedAt?: true
+  isActive?: true
   isDeleted?: true
 }
 
@@ -162,7 +162,6 @@ export type CustomerMaxAggregateInputType = {
   signInKey?: true
   code?: true
   apiKey?: true
-  active?: true
   street?: true
   city?: true
   zipCode?: true
@@ -172,6 +171,7 @@ export type CustomerMaxAggregateInputType = {
   tenantId?: true
   createdAt?: true
   updatedAt?: true
+  isActive?: true
   isDeleted?: true
 }
 
@@ -187,7 +187,6 @@ export type CustomerCountAggregateInputType = {
   signInKey?: true
   code?: true
   apiKey?: true
-  active?: true
   setSeqInstructor?: true
   setSeqTarget?: true
   street?: true
@@ -199,6 +198,7 @@ export type CustomerCountAggregateInputType = {
   tenantId?: true
   createdAt?: true
   updatedAt?: true
+  isActive?: true
   isDeleted?: true
   _all?: true
 }
@@ -301,7 +301,6 @@ export type CustomerGroupByOutputType = {
   signInKey: string
   code: string
   apiKey: string
-  active: boolean
   setSeqInstructor: string[]
   setSeqTarget: string[]
   street: string
@@ -313,6 +312,7 @@ export type CustomerGroupByOutputType = {
   tenantId: string
   createdAt: Date
   updatedAt: Date
+  isActive: boolean
   isDeleted: boolean
   _count: CustomerCountAggregateOutputType | null
   _avg: CustomerAvgAggregateOutputType | null
@@ -351,7 +351,6 @@ export type CustomerWhereInput = {
   signInKey?: Prisma.StringFilter<"Customer"> | string
   code?: Prisma.StringFilter<"Customer"> | string
   apiKey?: Prisma.StringFilter<"Customer"> | string
-  active?: Prisma.BoolFilter<"Customer"> | boolean
   setSeqInstructor?: Prisma.StringNullableListFilter<"Customer">
   setSeqTarget?: Prisma.StringNullableListFilter<"Customer">
   street?: Prisma.StringFilter<"Customer"> | string
@@ -363,6 +362,7 @@ export type CustomerWhereInput = {
   tenantId?: Prisma.StringFilter<"Customer"> | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
+  isActive?: Prisma.BoolFilter<"Customer"> | boolean
   isDeleted?: Prisma.BoolFilter<"Customer"> | boolean
   instructors?: Prisma.InstructorListRelationFilter
   locations?: Prisma.LocationListRelationFilter
@@ -380,7 +380,6 @@ export type CustomerOrderByWithRelationInput = {
   signInKey?: Prisma.SortOrder
   code?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   setSeqInstructor?: Prisma.SortOrder
   setSeqTarget?: Prisma.SortOrder
   street?: Prisma.SortOrder
@@ -392,6 +391,7 @@ export type CustomerOrderByWithRelationInput = {
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   instructors?: Prisma.InstructorOrderByRelationAggregateInput
   locations?: Prisma.LocationOrderByRelationAggregateInput
@@ -413,7 +413,6 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   secondary?: Prisma.StringFilter<"Customer"> | string
   tertiary?: Prisma.StringFilter<"Customer"> | string
   quaternary?: Prisma.StringFilter<"Customer"> | string
-  active?: Prisma.BoolFilter<"Customer"> | boolean
   setSeqInstructor?: Prisma.StringNullableListFilter<"Customer">
   setSeqTarget?: Prisma.StringNullableListFilter<"Customer">
   street?: Prisma.StringFilter<"Customer"> | string
@@ -424,6 +423,7 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   tenantId?: Prisma.StringFilter<"Customer"> | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
+  isActive?: Prisma.BoolFilter<"Customer"> | boolean
   isDeleted?: Prisma.BoolFilter<"Customer"> | boolean
   instructors?: Prisma.InstructorListRelationFilter
   locations?: Prisma.LocationListRelationFilter
@@ -441,7 +441,6 @@ export type CustomerOrderByWithAggregationInput = {
   signInKey?: Prisma.SortOrder
   code?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   setSeqInstructor?: Prisma.SortOrder
   setSeqTarget?: Prisma.SortOrder
   street?: Prisma.SortOrder
@@ -453,6 +452,7 @@ export type CustomerOrderByWithAggregationInput = {
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   _count?: Prisma.CustomerCountOrderByAggregateInput
   _avg?: Prisma.CustomerAvgOrderByAggregateInput
@@ -476,7 +476,6 @@ export type CustomerScalarWhereWithAggregatesInput = {
   signInKey?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   code?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   apiKey?: Prisma.StringWithAggregatesFilter<"Customer"> | string
-  active?: Prisma.BoolWithAggregatesFilter<"Customer"> | boolean
   setSeqInstructor?: Prisma.StringNullableListFilter<"Customer">
   setSeqTarget?: Prisma.StringNullableListFilter<"Customer">
   street?: Prisma.StringWithAggregatesFilter<"Customer"> | string
@@ -488,6 +487,7 @@ export type CustomerScalarWhereWithAggregatesInput = {
   tenantId?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"Customer"> | boolean
   isDeleted?: Prisma.BoolWithAggregatesFilter<"Customer"> | boolean
 }
 
@@ -503,7 +503,6 @@ export type CustomerCreateInput = {
   signInKey?: string
   code?: string
   apiKey?: string
-  active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
   street?: string
@@ -515,6 +514,7 @@ export type CustomerCreateInput = {
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   instructors?: Prisma.InstructorCreateNestedManyWithoutCustomerInput
   locations?: Prisma.LocationCreateNestedManyWithoutCustomerInput
@@ -532,7 +532,6 @@ export type CustomerUncheckedCreateInput = {
   signInKey?: string
   code?: string
   apiKey?: string
-  active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
   street?: string
@@ -544,6 +543,7 @@ export type CustomerUncheckedCreateInput = {
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   instructors?: Prisma.InstructorUncheckedCreateNestedManyWithoutCustomerInput
   locations?: Prisma.LocationUncheckedCreateNestedManyWithoutCustomerInput
@@ -561,7 +561,6 @@ export type CustomerUpdateInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -573,6 +572,7 @@ export type CustomerUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   instructors?: Prisma.InstructorUpdateManyWithoutCustomerNestedInput
   locations?: Prisma.LocationUpdateManyWithoutCustomerNestedInput
@@ -590,7 +590,6 @@ export type CustomerUncheckedUpdateInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -602,6 +601,7 @@ export type CustomerUncheckedUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   instructors?: Prisma.InstructorUncheckedUpdateManyWithoutCustomerNestedInput
   locations?: Prisma.LocationUncheckedUpdateManyWithoutCustomerNestedInput
@@ -619,7 +619,6 @@ export type CustomerCreateManyInput = {
   signInKey?: string
   code?: string
   apiKey?: string
-  active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
   street?: string
@@ -631,6 +630,7 @@ export type CustomerCreateManyInput = {
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
 }
 
@@ -646,7 +646,6 @@ export type CustomerUpdateManyMutationInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -658,6 +657,7 @@ export type CustomerUpdateManyMutationInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -673,7 +673,6 @@ export type CustomerUncheckedUpdateManyInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -685,6 +684,7 @@ export type CustomerUncheckedUpdateManyInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -700,7 +700,6 @@ export type CustomerCountOrderByAggregateInput = {
   signInKey?: Prisma.SortOrder
   code?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   setSeqInstructor?: Prisma.SortOrder
   setSeqTarget?: Prisma.SortOrder
   street?: Prisma.SortOrder
@@ -712,6 +711,7 @@ export type CustomerCountOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
 }
 
@@ -732,7 +732,6 @@ export type CustomerMaxOrderByAggregateInput = {
   signInKey?: Prisma.SortOrder
   code?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   street?: Prisma.SortOrder
   city?: Prisma.SortOrder
   zipCode?: Prisma.SortOrder
@@ -742,6 +741,7 @@ export type CustomerMaxOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
 }
 
@@ -757,7 +757,6 @@ export type CustomerMinOrderByAggregateInput = {
   signInKey?: Prisma.SortOrder
   code?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   street?: Prisma.SortOrder
   city?: Prisma.SortOrder
   zipCode?: Prisma.SortOrder
@@ -767,6 +766,7 @@ export type CustomerMinOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
 }
 
@@ -853,7 +853,6 @@ export type CustomerCreateWithoutInstructorsInput = {
   signInKey?: string
   code?: string
   apiKey?: string
-  active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
   street?: string
@@ -865,6 +864,7 @@ export type CustomerCreateWithoutInstructorsInput = {
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   locations?: Prisma.LocationCreateNestedManyWithoutCustomerInput
 }
@@ -881,7 +881,6 @@ export type CustomerUncheckedCreateWithoutInstructorsInput = {
   signInKey?: string
   code?: string
   apiKey?: string
-  active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
   street?: string
@@ -893,6 +892,7 @@ export type CustomerUncheckedCreateWithoutInstructorsInput = {
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   locations?: Prisma.LocationUncheckedCreateNestedManyWithoutCustomerInput
 }
@@ -925,7 +925,6 @@ export type CustomerUpdateWithoutInstructorsInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -937,6 +936,7 @@ export type CustomerUpdateWithoutInstructorsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locations?: Prisma.LocationUpdateManyWithoutCustomerNestedInput
 }
@@ -953,7 +953,6 @@ export type CustomerUncheckedUpdateWithoutInstructorsInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -965,6 +964,7 @@ export type CustomerUncheckedUpdateWithoutInstructorsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   locations?: Prisma.LocationUncheckedUpdateManyWithoutCustomerNestedInput
 }
@@ -981,7 +981,6 @@ export type CustomerCreateWithoutLocationsInput = {
   signInKey?: string
   code?: string
   apiKey?: string
-  active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
   street?: string
@@ -993,6 +992,7 @@ export type CustomerCreateWithoutLocationsInput = {
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   instructors?: Prisma.InstructorCreateNestedManyWithoutCustomerInput
 }
@@ -1009,7 +1009,6 @@ export type CustomerUncheckedCreateWithoutLocationsInput = {
   signInKey?: string
   code?: string
   apiKey?: string
-  active?: boolean
   setSeqInstructor?: Prisma.CustomerCreatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerCreatesetSeqTargetInput | string[]
   street?: string
@@ -1021,6 +1020,7 @@ export type CustomerUncheckedCreateWithoutLocationsInput = {
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   instructors?: Prisma.InstructorUncheckedCreateNestedManyWithoutCustomerInput
 }
@@ -1053,7 +1053,6 @@ export type CustomerUpdateWithoutLocationsInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1065,6 +1064,7 @@ export type CustomerUpdateWithoutLocationsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   instructors?: Prisma.InstructorUpdateManyWithoutCustomerNestedInput
 }
@@ -1081,7 +1081,6 @@ export type CustomerUncheckedUpdateWithoutLocationsInput = {
   signInKey?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   setSeqInstructor?: Prisma.CustomerUpdatesetSeqInstructorInput | string[]
   setSeqTarget?: Prisma.CustomerUpdatesetSeqTargetInput | string[]
   street?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1093,6 +1092,7 @@ export type CustomerUncheckedUpdateWithoutLocationsInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   instructors?: Prisma.InstructorUncheckedUpdateManyWithoutCustomerNestedInput
 }
@@ -1149,7 +1149,6 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   signInKey?: boolean
   code?: boolean
   apiKey?: boolean
-  active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
   street?: boolean
@@ -1161,6 +1160,7 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
   instructors?: boolean | Prisma.Customer$instructorsArgs<ExtArgs>
   locations?: boolean | Prisma.Customer$locationsArgs<ExtArgs>
@@ -1179,7 +1179,6 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   signInKey?: boolean
   code?: boolean
   apiKey?: boolean
-  active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
   street?: boolean
@@ -1191,6 +1190,7 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
 }, ExtArgs["result"]["customer"]>
 
@@ -1206,7 +1206,6 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   signInKey?: boolean
   code?: boolean
   apiKey?: boolean
-  active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
   street?: boolean
@@ -1218,6 +1217,7 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
 }, ExtArgs["result"]["customer"]>
 
@@ -1233,7 +1233,6 @@ export type CustomerSelectScalar = {
   signInKey?: boolean
   code?: boolean
   apiKey?: boolean
-  active?: boolean
   setSeqInstructor?: boolean
   setSeqTarget?: boolean
   street?: boolean
@@ -1245,10 +1244,11 @@ export type CustomerSelectScalar = {
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"name" | "email" | "website" | "logoUrl" | "primary" | "secondary" | "tertiary" | "quaternary" | "signInKey" | "code" | "apiKey" | "active" | "setSeqInstructor" | "setSeqTarget" | "street" | "city" | "zipCode" | "longitude" | "latitude" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isDeleted", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"name" | "email" | "website" | "logoUrl" | "primary" | "secondary" | "tertiary" | "quaternary" | "signInKey" | "code" | "apiKey" | "setSeqInstructor" | "setSeqTarget" | "street" | "city" | "zipCode" | "longitude" | "latitude" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isActive" | "isDeleted", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   instructors?: boolean | Prisma.Customer$instructorsArgs<ExtArgs>
   locations?: boolean | Prisma.Customer$locationsArgs<ExtArgs>
@@ -1275,7 +1275,6 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     signInKey: string
     code: string
     apiKey: string
-    active: boolean
     setSeqInstructor: string[]
     setSeqTarget: string[]
     street: string
@@ -1287,6 +1286,7 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     tenantId: string
     createdAt: Date
     updatedAt: Date
+    isActive: boolean
     isDeleted: boolean
   }, ExtArgs["result"]["customer"]>
   composites: {}
@@ -1724,7 +1724,6 @@ export interface CustomerFieldRefs {
   readonly signInKey: Prisma.FieldRef<"Customer", 'String'>
   readonly code: Prisma.FieldRef<"Customer", 'String'>
   readonly apiKey: Prisma.FieldRef<"Customer", 'String'>
-  readonly active: Prisma.FieldRef<"Customer", 'Boolean'>
   readonly setSeqInstructor: Prisma.FieldRef<"Customer", 'String[]'>
   readonly setSeqTarget: Prisma.FieldRef<"Customer", 'String[]'>
   readonly street: Prisma.FieldRef<"Customer", 'String'>
@@ -1736,6 +1735,7 @@ export interface CustomerFieldRefs {
   readonly tenantId: Prisma.FieldRef<"Customer", 'String'>
   readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Customer", 'DateTime'>
+  readonly isActive: Prisma.FieldRef<"Customer", 'Boolean'>
   readonly isDeleted: Prisma.FieldRef<"Customer", 'Boolean'>
 }
     

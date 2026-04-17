@@ -191,7 +191,6 @@ export const CustomerScalarFieldEnum = {
   signInKey: 'signInKey',
   code: 'code',
   apiKey: 'apiKey',
-  active: 'active',
   setSeqInstructor: 'setSeqInstructor',
   setSeqTarget: 'setSeqTarget',
   street: 'street',
@@ -203,6 +202,7 @@ export const CustomerScalarFieldEnum = {
   tenantId: 'tenantId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  isActive: 'isActive',
   isDeleted: 'isDeleted'
 } as const
 
