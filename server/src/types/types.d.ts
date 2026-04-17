@@ -27,6 +27,10 @@ declare global {
         tenantId: string;
         role: 'user' | 'participant';
       };
+      publicTenant?: {
+        tenantId: string;
+        customerId: string;
+      };
       imageUrl?: import('formidable').File;
     }
   }

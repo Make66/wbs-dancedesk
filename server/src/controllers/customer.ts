@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express';
+import { randomBytes } from 'crypto';
 import prisma from '#db';
 import { log } from '#utils';
 
@@ -65,4 +66,16 @@ export const removeCustomer: RequestHandler = async (req, res) => {
   if (!exists) throw new Error('Customer not found', { cause: { status: 404 } });
   await prisma.customer.update({ where: { id }, data: { isDeleted: true } });
   res.status(204).send();
+};
+
+export const rotateApiKey: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  log(SRC, 'rotateApiKey', 'Rotating API key', { id, tenantId });
+  const exists = await prisma.customer.findFirst({ where: { id, tenantId, isDeleted: false } });
+  if (!exists) throw new Error('Customer not found', { cause: { status: 404 } });
+  const apiKey = randomBytes(32).toString('hex');
+  await prisma.customer.update({ where: { id }, data: { apiKey } });
+  log(SRC, 'rotateApiKey', 'API key rotated', { id, tenantId });
+  res.json({ apiKey });
 };

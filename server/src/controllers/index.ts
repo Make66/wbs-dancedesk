@@ -15,3 +15,4 @@ export * from "./participant.ts";
 export * from "./event.ts";
 export * from "./test.ts";
 export * from "./chat.ts";
+export * from "./public.ts";

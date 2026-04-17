@@ -190,6 +190,7 @@ export const CustomerScalarFieldEnum = {
   quaternary: 'quaternary',
   signInKey: 'signInKey',
   code: 'code',
+  apiKey: 'apiKey',
   active: 'active',
   setSeqInstructor: 'setSeqInstructor',
   setSeqTarget: 'setSeqTarget',

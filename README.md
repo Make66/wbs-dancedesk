@@ -20,16 +20,16 @@ Main goal of the redesign is to offer a clean, modern interface with minimum of 
 ## Milestones
 
 ### Milestone 1 - reached!
-![Minimum setup](./documentation/resources/images/Stufe-1.svg)
+![Minimum setup](./docs/images/images/Stufe-1.svg)
 
 ### Milestone 2 - mostly reached!
-![Adding consumer app](./documentation/resources/images/Stufe-2.svg)
+![Adding consumer app](./docs/images/images/Stufe-2.svg)
 
 ### Milestone 3
-![Adding OAuth](./documentation/resources/images/Stufe-3.svg)
+![Adding OAuth](./docs/images/images/Stufe-3.svg)
 
 ### Milestone 4
-![Adding user onboarding facilitation](./documentation/resources/images/Stufe-4.svg)
+![Adding user onboarding facilitation](./docs/images/images/Stufe-4.svg)
 
 ## Tools used
 * Trello: https://trello.com/b/OBGj6jTR/mein-trello-board
