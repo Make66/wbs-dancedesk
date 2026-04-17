@@ -94,6 +94,23 @@ export const getCoursesByWeekDB = async (
   return response.json();
 };
 
+export const getCourseDatesDB = async (courseId: string): Promise<string[]> => {
+  const response = await fetch(
+    `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses/${courseId}/dates`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch course dates: ${response.status}`);
+  }
+
+  return response.json();
+};
+
 export const getCoursesByInstructorIdDB = async (instructorId: string) => {
   try {
     const response = await fetch(
