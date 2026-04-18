@@ -295,6 +295,8 @@ GET /courses/week/:year/:week  - Hi Adrian!
 GET /courses/:id/dates         - delivers possible event dates for a course
 GET /courses/:id/participants  - all participants of a certain course
 GET /customers/by-tenant/:tenantId - no auth required, only branding fields. Created for 1st logins
+POST /api/customers/:id/rotate-api-key - create a new key and so invalidate the old one
+POST /api/customers/:id/rotate-signin-key - create a new key and so invalidate the old one
 GET /events/month              - returns events where startsAt >= 1st day of month, limited to this month
 GET /events/month/:number      - returns events from a certain month
 GET /events/upcoming           - returns events where startsAt > yesterday at midnight, ordered ascending, limited to this week

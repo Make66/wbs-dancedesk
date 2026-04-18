@@ -3,8 +3,8 @@ import { z } from 'zod/v4';
 export const customerSchema = z.object({
   name: z.string().min(1).optional(),
   email: z.email().optional(),
-  website: z.string().url().optional(),
-  logoUrl: z.string().optional(),
+  website: z.url().optional(),
+  logoUrl: z.url().optional(),
   primary: z.string().default("#B5252B").optional(),
   secondary: z.string().default("#858384").optional(),
   tertiary: z.string().default("#858384").optional(),

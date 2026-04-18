@@ -79,3 +79,16 @@ export const rotateApiKey: RequestHandler = async (req, res) => {
   log(SRC, 'rotateApiKey', 'API key rotated', { id, tenantId });
   res.json({ apiKey });
 };
+
+export const rotateSignInKey: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const { tenantId } = req.user!;
+  log(SRC, 'rotateSignInKey', 'Rotating sign-in key', { id, tenantId });
+  const exists = await prisma.customer.findFirst({ where: { id, tenantId, isDeleted: false } });
+  if (!exists) throw new Error('Customer not found', { cause: { status: 404 } });
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const signInKey = Array.from(randomBytes(5), (b) => chars[b % chars.length]).join('');
+  await prisma.customer.update({ where: { id }, data: { signInKey } });
+  log(SRC, 'rotateSignInKey', 'Sign-in key rotated', { id, tenantId });
+  res.json({ signInKey });
+};
