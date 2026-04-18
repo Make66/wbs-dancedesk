@@ -76,5 +76,5 @@ app.use("/*splat", (_req, res) => {
 
 app.use(errorHandler);
 
-const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+const host = process.env.HOST ?? (process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost');
 app.listen(port, host, () => console.log(`Server listening on http://${host}:${port}`));

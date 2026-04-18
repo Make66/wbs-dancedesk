@@ -100,6 +100,18 @@ export const coursesHandler: RequestHandler = async (req, res) => {
   const { categoryId, locationId } = req.query as Record<string, string | undefined>;
   log(SRC, 'coursesHandler', 'Public courses fetch', { tenantId, categoryId, locationId });
 
+  const settings = await prisma.settings.findUnique({
+    where: { tenantId },
+    select: { registration: true },
+  });
+  const registration = settings?.registration as { displayPastNumber?: number } | null;
+  const displayPastNumber = registration?.displayPastNumber ?? 7;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const cutoff = new Date(today);
+  cutoff.setDate(cutoff.getDate() - displayPastNumber);
+
   const courses = await prisma.course.findMany({
     where: {
       tenantId,
@@ -119,6 +131,7 @@ export const coursesHandler: RequestHandler = async (req, res) => {
       seatsCurrent: true,
       seatsMax: true,
       isBookedOut: true,
+      isClub: true,
       options: true,
       categoryId: true,
       locationId: true,
@@ -129,5 +142,14 @@ export const coursesHandler: RequestHandler = async (req, res) => {
     orderBy: { startsAt: 'asc' }
   });
 
-  res.json({ courses });
+  const filtered = courses.filter(c => {
+    if (!c.isClub) return c.startsAt >= cutoff;
+    // clubs: keep if at least one date entry is >= today
+    const dates = c.dates as { date: string }[];
+    return Array.isArray(dates) && dates.some(d => new Date(d.date) >= today);
+  });
+
+  log(SRC, 'coursesHandler', `Fetched ${filtered.length} courses (${courses.length} before club-date filter)`, { tenantId, categoryId, locationId });
+
+  res.json({ courses: filtered });
 };
