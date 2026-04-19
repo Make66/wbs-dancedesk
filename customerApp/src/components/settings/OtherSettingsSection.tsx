@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Settings } from "lucide-react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
+import QRCode from "qrcode";
 import APIKeyCardItem from "./APIKeyCardItem";
 import { settingsStore } from "../../stores/settingsStore";
 
@@ -20,7 +21,8 @@ const OtherSettingsSection = () => {
   const [signInKeyCopied, setSignInKeyCopied] = useState(false);
 
   const signInKeyUrl = settingsStore(
-    (s) => (s.settings.other as Record<string, unknown> | undefined)?.signInKeyUrl as string | undefined,
+    (s) =>
+      (s.settings.other as Record<string, unknown> | undefined)?.signInKeyUrl as string | undefined,
   );
   const setSettings = settingsStore((s) => s.setSettings);
 
@@ -49,28 +51,67 @@ const OtherSettingsSection = () => {
     fetchCustomer();
   }, []);
 
-  const rotateKey = async (
-    endpoint: string,
-    responseKey: string,
-    setValue: (v: string) => void,
-    setGenerating: (v: boolean) => void,
-    setError: (v: string | null) => void,
-  ) => {
+  const rotateApiKey = async () => {
     if (!customerId) return;
-    setGenerating(true);
-    setError(null);
+    setIsGeneratingApiKey(true);
+    setApiKeyError(null);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers/${customerId}/${endpoint}`,
+        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers/${customerId}/rotate-api-key`,
         { method: "POST", credentials: "include" },
       );
       if (!response.ok) throw new Error(`Fehler beim Generieren (${response.status}).`);
       const data = await response.json();
-      setValue(data[responseKey]);
+      setApiKey(data.apiKey);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Unbekannter Fehler.");
+      setApiKeyError(error instanceof Error ? error.message : "Unbekannter Fehler.");
     } finally {
-      setGenerating(false);
+      setIsGeneratingApiKey(false);
+    }
+  };
+
+  const rotateSignInKey = async () => {
+    if (!customerId) return;
+    setIsGeneratingSignInKey(true);
+    setSignInKeyError(null);
+    try {
+      // 1. Neuen SignIn-Key generieren
+      const rotateRes = await fetch(
+        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers/${customerId}/rotate-signin-key`,
+        { method: "POST", credentials: "include" },
+      );
+      if (!rotateRes.ok) throw new Error(`Fehler beim Generieren (${rotateRes.status}).`);
+      const { signInKey: newKey } = await rotateRes.json();
+      setSignInKey(newKey);
+
+      // 2. QR-Code als PNG-Blob erzeugen
+      const dataUrl = await QRCode.toDataURL(newKey, {
+        type: "image/png",
+        width: 400,
+        margin: 0.5,
+      });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], "signin-key-qr.png", { type: "image/png" });
+
+      // 3. Zu Cloudinary hochladen
+      const formData = new FormData();
+      formData.append("image", file);
+      const uploadRes = await fetch(
+        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings/upload-signin-qr`,
+        { method: "POST", credentials: "include", body: formData },
+      );
+      if (!uploadRes.ok) throw new Error(`Upload fehlgeschlagen (${uploadRes.status}).`);
+      const { signInKeyUrl: newUrl } = await uploadRes.json();
+
+      // 4. Store aktualisieren
+      setSettings({
+        other: { ...(settingsStore.getState().settings.other ?? {}), signInKeyUrl: newUrl },
+      });
+    } catch (error) {
+      setSignInKeyError(error instanceof Error ? error.message : "Unbekannter Fehler.");
+    } finally {
+      setIsGeneratingSignInKey(false);
     }
   };
 
@@ -78,19 +119,6 @@ const OtherSettingsSection = () => {
     await navigator.clipboard.writeText(value);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleUploadQr = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("image", file);
-    const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings/upload-signin-qr`,
-      { method: "POST", credentials: "include", body: formData },
-    );
-    if (!response.ok) throw new Error(`Upload fehlgeschlagen (${response.status}).`);
-    const data = await response.json();
-    setSettings({ other: { ...(settingsStore.getState().settings.other ?? {}), signInKeyUrl: data.signInKeyUrl } });
-    return data.signInKeyUrl;
   };
 
   return (
@@ -122,38 +150,20 @@ const OtherSettingsSection = () => {
             disabled={!customerId}
             copied={apiKeyCopied}
             placeholder='Klicke auf „Generieren" um einen neuen API-Key zu erstellen.'
-            onRotate={() =>
-              rotateKey(
-                "rotate-api-key",
-                "apiKey",
-                setApiKey,
-                setIsGeneratingApiKey,
-                setApiKeyError,
-              )
-            }
+            onRotate={rotateApiKey}
             onCopy={() => apiKey && copyToClipboard(apiKey, setApiKeyCopied)}
           />
 
           <APIKeyCardItem
             label="SignIn-Key"
             value={signInKey}
-            showQr
             qrImageUrl={signInKeyUrl ?? null}
-            onUploadQr={handleUploadQr}
             isGenerating={isGeneratingSignInKey}
             error={signInKeyError}
             disabled={!customerId}
             copied={signInKeyCopied}
             placeholder='Klicke auf „Generieren" um einen neuen SignIn-Key zu erstellen.'
-            onRotate={() =>
-              rotateKey(
-                "rotate-signin-key",
-                "signInKey",
-                setSignInKey,
-                setIsGeneratingSignInKey,
-                setSignInKeyError,
-              )
-            }
+            onRotate={rotateSignInKey}
             onCopy={() => signInKey && copyToClipboard(signInKey, setSignInKeyCopied)}
           />
         </div>
