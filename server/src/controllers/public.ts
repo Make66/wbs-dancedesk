@@ -1,6 +1,22 @@
 import type { RequestHandler } from 'express';
+import https from 'node:https';
+import http from 'node:http';
 import prisma from '#db';
 import { log } from '#utils';
+
+// Allow self-signed certificates (e.g. ddev local environments)
+const fetchInsecure = (url: string): Promise<unknown> =>
+  new Promise((resolve, reject) => {
+    const parsed = new URL(url);
+    const get = parsed.protocol === 'https:' ? https.get : http.get;
+    get(url, { rejectUnauthorized: false }, (res) => {
+      let raw = '';
+      res.on('data', (chunk: string) => { raw += chunk; });
+      res.on('end', () => {
+        try { resolve(JSON.parse(raw)); } catch (e) { reject(e); }
+      });
+    }).on('error', reject);
+  });
 
 const SRC = 'controllers/public.ts';
 
@@ -93,6 +109,48 @@ export const bootstrapHandler: RequestHandler = async (req, res) => {
   }));
 
   res.json({ customer, locations: locationsTree });
+};
+
+const NEWS_TTL_SECONDS = 86400;
+
+export const newsHandler: RequestHandler = async (req, res) => {
+  const { tenantId } = req.publicTenant!;
+  log(SRC, 'newsHandler', 'Public news fetch', { tenantId });
+
+  let record = await prisma.news.findFirst({ where: { tenantId, ...PUBLIC_FILTER } });
+
+  const ageSeconds = record
+    ? (Date.now() - record.updatedAt.getTime()) / 1000
+    : Infinity;
+
+  if (ageSeconds > NEWS_TTL_SECONDS) {
+    log(SRC, 'newsHandler', record ? 'News stale, refreshing' : 'No news record, fetching', { tenantId, ageSeconds });
+
+    const settings = await prisma.settings.findUnique({ where: { tenantId }, select: { basic: true } });
+    const domain = (settings?.basic as { domain?: string } | null)?.domain;
+
+    if (domain) {
+      try {
+        const fetched = await fetchInsecure(`${domain}/api/news`) as object;
+
+        if (record) {
+          record = await prisma.news.update({ where: { id: record.id }, data: { news: fetched } });
+          log(SRC, 'newsHandler', 'News record updated', { tenantId });
+        } else {
+          record = await prisma.news.create({ data: { tenantId, news: fetched } });
+          log(SRC, 'newsHandler', 'News record created', { tenantId });
+        }
+      } catch (err) {
+        log(SRC, 'newsHandler', `Failed to fetch news from ${domain}/api/news: ${err}`, { tenantId });
+      }
+    } else {
+      log(SRC, 'newsHandler', 'No domain configured in settings.basic, skipping news fetch', { tenantId });
+    }
+  } else {
+    log(SRC, 'newsHandler', 'News is fresh, serving from cache', { tenantId, ageSeconds });
+  }
+
+  res.json({ news: record?.news ?? [] });
 };
 
 export const coursesHandler: RequestHandler = async (req, res) => {

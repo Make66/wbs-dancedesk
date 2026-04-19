@@ -31,7 +31,7 @@ export const getCustomerBySignInKey: RequestHandler = async (req, res) => {
   log(SRC, 'getCustomerBySignInKey', 'Fetching customer by signInKey', { signInKey });
   const customer = await prisma.customer.findFirst({
     where: { signInKey, isDeleted: false },
-    select: { id: true, name: true, logoUrl: true, primary: true, secondary: true, tertiary: true, quaternary: true, website: true }
+    select: { id: true, tenantId: true, name: true, logoUrl: true, primary: true, secondary: true, tertiary: true, quaternary: true, website: true }
   });
   if (!customer) throw new Error('Customer not found', { cause: { status: 404 } });
   res.json(customer);

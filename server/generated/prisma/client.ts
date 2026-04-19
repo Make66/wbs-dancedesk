@@ -92,6 +92,11 @@ export type Location = Prisma.LocationModel
  */
 export type Module = Prisma.ModuleModel
 /**
+ * Model News
+ * 
+ */
+export type News = Prisma.NewsModel
+/**
  * Model Participant
  * 
  */

@@ -143,6 +143,43 @@ Only courses with `isActive=true` are returned, and only for categories that are
 
 ---
 
+### `GET /api/public/news`
+
+Returns news content for the tenant. The data is cached in the `News` database record and refreshed automatically when stale.
+
+**Request:**
+```
+GET /api/public/news
+X-API-Key: <key>
+```
+
+**Response:**
+```json
+{
+  "news": [ ... ]
+}
+```
+
+The shape of the `news` array is determined by whatever the upstream `/api/news` endpoint returns — the server stores and forwards it as-is.
+
+**Caching behaviour:**
+
+The server caches news per tenant in the `News` table.
+
+| Condition | Behaviour |
+|-----------|-----------|
+| No `News` record exists | Fetches from `<settings.basic.domain>/api/news`, creates record |
+| Record exists, `updatedAt` < 86 400 s ago | Serves cached data immediately |
+| Record exists, `updatedAt` ≥ 86 400 s ago | Re-fetches from upstream, updates record, serves fresh data |
+| Upstream fetch fails | Logs error, serves last cached data (or empty array if no record) |
+| `settings.basic.domain` not configured | Logs warning, serves cached data or empty array |
+
+The upstream URL is `<settings.basic.domain>/api/news` — set the domain in **Settings → Basic**.
+
+Only records with `isActive=true` and `isDeleted=false` are returned.
+
+---
+
 ## `isActive` Cascade
 
 `isActive` is the single public-visibility switch on every model. The cascade works as follows:
@@ -165,11 +202,15 @@ No separate "hidden" flag is needed — deactivating a target is sufficient to r
    → GET /api/public/bootstrap
    → Renders location selector, target tabs, category list
 
-2. User selects a category
+2. Widget loads news (e.g. home page banner)
+   → GET /api/public/news
+   → Server refreshes from upstream if data is older than 24 h
+
+3. User selects a category
    → GET /api/public/courses?categoryId=<uuid>
    → Renders course cards with dates and seat availability
 
-3. User navigates to another category
+4. User navigates to another category
    → GET /api/public/courses?categoryId=<other-uuid>
    → (or: load all courses once on init and filter client-side)
 ```

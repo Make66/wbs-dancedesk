@@ -600,3 +600,7 @@ To test communication over the tunnel use: (answers a HTTP code, 000 means fail)
 ```
 curl -s -o /dev/null -w "%{http_code}" http://localhost:5050/pgadmin4/
 ```
+
+## Q: How save is a signInKey consist of 5-digit random letters and numbers?
+
+### A: On entropy: the key uses randomBytes from Node's crypto module, so it's cryptographically random. With 62^5 ≈ 916 million combinations it's fine as a low-stakes sign-in shortcut, but not suitable for anything security-critical (where you'd want something much longer).

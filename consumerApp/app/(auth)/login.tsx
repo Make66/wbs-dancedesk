@@ -208,7 +208,7 @@ export default function LoginScreen() {
   if (!hydrated) {
     return (
       <View style={styles.bg}>
-        <Image source={require('../../assets/login-bg.jpg')} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
+        <Image source={require('../../assets/login-bg.jpg')} style={StyleSheet.absoluteFillObject} resizeMode="contain" />
         <View style={styles.container}>
           <ActivityIndicator color={colors.primary} />
         </View>
@@ -220,7 +220,7 @@ export default function LoginScreen() {
   if (!customer) {
     return (
       <View style={styles.bg}>
-        <Image source={require('../../assets/login-bg.jpg')} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
+        <Image source={require('../../assets/login-bg.jpg')} style={StyleSheet.absoluteFillObject} resizeMode="contain" />
         <View style={styles.container}>
           <ThemedText style={styles.title}>Studio finden</ThemedText>
           <ThemedText style={[styles.subtitle, { color: colors.textMuted }]}>
@@ -445,7 +445,7 @@ export default function LoginScreen() {
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  bg: { flex: 1 },
+  bg: { flex: 1, backgroundColor: '#000' },
   container: { flex: 1, justifyContent: 'center', padding: 24, gap: 12, backgroundColor: 'rgba(0,0,0,0.45)' },
   title: { fontSize: 30, fontWeight: '700', color: '#CCC' },
   subtitle: { fontSize: 16, marginBottom: 12 },
