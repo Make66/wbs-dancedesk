@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Settings } from "lucide-react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import APIKeyCardItem from "./APIKeyCardItem";
+import { settingsStore } from "../../stores/settingsStore";
 
 const OtherSettingsSection = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,11 @@ const OtherSettingsSection = () => {
   const [isGeneratingSignInKey, setIsGeneratingSignInKey] = useState(false);
   const [signInKeyError, setSignInKeyError] = useState<string | null>(null);
   const [signInKeyCopied, setSignInKeyCopied] = useState(false);
+
+  const signInKeyUrl = settingsStore(
+    (s) => (s.settings.other as Record<string, unknown> | undefined)?.signInKeyUrl as string | undefined,
+  );
+  const setSettings = settingsStore((s) => s.setSettings);
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -74,6 +80,19 @@ const OtherSettingsSection = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleUploadQr = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("image", file);
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings/upload-signin-qr`,
+      { method: "POST", credentials: "include", body: formData },
+    );
+    if (!response.ok) throw new Error(`Upload fehlgeschlagen (${response.status}).`);
+    const data = await response.json();
+    setSettings({ other: { ...(settingsStore.getState().settings.other ?? {}), signInKeyUrl: data.signInKeyUrl } });
+    return data.signInKeyUrl;
+  };
+
   return (
     <div className="p-4 bg-orange-400/60 rounded-2xl">
       <div
@@ -119,6 +138,8 @@ const OtherSettingsSection = () => {
             label="SignIn-Key"
             value={signInKey}
             showQr
+            qrImageUrl={signInKeyUrl ?? null}
+            onUploadQr={handleUploadQr}
             isGenerating={isGeneratingSignInKey}
             error={signInKeyError}
             disabled={!customerId}
