@@ -5,6 +5,8 @@ import TargetSettingsSection from "../components/settings/TargetSettingsSection"
 import RoomSettingsSection from "../components/settings/RoomSettingsSection";
 import InstructorSettingsSection from "../components/settings/InstructorSettingsSection";
 import OtherSettingsSection from "../components/settings/OtherSettingsSection";
+import RegistrationSettingsSection from "../components/settings/RegistrationSettingsSection";
+import RebateSettingsSection from "../components/settings/RebateSettingsSection";
 
 const SettingsPage = () => {
   return (
@@ -20,6 +22,8 @@ const SettingsPage = () => {
           <CalendarSettingsSection />
           <FederalHolidaySettingsSection />
           <HolidaySettingSection />
+          <RegistrationSettingsSection />
+          <RebateSettingsSection />
           <OtherSettingsSection />
         </div>
       </div>
