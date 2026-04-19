@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { Check, Copy, RefreshCw, Download } from "lucide-react";
+import { useRef, useState } from "react";
+import { Check, Copy, RefreshCw, Download, Upload } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 
 type APIKeyCardItemProps = {
@@ -13,6 +13,8 @@ type APIKeyCardItemProps = {
   disabled: boolean;
   placeholder: string;
   showQr?: boolean;
+  qrImageUrl?: string | null;
+  onUploadQr?: (file: File) => Promise<string>;
 };
 
 const APIKeyCardItem = ({
@@ -26,8 +28,13 @@ const APIKeyCardItem = ({
   disabled,
   placeholder,
   showQr = false,
+  qrImageUrl,
+  onUploadQr,
 }: APIKeyCardItemProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(qrImageUrl ?? null);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -37,6 +44,28 @@ const APIKeyCardItem = ({
     a.href = url;
     a.download = `${label.toLowerCase().replace(/\s+/g, "-")}-qr.png`;
     a.click();
+  };
+
+  const handleUpload = async () => {
+    if (!onUploadQr || !canvasRef.current) return;
+    setIsUploading(true);
+    setUploadError(null);
+    canvasRef.current.toBlob(async (blob) => {
+      if (!blob) {
+        setUploadError("QR-Code konnte nicht erstellt werden.");
+        setIsUploading(false);
+        return;
+      }
+      try {
+        const file = new File([blob], "signin-key-qr.png", { type: "image/png" });
+        const url = await onUploadQr(file);
+        setUploadedUrl(url);
+      } catch (err) {
+        setUploadError(err instanceof Error ? err.message : "Upload fehlgeschlagen.");
+      } finally {
+        setIsUploading(false);
+      }
+    }, "image/png");
   };
 
   return (
@@ -82,17 +111,55 @@ const APIKeyCardItem = ({
               <div className="p-3 rounded-2xl bg-white shadow-md">
                 <QRCodeCanvas ref={canvasRef} value={value} size={180} />
               </div>
-              <button
-                type="button"
-                onClick={handleDownload}
-                className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors"
-                data-tooltip-id="tooltip"
-                data-tooltip-content="QR-Code als PNG herunterladen"
-                data-tooltip-place="bottom"
-              >
-                <Download className="w-4 h-4" />
-                <span className="text-sm">PNG herunterladen</span>
-              </button>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors"
+                  data-tooltip-id="tooltip"
+                  data-tooltip-content="QR-Code als PNG herunterladen"
+                  data-tooltip-place="bottom"
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="text-sm">PNG herunterladen</span>
+                </button>
+
+                {onUploadQr && (
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    disabled={isUploading}
+                    className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-tooltip-id="tooltip"
+                    data-tooltip-content="QR-Code zu Cloudinary hochladen"
+                    data-tooltip-place="bottom"
+                  >
+                    <Upload className={`w-4 h-4 ${isUploading ? "animate-pulse" : ""}`} />
+                    <span className="text-sm">{isUploading ? "Hochladen…" : "Zu Cloudinary"}</span>
+                  </button>
+                )}
+              </div>
+
+              {uploadError && <p className="text-sm text-red-500">{uploadError}</p>}
+
+              {uploadedUrl && (
+                <div className="w-full flex flex-col gap-2">
+                  <img
+                    src={uploadedUrl}
+                    alt="QR-Code (Cloudinary)"
+                    className="w-48 h-48 mx-auto rounded-xl border border-muted-foreground object-contain bg-white"
+                  />
+                  <a
+                    href={uploadedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-xs text-muted-foreground text-center truncate hover:text-foreground transition-colors"
+                  >
+                    {uploadedUrl}
+                  </a>
+                </div>
+              )}
             </div>
           )}
         </>

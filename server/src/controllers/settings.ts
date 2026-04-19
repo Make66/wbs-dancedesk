@@ -448,3 +448,19 @@ export const upsertSettings: RequestHandler = async (req, res) => {
   });
   res.json(settings);
 };
+
+export const uploadSignInQr: RequestHandler = async (req, res) => {
+  const { tenantId } = req.user!;
+  const signInKeyUrl: string = req.body.imageUrl;
+  if (!signInKeyUrl) throw new Error('No image uploaded', { cause: { status: 400 } });
+
+  const existing = await prisma.settings.findUnique({ where: { tenantId } });
+  const other = { ...(existing?.other as Record<string, unknown> | null ?? {}), signInKeyUrl };
+
+  const settings = await prisma.settings.upsert({
+    where: { tenantId },
+    create: { tenantId, other },
+    update: { other },
+  });
+  res.json({ signInKeyUrl: (settings.other as Record<string, unknown>).signInKeyUrl });
+};
