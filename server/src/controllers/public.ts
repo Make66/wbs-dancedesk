@@ -5,11 +5,11 @@ import prisma from '#db';
 import { log } from '#utils';
 
 // Allow self-signed certificates (e.g. ddev local environments)
-const fetchInsecure = (url: string): Promise<unknown> =>
+const fetchInsecure = (url: string, headers?: Record<string, string>): Promise<unknown> =>
   new Promise((resolve, reject) => {
     const parsed = new URL(url);
     const get = parsed.protocol === 'https:' ? https.get : http.get;
-    get(url, { rejectUnauthorized: false }, (res) => {
+    get(url, { rejectUnauthorized: false, headers }, (res) => {
       let raw = '';
       res.on('data', (chunk: string) => { raw += chunk; });
       res.on('end', () => {
@@ -119,19 +119,24 @@ export const newsHandler: RequestHandler = async (req, res) => {
 
   let record = await prisma.news.findFirst({ where: { tenantId, ...PUBLIC_FILTER } });
 
-  const ageSeconds = record
-    ? (Date.now() - record.updatedAt.getTime()) / 1000
-    : Infinity;
+  // const ageSeconds = record
+  //   ? (Date.now() - record.updatedAt.getTime()) / 1000
+  //   : Infinity;
+
+  const ageSeconds = 86401; // Force refresh for testing
 
   if (ageSeconds > NEWS_TTL_SECONDS) {
     log(SRC, 'newsHandler', record ? 'News stale, refreshing' : 'No news record, fetching', { tenantId, ageSeconds });
 
-    const settings = await prisma.settings.findUnique({ where: { tenantId }, select: { basic: true } });
+    const settings = await prisma.settings.findUnique({ where: { tenantId }, select: { basic: true, other: true } });
     const domain = (settings?.basic as { domain?: string } | null)?.domain;
+    const newsApiKey = (settings?.other as { newsApiKey?: string } | null)?.newsApiKey;
 
     if (domain) {
       try {
-        const fetched = await fetchInsecure(`${domain}/api/news`) as object;
+        const headers: Record<string, string> = {};
+        if (newsApiKey) headers['X-Api-Key'] = newsApiKey;
+        const fetched = await fetchInsecure(`${domain}/api/news`, headers) as object;
 
         if (record) {
           record = await prisma.news.update({ where: { id: record.id }, data: { news: fetched } });
@@ -149,6 +154,8 @@ export const newsHandler: RequestHandler = async (req, res) => {
   } else {
     log(SRC, 'newsHandler', 'News is fresh, serving from cache', { tenantId, ageSeconds });
   }
+
+  console.log('Serving news:', record?.news); // Debug log to verify news content
 
   res.json({ news: record?.news ?? [] });
 };
