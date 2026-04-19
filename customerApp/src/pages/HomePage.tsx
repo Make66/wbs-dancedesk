@@ -8,7 +8,7 @@ import {
 } from "react-icons/lu";
 import { userStore } from "../stores/userStore";
 import StatCard from "../components/dashboard/StatCard";
-import TodaysCourses from "../components/dashboard/TodaysCourses";
+import NewsSection from "../components/dashboard/NewsSection";
 import RecentRegistrations from "../components/dashboard/RecentRegistrations";
 import QuickActions from "../components/dashboard/QuickActions";
 import DashboardCharts from "../components/dashboard/DashboardCharts";
@@ -60,7 +60,7 @@ const STATS = [
 
 const WIDGET_LABELS: Record<WidgetId, string> = {
   stats: "Statistiken",
-  "todays-courses": "Heutige Kurse",
+  "todays-courses": "Neuigkeiten",
   charts: "Diagramme",
   "bottom-row": "Anmeldungen & Schnellaktionen",
 };
@@ -93,7 +93,7 @@ const HomePage = () => {
       case "todays-courses":
         return (
           <SortableWidget key={id} id={id} editMode={editMode}>
-            <TodaysCourses />
+            <NewsSection />
           </SortableWidget>
         );
       case "charts":
