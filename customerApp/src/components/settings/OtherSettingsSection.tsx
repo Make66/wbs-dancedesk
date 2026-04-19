@@ -1,9 +1,28 @@
 import { useState, useEffect } from "react";
-import { Settings } from "lucide-react";
+import { Settings, Save, Check } from "lucide-react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import QRCode from "qrcode";
 import APIKeyCardItem from "./APIKeyCardItem";
 import { settingsStore } from "../../stores/settingsStore";
+
+const FEDERAL_STATES: { value: string; label: string }[] = [
+  { value: "BW", label: "Baden-Württemberg" },
+  { value: "BY", label: "Bayern" },
+  { value: "BE", label: "Berlin" },
+  { value: "BB", label: "Brandenburg" },
+  { value: "HB", label: "Bremen" },
+  { value: "HH", label: "Hamburg" },
+  { value: "HE", label: "Hessen" },
+  { value: "MV", label: "Mecklenburg-Vorpommern" },
+  { value: "NI", label: "Niedersachsen" },
+  { value: "NW", label: "Nordrhein-Westfalen" },
+  { value: "RP", label: "Rheinland-Pfalz" },
+  { value: "SL", label: "Saarland" },
+  { value: "SN", label: "Sachsen" },
+  { value: "ST", label: "Sachsen-Anhalt" },
+  { value: "SH", label: "Schleswig-Holstein" },
+  { value: "TH", label: "Thüringen" },
+];
 
 const OtherSettingsSection = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,11 +40,36 @@ const OtherSettingsSection = () => {
   const [signInKeyError, setSignInKeyError] = useState<string | null>(null);
   const [signInKeyCopied, setSignInKeyCopied] = useState(false);
 
+  const [isSavingBasic, setIsSavingBasic] = useState(false);
+  const [basicSaved, setBasicSaved] = useState(false);
+  const [basicError, setBasicError] = useState<string | null>(null);
+
   const signInKeyUrl = settingsStore(
     (s) =>
       (s.settings.other as Record<string, unknown> | undefined)?.signInKeyUrl as string | undefined,
   );
+  const basic = settingsStore((s) => s.settings.basic);
   const setSettings = settingsStore((s) => s.setSettings);
+
+  const [localBasic, setLocalBasic] = useState({
+    domain: "",
+    federalState: "",
+    termsUri: "",
+    privacyUri: "",
+    cancellationUri: "",
+    cancellationSampleUri: "",
+  });
+
+  useEffect(() => {
+    setLocalBasic({
+      domain: basic.domain ?? "",
+      federalState: basic.federalState ?? "",
+      termsUri: basic.termsUri ?? "",
+      privacyUri: basic.privacyUri ?? "",
+      cancellationUri: basic.cancellationUri ?? "",
+      cancellationSampleUri: basic.cancellationSampleUri ?? "",
+    });
+  }, [basic]);
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -142,6 +186,31 @@ const OtherSettingsSection = () => {
     }
   };
 
+  const saveBasic = async () => {
+    setIsSavingBasic(true);
+    setBasicError(null);
+    setBasicSaved(false);
+    try {
+      const payload = Object.fromEntries(
+        Object.entries(localBasic).filter(([, v]) => v !== ""),
+      );
+      const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ basic: payload }),
+      });
+      if (!response.ok) throw new Error(`Fehler beim Speichern (${response.status}).`);
+      setSettings({ basic: payload });
+      setBasicSaved(true);
+      setTimeout(() => setBasicSaved(false), 2000);
+    } catch (error) {
+      setBasicError(error instanceof Error ? error.message : "Unbekannter Fehler.");
+    } finally {
+      setIsSavingBasic(false);
+    }
+  };
+
   const copyToClipboard = async (value: string, setCopied: (v: boolean) => void) => {
     await navigator.clipboard.writeText(value);
     setCopied(true);
@@ -167,6 +236,58 @@ const OtherSettingsSection = () => {
 
       {isOpen && (
         <div className="mt-4 flex flex-col gap-3">
+          {/* Basic config fields */}
+          <div className="rounded-2xl border border-muted-foreground bg-background/40 p-4 flex flex-col gap-3">
+            <span className="text-lg font-medium">Grundeinstellungen</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {(
+                [
+                  { key: "domain", label: "Domain", placeholder: "https://example.com" },
+                  { key: "termsUri", label: "AGB-URL", placeholder: "https://example.com/agb" },
+                  { key: "privacyUri", label: "Datenschutz-URL", placeholder: "https://example.com/datenschutz" },
+                  { key: "cancellationUri", label: "Widerruf-URL", placeholder: "https://example.com/widerruf" },
+                  { key: "cancellationSampleUri", label: "Widerrufsmuster-URL", placeholder: "https://example.com/muster" },
+                ] as { key: keyof typeof localBasic; label: string; placeholder: string }[]
+              ).map(({ key, label, placeholder }) => (
+                <div key={key} className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground pl-1">{label}</label>
+                  <input
+                    type="text"
+                    value={localBasic[key]}
+                    onChange={(e) => setLocalBasic((prev) => ({ ...prev, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    className="h-12 w-full rounded-xl border border-muted-foreground bg-background/40 px-4 text-sm focus:outline-none focus:ring-0"
+                  />
+                </div>
+              ))}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground pl-1">Bundesland</label>
+                <select
+                  value={localBasic.federalState}
+                  onChange={(e) => setLocalBasic((prev) => ({ ...prev, federalState: e.target.value }))}
+                  className="h-12 w-full rounded-xl border border-muted-foreground bg-background/40 px-4 text-sm focus:outline-none focus:ring-0"
+                >
+                  <option value="">– bitte wählen –</option>
+                  {FEDERAL_STATES.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 mt-1">
+              <button
+                type="button"
+                onClick={saveBasic}
+                disabled={isSavingBasic}
+                className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {basicSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+                {isSavingBasic ? "Speichern…" : basicSaved ? "Gespeichert" : "Speichern"}
+              </button>
+              {basicError && <span className="text-sm text-red-500">{basicError}</span>}
+            </div>
+          </div>
+
           {loadError && <p className="text-sm text-red-500 pl-1">{loadError}</p>}
 
           <APIKeyCardItem
