@@ -77,6 +77,7 @@ export const otherConfigSchema = z.object({
   apiKey: z.string().optional(),
   signInKey: z.string().optional(),
   signInKeyUrl: z.url().optional(),
+  newsApiKey: z.string().optional(),
 }).optional();
 
 export const settingsSchema = z.object({
