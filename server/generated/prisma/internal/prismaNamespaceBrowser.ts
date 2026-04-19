@@ -61,6 +61,7 @@ export const ModelName = {
   Instructor: 'Instructor',
   Location: 'Location',
   Module: 'Module',
+  News: 'News',
   Participant: 'Participant',
   ParticipantCourse: 'ParticipantCourse',
   Registration: 'Registration',
@@ -293,6 +294,19 @@ export const ModuleScalarFieldEnum = {
 } as const
 
 export type ModuleScalarFieldEnum = (typeof ModuleScalarFieldEnum)[keyof typeof ModuleScalarFieldEnum]
+
+
+export const NewsScalarFieldEnum = {
+  news: 'news',
+  id: 'id',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  isActive: 'isActive',
+  isDeleted: 'isDeleted'
+} as const
+
+export type NewsScalarFieldEnum = (typeof NewsScalarFieldEnum)[keyof typeof NewsScalarFieldEnum]
 
 
 export const ParticipantScalarFieldEnum = {

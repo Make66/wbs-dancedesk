@@ -80,11 +80,11 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.6.0
+ * Prisma Client JS version: 7.7.0
  * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.6.0",
+  client: "7.7.0",
   engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 }
 
@@ -394,6 +394,7 @@ export const ModelName = {
   Instructor: 'Instructor',
   Location: 'Location',
   Module: 'Module',
+  News: 'News',
   Participant: 'Participant',
   ParticipantCourse: 'ParticipantCourse',
   Registration: 'Registration',
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "attendance" | "category" | "chatSession" | "chatMessage" | "course" | "customer" | "event" | "instructor" | "location" | "module" | "participant" | "participantCourse" | "registration" | "room" | "settings" | "target" | "text" | "user"
+    modelProps: "attendance" | "category" | "chatSession" | "chatMessage" | "course" | "customer" | "event" | "instructor" | "location" | "module" | "news" | "participant" | "participantCourse" | "registration" | "room" | "settings" | "target" | "text" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1158,6 +1159,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ModuleCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ModuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    News: {
+      payload: Prisma.$NewsPayload<ExtArgs>
+      fields: Prisma.NewsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NewsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NewsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        findFirst: {
+          args: Prisma.NewsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NewsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        findMany: {
+          args: Prisma.NewsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>[]
+        }
+        create: {
+          args: Prisma.NewsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        createMany: {
+          args: Prisma.NewsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NewsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>[]
+        }
+        delete: {
+          args: Prisma.NewsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        update: {
+          args: Prisma.NewsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        deleteMany: {
+          args: Prisma.NewsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NewsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NewsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>[]
+        }
+        upsert: {
+          args: Prisma.NewsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        aggregate: {
+          args: Prisma.NewsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNews>
+        }
+        groupBy: {
+          args: Prisma.NewsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NewsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsCountAggregateOutputType> | number
         }
       }
     }
@@ -2000,6 +2075,19 @@ export const ModuleScalarFieldEnum = {
 export type ModuleScalarFieldEnum = (typeof ModuleScalarFieldEnum)[keyof typeof ModuleScalarFieldEnum]
 
 
+export const NewsScalarFieldEnum = {
+  news: 'news',
+  id: 'id',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  isActive: 'isActive',
+  isDeleted: 'isDeleted'
+} as const
+
+export type NewsScalarFieldEnum = (typeof NewsScalarFieldEnum)[keyof typeof NewsScalarFieldEnum]
+
+
 export const ParticipantScalarFieldEnum = {
   firstName: 'firstName',
   lastName: 'lastName',
@@ -2410,6 +2498,7 @@ export type GlobalOmitConfig = {
   instructor?: Prisma.InstructorOmit
   location?: Prisma.LocationOmit
   module?: Prisma.ModuleOmit
+  news?: Prisma.NewsOmit
   participant?: Prisma.ParticipantOmit
   participantCourse?: Prisma.ParticipantCourseOmit
   registration?: Prisma.RegistrationOmit

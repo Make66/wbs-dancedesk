@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 
 export const basicConfigSchema = z.object({
-  domain: z.string().optional(),
+  domain: z.url().optional(),
   federalState: z.string().optional(),
   termsUri: z.string().optional(),
   privacyUri: z.string().optional(),
