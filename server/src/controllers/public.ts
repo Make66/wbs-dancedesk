@@ -115,28 +115,24 @@ const NEWS_TTL_SECONDS = 86400;
 
 export const newsHandler: RequestHandler = async (req, res) => {
   const { tenantId } = req.publicTenant!;
+  const apiKey = req.headers['x-api-key'] as string;
   log(SRC, 'newsHandler', 'Public news fetch', { tenantId });
 
   let record = await prisma.news.findFirst({ where: { tenantId, ...PUBLIC_FILTER } });
 
-  // const ageSeconds = record
-  //   ? (Date.now() - record.updatedAt.getTime()) / 1000
-  //   : Infinity;
-
-  const ageSeconds = 86401; // Force refresh for testing
+  const ageSeconds = record
+    ? (Date.now() - record.updatedAt.getTime()) / 1000
+    : Infinity;
 
   if (ageSeconds > NEWS_TTL_SECONDS) {
     log(SRC, 'newsHandler', record ? 'News stale, refreshing' : 'No news record, fetching', { tenantId, ageSeconds });
 
-    const settings = await prisma.settings.findUnique({ where: { tenantId }, select: { basic: true, other: true } });
+    const settings = await prisma.settings.findUnique({ where: { tenantId }, select: { basic: true } });
     const domain = (settings?.basic as { domain?: string } | null)?.domain;
-    const newsApiKey = (settings?.other as { newsApiKey?: string } | null)?.newsApiKey;
 
     if (domain) {
       try {
-        const headers: Record<string, string> = {};
-        if (newsApiKey) headers['X-Api-Key'] = newsApiKey;
-        const fetched = await fetchInsecure(`${domain}/api/news`, headers) as object;
+        const fetched = await fetchInsecure(`${domain}/api/news`, { 'X-Api-Key': apiKey }) as object;
 
         if (record) {
           record = await prisma.news.update({ where: { id: record.id }, data: { news: fetched } });
@@ -154,8 +150,6 @@ export const newsHandler: RequestHandler = async (req, res) => {
   } else {
     log(SRC, 'newsHandler', 'News is fresh, serving from cache', { tenantId, ageSeconds });
   }
-
-  console.log('Serving news:', record?.news); // Debug log to verify news content
 
   res.json({ news: record?.news ?? [] });
 };
