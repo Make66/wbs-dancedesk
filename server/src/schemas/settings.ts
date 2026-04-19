@@ -73,6 +73,12 @@ export const voucherConfigSchema = z.object({
   })).optional(),
 });
 
+export const otherConfigSchema = z.object({
+  apiKey: z.string().optional(),
+  signInKey: z.string().optional(),
+  signInKeyUrl: z.url().optional(),
+}).optional();
+
 export const settingsSchema = z.object({
   basic:        basicConfigSchema,
   calendar:     calendarConfigSchema,
@@ -83,7 +89,7 @@ export const settingsSchema = z.object({
   registration: registrationConfigSchema,
   terms:        termsConfigSchema,
   voucher:      voucherConfigSchema,
-  other:        z.record(z.string(), z.unknown()).optional(),
+  other:        otherConfigSchema,
 
   id: z.string().uuid(),
   tenantId: z.string(),
