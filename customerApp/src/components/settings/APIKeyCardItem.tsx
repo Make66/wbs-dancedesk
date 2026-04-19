@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Check, Copy, RefreshCw } from "lucide-react";
 
 type APIKeyCardItemProps = {
@@ -24,66 +25,87 @@ const APIKeyCardItem = ({
   disabled,
   placeholder,
   qrImageUrl,
-}: APIKeyCardItemProps) => (
-  <div className="rounded-2xl border border-muted-foreground bg-background/40 p-4 flex flex-col gap-3">
-    <div className="flex items-center justify-between">
-      <span className="text-lg font-medium">{label}</span>
-      <button
-        type="button"
-        onClick={onRotate}
-        disabled={isGenerating || disabled}
-        className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        data-tooltip-id="tooltip"
-        data-tooltip-content={`Neuen ${label} generieren`}
-        data-tooltip-place="bottom"
-      >
-        <RefreshCw className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
-        <span className="text-sm">{isGenerating ? "Generieren…" : "Generieren"}</span>
-      </button>
-    </div>
+}: APIKeyCardItemProps) => {
+  const [urlCopied, setUrlCopied] = useState(false);
 
-    {error && <p className="text-sm text-red-500">{error}</p>}
+  const handleCopyUrl = async () => {
+    if (!qrImageUrl) return;
+    await navigator.clipboard.writeText(qrImageUrl);
+    setUrlCopied(true);
+    setTimeout(() => setUrlCopied(false), 2000);
+  };
 
-    {value ? (
-      <>
+  return (
+    <div className="rounded-2xl border border-muted-foreground bg-background/40 p-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <span className="text-lg font-medium">{label}</span>
         <button
           type="button"
-          onClick={onCopy}
-          className="flex items-center justify-between gap-4 h-12 w-full rounded-xl border border-muted-foreground bg-background/40 px-4 cursor-pointer hover:bg-orange-500 transition-colors text-left group"
+          onClick={onRotate}
+          disabled={isGenerating || disabled}
+          className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           data-tooltip-id="tooltip"
-          data-tooltip-content="In Zwischenablage kopieren"
+          data-tooltip-content={`Neuen ${label} generieren`}
           data-tooltip-place="bottom"
         >
-          <span className="font-mono text-sm truncate flex-1">{value}</span>
-          {copied ? (
-            <Check className="w-4 h-4 shrink-0 text-green-500" />
-          ) : (
-            <Copy className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
-          )}
+          <RefreshCw className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
+          <span className="text-sm">{isGenerating ? "Generieren…" : "Generieren"}</span>
         </button>
+      </div>
 
-        {qrImageUrl && (
-          <div className="flex flex-col items-center gap-2 pt-1">
-            <img
-              src={qrImageUrl}
-              alt="QR-Code"
-              className="w-48 h-48 rounded-xl border border-muted-foreground object-contain bg-white p-2"
-            />
-            <a
-              href={qrImageUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-xs text-muted-foreground text-center truncate max-w-full hover:text-foreground transition-colors"
-            >
-              {qrImageUrl}
-            </a>
-          </div>
-        )}
-      </>
-    ) : (
-      <p className="text-sm text-muted-foreground pl-1">{placeholder}</p>
-    )}
-  </div>
-);
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
+      {value ? (
+        <>
+          <button
+            type="button"
+            onClick={onCopy}
+            className="flex items-center justify-between gap-4 h-12 w-full rounded-xl border border-muted-foreground bg-background/40 px-4 cursor-pointer hover:bg-orange-500 transition-colors text-left group"
+            data-tooltip-id="tooltip"
+            data-tooltip-content="In Zwischenablage kopieren"
+            data-tooltip-place="bottom"
+          >
+            <span className="font-mono text-sm truncate flex-1">{value}</span>
+            {copied ? (
+              <Check className="w-4 h-4 shrink-0 text-green-500" />
+            ) : (
+              <Copy className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
+            )}
+          </button>
+
+          {qrImageUrl && (
+            <>
+              <button
+                type="button"
+                onClick={handleCopyUrl}
+                className="flex items-center justify-between gap-4 h-12 w-full rounded-xl border border-muted-foreground bg-background/40 px-4 cursor-pointer hover:bg-orange-500 transition-colors text-left group"
+                data-tooltip-id="tooltip"
+                data-tooltip-content="URL in Zwischenablage kopieren"
+                data-tooltip-place="bottom"
+              >
+                <span className="font-mono text-sm truncate flex-1">{qrImageUrl}</span>
+                {urlCopied ? (
+                  <Check className="w-4 h-4 shrink-0 text-green-500" />
+                ) : (
+                  <Copy className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
+                )}
+              </button>
+
+              <div className="flex justify-center pt-1">
+                <img
+                  src={qrImageUrl}
+                  alt="QR-Code"
+                  className="w-48 h-48 rounded-xl border border-muted-foreground object-contain bg-white p-2"
+                />
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        <p className="text-sm text-muted-foreground pl-1">{placeholder}</p>
+      )}
+    </div>
+  );
+};
 
 export default APIKeyCardItem;
