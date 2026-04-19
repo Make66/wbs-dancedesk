@@ -277,41 +277,42 @@ GET  /public/bootstrap               → { customer, locations[], targets[], cat
 GET  /public/courses                 → { courses[] }
 GET  /public/courses?categoryId=uuid → courses for one category
 GET  /public/courses?locationId=uuid → courses at one location
-GET /api/public/news                 - X-API-Key: <key>, news stored on server, fetches/updates when outdated/empty (86400)
+GET  /public/news                    - X-API-Key: <key>, news stored on server, fetches/updates when outdated/empty (86400)
 ```
 
 See [docs/08_publicApi.md](../docs/08_publicApi.md) for full request/response examples and the `isActive` cascade table.
 
 ## Nested routes
 ```
-GET /categories/:id/courses    — courses belonging to a category
+GET  /categories/:id/courses    — courses belonging to a category
 POST /chats                  { participantId, tenantId }        → { sessionId }
 POST /chats/messages         { sessionId, prompt }              → SSE stream + [DONE]
-GET /chats/:sessionId                                          → { session, messages[] }
-GET /courses/month             - all courses this month, starting with 0: monday
-GET /courses/month/:number     - all courses in month n, (13 % 12) = 1st month next year
-GET /courses/week              - all courses this week, starting with 0: monday
-GET /courses/week/:number      - all courses in week n, (54 % 53) = 1st week next year
-GET /courses/week/:year/:week  - Hi Adrian!
-GET /courses/:id/dates         - delivers possible event dates for a course
-GET /courses/:id/participants  - all participants of a certain course
-GET /customers/by-tenant/:tenantId - no auth required, only branding fields. Created for 1st logins
-POST /api/customers/:id/rotate-api-key - create a new key and so invalidate the old one
-POST /api/customers/:id/rotate-signin-key - create a new key and so invalidate the old one
-GET /events/month              - returns events where startsAt >= 1st day of month, limited to this month
-GET /events/month/:number      - returns events from a certain month
-GET /events/upcoming           - returns events where startsAt > yesterday at midnight, ordered ascending, limited to this week
+GET  /chats/:sessionId                                          → { session, messages[] }
+GET  /courses/month             - all courses this month, starting with 0: monday
+GET  /courses/month/:number     - all courses in month n, (13 % 12) = 1st month next year
+GET  /courses/week              - all courses this week, starting with 0: monday
+GET  /courses/week/:number      - all courses in week n, (54 % 53) = 1st week next year
+GET  /courses/week/:year/:week  - Hi Adrian!
+GET  /courses/:id/dates         - delivers possible event dates for a course
+GET  /courses/:id/participants  - all participants of a certain course
+GET  /customers/by-tenant/:tenantId - no auth required, only branding fields. Created for 1st logins
+POST /customers/:id/rotate-api-key - create a new key and so invalidate the old one
+POST /customers/:id/rotate-signin-key - create a new key and so invalidate the old one
+GET  /events/month              - returns events where startsAt >= 1st day of month, limited to this month
+GET  /events/month/:number      - returns events from a certain month
+GET  /events/upcoming           - returns events where startsAt > yesterday at midnight, ordered ascending, limited to this week
 GET /instructors/:id/courses   - returns all non-deleted courses for the given instructor within the tenant.
 GET /locations/:id/events     — events belonging to a location
-GET /locations/:id/rooms       — rooms belonging to a location
-GET /locations/:id/targets     — targets belonging to a location
-GET /settings/holidays/federal/:state'  - official state holidays of a given state (2-letter capital)
-GET /settings/holidays/school/:state'  - official school holidays of a given state (2-letter capital)
-GET /targets/:id/categories    — categories belonging to a target
-GET /targets/:id/courses       — returns target + categories + their courses (nested)
-GET /participants/:id/courses  - all courses of a certain participant
-GET /rooms/:id/events          - all events of a certain room
-GET /users/:id                 — returns user with included locations and modules
+GET  /locations/:id/rooms       — rooms belonging to a location
+GET  /locations/:id/targets     — targets belonging to a location
+POST /news/refresh             - forces re-read news from external source instead of keeping it for 24h
+GET  /settings/holidays/federal/:state'  - official state holidays of a given state (2-letter capital)
+GET  /settings/holidays/school/:state'  - official school holidays of a given state (2-letter capital)
+GET  /targets/:id/categories    — categories belonging to a target
+GET  /targets/:id/courses       — returns target + categories + their courses (nested)
+GET  /participants/:id/courses  - all courses of a certain participant
+GET  /rooms/:id/events          - all events of a certain room
+GET  /users/:id                 — returns user with included locations and modules
 ```
 
 # Deployment

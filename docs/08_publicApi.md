@@ -176,7 +176,38 @@ The server caches news per tenant in the `News` table.
 
 The upstream URL is `<settings.basic.domain>/api/news` — set the domain in **Settings → Basic**.
 
+The `X-Api-Key` sent by the caller is forwarded as-is to the upstream server, so both sides must be configured with the same key. No separate news API key is needed.
+
 Only records with `isActive=true` and `isDeleted=false` are returned.
+
+---
+
+### `POST /api/news/refresh`
+
+Admin-only endpoint that forces an immediate cache refresh from the upstream news source, bypassing the 24 h TTL.
+
+**Request:**
+```
+POST /api/news/refresh
+Cookie: <admin session>
+```
+
+No request body required.
+
+**Response:**
+```json
+{ "ok": true }
+```
+
+**Errors:**
+
+| Status | Reason |
+|--------|--------|
+| `400` | `settings.basic.domain` is not configured |
+| `400` | No API key configured for this customer |
+| `401` | Missing or invalid admin session |
+
+**Use cases:** news was just published on the source system and should appear immediately without waiting for the next TTL expiry.
 
 ---
 

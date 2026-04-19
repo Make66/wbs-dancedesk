@@ -120,11 +120,9 @@ export const newsHandler: RequestHandler = async (req, res) => {
 
   let record = await prisma.news.findFirst({ where: { tenantId, ...PUBLIC_FILTER } });
 
-  // const ageSeconds = record
-  //   ? (Date.now() - record.updatedAt.getTime()) / 1000
-  //   : Infinity;
-
-  const ageSeconds = 86401;
+  const ageSeconds = record
+    ? (Date.now() - record.updatedAt.getTime()) / 1000
+    : Infinity;
 
   if (ageSeconds > NEWS_TTL_SECONDS) {
     log(SRC, 'newsHandler', record ? 'News stale, refreshing' : 'No news record, fetching', { tenantId, ageSeconds });
