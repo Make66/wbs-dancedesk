@@ -1,23 +1,29 @@
 import { useState, useEffect } from "react";
-import { Settings, RefreshCw, Copy, Check } from "lucide-react";
+import { Settings } from "lucide-react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
+import APIKeyCardItem from "./APIKeyCardItem";
 
 const OtherSettingsSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generateError, setGenerateError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [isGeneratingApiKey, setIsGeneratingApiKey] = useState(false);
+  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
+  const [apiKeyCopied, setApiKeyCopied] = useState(false);
+
+  const [signInKey, setSignInKey] = useState<string | null>(null);
+  const [isGeneratingSignInKey, setIsGeneratingSignInKey] = useState(false);
+  const [signInKeyError, setSignInKeyError] = useState<string | null>(null);
+  const [signInKeyCopied, setSignInKeyCopied] = useState(false);
 
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers`,
-          { credentials: "include" },
-        );
+        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers`, {
+          credentials: "include",
+        });
         if (!response.ok) {
           setLoadError(`Fehler beim Laden (${response.status})`);
           return;
@@ -26,6 +32,7 @@ const OtherSettingsSection = () => {
         if (Array.isArray(data) && data.length > 0) {
           setCustomerId(data[0].id);
           if (data[0].apiKey) setApiKey(data[0].apiKey);
+          if (data[0].signInKey) setSignInKey(data[0].signInKey);
         } else {
           setLoadError("Kein Customer-Eintrag gefunden.");
         }
@@ -36,28 +43,33 @@ const OtherSettingsSection = () => {
     fetchCustomer();
   }, []);
 
-  const handleRotate = async () => {
+  const rotateKey = async (
+    endpoint: string,
+    responseKey: string,
+    setValue: (v: string) => void,
+    setGenerating: (v: boolean) => void,
+    setError: (v: string | null) => void,
+  ) => {
     if (!customerId) return;
-    setIsGenerating(true);
-    setGenerateError(null);
+    setGenerating(true);
+    setError(null);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers/${customerId}/rotate-api-key`,
+        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers/${customerId}/${endpoint}`,
         { method: "POST", credentials: "include" },
       );
       if (!response.ok) throw new Error(`Fehler beim Generieren (${response.status}).`);
       const data = await response.json();
-      setApiKey(data.apiKey);
+      setValue(data[responseKey]);
     } catch (error) {
-      setGenerateError(error instanceof Error ? error.message : "Unbekannter Fehler.");
+      setError(error instanceof Error ? error.message : "Unbekannter Fehler.");
     } finally {
-      setIsGenerating(false);
+      setGenerating(false);
     }
   };
 
-  const handleCopy = async () => {
-    if (!apiKey) return;
-    await navigator.clipboard.writeText(apiKey);
+  const copyToClipboard = async (value: string, setCopied: (v: boolean) => void) => {
+    await navigator.clipboard.writeText(value);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -81,48 +93,48 @@ const OtherSettingsSection = () => {
 
       {isOpen && (
         <div className="mt-4 flex flex-col gap-3">
-          <div className="rounded-2xl border border-muted-foreground bg-background/40 p-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-medium">API-Key</span>
-              <button
-                type="button"
-                onClick={handleRotate}
-                disabled={isGenerating || !customerId}
-                className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                data-tooltip-id="tooltip"
-                data-tooltip-content="Neuen API-Key generieren"
-                data-tooltip-place="bottom"
-              >
-                <RefreshCw className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
-                <span className="text-sm">Generieren</span>
-              </button>
-            </div>
+          {loadError && <p className="text-sm text-red-500 pl-1">{loadError}</p>}
 
-            {loadError && <p className="text-sm text-red-500">{loadError}</p>}
-            {generateError && <p className="text-sm text-red-500">{generateError}</p>}
+          <APIKeyCardItem
+            label="API-Key"
+            value={apiKey}
+            isGenerating={isGeneratingApiKey}
+            error={apiKeyError}
+            disabled={!customerId}
+            copied={apiKeyCopied}
+            placeholder='Klicke auf „Generieren" um einen neuen API-Key zu erstellen.'
+            onRotate={() =>
+              rotateKey(
+                "rotate-api-key",
+                "apiKey",
+                setApiKey,
+                setIsGeneratingApiKey,
+                setApiKeyError,
+              )
+            }
+            onCopy={() => apiKey && copyToClipboard(apiKey, setApiKeyCopied)}
+          />
 
-            {apiKey ? (
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="flex items-center justify-between gap-4 h-12 w-full rounded-xl border border-muted-foreground bg-background/40 px-4 cursor-pointer hover:bg-orange-500 transition-colors text-left group"
-                data-tooltip-id="tooltip"
-                data-tooltip-content="In Zwischenablage kopieren"
-                data-tooltip-place="bottom"
-              >
-                <span className="font-mono text-sm truncate flex-1">{apiKey}</span>
-                {copied ? (
-                  <Check className="w-4 h-4 shrink-0 text-green-500" />
-                ) : (
-                  <Copy className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
-                )}
-              </button>
-            ) : (
-              <p className="text-sm text-muted-foreground pl-1">
-                Klicke auf „Generieren" um einen neuen API-Key zu erstellen.
-              </p>
-            )}
-          </div>
+          <APIKeyCardItem
+            label="SignIn-Key"
+            value={signInKey}
+            showQr
+            isGenerating={isGeneratingSignInKey}
+            error={signInKeyError}
+            disabled={!customerId}
+            copied={signInKeyCopied}
+            placeholder='Klicke auf „Generieren" um einen neuen SignIn-Key zu erstellen.'
+            onRotate={() =>
+              rotateKey(
+                "rotate-signin-key",
+                "signInKey",
+                setSignInKey,
+                setIsGeneratingSignInKey,
+                setSignInKeyError,
+              )
+            }
+            onCopy={() => signInKey && copyToClipboard(signInKey, setSignInKeyCopied)}
+          />
         </div>
       )}
     </div>
