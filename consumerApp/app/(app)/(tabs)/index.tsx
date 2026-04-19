@@ -43,9 +43,9 @@ export default function HomeTab() {
         </ThemedText>
       </Card>
 
+      <ThemedText style={styles.section}>Deine aktuellen Kurse</ThemedText>
+      {courses.map((course) => (
       <Card>
-        <ThemedText style={styles.section}>Deine aktuellen Kurse</ThemedText>
-        {courses.map((course) => (
           <View key={course.id}>
             <ThemedText>{course.name}</ThemedText>
             {[...course.dates]
@@ -68,12 +68,12 @@ export default function HomeTab() {
                 </View>
               ))}
           </View>
-        ))}
       </Card>
+    ))}
 
+    <ThemedText style={styles.section}>Deine nächsten Events</ThemedText>
+    {events.map((event) => (
       <Card>
-        <ThemedText style={styles.section}>Deine nächsten Events</ThemedText>
-        {events.map((event) => (
           <View key={event.id}>
             <ThemedText style={styles.dayHeader}>{event.title}</ThemedText>
             {event.startsAt ? (
@@ -92,11 +92,11 @@ export default function HomeTab() {
               </ThemedText>
             ) : null}
           </View>
-        ))}
       </Card>
+    ))}
 
-      <Card>
         <ThemedText style={styles.section}>Aktuelle Kurswoche</ThemedText>
+      <Card>
         {courseWeek ? (
           [
             "Montag",

@@ -13,23 +13,23 @@ const authAxios = axios.create({
 });
 
 async function fetchParticipantMe(): Promise<Participant> {
-  console.log('[3] AUTH API: calling /auth/participant-me');
+  console.log('[3] AUTH API: calling /api/auth/participant-me');
   try {
-    const response = await authAxios.get('/auth/participant-me');
-    console.log('[3] AUTH API: /auth/participant-me response:', response.data);
+    const response = await authAxios.get('/api/auth/participant-me');
+    console.log('[3] AUTH API: /api/auth/participant-me response:', response.data);
     return response.data.participant as Participant;
   } catch (e: unknown) {
     const err = e as { response?: { status: number; data: unknown } };
-    console.error('[3] AUTH API: /auth/participant-me failed', err?.response?.status, err?.response?.data);
+    console.error('[3] AUTH API: /api/auth/participant-me failed', err?.response?.status, err?.response?.data);
     throw e;
   }
 }
 
 async function hydrateAppData(participantId: string): Promise<void> {
   const [coursesRes, eventsRes, courseWeekRes] = await Promise.all([
-    authAxios.get(`/participants/${participantId}/courses`),
-    authAxios.get('/events/upcoming'),
-    authAxios.get('/courses/week'),
+    authAxios.get(`/api/participants/${participantId}/courses`),
+    authAxios.get('/api/events/upcoming'),
+    authAxios.get('/api/courses/week'),
   ]);
 
   useMyCoursesStore.getState().setCourses(coursesRes.data as Course[]);
@@ -49,8 +49,8 @@ function clearAppData(): void {
 }
 
 export async function login(email: string, password: string, tenantId: string): Promise<void> {
-  console.log('[2] AUTH API: POST /auth/participant-login');
-  const response = await authAxios.post('/auth/participant-login', {
+  console.log('[2] AUTH API: POST ' + env.apiBaseUrl + '/api/auth/participant-login with tenantId:', tenantId);
+  const response = await authAxios.post('/api/auth/participant-login', {
     email,
     password,
     tenantId,
@@ -59,7 +59,7 @@ export async function login(email: string, password: string, tenantId: string): 
   console.log('[2] AUTH API: credentials accepted, writing auth store:', user);
   useAuthStore.getState().setAuth(user);
 
-  console.log('[3] AUTH API: fetching participant profile from /auth/participant-me');
+  console.log('[3] AUTH API: fetching participant profile from /api/auth/participant-me');
   const participant = await fetchParticipantMe();
   useUserStore.getState().setParticipant(participant);
   console.log('[3] AUTH API: participant written to user store:', participant);
@@ -70,7 +70,7 @@ export async function login(email: string, password: string, tenantId: string): 
 
 export async function logout(): Promise<void> {
   try {
-    await authAxios.post('/auth/logout');
+    await authAxios.post('/api/auth/logout');
   } catch {
     // Ignore logout request errors — clear the session regardless
   }
