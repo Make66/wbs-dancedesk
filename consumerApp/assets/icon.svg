@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="bg" cx="45%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#d40000"/>
+      <stop offset="100%" stop-color="#6b0000"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#glow)"/>
+
+  <!-- Decorative rings -->
+  <circle cx="512" cy="490" r="355" fill="none" stroke="#BABABA" stroke-width="2.5" opacity="0.3"/>
+  <circle cx="512" cy="490" r="330" fill="none" stroke="#BABABA" stroke-width="1"   opacity="0.15"/>
+
+  <!-- ══════════════════════════════════
+       MAN  (left, facing right)
+       Head center:  (385, 255)  r=54
+       Shoulder line: y=340,  x=295–475
+       Torso to y=570
+       Legs to y=840
+       ══════════════════════════════════ -->
+
+  <!-- Legs -->
+  <rect x="311" y="565" width="62" height="270" rx="18" fill="#BABABA"/>
+  <rect x="385" y="565" width="62" height="270" rx="18" fill="#BABABA"/>
+
+  <!-- Jacket / torso -->
+  <path d="M295 345 Q385 328 475 345 L488 565 L295 565 Z" fill="#BABABA"/>
+
+  <!-- Lapels (dark cut-out for suit realism) -->
+  <path d="M385 345 L365 420 L385 430 L405 420 Z" fill="#8a0000"/>
+
+  <!-- Head -->
+  <circle cx="385" cy="255" r="54" fill="#BABABA"/>
+
+  <!-- Left arm — raised, holding woman's hand -->
+  <path d="M300 370 Q255 330 230 275" stroke="#BABABA" stroke-width="34" fill="none" stroke-linecap="round"/>
+  <circle cx="228" cy="271" r="22" fill="#BABABA"/>
+
+  <!-- Right arm — resting on woman's back -->
+  <path d="M473 390 Q545 400 600 430" stroke="#BABABA" stroke-width="34" fill="none" stroke-linecap="round"/>
+
+
+  <!-- ══════════════════════════════════
+       WOMAN  (right, facing left)
+       Head center:  (640, 230)  r=50
+       Upper body:   ~610–680, y=290–440
+       Skirt fans out dramatically to right
+       ══════════════════════════════════ -->
+
+  <!-- Ballroom gown — dramatic asymmetric sweep to the right -->
+  <path d="
+    M 565 440
+    Q 480 510  420 720
+    Q 475 755  512 760
+    Q 570 762  630 745
+    Q 700 720  770 680
+    Q 850 630  890 560
+    Q 820 490  760 445
+    Q 710 438  680 435
+    Z"
+    fill="#BABABA"/>
+
+  <!-- Dress fold lines for depth -->
+  <path d="M570 445 Q530 540 490 680" stroke="#b80000" stroke-width="3" fill="none" opacity="0.35"/>
+  <path d="M620 440 Q640 530 660 640" stroke="#b80000" stroke-width="2" fill="none" opacity="0.25"/>
+
+  <!-- Upper body -->
+  <path d="M590 305 Q640 298 678 318 L695 440 L572 440 L590 305 Z" fill="#BABABA"/>
+
+  <!-- Head -->
+  <circle cx="636" cy="228" r="50" fill="#BABABA"/>
+
+  <!-- Hair bun -->
+  <circle cx="636" cy="188" r="27" fill="#BABABA"/>
+  <circle cx="655" cy="178" r="18" fill="#BABABA"/>
+
+  <!-- Right arm raised — hand clasped with man's left hand -->
+  <path d="M678 330 Q710 298 730 268" stroke="#BABABA" stroke-width="30" fill="none" stroke-linecap="round"/>
+  <circle cx="732" cy="265" r="20" fill="#BABABA"/>
+
+
+  <!-- ══════════════════════════════════
+       DECORATIVE SPARKLES
+       ══════════════════════════════════ -->
+
+  <!-- Large star top-right -->
+  <polygon points="800,148 810,178 842,178 817,196 827,226 800,208 773,226 783,196 758,178 790,178"
+           fill="#BABABA" opacity="0.80"/>
+
+  <!-- Medium star top-left -->
+  <polygon points="220,185 228,208 253,208 233,222 240,245 220,231 200,245 207,222 187,208 212,208"
+           fill="#BABABA" opacity="0.65"/>
+
+  <!-- Small star right-mid -->
+  <polygon points="870,395 876,413 895,413 880,423 886,441 870,431 854,441 860,423 845,413 864,413"
+           fill="#BABABA" opacity="0.55"/>
+
+  <!-- Small star left-mid -->
+  <polygon points="155,380 160,396 177,396 163,405 168,421 155,412 142,421 147,405 133,396 150,396"
+           fill="#BABABA" opacity="0.50"/>
+
+  <!-- Tiny sparkle dots -->
+  <circle cx="750" cy="175" r="7"  fill="#BABABA" opacity="0.50"/>
+  <circle cx="775" cy="230" r="4"  fill="#BABABA" opacity="0.40"/>
+  <circle cx="265" cy="160" r="5"  fill="#BABABA" opacity="0.45"/>
+  <circle cx="190" cy="270" r="4"  fill="#BABABA" opacity="0.35"/>
+  <circle cx="512" cy="120" r="6"  fill="#BABABA" opacity="0.40"/>
+  <circle cx="920" cy="310" r="4"  fill="#BABABA" opacity="0.30"/>
+  <circle cx="110" cy="450" r="3"  fill="#BABABA" opacity="0.30"/>
+
+  <!-- Floor line (subtle) -->
+  <line x1="200" y1="838" x2="824" y2="838" stroke="#BABABA" stroke-width="2.5" opacity="0.25"/>
+
+</svg>

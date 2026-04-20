@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!--
+    Splash screen emblem — transparent background.
+    A compact, centered medallion: ring + couple + sparkles.
+    Expo overlays this on splash.backgroundColor = "#b80000".
+  -->
+
+  <!-- Outer ring -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="#BABABA" stroke-width="5" opacity="0.50"/>
+  <!-- Inner ring -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#BABABA" stroke-width="2" opacity="0.25"/>
+
+  <!-- ── MAN (left) — scaled to fit medallion ── -->
+  <!-- Legs -->
+  <rect x="148" y="298" width="30" height="112" rx="8" fill="#BABABA"/>
+  <rect x="183" y="298" width="30" height="112" rx="8" fill="#BABABA"/>
+  <!-- Torso -->
+  <path d="M133 188 Q190 178 246 188 L252 298 L130 298 Z" fill="#BABABA"/>
+  <!-- Lapels -->
+  <path d="M190 188 L180 228 L190 233 L200 228 Z" fill="#b80000"/>
+  <!-- Head -->
+  <circle cx="190" cy="145" r="36" fill="#BABABA"/>
+  <!-- Left arm raised -->
+  <path d="M136 202 Q112 178 100 145" stroke="#BABABA" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <circle cx="99" cy="142" r="13" fill="#BABABA"/>
+  <!-- Right arm to partner -->
+  <path d="M244 212 Q282 215 310 230" stroke="#BABABA" stroke-width="20" fill="none" stroke-linecap="round"/>
+
+  <!-- ── WOMAN (right) ── -->
+  <!-- Dress -->
+  <path d="
+    M 278 238
+    Q 236 272  208 378
+    Q 236 392  256 393
+    Q 278 393  308 384
+    Q 344 370  374 350
+    Q 414 320  432 284
+    Q 396 254  370 238
+    Q 350 233  336 231
+    Z" fill="#BABABA"/>
+  <!-- Dress folds -->
+  <path d="M280 240 Q262 288 248 360" stroke="#b80000" stroke-width="2" fill="none" opacity="0.35"/>
+  <!-- Upper body -->
+  <path d="M292 162 Q322 157 342 168 L350 238 L278 238 L292 162 Z" fill="#BABABA"/>
+  <!-- Head -->
+  <circle cx="315" cy="138" r="34" fill="#BABABA"/>
+  <!-- Hair bun -->
+  <circle cx="315" cy="113" r="18" fill="#BABABA"/>
+  <circle cx="326" cy="107" r="12" fill="#BABABA"/>
+  <!-- Right arm raised -->
+  <path d="M340 177 Q358 158 368 140" stroke="#BABABA" stroke-width="19" fill="none" stroke-linecap="round"/>
+  <circle cx="370" cy="137" r="13" fill="#BABABA"/>
+
+  <!-- ── SPARKLES ── -->
+  <polygon points="398,72 404,90 424,90 408,101 414,119 398,108 382,119 388,101 372,90 392,90" fill="#BABABA" opacity="0.80"/>
+  <polygon points="108,88 113,103 130,103 116,112 121,127 108,118 95,127 100,112 86,103 103,103"  fill="#BABABA" opacity="0.65"/>
+  <polygon points="438,200 442,212 455,212 445,219 449,231 438,224 427,231 431,219 421,212 434,212" fill="#BABABA" opacity="0.55"/>
+  <circle cx="375" cy="80"  r="5" fill="#BABABA" opacity="0.50"/>
+  <circle cx="130" cy="76"  r="4" fill="#BABABA" opacity="0.45"/>
+  <circle cx="256" cy="42"  r="5" fill="#BABABA" opacity="0.40"/>
+  <circle cx="455" cy="148" r="3" fill="#BABABA" opacity="0.35"/>
+
+  <!-- Floor line -->
+  <line x1="120" y1="412" x2="392" y2="412" stroke="#BABABA" stroke-width="2" opacity="0.28"/>
+
+</svg>
