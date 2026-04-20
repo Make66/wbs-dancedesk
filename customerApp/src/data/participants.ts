@@ -39,16 +39,17 @@ export const getCoursesByParticipantId = async (participantId: string): Promise<
 
 export const updateParticipantDB = async (
   participantId: string,
-  data: Partial<Participant>,
+  data: Partial<Participant> | FormData,
 ): Promise<Participant> => {
   try {
+    const isFormData = data instanceof FormData;
     const response = await fetch(
       `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/participants/${participantId}`,
       {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: isFormData ? undefined : { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(data),
+        body: isFormData ? data : JSON.stringify(data),
       },
     );
     if (!response.ok) throw new Error("Teilnehmer konnte nicht aktualisiert werden.");
