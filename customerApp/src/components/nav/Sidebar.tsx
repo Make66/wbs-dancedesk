@@ -29,7 +29,7 @@ const Sidebar = () => {
     <aside
       className={cn(
         isSidebarOpen ? "min-w-74 px-5" : "w-16 px-2",
-        "h-screen flex flex-col bg-zinc-800 transition-all duration-200",
+        "h-screen hidden md:flex flex-col bg-zinc-800 transition-all duration-200",
       )}
     >
       <div className="flex py-4 items-center justify-between h-20 mb-4">
