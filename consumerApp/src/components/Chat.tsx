@@ -188,7 +188,7 @@ export function Chat() {
       setRegistering(true);
 
       try {
-        const res = await fetch(`${env.apiBaseUrl}/registrations`, {
+        const res = await fetch(`${env.apiBaseUrl}/api/registrations`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -197,7 +197,7 @@ export function Chat() {
             lastName: participant.lastName,
             email: participant.email,
             tenantId: user.tenantId,
-            courseId,
+            course: courseId,
             ...(participant.phone ? { phone: participant.phone } : {}),
             ...(participant.street ? { street: participant.street } : {}),
             ...(participant.city ? { city: participant.city } : {}),

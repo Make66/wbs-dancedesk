@@ -45,8 +45,8 @@ export default function HomeTab() {
 
       <ThemedText style={styles.section}>Deine aktuellen Kurse</ThemedText>
       {courses.map((course) => (
-      <Card>
-          <View key={course.id}>
+      <Card key={course.id}>
+          <View>
             <ThemedText>{course.name}</ThemedText>
             {[...course.dates]
               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -73,8 +73,8 @@ export default function HomeTab() {
 
     <ThemedText style={styles.section}>Deine nächsten Events</ThemedText>
     {events.map((event) => (
-      <Card>
-          <View key={event.id}>
+      <Card key={event.id}>
+          <View>
             <ThemedText style={styles.dayHeader}>{event.title}</ThemedText>
             {event.startsAt ? (
               <ThemedText style={styles.dateText}>

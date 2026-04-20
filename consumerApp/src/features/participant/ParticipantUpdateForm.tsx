@@ -6,6 +6,7 @@ import { useUserStore } from '@/store/user';
 import { api } from '@/lib/api';
 import { useAppTheme } from '@/theme/ThemeProvider';
 import { ThemedText } from '@/components/ThemedText';
+import { AvatarPicker } from '@/components/AvatarPicker';
 import { useState } from 'react';
 
 function isoToGerman(iso: string): string {
@@ -49,6 +50,7 @@ export function ParticipantUpdateForm() {
   const { colors } = useAppTheme();
   const participant = useUserStore((state) => state.participant);
   const setParticipant = useUserStore((state) => state.setParticipant);
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,12 +72,32 @@ export function ParticipantUpdateForm() {
   const onSubmit = async (data: FormData) => {
     setError(null);
     setSuccess(false);
-    const response = await api.patch(`/participants/${participant.id}`, {
-      ...data,
-      birthDate: data.birthDate ? germanToIso(data.birthDate) : undefined,
-    });
-    setParticipant({ ...participant, ...response.data });
-    setSuccess(true);
+    try {
+      let response;
+      if (avatarUri) {
+        // See Documentation/5_avatar_upload.md for the full upload flow.
+        const form = new FormData();
+        form.append('image', { uri: avatarUri, name: 'avatar.jpg', type: 'image/jpeg' } as any);
+        form.append('firstName', data.firstName);
+        form.append('lastName', data.lastName);
+        if (data.phone) form.append('phone', data.phone);
+        if (data.birthDate) form.append('birthDate', germanToIso(data.birthDate));
+        if (data.street) form.append('street', data.street);
+        if (data.city) form.append('city', data.city);
+        if (data.zipCode) form.append('zipCode', data.zipCode);
+        response = await api.patch(`/api/participants/${participant.id}`, form);
+      } else {
+        response = await api.patch(`/api/participants/${participant.id}`, {
+          ...data,
+          birthDate: data.birthDate ? germanToIso(data.birthDate) : undefined,
+        });
+      }
+      setParticipant({ ...participant, ...response.data });
+      setAvatarUri(null);
+      setSuccess(true);
+    } catch {
+      setError('Speichern fehlgeschlagen. Bitte erneut versuchen.');
+    }
   };
 
   const inputStyle = (hasError: boolean) => [
@@ -87,8 +109,16 @@ export function ParticipantUpdateForm() {
     },
   ];
 
+  const initials = `${participant.firstName?.[0] ?? ''}${participant.lastName?.[0] ?? ''}`.toUpperCase();
+
   return (
     <View style={styles.container}>
+      <AvatarPicker
+        imageUrl={avatarUri ?? participant.imageUrl ?? ''}
+        initials={initials}
+        onChange={setAvatarUri}
+      />
+
       <Field label="Vorname" error={errors.firstName?.message}>
         <Controller control={control} name="firstName" render={({ field: { onChange, onBlur, value } }) => (
           <TextInput style={inputStyle(!!errors.firstName)} placeholder="Vorname" placeholderTextColor={colors.textMuted} onBlur={onBlur} onChangeText={onChange} value={value} />

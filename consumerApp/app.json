@@ -6,19 +6,30 @@
     "jsEngine": "hermes",
     "plugins": ["expo-router", "expo-dev-client"],
     "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
     "ios": {
       "jsEngine": "jsc",
       "bundleIdentifier": "com.taketool.dancepilot",
       "supportsTablet": true,
       "usesAppleSignIn": true,
       "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "We use your photo library so you can choose a profile picture.",
         "NSCameraUsageDescription": "We use the camera for capturing profile and app content.",
         "NSLocationWhenInUseUsageDescription": "We use your location to power nearby and local features.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location for background location features when enabled."
       }
     },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#b80000"
+    },
     "android": {
       "package": "com.example.consumerstarterv2",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#b80000"
+      },
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.ACCESS_FINE_LOCATION",

@@ -9,6 +9,8 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   config.headers = config.headers ?? {};
-  config.headers['Content-Type'] = 'application/json';
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json';
+  }
   return config;
 });
