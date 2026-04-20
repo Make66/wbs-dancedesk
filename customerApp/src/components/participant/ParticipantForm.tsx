@@ -53,6 +53,7 @@ const ParticipantForm = ({ participant }: ParticipantFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const methods = useForm<ParticipantFormValues>({
     defaultValues: {
@@ -107,7 +108,16 @@ const ParticipantForm = ({ participant }: ParticipantFormProps) => {
     if (!participant?.id) return;
     try {
       setIsSubmitting(true);
-      await updateParticipantDB(String(participant.id), values);
+      if (imageFile) {
+        const formData = new FormData();
+        Object.entries(values).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) formData.append(key, String(value));
+        });
+        formData.append("image", imageFile);
+        await updateParticipantDB(String(participant.id), formData);
+      } else {
+        await updateParticipantDB(String(participant.id), values);
+      }
       toast.success("Teilnehmer erfolgreich aktualisiert!");
     } catch (error) {
       console.error("Fehler beim Speichern:", error);
@@ -129,7 +139,7 @@ const ParticipantForm = ({ participant }: ParticipantFormProps) => {
               id={String(participant?.id)}
               className="h-64 w-64"
               imageUrl={participant?.imageUrl}
-              onChange={() => {}}
+              onChange={(file) => setImageFile(file)}
             />
           </div>
 
@@ -183,14 +193,14 @@ const ParticipantForm = ({ participant }: ParticipantFormProps) => {
             <div className="w-full flex flex-col gap-1">
               <div className="flex w-full rounded-xl">
                 {GENDER_OPTIONS.map((option, index) => (
-                  <div key={option.id} className="relative">
+                  <div key={option.id} className="relative w-full">
                     <button
                       type="button"
                       onClick={() => setValue("gender", option.id)}
                       className={cn(
                         index === 0 && "rounded-l-2xl",
                         index === GENDER_OPTIONS.length - 1 && "rounded-r-2xl",
-                        "w-36 h-22 border flex items-center bg-background/40 justify-center cursor-pointer transition-all hover:bg-purple-400",
+                        "w-full h-22 border flex items-center bg-background/40 justify-center cursor-pointer transition-all hover:bg-purple-400",
                         selectedGender === option.id
                           ? "bg-purple-500 text-white border-purple-500"
                           : "border-muted-foreground",
