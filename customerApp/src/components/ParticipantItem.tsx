@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import type { Participant } from "../types/participants-type";
 import { IoMdMale, IoMdFemale } from "react-icons/io";
 import { IoMaleFemaleOutline } from "react-icons/io5";
@@ -9,7 +10,7 @@ type ParticipantItemProps = {
 
 const ParticipantItem = ({ participant }: ParticipantItemProps) => {
   return (
-    <div className="w-full px-4 py-3 rounded-2xl bg-background/40 border border-muted-foreground flex items-center justify-between cursor-pointer hover:bg-muted/50 transition-colors">
+    <Link to={`/participant/${participant.id}`} className="w-full px-4 py-3 rounded-2xl bg-background/40 border border-muted-foreground flex items-center justify-between cursor-pointer hover:bg-muted/50 transition-colors">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
           <img
@@ -35,7 +36,7 @@ const ParticipantItem = ({ participant }: ParticipantItemProps) => {
         )}
         <span>{calculateAge(participant.birthDate)} Jahre</span>
       </div>
-    </div>
+    </Link>
   );
 };
 

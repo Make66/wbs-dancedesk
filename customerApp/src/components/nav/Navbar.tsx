@@ -29,7 +29,7 @@ const Navbar = () => {
         className="md:hidden cursor-pointer"
         onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
       >
-        <RxHamburgerMenu className="text-2xl mr-4" />
+        <RxHamburgerMenu className="text-2xl" />
       </button>
       <div className="hidden md:flex items-center gap-7">
         <ThemeToggle />

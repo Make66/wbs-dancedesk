@@ -50,7 +50,7 @@ const SeatingChart = ({ seatsCurrent, maxSeats }: CourseSeatChartProps) => {
           </PieChart>
         </ResponsiveContainer>
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <div className="hidden pointer-events-none absolute inset-0 md:flex flex-col items-center justify-center">
           <span className="text-3xl font-bold text-foreground">{occupancyPercent}%</span>
           <span className="text-sm text-muted-foreground">belegt</span>
         </div>

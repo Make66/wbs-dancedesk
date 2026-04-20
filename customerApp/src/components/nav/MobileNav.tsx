@@ -45,9 +45,7 @@ const MobileNav = ({ onClose }: MobileNavProps) => {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
       "flex items-center gap-4 rounded-xl py-4 px-4 text-lg transition-all duration-200",
-      isActive
-        ? "bg-gray-700 text-white"
-        : "hover:bg-gray-700 hover:text-white text-gray-300",
+      isActive ? "bg-gray-700 text-white" : "hover:bg-gray-700 hover:text-white text-gray-300",
     );
 
   return (
@@ -55,26 +53,13 @@ const MobileNav = ({ onClose }: MobileNavProps) => {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-gray-600">
         <span className="text-gray-100 font-bold text-2xl">DanceDesk</span>
-        <div className="flex items-center gap-5">
-          <ThemeToggle />
-          <div className="relative">
-            <span className="absolute -top-1.5 -right-2 px-1.5 py-0.5 text-[8px] text-white font-bold bg-red-500 rounded-full">
-              1
-            </span>
-            <FaEnvelope className="text-xl cursor-pointer text-gray-300" />
-          </div>
-          <FaRegCircleUser
-            className="text-xl cursor-pointer text-gray-300"
-            onClick={handleLogout}
-          />
-          <button
-            onClick={onClose}
-            className="p-2 bg-gray-600 hover:bg-gray-500 rounded-xl cursor-pointer"
-            aria-label="Menü schließen"
-          >
-            <X className="stroke-gray-200 h-5 w-5" />
-          </button>
-        </div>
+        <button
+          onClick={onClose}
+          className="p-2 bg-gray-600 hover:bg-gray-500 rounded-xl cursor-pointer"
+          aria-label="Menü schließen"
+        >
+          <X className="stroke-gray-200 h-5 w-5" />
+        </button>
       </div>
 
       {/* Scrollable content */}
@@ -157,6 +142,21 @@ const MobileNav = ({ onClose }: MobileNavProps) => {
             <span>Einstellungen</span>
           </NavLink>
         </nav>
+      </div>
+      <div className="p-5 flex items-center justify-center mb-5">
+        <div className="flex items-center gap-13">
+          <ThemeToggle />
+          <div className="relative">
+            <span className="absolute -top-1.5 -right-2 px-1.5 py-0.5 text-[8px] text-white font-bold bg-red-500 rounded-full">
+              1
+            </span>
+            <FaEnvelope className="text-xl cursor-pointer text-gray-300" />
+          </div>
+          <FaRegCircleUser
+            className="text-xl cursor-pointer text-gray-300"
+            onClick={handleLogout}
+          />
+        </div>
       </div>
     </div>
   );

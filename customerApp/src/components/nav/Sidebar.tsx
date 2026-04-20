@@ -8,7 +8,6 @@ import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
 import { ChevronDown } from "lucide-react";
 import { IoSettingsSharp } from "react-icons/io5";
-import { useState } from "react";
 import SidebarMin from "./SidebarMin";
 import LocationPicker from "./LocationPicker";
 import CourseTargetsLoader from "./DataLoader";
@@ -19,11 +18,9 @@ const Sidebar = () => {
   const isSidebarOpen = userStore((state) => state.isSidebarOpen);
   const targets = targetStore((state) => state.targets);
   const activeTargets = targets.filter((target) => target.isActive);
-  const [isCoursesExpanded, setIsCoursesExpanded] = useState(true);
-  const navigate = useNavigate();
   const location = useLocation();
-
   const isCoursesActive = location.pathname.startsWith("/courses");
+  const navigate = useNavigate();
 
   return (
     <aside
@@ -70,12 +67,9 @@ const Sidebar = () => {
           </NavLink>
           <div className="border-b border-gray-500" />
           <div>
-            <div className="mb-3">
+            <div className="">
               <div
-                onClick={() => {
-                  setIsCoursesExpanded(true);
-                  navigate("/courses");
-                }}
+                onClick={() => navigate("/courses")}
                 className={cn(
                   "flex items-center justify-between rounded-xl py-3 px-2 transition-all duration-200 cursor-pointer",
                   isCoursesActive
@@ -88,25 +82,15 @@ const Sidebar = () => {
                   <span>Kurse</span>
                 </div>
 
-                <button
-                  type="button"
-                  className="mr-3 cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsCoursesExpanded((prev) => !prev);
-                  }}
-                  aria-label={isCoursesExpanded ? "Kurse einklappen" : "Kurse ausklappen"}
-                >
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 transition-transform duration-200",
-                      isCoursesExpanded && "rotate-180",
-                    )}
-                  />
-                </button>
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 mr-3 transition-transform duration-200",
+                    isCoursesActive && "rotate-180",
+                  )}
+                />
               </div>
             </div>
-            {isCoursesExpanded && (
+            {isCoursesActive && (
               <div>
                 {activeTargets.map((target) => {
                   return <SidebarTargetItem className="ml-5" key={target.id} target={target} />;
