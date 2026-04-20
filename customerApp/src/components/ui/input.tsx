@@ -9,7 +9,7 @@ const inputVariants = cva(
     "bg-background/40 text-zinc-900 placeholder:text-zinc-400",
     "focus:border-3",
     "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100",
-    "dark:bg-background dark:text-foreground dark:placeholder:text-zinc-500",
+    "dark:text-foreground dark:placeholder:text-zinc-500",
     "dark:focus:border-zinc-500 dark:focus:ring-zinc-800",
   ].join(" "),
   {
