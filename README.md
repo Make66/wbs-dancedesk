@@ -17,19 +17,63 @@ Main goal of the redesign is to offer a clean, modern interface with minimum of 
 * registrations: allow manual registration of a new participant (re-uses registration component)
 * a powerful calendar gives full overview over unused rooms
 
-## Milestones
+# Feature summary
+* DB relations: 19 DB tables with relations to each other: 1:n, n:n, n:m (see server ![README.md](./server/README.md))
+* JWT authentication for user and participant with register, login, me, logout and refresh
+* API Endpoints: CRUD for all basic schema
+* API Endpoints: 29 nested routes for special consumption in the customerApp (Admin) to reflect the business logic
+* Deployment consumerApp: currently deployed to LAN, accessing the server using its local IP address
 
-### Milestone 1 - reached!
-![Minimum setup](./docs/images/images/Stufe-1.svg)
+## Server
+* nodejs, express, zod, cors
+* database backed by postgres using prisma client, migrations and schema
+* api usage logging
+* Deployed to api.kurstool.de, behind nginx proxy, https terminated. Systemd service, survives reboots
 
-### Milestone 2 - mostly reached!
-![Adding consumer app](./docs/images/images/Stufe-2.svg)
+## Admin SPA
+* Deployment customerApp: deployed to admin.kurstool.de, directly served /dist/ by nginx, https terminated
+* responsive: mobile & desktop optimized
+* dashboard for business overview that integrates remote news feed
+* widely used drag-and-drop, wherever meaningful
+* design mode to adopt the user interface. Used in dashboard, targets, categories
+* ability to change foreground- background color of items, add icons
+* ability to deactivate items so the can be excluded from display on customers business website
+* file upload for instructors, participants, rooms etc.
+* dark mode available
+* working on a tree-like business structur of customers / locations / targets / categories / courses
+* individually styled forms for maximized usability and brand UI
+* featuring a week overview
+* featuring a day/week/month calendar for events and courses broken down to room level
+* strong settings so the user can adopt as much of the apps behavior by himself
 
-### Milestone 3
-![Adding OAuth](./docs/images/images/Stufe-3.svg)
+## Consumer App
+React-Native app based on expo and react-hook-form (zod, zustand), written fully typed
+* Studio selector based on QR code or invitation code
+* login scheme JWT with refresh
+* Overview of personal items (dashboard)
+* Chat for customer service and course booking
+* Profile updating with file upload
 
-### Milestone 4
-![Adding user onboarding facilitation](./docs/images/images/Stufe-4.svg)
+## Website integration
+* Course integration to website on content element-level and selectable by location/target/category
+* API service to feed the news of the website to Admin SPA and ConsumerApp using the server as a proxy
 
-## Tools used
+
+# Milestones
+
+## Milestone 1 - reached!
+![Minimum setup](./docs/images/Stufe-1.svg)
+
+## Milestone 2 - mostly reached!
+![Adding consumer app](./docs/images/Stufe-2.svg)
+
+## Milestone 3
+![Adding OAuth](./docs/images/Stufe-3.svg)
+
+## Milestone 4
+![Adding user onboarding facilitation](./docs/images/Stufe-4.svg)
+
+# Tools used
 * Trello: https://trello.com/b/OBGj6jTR/mein-trello-board
+* Figma : https://www.figma.com/design/IMqo4WEwc4F4Tn0y9ve4w5/Ohne-Namen?node-id=0-1&p=f
+
