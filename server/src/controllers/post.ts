@@ -5,7 +5,7 @@ export const getAllPosts: RequestHandler = async (req, res) => {
   const { tenantId } = req.user!;
   const posts = await prisma.post.findMany({
     where: { tenantId, isDeleted: false },
-    orderBy: { date: 'desc' },
+    orderBy: [{ isTopPost: 'desc' }, { date: 'desc' }],
   });
   res.json(posts);
 };

@@ -21,6 +21,7 @@ export const postSchema = z.object({
   isActive:    booleanFromForm.default(true),
   isArchived:  booleanFromForm.default(false),
   isDeleted:   booleanFromForm.default(false),
+  isTopPost:   booleanFromForm.default(false),
 });
 
 export type Post = z.infer<typeof postSchema>;

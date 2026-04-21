@@ -29,6 +29,7 @@ type PostFormValues = {
   eventId: string;
   isActive: boolean;
   isArchived: boolean;
+  isTopPost: boolean;
   imageUrl: string;
 };
 
@@ -70,6 +71,7 @@ const PostForm = ({ post }: PostFormProps) => {
       eventId: post?.eventId ?? "",
       isActive: post?.isActive ?? true,
       isArchived: post?.isArchived ?? false,
+      isTopPost: post?.isTopPost ?? false,
       imageUrl: post?.imageUrl ?? "",
     },
   });
@@ -90,6 +92,7 @@ const PostForm = ({ post }: PostFormProps) => {
       eventId: post.eventId ?? "",
       isActive: post.isActive,
       isArchived: post.isArchived,
+      isTopPost: post.isTopPost,
       imageUrl: post.imageUrl ?? "",
     });
   }, [post, reset]);
@@ -123,6 +126,7 @@ const PostForm = ({ post }: PostFormProps) => {
         eventId: values.eventId || null,
         isActive: values.isActive,
         isArchived: values.isArchived,
+        isTopPost: values.isTopPost,
         imageUrl: imageFile ? undefined : values.imageUrl,
         imageFile,
       };
@@ -146,15 +150,27 @@ const PostForm = ({ post }: PostFormProps) => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-2 flex flex-col gap-6 max-w-2xl">
-        <ProfileImageUploader
-          id={post?.id}
-          className="h-64 w-full"
-          cropShape="rect"
-          aspect={16 / 9}
-          imageUrl={post?.imageUrl}
-          fallbackSrc="/assets/images/no-post.jpg"
-          onChange={(file) => setImageFile(file)}
-        />
+        <div className="relative">
+          <ProfileImageUploader
+            id={post?.id}
+            className="h-64 w-full"
+            cropShape="rect"
+            aspect={16 / 9}
+            imageUrl={post?.imageUrl}
+            fallbackSrc="/assets/images/no-post.jpg"
+            onChange={(file) => setImageFile(file)}
+          />
+          <div className="absolute top-3 right-3 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-xl px-3 py-2 border border-border shadow-sm">
+            <span className="text-xs font-medium">Top-Beitrag</span>
+            <Controller
+              name="isTopPost"
+              control={control}
+              render={({ field }) => (
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              )}
+            />
+          </div>
+        </div>
 
         <Input type="text" label="Titel *" {...register("title", { required: true })} className="w-full" />
         <Input type="text" label="Teaser" {...register("teaser")} className="w-full" />

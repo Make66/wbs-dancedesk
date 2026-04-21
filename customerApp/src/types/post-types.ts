@@ -16,4 +16,5 @@ export type Post = {
   isActive: boolean;
   isArchived: boolean;
   isDeleted: boolean;
+  isTopPost: boolean;
 };
