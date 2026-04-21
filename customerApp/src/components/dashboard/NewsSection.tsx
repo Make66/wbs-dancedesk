@@ -1,3 +1,5 @@
+import { settingsStore } from "../../stores/settingsStore";
+
 type NewsItem = {
   uid: number;
   title: string;
@@ -36,6 +38,8 @@ const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" });
 
 const NewsSection = () => {
+  const domain = settingsStore((s) => s.settings.basic.domain ?? "");
+
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900 p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
@@ -48,6 +52,15 @@ const NewsSection = () => {
             key={item.uid}
             className="flex gap-3 rounded-lg p-3 border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
           >
+            {item.mediaUrl ? (
+              <img
+                src={`${domain}/${item.mediaUrl}`}
+                alt={item.title}
+                className="w-14 h-14 rounded-md object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-md bg-muted shrink-0" />
+            )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
                 <p className="font-medium text-sm truncate">{item.title}</p>
