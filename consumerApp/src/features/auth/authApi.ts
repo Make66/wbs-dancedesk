@@ -20,7 +20,9 @@ async function fetchParticipantMe(): Promise<Participant> {
     return response.data.participant as Participant;
   } catch (e: unknown) {
     const err = e as { response?: { status: number; data: unknown } };
-    console.error('[3] AUTH API: /api/auth/participant-me failed', err?.response?.status, err?.response?.data);
+    if (err?.response?.status !== 401) {
+      console.error('[3] AUTH API: /api/auth/participant-me failed', err?.response?.status, err?.response?.data);
+    }
     throw e;
   }
 }

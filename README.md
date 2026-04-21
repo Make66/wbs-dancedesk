@@ -18,20 +18,22 @@ Main goal of the redesign is to offer a clean, modern interface with minimum of 
 * a powerful calendar gives full overview over unused rooms
 
 # Feature summary
-* DB relations: 19 DB tables with relations to each other: 1:n, n:n, n:m (see server ![README.md](./server/README.md))
-* JWT authentication for user and participant with register, login, me, logout and refresh
-* API Endpoints: CRUD for all basic schema
-* API Endpoints: 29 nested routes for special consumption in the customerApp (Admin) to reflect the business logic
-* Deployment consumerApp: currently deployed to LAN, accessing the server using its local IP address
 
 ## Server
 * nodejs, express, zod, cors
 * database backed by postgres using prisma client, migrations and schema
+* DB complexity: 19 DB tables with relations to each other: 1:n, n:n, n:m (see server [README.md](./server/README.md))
+* JWT authentication for user and participant with register, login, me, logout and refresh
+* API Endpoints: CRUD for all basic schema
+* API Endpoints: 29 nested routes for special consumption in the customerApp (Admin) to reflect the business logic
 * api usage logging
-* Deployed to api.kurstool.de, behind nginx proxy, https terminated. Systemd service, survives reboots
+* Automatically deployed using github actions to api.kurstool.de, 
+* runs behind nginx proxy, https terminated. 
+* Systemd service, survives reboots
 
 ## Admin SPA
-* Deployment customerApp: deployed to admin.kurstool.de, directly served /dist/ by nginx, https terminated
+* Automatically deployed using github actions to admin.kurstool.de
+* served /dist/ by nginx, https terminated
 * responsive: mobile & desktop optimized
 * dashboard for business overview that integrates remote news feed
 * widely used drag-and-drop, wherever meaningful
@@ -53,6 +55,7 @@ React-Native app based on expo and react-hook-form (zod, zustand), written fully
 * Overview of personal items (dashboard)
 * Chat for customer service and course booking
 * Profile updating with file upload
+* Deployment consumerApp: currently deployed to LAN, accessing the server using its local IP address. Future: TestFlight, then AppStore and PlayStore
 
 ## Website integration
 * Course integration to website on content element-level and selectable by location/target/category
@@ -62,16 +65,16 @@ React-Native app based on expo and react-hook-form (zod, zustand), written fully
 # Milestones
 
 ## Milestone 1 - reached!
-![Minimum setup](./docs/images/Stufe-1.svg)
+[Minimum setup](./docs/images/Stufe-1.svg)
 
 ## Milestone 2 - mostly reached!
-![Adding consumer app](./docs/images/Stufe-2.svg)
+[Adding consumer app](./docs/images/Stufe-2.svg)
 
 ## Milestone 3
-![Adding OAuth](./docs/images/Stufe-3.svg)
+[Adding OAuth](./docs/images/Stufe-3.svg)
 
 ## Milestone 4
-![Adding user onboarding facilitation](./docs/images/Stufe-4.svg)
+[Adding user onboarding facilitation](./docs/images/Stufe-4.svg)
 
 # Tools used
 * Trello: https://trello.com/b/OBGj6jTR/mein-trello-board

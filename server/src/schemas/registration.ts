@@ -6,7 +6,7 @@ export const registrationSchema = z.object({
   email: z.email(),
   phone: z.string().max(20).optional(),
 
-  course: z.uuid('courseId must be a valid UUID'),
+  courseId: z.uuid('courseId must be a valid UUID'),
   
   street: z.string().max(255).optional(),
   city: z.string().max(100).optional(),

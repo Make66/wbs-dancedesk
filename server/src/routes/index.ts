@@ -8,6 +8,7 @@ export { default as instructorsRouter }   from './instructorRouter.ts';
 export { default as locationsRouter }     from './locationRouter.ts';
 export { default as modulesRouter }       from './moduleRouter.ts';
 export { default as newsRouter }          from './newsRouter.ts';
+export { default as postsRouter }         from './postRouter.ts';
 export { default as participantsRouter }  from './participantRouter.ts';
 export { default as publicRouter }        from './publicRouter.ts';
 export { default as registrationsRouter } from './registrationRouter.ts';

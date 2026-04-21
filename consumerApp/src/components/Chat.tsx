@@ -133,7 +133,7 @@ export function Chat() {
     // Fetch domain from settings if not yet known
     if (!domain) {
       try {
-        const res = await fetch(`${env.apiBaseUrl}/settings`, { credentials: 'include' });
+        const res = await fetch(`${env.apiBaseUrl}/api/settings`, { credentials: 'include' });
         if (res.ok) {
           const data = (await res.json()) as Settings;
           domain = data.basic?.domain ?? null;
@@ -197,7 +197,7 @@ export function Chat() {
             lastName: participant.lastName,
             email: participant.email,
             tenantId: user.tenantId,
-            course: courseId,
+            courseId,
             ...(participant.phone ? { phone: participant.phone } : {}),
             ...(participant.street ? { street: participant.street } : {}),
             ...(participant.city ? { city: participant.city } : {}),

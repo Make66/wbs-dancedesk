@@ -670,6 +670,7 @@ async function main() {
         if (!categoryId) continue;
         for (const kurs of zs.kurse ?? []) {
           const startsAt = parseDate(kurs.startdatum, kurs.anfangszeit || '00:00');
+          if (startsAt.getFullYear() < new Date().getFullYear()) continue;
           const endsAt   = parseDate(kurs.startdatum, kurs.endezeit   || '00:00');
           const seatsCurrent = kurs.seats_cur === -1 ? 0 : (kurs.seats_cur ?? 0);
           const dates = (kurs.termine ?? []).map(t => ({

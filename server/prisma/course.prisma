@@ -19,20 +19,21 @@ model Course {
   isTaxFree        Boolean @default(false)
 
   // relations from other models
-  attendances  Attendance[]
-  category     Category    @relation(fields: [categoryId], references: [id])
-  categoryId   String      @db.Uuid
-  instructor   Instructor? @relation(fields: [instructorId], references: [id])
-  instructorId String?     @db.Uuid
-  location     Location?   @relation(fields: [locationId], references: [id])
-  locationId   String?     @db.Uuid
+  attendances   Attendance[]
+  category      Category       @relation(fields: [categoryId], references: [id])
+  categoryId    String         @db.Uuid
+  instructor    Instructor?    @relation(fields: [instructorId], references: [id])
+  instructorId  String?        @db.Uuid
+  location      Location?      @relation(fields: [locationId], references: [id])
+  locationId    String?        @db.Uuid
+  posts         Post[]
   registrations Registration[]
-  room         Room?       @relation(fields: [roomId], references: [id])
-  roomId       String?     @db.Uuid
-  textTerms    Text?       @relation("textTerms", fields: [textTermsId], references: [id])
-  textTermsId  String?     @db.Uuid
-  textInfo     Text?       @relation("textInfo", fields: [textInfoId], references: [id])
-  textInfoId   String?     @db.Uuid
+  room          Room?          @relation(fields: [roomId], references: [id])
+  roomId        String?        @db.Uuid
+  textTerms     Text?          @relation("textTerms", fields: [textTermsId], references: [id])
+  textTermsId   String?        @db.Uuid
+  textInfo      Text?          @relation("textInfo", fields: [textInfoId], references: [id])
+  textInfoId    String?        @db.Uuid
 
   // n:m relations
   participants       Participant[]       @relation("ParticipantCourse")

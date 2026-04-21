@@ -245,6 +245,7 @@ POST   /auth/participant-me       (requires accessToken cookie)
 ## CRUD for models
 ```
 /auth           POST register, login, refresh  |  DELETE logout  |  GET me
+/posts          GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 /targets        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 /categories     GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id
 /courses        GET, POST, GET/:id, PUT/:id, PATCH /:id, DELETE/:id

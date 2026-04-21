@@ -18,6 +18,7 @@ model Event {
   // relations
   location   Location? @relation(fields: [locationId], references: [id])
   locationId String?   @db.Uuid
+  posts      Post[]
   room       Room?     @relation(fields: [roomId], references: [id])
   roomId     String?   @db.Uuid
   targets    Target[]  @relation("EventTargets")

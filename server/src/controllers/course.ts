@@ -14,7 +14,7 @@ interface ParsedHoliday {
 }
 
 function utcMidnight(date: Date): number {
-  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
 }
 
 function parseHolidays(raw: unknown): ParsedHoliday[] {

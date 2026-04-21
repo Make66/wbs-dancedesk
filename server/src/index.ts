@@ -19,6 +19,7 @@ import {
   locationsRouter,
   modulesRouter,
   newsRouter,
+  postsRouter,
   participantsRouter,
   publicRouter,
   registrationsRouter,
@@ -62,6 +63,7 @@ app.use("/api/instructors", instructorsRouter);
 app.use("/api/locations", locationsRouter);
 app.use("/api/modules", modulesRouter);
 app.use("/api/news", newsRouter);
+app.use("/api/posts", postsRouter);
 app.use("/api/participants", participantsRouter);
 app.use("/api/registrations", registrationsRouter);
 app.use("/api/rooms", roomsRouter);

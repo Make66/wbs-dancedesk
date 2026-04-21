@@ -1,0 +1,25 @@
+model Post {
+  title    String?  @default("")
+  teaser   String?  @default("")
+  text     String?  @default("")
+  imageUrl String   @default("")
+  author   String   @default("")
+  date     DateTime @default(now())
+  startsAt DateTime @default(now())
+  endsAt   DateTime @default(now())
+
+  // relations
+  course   Course? @relation(fields: [courseId], references: [id])
+  courseId String? @db.Uuid
+  event    Event?  @relation(fields: [eventId], references: [id])
+  eventId  String? @db.Uuid
+
+  // Common fields
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isActive   Boolean  @default(true)
+  isArchived Boolean  @default(false)
+  isDeleted  Boolean  @default(false)
+}

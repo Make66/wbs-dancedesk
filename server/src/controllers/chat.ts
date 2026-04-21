@@ -73,6 +73,7 @@ async function buildContextMessage(participantId: string, tenantId: string, doma
       id: { notIn: enrolledCourseIds },
     },
     select: {
+      id: true,
       name: true,
       seatsCurrent: true,
       seatsMax: true,
@@ -124,7 +125,7 @@ async function buildContextMessage(participantId: string, tenantId: string, doma
   if (availableCourses.length > 0) {
     const formatted = availableCourses.map((c) => {
       const seats = c.seatsMax - c.seatsCurrent;
-      return `"${c.name}" (${c.category?.name ?? '?'}, ${seats} seat${seats !== 1 ? 's' : ''} left)`;
+      return `"${c.name}" (${c.category?.name ?? '?'}, ${seats} seat${seats !== 1 ? 's' : ''} left, id:${c.id})`;
     });
     lines.push('Available courses: ' + formatted.join('; '));
   }
