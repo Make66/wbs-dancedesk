@@ -12,6 +12,26 @@ const iconClass = "text-2xl fill-current";
 const SidebarMin = () => {
   return (
     <div className="flex flex-col items-center gap-6 mt-6">
+      {[
+        { to: "/", icon: <MdDashboard className={iconClass} /> },
+      ].map(({ to, icon }) => (
+        <NavLink
+          key={to}
+          to={to}
+          className={({ isActive }) =>
+            cn(
+              "p-2 rounded-xl transition-all duration-200",
+              isActive
+                ? "bg-gray-700 text-white"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+              "py-3 px-2",
+            )
+          }
+        >
+          {icon}
+        </NavLink>
+      ))}
+
       <button
         className="py-3 px-2 hover:bg-gray-700 rounded-xl"
         onClick={() => userStore.setState({ isSidebarOpen: true })}
@@ -20,7 +40,6 @@ const SidebarMin = () => {
       </button>
 
       {[
-        { to: "/", icon: <MdDashboard className={iconClass} /> },
         { to: "/courses", icon: <IoSchool className={iconClass} /> },
         { to: "/calendar", icon: <FaCalendarAlt className={iconClass} /> },
         { to: "/participants", icon: <ImUsers className={iconClass} /> },
