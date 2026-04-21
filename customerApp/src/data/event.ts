@@ -1,5 +1,35 @@
 import { toast } from "react-toastify";
 
+export type Event = {
+  id: string;
+  title: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  startsAt: string;
+  endsAt: string;
+  isActive: boolean;
+  isDeleted: boolean;
+};
+
+export const getEventsDB = async (): Promise<Event[]> => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/events`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch events: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    throw error;
+  }
+};
+
 type EventPayload = {
   title?: string;
   description?: string;

@@ -1,7 +1,7 @@
 import { ImUsers } from "react-icons/im";
 import { IoSchool, IoSettingsSharp } from "react-icons/io5";
 import { MdDashboard } from "react-icons/md";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaNewspaper } from "react-icons/fa";
 import { NavLink } from "react-router";
 import { MapPin } from "lucide-react";
 import { userStore } from "../../stores/userStore";
@@ -24,6 +24,7 @@ const SidebarMin = () => {
         { to: "/courses", icon: <IoSchool className={iconClass} /> },
         { to: "/calendar", icon: <FaCalendarAlt className={iconClass} /> },
         { to: "/participants", icon: <ImUsers className={iconClass} /> },
+        { to: "/posts", icon: <FaNewspaper className={iconClass} /> },
         { to: "/settings", icon: <IoSettingsSharp className={iconClass} /> },
       ].map(({ to, icon }) => (
         <NavLink

@@ -8,6 +8,8 @@ export * from './target.ts';
 export * from './instructor.ts';
 export * from './location.ts';
 export * from './module.ts';
+export * from './news.ts';
+export * from './post.ts';
 export * from './registration.ts';
 export * from './room.ts';
 export * from './text.ts';

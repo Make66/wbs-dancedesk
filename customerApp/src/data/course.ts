@@ -1,5 +1,24 @@
 import { toast } from "react-toastify";
-import type { CreateCourseInput } from "../types/course-types";
+import type { Course, CreateCourseInput } from "../types/course-types";
+
+export const getCoursesDB = async (): Promise<Course[]> => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch courses: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    throw error;
+  }
+};
 
 export interface UpdateCourseInput {
   isActive?: boolean;

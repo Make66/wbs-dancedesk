@@ -2,7 +2,7 @@ import { NavLink, useLocation, useNavigate } from "react-router";
 import { targetStore } from "../../stores/targetStore";
 import { cn } from "../../lib/utils";
 import { LuArrowLeftToLine, LuArrowRightToLine } from "react-icons/lu";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaNewspaper } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
@@ -127,6 +127,21 @@ const Sidebar = () => {
           >
             <ImUsers className="text-2xl cursor-pointer fill-current ml-2" />
             <span>Teilnehmer</span>
+          </NavLink>
+          <div className="border-b border-gray-500" />
+          <NavLink
+            to="/posts"
+            className={({ isActive }) =>
+              cn(
+                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                isActive
+                  ? "bg-gray-700 text-white"
+                  : "hover:bg-gray-700 hover:text-white text-gray-300",
+              )
+            }
+          >
+            <FaNewspaper className="text-2xl cursor-pointer fill-current ml-2" />
+            <span>News</span>
           </NavLink>
           <div className="border-b border-gray-500" />
 

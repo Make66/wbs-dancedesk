@@ -83,6 +83,11 @@ export type Participant = Prisma.ParticipantModel
  */
 export type ParticipantCourse = Prisma.ParticipantCourseModel
 /**
+ * Model Post
+ * 
+ */
+export type Post = Prisma.PostModel
+/**
  * Model Registration
  * 
  */

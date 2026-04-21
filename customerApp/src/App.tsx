@@ -15,6 +15,8 @@ import {
   InstructorDetailPage,
   RoomDetailPage,
   ParticipantsDetailPage,
+  PostsPage,
+  PostDetailPage,
 } from "./pages";
 import "./App.css";
 
@@ -37,6 +39,9 @@ function App() {
             <Route path="/instructors" element={<InstructorsPage />} />
             <Route path="/instructor/:instructorId" element={<InstructorDetailPage />} />
             <Route path="/instructor" element={<InstructorDetailPage />} />
+            <Route path="/posts" element={<PostsPage />} />
+            <Route path="/post/:postId" element={<PostDetailPage />} />
+            <Route path="/post" element={<PostDetailPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<HomePage />} />
           </Route>

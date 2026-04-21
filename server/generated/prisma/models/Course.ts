@@ -416,6 +416,7 @@ export type CourseWhereInput = {
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   instructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
   location?: Prisma.XOR<Prisma.LocationNullableScalarRelationFilter, Prisma.LocationWhereInput> | null
+  posts?: Prisma.PostListRelationFilter
   registrations?: Prisma.RegistrationListRelationFilter
   room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
   textTerms?: Prisma.XOR<Prisma.TextNullableScalarRelationFilter, Prisma.TextWhereInput> | null
@@ -458,6 +459,7 @@ export type CourseOrderByWithRelationInput = {
   category?: Prisma.CategoryOrderByWithRelationInput
   instructor?: Prisma.InstructorOrderByWithRelationInput
   location?: Prisma.LocationOrderByWithRelationInput
+  posts?: Prisma.PostOrderByRelationAggregateInput
   registrations?: Prisma.RegistrationOrderByRelationAggregateInput
   room?: Prisma.RoomOrderByWithRelationInput
   textTerms?: Prisma.TextOrderByWithRelationInput
@@ -503,6 +505,7 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   instructor?: Prisma.XOR<Prisma.InstructorNullableScalarRelationFilter, Prisma.InstructorWhereInput> | null
   location?: Prisma.XOR<Prisma.LocationNullableScalarRelationFilter, Prisma.LocationWhereInput> | null
+  posts?: Prisma.PostListRelationFilter
   registrations?: Prisma.RegistrationListRelationFilter
   room?: Prisma.XOR<Prisma.RoomNullableScalarRelationFilter, Prisma.RoomWhereInput> | null
   textTerms?: Prisma.XOR<Prisma.TextNullableScalarRelationFilter, Prisma.TextWhereInput> | null
@@ -611,6 +614,7 @@ export type CourseCreateInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -650,6 +654,7 @@ export type CourseUncheckedCreateInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -683,6 +688,7 @@ export type CourseUpdateInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -722,6 +728,7 @@ export type CourseUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -953,6 +960,11 @@ export type CourseSumOrderByAggregateInput = {
   seatsMax?: Prisma.SortOrder
 }
 
+export type CourseNullableScalarRelationFilter = {
+  is?: Prisma.CourseWhereInput | null
+  isNot?: Prisma.CourseWhereInput | null
+}
+
 export type CourseCreateNestedOneWithoutAttendancesInput = {
   create?: Prisma.XOR<Prisma.CourseCreateWithoutAttendancesInput, Prisma.CourseUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.CourseCreateOrConnectWithoutAttendancesInput
@@ -1154,6 +1166,22 @@ export type CourseUpdateOneRequiredWithoutParticipantCoursesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CourseUpdateToOneWithWhereWithoutParticipantCoursesInput, Prisma.CourseUpdateWithoutParticipantCoursesInput>, Prisma.CourseUncheckedUpdateWithoutParticipantCoursesInput>
 }
 
+export type CourseCreateNestedOneWithoutPostsInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutPostsInput, Prisma.CourseUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutPostsInput
+  connect?: Prisma.CourseWhereUniqueInput
+}
+
+export type CourseUpdateOneWithoutPostsNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutPostsInput, Prisma.CourseUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutPostsInput
+  upsert?: Prisma.CourseUpsertWithoutPostsInput
+  disconnect?: Prisma.CourseWhereInput | boolean
+  delete?: Prisma.CourseWhereInput | boolean
+  connect?: Prisma.CourseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseUpdateToOneWithWhereWithoutPostsInput, Prisma.CourseUpdateWithoutPostsInput>, Prisma.CourseUncheckedUpdateWithoutPostsInput>
+}
+
 export type CourseCreateNestedOneWithoutRegistrationsInput = {
   create?: Prisma.XOR<Prisma.CourseCreateWithoutRegistrationsInput, Prisma.CourseUncheckedCreateWithoutRegistrationsInput>
   connectOrCreate?: Prisma.CourseCreateOrConnectWithoutRegistrationsInput
@@ -1321,6 +1349,7 @@ export type CourseCreateWithoutAttendancesInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -1359,6 +1388,7 @@ export type CourseUncheckedCreateWithoutAttendancesInput = {
   updatedAt?: Date | string
   isActive?: boolean
   isDeleted?: boolean
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -1407,6 +1437,7 @@ export type CourseUpdateWithoutAttendancesInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -1445,6 +1476,7 @@ export type CourseUncheckedUpdateWithoutAttendancesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -1477,6 +1509,7 @@ export type CourseCreateWithoutCategoryInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutCourseInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -1515,6 +1548,7 @@ export type CourseUncheckedCreateWithoutCategoryInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -1608,6 +1642,7 @@ export type CourseCreateWithoutInstructorInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutCourseInput
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -1646,6 +1681,7 @@ export type CourseUncheckedCreateWithoutInstructorInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -1704,6 +1740,7 @@ export type CourseCreateWithoutLocationInput = {
   attendances?: Prisma.AttendanceCreateNestedManyWithoutCourseInput
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -1742,6 +1779,7 @@ export type CourseUncheckedCreateWithoutLocationInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -1801,6 +1839,7 @@ export type CourseCreateWithoutParticipantsInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -1839,6 +1878,7 @@ export type CourseUncheckedCreateWithoutParticipantsInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
 }
@@ -1892,6 +1932,7 @@ export type CourseCreateWithoutParticipantCoursesInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -1930,6 +1971,7 @@ export type CourseUncheckedCreateWithoutParticipantCoursesInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
 }
@@ -1978,6 +2020,7 @@ export type CourseUpdateWithoutParticipantCoursesInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -2016,8 +2059,169 @@ export type CourseUncheckedUpdateWithoutParticipantCoursesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseCreateWithoutPostsInput = {
+  name?: string | null
+  description?: string | null
+  startsAt?: Date | string
+  endsAt?: Date | string
+  frequency?: string
+  clubRepetition?: number
+  courseRepetition?: number
+  dates?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  contracts?: Prisma.CourseCreatecontractsInput | runtime.InputJsonValue[]
+  options?: number
+  seatsCurrent?: number
+  seatsMax?: number
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isBookedOut?: boolean
+  isClub?: boolean
+  isIgnoreCalendar?: boolean
+  isTaxFree?: boolean
+  id?: string
+  tenantId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isActive?: boolean
+  isDeleted?: boolean
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutCourseInput
+  category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
+  instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
+  location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
+  room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
+  textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
+  textInfo?: Prisma.TextCreateNestedOneWithoutCoursesAsInfoInput
+  participants?: Prisma.ParticipantCreateNestedManyWithoutCourseInput
+  participantCourses?: Prisma.ParticipantCourseCreateNestedManyWithoutCourseInput
+}
+
+export type CourseUncheckedCreateWithoutPostsInput = {
+  name?: string | null
+  description?: string | null
+  startsAt?: Date | string
+  endsAt?: Date | string
+  frequency?: string
+  clubRepetition?: number
+  courseRepetition?: number
+  dates?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  contracts?: Prisma.CourseCreatecontractsInput | runtime.InputJsonValue[]
+  options?: number
+  seatsCurrent?: number
+  seatsMax?: number
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isBookedOut?: boolean
+  isClub?: boolean
+  isIgnoreCalendar?: boolean
+  isTaxFree?: boolean
+  categoryId: string
+  instructorId?: string | null
+  locationId?: string | null
+  roomId?: string | null
+  textTermsId?: string | null
+  textInfoId?: string | null
+  id?: string
+  tenantId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isActive?: boolean
+  isDeleted?: boolean
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
+  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
+  participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
+}
+
+export type CourseCreateOrConnectWithoutPostsInput = {
+  where: Prisma.CourseWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseCreateWithoutPostsInput, Prisma.CourseUncheckedCreateWithoutPostsInput>
+}
+
+export type CourseUpsertWithoutPostsInput = {
+  update: Prisma.XOR<Prisma.CourseUpdateWithoutPostsInput, Prisma.CourseUncheckedUpdateWithoutPostsInput>
+  create: Prisma.XOR<Prisma.CourseCreateWithoutPostsInput, Prisma.CourseUncheckedCreateWithoutPostsInput>
+  where?: Prisma.CourseWhereInput
+}
+
+export type CourseUpdateToOneWithWhereWithoutPostsInput = {
+  where?: Prisma.CourseWhereInput
+  data: Prisma.XOR<Prisma.CourseUpdateWithoutPostsInput, Prisma.CourseUncheckedUpdateWithoutPostsInput>
+}
+
+export type CourseUpdateWithoutPostsInput = {
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  frequency?: Prisma.StringFieldUpdateOperationsInput | string
+  clubRepetition?: Prisma.IntFieldUpdateOperationsInput | number
+  courseRepetition?: Prisma.IntFieldUpdateOperationsInput | number
+  dates?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  contracts?: Prisma.CourseUpdatecontractsInput | runtime.InputJsonValue[]
+  options?: Prisma.IntFieldUpdateOperationsInput | number
+  seatsCurrent?: Prisma.IntFieldUpdateOperationsInput | number
+  seatsMax?: Prisma.IntFieldUpdateOperationsInput | number
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isBookedOut?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isClub?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isIgnoreCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTaxFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendances?: Prisma.AttendanceUpdateManyWithoutCourseNestedInput
+  category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
+  instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
+  location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
+  room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
+  textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
+  textInfo?: Prisma.TextUpdateOneWithoutCoursesAsInfoNestedInput
+  participants?: Prisma.ParticipantUpdateManyWithoutCourseNestedInput
+  participantCourses?: Prisma.ParticipantCourseUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseUncheckedUpdateWithoutPostsInput = {
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  frequency?: Prisma.StringFieldUpdateOperationsInput | string
+  clubRepetition?: Prisma.IntFieldUpdateOperationsInput | number
+  courseRepetition?: Prisma.IntFieldUpdateOperationsInput | number
+  dates?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  contracts?: Prisma.CourseUpdatecontractsInput | runtime.InputJsonValue[]
+  options?: Prisma.IntFieldUpdateOperationsInput | number
+  seatsCurrent?: Prisma.IntFieldUpdateOperationsInput | number
+  seatsMax?: Prisma.IntFieldUpdateOperationsInput | number
+  color?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isBookedOut?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isClub?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isIgnoreCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isTaxFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  instructorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textTermsId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  textInfoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
+  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
+  participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutRegistrationsInput = {
@@ -2048,6 +2252,7 @@ export type CourseCreateWithoutRegistrationsInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
   textInfo?: Prisma.TextCreateNestedOneWithoutCoursesAsInfoInput
@@ -2086,6 +2291,7 @@ export type CourseUncheckedCreateWithoutRegistrationsInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
 }
@@ -2134,6 +2340,7 @@ export type CourseUpdateWithoutRegistrationsInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
   textInfo?: Prisma.TextUpdateOneWithoutCoursesAsInfoNestedInput
@@ -2172,6 +2379,7 @@ export type CourseUncheckedUpdateWithoutRegistrationsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
 }
@@ -2204,6 +2412,7 @@ export type CourseCreateWithoutRoomInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
   textInfo?: Prisma.TextCreateNestedOneWithoutCoursesAsInfoInput
@@ -2241,6 +2450,7 @@ export type CourseUncheckedCreateWithoutRoomInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -2300,6 +2510,7 @@ export type CourseCreateWithoutTextTermsInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textInfo?: Prisma.TextCreateNestedOneWithoutCoursesAsInfoInput
@@ -2337,6 +2548,7 @@ export type CourseUncheckedCreateWithoutTextTermsInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -2380,6 +2592,7 @@ export type CourseCreateWithoutTextInfoInput = {
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
   instructor?: Prisma.InstructorCreateNestedOneWithoutCoursesInput
   location?: Prisma.LocationCreateNestedOneWithoutCoursesInput
+  posts?: Prisma.PostCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutCourseInput
   room?: Prisma.RoomCreateNestedOneWithoutCoursesInput
   textTerms?: Prisma.TextCreateNestedOneWithoutCoursesAsTermsInput
@@ -2417,6 +2630,7 @@ export type CourseUncheckedCreateWithoutTextInfoInput = {
   isActive?: boolean
   isDeleted?: boolean
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutCourseInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCourseInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCourseInput
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutCourseInput
   participantCourses?: Prisma.ParticipantCourseUncheckedCreateNestedManyWithoutCourseInput
@@ -2522,6 +2736,7 @@ export type CourseUpdateWithoutCategoryInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutCourseNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -2560,6 +2775,7 @@ export type CourseUncheckedUpdateWithoutCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -2654,6 +2870,7 @@ export type CourseUpdateWithoutInstructorInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutCourseNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -2692,6 +2909,7 @@ export type CourseUncheckedUpdateWithoutInstructorInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -2786,6 +3004,7 @@ export type CourseUpdateWithoutLocationInput = {
   attendances?: Prisma.AttendanceUpdateManyWithoutCourseNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -2824,6 +3043,7 @@ export type CourseUncheckedUpdateWithoutLocationInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -2888,6 +3108,7 @@ export type CourseUpdateWithoutParticipantsInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -2926,6 +3147,7 @@ export type CourseUncheckedUpdateWithoutParticipantsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
 }
@@ -3021,6 +3243,7 @@ export type CourseUpdateWithoutRoomInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
   textInfo?: Prisma.TextUpdateOneWithoutCoursesAsInfoNestedInput
@@ -3058,6 +3281,7 @@ export type CourseUncheckedUpdateWithoutRoomInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -3184,6 +3408,7 @@ export type CourseUpdateWithoutTextTermsInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textInfo?: Prisma.TextUpdateOneWithoutCoursesAsInfoNestedInput
@@ -3221,6 +3446,7 @@ export type CourseUncheckedUpdateWithoutTextTermsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -3285,6 +3511,7 @@ export type CourseUpdateWithoutTextInfoInput = {
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
   instructor?: Prisma.InstructorUpdateOneWithoutCoursesNestedInput
   location?: Prisma.LocationUpdateOneWithoutCoursesNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutCourseNestedInput
   room?: Prisma.RoomUpdateOneWithoutCoursesNestedInput
   textTerms?: Prisma.TextUpdateOneWithoutCoursesAsTermsNestedInput
@@ -3322,6 +3549,7 @@ export type CourseUncheckedUpdateWithoutTextInfoInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutCourseNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCourseNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCourseNestedInput
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutCourseNestedInput
   participantCourses?: Prisma.ParticipantCourseUncheckedUpdateManyWithoutCourseNestedInput
@@ -3365,6 +3593,7 @@ export type CourseUncheckedUpdateManyWithoutTextInfoInput = {
 
 export type CourseCountOutputType = {
   attendances: number
+  posts: number
   registrations: number
   participants: number
   participantCourses: number
@@ -3372,6 +3601,7 @@ export type CourseCountOutputType = {
 
 export type CourseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   attendances?: boolean | CourseCountOutputTypeCountAttendancesArgs
+  posts?: boolean | CourseCountOutputTypeCountPostsArgs
   registrations?: boolean | CourseCountOutputTypeCountRegistrationsArgs
   participants?: boolean | CourseCountOutputTypeCountParticipantsArgs
   participantCourses?: boolean | CourseCountOutputTypeCountParticipantCoursesArgs
@@ -3392,6 +3622,13 @@ export type CourseCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
  */
 export type CourseCountOutputTypeCountAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AttendanceWhereInput
+}
+
+/**
+ * CourseCountOutputType without action
+ */
+export type CourseCountOutputTypeCountPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostWhereInput
 }
 
 /**
@@ -3450,6 +3687,7 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   instructor?: boolean | Prisma.Course$instructorArgs<ExtArgs>
   location?: boolean | Prisma.Course$locationArgs<ExtArgs>
+  posts?: boolean | Prisma.Course$postsArgs<ExtArgs>
   registrations?: boolean | Prisma.Course$registrationsArgs<ExtArgs>
   room?: boolean | Prisma.Course$roomArgs<ExtArgs>
   textTerms?: boolean | Prisma.Course$textTermsArgs<ExtArgs>
@@ -3573,6 +3811,7 @@ export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   instructor?: boolean | Prisma.Course$instructorArgs<ExtArgs>
   location?: boolean | Prisma.Course$locationArgs<ExtArgs>
+  posts?: boolean | Prisma.Course$postsArgs<ExtArgs>
   registrations?: boolean | Prisma.Course$registrationsArgs<ExtArgs>
   room?: boolean | Prisma.Course$roomArgs<ExtArgs>
   textTerms?: boolean | Prisma.Course$textTermsArgs<ExtArgs>
@@ -3605,6 +3844,7 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     category: Prisma.$CategoryPayload<ExtArgs>
     instructor: Prisma.$InstructorPayload<ExtArgs> | null
     location: Prisma.$LocationPayload<ExtArgs> | null
+    posts: Prisma.$PostPayload<ExtArgs>[]
     registrations: Prisma.$RegistrationPayload<ExtArgs>[]
     room: Prisma.$RoomPayload<ExtArgs> | null
     textTerms: Prisma.$TextPayload<ExtArgs> | null
@@ -4040,6 +4280,7 @@ export interface Prisma__CourseClient<T, Null = never, ExtArgs extends runtime.T
   category<T extends Prisma.CategoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   instructor<T extends Prisma.Course$instructorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$instructorArgs<ExtArgs>>): Prisma.Prisma__InstructorClient<runtime.Types.Result.GetResult<Prisma.$InstructorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   location<T extends Prisma.Course$locationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$locationArgs<ExtArgs>>): Prisma.Prisma__LocationClient<runtime.Types.Result.GetResult<Prisma.$LocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  posts<T extends Prisma.Course$postsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$postsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   registrations<T extends Prisma.Course$registrationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$registrationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   room<T extends Prisma.Course$roomArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$roomArgs<ExtArgs>>): Prisma.Prisma__RoomClient<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   textTerms<T extends Prisma.Course$textTermsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$textTermsArgs<ExtArgs>>): Prisma.Prisma__TextClient<runtime.Types.Result.GetResult<Prisma.$TextPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -4564,6 +4805,30 @@ export type Course$locationArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.LocationInclude<ExtArgs> | null
   where?: Prisma.LocationWhereInput
+}
+
+/**
+ * Course.posts
+ */
+export type Course$postsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Post
+   */
+  select?: Prisma.PostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Post
+   */
+  omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  where?: Prisma.PostWhereInput
+  orderBy?: Prisma.PostOrderByWithRelationInput | Prisma.PostOrderByWithRelationInput[]
+  cursor?: Prisma.PostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostScalarFieldEnum | Prisma.PostScalarFieldEnum[]
 }
 
 /**

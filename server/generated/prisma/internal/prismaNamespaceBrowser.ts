@@ -64,6 +64,7 @@ export const ModelName = {
   News: 'News',
   Participant: 'Participant',
   ParticipantCourse: 'ParticipantCourse',
+  Post: 'Post',
   Registration: 'Registration',
   Room: 'Room',
   Settings: 'Settings',
@@ -344,6 +345,29 @@ export const ParticipantCourseScalarFieldEnum = {
 } as const
 
 export type ParticipantCourseScalarFieldEnum = (typeof ParticipantCourseScalarFieldEnum)[keyof typeof ParticipantCourseScalarFieldEnum]
+
+
+export const PostScalarFieldEnum = {
+  title: 'title',
+  teaser: 'teaser',
+  text: 'text',
+  imageUrl: 'imageUrl',
+  author: 'author',
+  date: 'date',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  courseId: 'courseId',
+  eventId: 'eventId',
+  id: 'id',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  isActive: 'isActive',
+  isArchived: 'isArchived',
+  isDeleted: 'isDeleted'
+} as const
+
+export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
 
 
 export const RegistrationScalarFieldEnum = {
