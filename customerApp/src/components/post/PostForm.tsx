@@ -150,25 +150,32 @@ const PostForm = ({ post }: PostFormProps) => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-2 flex flex-col gap-6 max-w-2xl">
-        <div className="relative">
+        <div className="flex gap-4">
           <ProfileImageUploader
             id={post?.id}
-            className="h-64 w-full"
+            className="h-48 w-64"
             cropShape="rect"
             aspect={16 / 9}
             imageUrl={post?.imageUrl}
             fallbackSrc="/assets/images/no-post.jpg"
             onChange={(file) => setImageFile(file)}
           />
-          <div className="absolute top-3 right-3 flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-xl px-3 py-2 border border-border shadow-sm">
-            <span className="text-xs font-medium">Top-Beitrag</span>
-            <Controller
-              name="isTopPost"
-              control={control}
-              render={({ field }) => (
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
+          <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 w-fit rounded-xl border border-border px-4 py-3 ml-auto">
+            {(["isTopPost", "isActive", "isArchived"] as const).map((name) => (
+              <Controller
+                key={name}
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <span className="text-sm whitespace-nowrap">
+                      {name === "isTopPost" ? "Top-Beitrag" : name === "isActive" ? "Aktiv" : "Archiviert"}
+                    </span>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </>
+                )}
+              />
+            ))}
           </div>
         </div>
 
@@ -198,29 +205,6 @@ const PostForm = ({ post }: PostFormProps) => {
           <div className="flex flex-col gap-1 flex-1">
             <label className="text-sm text-muted-foreground">Gültig bis</label>
             <Input type="datetime-local" {...register("endsAt")} className="w-full" />
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex items-center justify-between flex-1 rounded-xl border border-border px-4 py-3">
-            <span className="text-sm">Aktiv</span>
-            <Controller
-              name="isActive"
-              control={control}
-              render={({ field }) => (
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
-          </div>
-          <div className="flex items-center justify-between flex-1 rounded-xl border border-border px-4 py-3">
-            <span className="text-sm">Archiviert</span>
-            <Controller
-              name="isArchived"
-              control={control}
-              render={({ field }) => (
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
           </div>
         </div>
 
