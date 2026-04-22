@@ -12,6 +12,7 @@ import RoomDetailPage from "./RoomDetailPage";
 import ParticipantsDetailPage from "./ParticipantsDetailPage";
 import PostsPage from "./PostsPage";
 import PostDetailPage from "./PostDetailPage";
+import PostViewPage from "./PostViewPage";
 
 export {
   HomePage,
@@ -28,4 +29,5 @@ export {
   ParticipantsDetailPage,
   PostsPage,
   PostDetailPage,
+  PostViewPage,
 };
