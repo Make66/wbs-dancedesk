@@ -449,21 +449,26 @@ async function main() {
   const citiData: CitiLocation[] = JSON.parse(raw);
 
   // 1. clean slate — reverse dependency order
+  await prisma.chatMessage.deleteMany();
+  await prisma.chatSession.deleteMany();
   await prisma.attendance.deleteMany();
-  await prisma.category.deleteMany();
-  await prisma.course.deleteMany();
-  await prisma.customer.deleteMany();
-  await prisma.event.deleteMany();
-  await prisma.instructor.deleteMany();
-  await prisma.location.deleteMany();
-  await prisma.module.deleteMany();
-  await prisma.participant.deleteMany();
+  await prisma.participantCourse.deleteMany();
   await prisma.registration.deleteMany();
-  await prisma.room.deleteMany();
-  await prisma.settings.deleteMany();
+  await prisma.news.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.course.deleteMany();
+  await prisma.category.deleteMany();
   await prisma.target.deleteMany();
-  await prisma.text.deleteMany();
+  await prisma.event.deleteMany();
+  await prisma.room.deleteMany();
+  await prisma.location.deleteMany();
+  await prisma.instructor.deleteMany();
+  await prisma.participant.deleteMany();
+  await prisma.module.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.text.deleteMany();
+  await prisma.settings.deleteMany();
+  await prisma.customer.deleteMany();
 
   // 2. customer
   const customer = await prisma.customer.create({
