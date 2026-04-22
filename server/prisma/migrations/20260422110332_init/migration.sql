@@ -105,7 +105,7 @@ CREATE TABLE "Customer" (
     "quaternary" TEXT NOT NULL DEFAULT '#BABABA',
     "signInKey" TEXT NOT NULL DEFAULT '',
     "code" TEXT NOT NULL DEFAULT '',
-    "active" BOOLEAN NOT NULL DEFAULT true,
+    "apiKey" TEXT NOT NULL DEFAULT '',
     "setSeqInstructor" UUID[],
     "setSeqTarget" UUID[],
     "street" TEXT NOT NULL DEFAULT '123 Main St',
@@ -117,6 +117,7 @@ CREATE TABLE "Customer" (
     "tenantId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
@@ -209,6 +210,19 @@ CREATE TABLE "Module" (
 );
 
 -- CreateTable
+CREATE TABLE "News" (
+    "news" JSONB DEFAULT '[]',
+    "id" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "News_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Participant" (
     "firstName" TEXT DEFAULT 'John',
     "lastName" TEXT DEFAULT 'Doe',
@@ -243,6 +257,30 @@ CREATE TABLE "ParticipantCourse" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ParticipantCourse_pkey" PRIMARY KEY ("participantId","courseId")
+);
+
+-- CreateTable
+CREATE TABLE "Post" (
+    "title" TEXT DEFAULT '',
+    "teaser" TEXT DEFAULT '',
+    "text" TEXT DEFAULT '',
+    "imageUrl" TEXT NOT NULL DEFAULT '',
+    "author" TEXT NOT NULL DEFAULT '',
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "startsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "courseId" UUID,
+    "eventId" UUID,
+    "id" UUID NOT NULL,
+    "tenantId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "isTopPost" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Post_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -404,6 +442,9 @@ CREATE UNIQUE INDEX "Customer_signInKey_key" ON "Customer"("signInKey");
 CREATE UNIQUE INDEX "Customer_code_key" ON "Customer"("code");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Customer_apiKey_key" ON "Customer"("apiKey");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Instructor_email_key" ON "Instructor"("email");
 
 -- CreateIndex
@@ -471,6 +512,12 @@ ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_participantId_
 
 -- AddForeignKey
 ALTER TABLE "ParticipantCourse" ADD CONSTRAINT "ParticipantCourse_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Post" ADD CONSTRAINT "Post_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Post" ADD CONSTRAINT "Post_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Registration" ADD CONSTRAINT "Registration_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
