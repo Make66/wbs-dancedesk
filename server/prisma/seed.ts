@@ -684,7 +684,7 @@ async function main() {
           const roomPool     = locationId ? (roomsByLocation.get(locationId) ?? []) : [];
           const roomId       = roomPool.length ? roomPool[courseCount % roomPool.length] : undefined;
           const isClub = kurs.anz_unterrichtsstunden == null;
-          const courseRepetition = isClub ? 50 : kurs.anz_unterrichtsstunden!;
+          const courseRepetition = isClub ? 50 : Math.round(kurs.anz_unterrichtsstunden!);
           const course = await prisma.course.create({
             data: {
               name: kurs.kursbezeichnung,
