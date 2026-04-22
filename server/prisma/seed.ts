@@ -37,6 +37,7 @@ interface CitiKurs {
   termine: CitiTermin[];
   categoryId: string;
   isActive:boolean;
+  anz_unterrichtsstunden?: number;
 }
 
 interface CitiZielseite {
@@ -448,21 +449,26 @@ async function main() {
   const citiData: CitiLocation[] = JSON.parse(raw);
 
   // 1. clean slate — reverse dependency order
+  await prisma.chatMessage.deleteMany();
+  await prisma.chatSession.deleteMany();
   await prisma.attendance.deleteMany();
-  await prisma.category.deleteMany();
-  await prisma.course.deleteMany();
-  await prisma.customer.deleteMany();
-  await prisma.event.deleteMany();
-  await prisma.instructor.deleteMany();
-  await prisma.location.deleteMany();
-  await prisma.module.deleteMany();
-  await prisma.participant.deleteMany();
+  await prisma.participantCourse.deleteMany();
   await prisma.registration.deleteMany();
-  await prisma.room.deleteMany();
-  await prisma.settings.deleteMany();
+  await prisma.news.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.course.deleteMany();
+  await prisma.category.deleteMany();
   await prisma.target.deleteMany();
-  await prisma.text.deleteMany();
+  await prisma.event.deleteMany();
+  await prisma.room.deleteMany();
+  await prisma.location.deleteMany();
+  await prisma.instructor.deleteMany();
+  await prisma.participant.deleteMany();
+  await prisma.module.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.text.deleteMany();
+  await prisma.settings.deleteMany();
+  await prisma.customer.deleteMany();
 
   // 2. customer
   const customer = await prisma.customer.create({
@@ -682,10 +688,14 @@ async function main() {
           const locationId   = locationByTitle.get(kurs.standort);
           const roomPool     = locationId ? (roomsByLocation.get(locationId) ?? []) : [];
           const roomId       = roomPool.length ? roomPool[courseCount % roomPool.length] : undefined;
+          const isClub = kurs.anz_unterrichtsstunden == null;
+          const courseRepetition = isClub ? 50 : Math.round(kurs.anz_unterrichtsstunden!);
           const course = await prisma.course.create({
             data: {
               name: kurs.kursbezeichnung,
               isActive: true,
+              isClub,
+              courseRepetition,
               startsAt,
               endsAt,
               frequency: 'weekly',
@@ -938,7 +948,197 @@ async function main() {
     },
   });
 
-  console.log('Seeded:');
+  // 12. posts — 20 AI news items (Anthropic & OpenAI)
+  const TENANT = 'a50834f8-ad1a-46d2-836a-003d8d926dac';
+  const postSeed = [
+    {
+      title: 'Anthropic veröffentlicht Claude 4 mit erweitertem Kontextfenster',
+      teaser: 'Das neue Modell verarbeitet bis zu 500.000 Token und übertrifft GPT-5 in mehreren Benchmarks.',
+      text: 'Anthropic hat heute Claude 4 vorgestellt, das bislang leistungsstärkste Modell des Unternehmens. Mit einem Kontextfenster von 500.000 Token können ganze Codebasen oder umfangreiche Dokumente in einem einzigen Prompt verarbeitet werden. In standardisierten Tests wie MMLU und HumanEval erzielt Claude 4 neue Bestwerte und übertrifft dabei auch OpenAIs GPT-5 in mehreren Kategorien.',
+      imageUrl: 'https://picsum.photos/seed/claude4/800/450',
+      author: 'KI-Redaktion',
+      date: '2026-04-10T09:00:00.000Z',
+      isTopPost: true,
+    },
+    {
+      title: 'OpenAI stellt GPT-5 offiziell vor',
+      teaser: 'GPT-5 soll deutlich zuverlässiger sein und weniger halluzinieren als sein Vorgänger.',
+      text: 'OpenAI hat GPT-5 auf einer Pressekonferenz in San Francisco präsentiert. Das Modell wurde auf einem bedeutend größeren und sorgfältig kuratierten Datensatz trainiert. Laut OpenAI reduziert GPT-5 Halluzinationen um 40 % im Vergleich zu GPT-4 und erzielt in juristischen sowie medizinischen Reasoning-Tests erstmals menschliches Niveau.',
+      imageUrl: 'https://picsum.photos/seed/gpt5/800/450',
+      author: 'Tech-Desk',
+      date: '2026-04-08T10:30:00.000Z',
+      isTopPost: true,
+    },
+    {
+      title: 'Anthropic erhält 4 Milliarden Dollar Investition von Google',
+      teaser: 'Die Finanzierungsrunde bewertet Anthropic mit über 30 Milliarden Dollar.',
+      text: 'Google hat eine weitere Investition von 4 Milliarden Dollar in Anthropic angekündigt und damit die bisherige Partnerschaft vertieft. Die Mittel sollen vor allem in den Aufbau eigener KI-Chips sowie die Erweiterung der Rechenzentrumskapazitäten fließen. Anthropic-CEO Dario Amodei betonte, dass die Investition die Unabhängigkeit des Unternehmens nicht einschränke.',
+      imageUrl: 'https://picsum.photos/seed/anthropic-google/800/450',
+      author: 'Wirtschaftsredaktion',
+      date: '2026-03-28T08:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI launcht o3-mini für Entwickler',
+      teaser: 'Das schlanke Reasoning-Modell ist besonders für Coding-Aufgaben optimiert.',
+      text: 'OpenAI hat o3-mini in der API veröffentlicht. Das Modell ist speziell auf mathematisches und programmiertechnisches Denken ausgelegt und benötigt dabei deutlich weniger Rechenressourcen als o3. Entwickler berichten von deutlich kürzeren Antwortzeiten bei Coding-Aufgaben. Der Preis liegt bei 0,15 Dollar pro Million Input-Token.',
+      imageUrl: 'https://picsum.photos/seed/o3mini/800/450',
+      author: 'Entwickler-News',
+      date: '2026-03-20T14:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Anthropic führt "Constitutional AI 2.0" ein',
+      teaser: 'Die neue Methode soll KI-Modelle robuster gegen Manipulation machen.',
+      text: 'Anthropic hat eine aktualisierte Version seines Constitutional-AI-Ansatzes vorgestellt. CAI 2.0 integriert dynamische Regelwerke, die sich an neue Angriffsmuster anpassen können. In Red-Teaming-Tests zeigte Claude mit CAI 2.0 eine signifikant höhere Resistenz gegenüber Jailbreaking-Versuchen als Vergleichsmodelle.',
+      imageUrl: 'https://picsum.photos/seed/cai2/800/450',
+      author: 'Sicherheitsredaktion',
+      date: '2026-03-15T11:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI und Microsoft verlängern Partnerschaft bis 2030',
+      teaser: 'Microsoft sichert sich weiterhin exklusiven Cloud-Zugang zu OpenAI-Modellen.',
+      text: 'OpenAI und Microsoft haben ihre strategische Partnerschaft bis 2030 verlängert. Microsoft bleibt der primäre Cloud-Partner und investiert weitere 10 Milliarden Dollar. Im Gegenzug erhält Microsoft exklusiven Frühzugang zu neuen Modellen für seine Copilot-Produktlinie. Die Vereinbarung schließt auch gemeinsame Forschung zu KI-Sicherheit ein.',
+      imageUrl: 'https://picsum.photos/seed/openai-ms/800/450',
+      author: 'Business-Desk',
+      date: '2026-03-10T09:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Claude übernimmt Spitzenplatz im LMSYS Chatbot Arena',
+      teaser: 'Nutzer bevorzugen Claude in Blindtests gegenüber GPT-4o und Gemini Ultra.',
+      text: 'In der aktuellen Auswertung der LMSYS Chatbot Arena hat Claude von Anthropic erstmals die Spitzenposition übernommen. Über 50.000 Blindvergleiche zeigen, dass Nutzer Claude insbesondere bei kreativen Aufgaben und bei der Vermeidung sogenannter "sycophantic" Antworten bevorzugen. GPT-4o und Gemini Ultra folgen auf den Plätzen zwei und drei.',
+      imageUrl: 'https://picsum.photos/seed/arena/800/450',
+      author: 'KI-Redaktion',
+      date: '2026-03-05T16:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI öffnet GPT-4o für kostenlose Nutzer',
+      teaser: 'Ab sofort können auch Gratisnutzer auf das fortschrittlichste Multimodal-Modell zugreifen.',
+      text: 'OpenAI weitet den Zugang zu GPT-4o auf alle Nutzer aus, auch ohne kostenpflichtiges Abo. Allerdings gelten für Gratisnutzer weiterhin Nutzungslimits. Das Unternehmen begründet den Schritt mit dem Ziel, KI möglichst breit zugänglich zu machen. ChatGPT verzeichnete in der Folge einen Nutzungsanstieg von 20 % innerhalb einer Woche.',
+      imageUrl: 'https://picsum.photos/seed/gpt4ofree/800/450',
+      author: 'Produkt-News',
+      date: '2026-02-28T12:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Anthropic veröffentlicht Studie zu KI-Bewusstsein',
+      teaser: 'Forscher untersuchen, ob große Sprachmodelle Ansätze von Selbstwahrnehmung zeigen.',
+      text: 'In einem ungewöhnlich offenen Forschungsbericht beschäftigt sich Anthropic mit der Frage, ob Claude über rudimentäre Formen von Selbstwahrnehmung verfügt. Die Studie kommt zu keinem eindeutigen Ergebnis, empfiehlt aber einen vorsichtigen Umgang mit dem Thema. Dario Amodei betonte, dass das Unternehmen die Frage ethisch ernst nehme.',
+      imageUrl: 'https://picsum.photos/seed/consciousness/800/450',
+      author: 'Wissenschaftsredaktion',
+      date: '2026-02-20T10:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI startet Sora für alle ChatGPT Plus-Nutzer',
+      teaser: 'Das KI-Videogenerierungs-Tool ist ab sofort global verfügbar.',
+      text: 'OpenAI hat Sora, sein KI-Videogenerierungstool, weltweit für ChatGPT-Plus-Abonnenten freigeschaltet. Nutzer können Videos mit bis zu einer Minute Länge in 1080p-Auflösung generieren. Trotz der technischen Leistungsfähigkeit gibt es Kritik an fehlenden Wasserzeichen und der Möglichkeit, täuschend echte Desinformationsvideos zu erstellen.',
+      imageUrl: 'https://picsum.photos/seed/sora/800/450',
+      author: 'Medienredaktion',
+      date: '2026-02-14T08:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Anthropic kooperiert mit NASA für Weltraumforschung',
+      teaser: 'Claude soll wissenschaftliche Daten von Mars-Missionen analysieren.',
+      text: 'Anthropic und NASA haben eine Forschungskooperation bekanntgegeben. Claude soll dabei helfen, die enormen Datenmengen der Mars-Perseverance-Mission auszuwerten und Muster in geologischen Proben zu identifizieren. NASA-Forscher hoffen, durch den KI-Einsatz die Analysezeit drastisch zu verkürzen und neue Erkenntnisse zur Marskruste zu gewinnen.',
+      imageUrl: 'https://picsum.photos/seed/nasa-ai/800/450',
+      author: 'Wissenschaftsredaktion',
+      date: '2026-02-07T14:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI gründet gemeinnützige KI-Sicherheitsabteilung',
+      teaser: 'Die neue Einheit soll unabhängig von kommerziellen Interessen forschen.',
+      text: 'OpenAI hat eine neue gemeinnützige Forschungsabteilung gegründet, die sich ausschließlich mit KI-Sicherheit befasst. Die Einheit wird von Helen Toner geleitet und erhält ein Jahresbudget von 300 Millionen Dollar. Sie soll unabhängig vom kommerziellen Bereich agieren und ihre Ergebnisse vollständig veröffentlichen.',
+      imageUrl: 'https://picsum.photos/seed/openai-safety/800/450',
+      author: 'Sicherheitsredaktion',
+      date: '2026-01-30T09:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Claude API erreicht eine Million aktive Entwickler',
+      teaser: 'Anthropics Entwicklerplattform verzeichnet rasantes Wachstum.',
+      text: 'Anthropic hat bekannt gegeben, dass die Claude API die Marke von einer Million aktiver Entwickler überschritten hat. Das Wachstum sei vor allem auf Unternehmenskunden aus den Bereichen Recht, Medizin und Softwareentwicklung zurückzuführen. Anthropic plant, in Kürze eine günstigere Einstiegsstufe für Startups einzuführen.',
+      imageUrl: 'https://picsum.photos/seed/claude-devs/800/450',
+      author: 'Entwickler-News',
+      date: '2026-01-22T10:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI und Axel Springer schließen Inhaltslizenzvertrag',
+      teaser: 'KI-Modelle dürfen künftig auf Inhalte von Bild, Welt und Politico zugreifen.',
+      text: 'OpenAI hat einen mehrjährigen Lizenzvertrag mit dem Medienhaus Axel Springer unterzeichnet. Damit dürfen ChatGPT und andere OpenAI-Produkte auf Inhalte von Bild, Welt, Business Insider und Politico zugreifen und diese in Antworten einbinden. Axel Springer erhält im Gegenzug eine Beteiligung sowie frühzeitigen Zugang zu neuen OpenAI-Technologien.',
+      imageUrl: 'https://picsum.photos/seed/media-deal/800/450',
+      author: 'Medienredaktion',
+      date: '2026-01-15T11:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Anthropic veröffentlicht "Model Spec" als Open Standard',
+      teaser: 'Das Dokument beschreibt die Werte und Verhaltensregeln für Claude-Modelle.',
+      text: 'Anthropic hat seine "Model Spec" — das interne Regelwerk für das Verhalten von Claude — als offenen Standard veröffentlicht. Das Unternehmen lädt andere KI-Labore ein, ähnliche Dokumente zu erstellen und zu teilen. Ziel ist eine branchenweite Grundlage für transparentere und vergleichbarere KI-Systeme.',
+      imageUrl: 'https://picsum.photos/seed/modelspec/800/450',
+      author: 'KI-Politik',
+      date: '2026-01-10T09:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI plant eigene KI-Chips mit TSMC',
+      teaser: 'Das Unternehmen will die Abhängigkeit von Nvidia reduzieren.',
+      text: 'Laut Berichten plant OpenAI die Entwicklung eigener KI-Beschleuniger in Kooperation mit TSMC. Die ersten Chips sollen 2027 in Produktion gehen. Ziel ist es, die Kosten für das Training und den Betrieb großer Modelle deutlich zu senken und die Abhängigkeit von Nvidias H100- und H200-GPUs zu verringern.',
+      imageUrl: 'https://picsum.photos/seed/openai-chip/800/450',
+      author: 'Hardware-Desk',
+      date: '2025-12-20T10:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Anthropic und EU einigen sich auf freiwilligen KI-Kodex',
+      teaser: 'Claude erfüllt als erstes großes Modell alle Anforderungen des EU AI Act.',
+      text: 'Anthropic hat gemeinsam mit der Europäischen Kommission einen freiwilligen Verhaltenskodex für General-Purpose-AI-Modelle unterzeichnet. Claude ist damit das erste weitverbreitete Sprachmodell, das offiziell alle Anforderungen des EU AI Act in der Hochrisiko-Kategorie erfüllt. Das Unternehmen sieht dies als Vorteil im europäischen Unternehmensmarkt.',
+      imageUrl: 'https://picsum.photos/seed/eu-ai/800/450',
+      author: 'KI-Politik',
+      date: '2025-12-12T14:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI integriert ChatGPT in Apple Intelligence',
+      teaser: 'iPhones mit iOS 18 können ab sofort direkt auf ChatGPT zugreifen.',
+      text: 'Apple und OpenAI haben ihre angekündigte Integration abgeschlossen. iPhone-Nutzer mit iOS 18 können nun Siri-Anfragen nahtlos an ChatGPT weiterleiten, ohne die App wechseln zu müssen. Apple betont, dass dabei keine Nutzerdaten an OpenAI übertragen werden, sofern der Nutzer keine explizite Einwilligung gibt.',
+      imageUrl: 'https://picsum.photos/seed/apple-openai/800/450',
+      author: 'Produkt-News',
+      date: '2025-12-05T10:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'Anthropic startet Claude for Work — neues Team-Produkt',
+      teaser: 'Die kollaborative Plattform ermöglicht Teams die gemeinsame Nutzung von KI-Workflows.',
+      text: 'Anthropic hat "Claude for Work" vorgestellt, eine neue kollaborative Plattform für Unternehmen. Teams können damit gemeinsame Prompt-Bibliotheken, geteilte Gesprächsverläufe und rollenbasierte Zugriffsrechte verwalten. Das Produkt richtet sich vor allem an mittelgroße Unternehmen und kostet 30 Dollar pro Nutzer und Monat.',
+      imageUrl: 'https://picsum.photos/seed/claude-work/800/450',
+      author: 'Business-Desk',
+      date: '2025-11-28T09:00:00.000Z',
+      isTopPost: false,
+    },
+    {
+      title: 'OpenAI veröffentlicht erstes KI-Sicherheits-Jahrbuch',
+      teaser: 'Das Dokument dokumentiert alle bekannten Sicherheitsvorfälle des Jahres 2025.',
+      text: 'OpenAI hat erstmals ein umfassendes Jahrbuch zu KI-Sicherheitsvorfällen veröffentlicht. Das Dokument beschreibt 47 dokumentierte Vorfälle aus 2025, darunter Prompt-Injection-Angriffe, unbeabsichtigte Datenlecks und Missbrauch durch staatliche Akteure. OpenAI hofft, mit der Transparenz einen Branchenstandard zu setzen.',
+      imageUrl: 'https://picsum.photos/seed/safety-book/800/450',
+      author: 'Sicherheitsredaktion',
+      date: '2025-11-15T08:00:00.000Z',
+      isTopPost: false,
+    },
+  ];
+
+  for (const post of postSeed) {
+    await prisma.post.create({
+      data: { ...post, tenantId: TENANT, isActive: true, isArchived: false, isDeleted: false },
+    });
+  }
+  console.log(`  ${postSeed.length} posts`);
   console.log(`  ${targetMap.size} targets`);
   console.log(`  ${uniqueCategories.size} categories`);
   console.log(`  ${locationMap.size} locations`);

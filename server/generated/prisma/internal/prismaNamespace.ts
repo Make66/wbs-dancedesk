@@ -2217,7 +2217,8 @@ export const PostScalarFieldEnum = {
   updatedAt: 'updatedAt',
   isActive: 'isActive',
   isArchived: 'isArchived',
-  isDeleted: 'isDeleted'
+  isDeleted: 'isDeleted',
+  isTopPost: 'isTopPost'
 } as const
 
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]

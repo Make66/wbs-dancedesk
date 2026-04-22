@@ -12,6 +12,7 @@ type PostInput = {
   eventId?: string | null;
   isActive?: boolean;
   isArchived?: boolean;
+  isTopPost?: boolean;
   imageUrl?: string;
   imageFile?: File | null;
 };
@@ -72,6 +73,7 @@ const buildFormData = (data: PostInput): FormData => {
   if (data.eventId) formData.append("eventId", data.eventId);
   if (data.isActive !== undefined) formData.append("isActive", String(data.isActive));
   if (data.isArchived !== undefined) formData.append("isArchived", String(data.isArchived));
+  if (data.isTopPost !== undefined) formData.append("isTopPost", String(data.isTopPost));
   if (data.imageUrl) formData.append("imageUrl", data.imageUrl);
   if (data.imageFile) formData.append("image", data.imageFile);
 

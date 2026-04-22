@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { FaStar } from "react-icons/fa";
 import type { Post } from "../../types/post-types";
 
 type PostItemProps = {
@@ -38,6 +39,14 @@ const PostItem = ({ post }: PostItemProps) => {
               )}
             </div>
             <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {post.isTopPost && (
+                <FaStar
+                  className="text-yellow-400 shrink-0"
+                  data-tooltip-id="tooltip"
+                  data-tooltip-content="Top-Beitrag"
+                  data-tooltip-place="top"
+                />
+              )}
               {post.author && <span>{post.author}</span>}
               {formattedDate && <span>{formattedDate}</span>}
               {!post.isActive && (

@@ -29,6 +29,7 @@ type PostFormValues = {
   eventId: string;
   isActive: boolean;
   isArchived: boolean;
+  isTopPost: boolean;
   imageUrl: string;
 };
 
@@ -70,6 +71,7 @@ const PostForm = ({ post }: PostFormProps) => {
       eventId: post?.eventId ?? "",
       isActive: post?.isActive ?? true,
       isArchived: post?.isArchived ?? false,
+      isTopPost: post?.isTopPost ?? false,
       imageUrl: post?.imageUrl ?? "",
     },
   });
@@ -90,6 +92,7 @@ const PostForm = ({ post }: PostFormProps) => {
       eventId: post.eventId ?? "",
       isActive: post.isActive,
       isArchived: post.isArchived,
+      isTopPost: post.isTopPost,
       imageUrl: post.imageUrl ?? "",
     });
   }, [post, reset]);
@@ -123,6 +126,7 @@ const PostForm = ({ post }: PostFormProps) => {
         eventId: values.eventId || null,
         isActive: values.isActive,
         isArchived: values.isArchived,
+        isTopPost: values.isTopPost,
         imageUrl: imageFile ? undefined : values.imageUrl,
         imageFile,
       };
@@ -146,15 +150,34 @@ const PostForm = ({ post }: PostFormProps) => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-2 flex flex-col gap-6 max-w-2xl">
-        <ProfileImageUploader
-          id={post?.id}
-          className="h-64 w-full"
-          cropShape="rect"
-          aspect={16 / 9}
-          imageUrl={post?.imageUrl}
-          fallbackSrc="/assets/images/no-post.jpg"
-          onChange={(file) => setImageFile(file)}
-        />
+        <div className="flex gap-4">
+          <ProfileImageUploader
+            id={post?.id}
+            className="h-48 w-64"
+            cropShape="rect"
+            aspect={16 / 9}
+            imageUrl={post?.imageUrl}
+            fallbackSrc="/assets/images/no-post.jpg"
+            onChange={(file) => setImageFile(file)}
+          />
+          <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 w-fit rounded-xl border border-border px-4 py-3 ml-auto">
+            {(["isTopPost", "isActive", "isArchived"] as const).map((name) => (
+              <Controller
+                key={name}
+                name={name}
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <span className="text-sm whitespace-nowrap">
+                      {name === "isTopPost" ? "Top-Beitrag" : name === "isActive" ? "Aktiv" : "Archiviert"}
+                    </span>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </>
+                )}
+              />
+            ))}
+          </div>
+        </div>
 
         <Input type="text" label="Titel *" {...register("title", { required: true })} className="w-full" />
         <Input type="text" label="Teaser" {...register("teaser")} className="w-full" />
@@ -182,29 +205,6 @@ const PostForm = ({ post }: PostFormProps) => {
           <div className="flex flex-col gap-1 flex-1">
             <label className="text-sm text-muted-foreground">Gültig bis</label>
             <Input type="datetime-local" {...register("endsAt")} className="w-full" />
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex items-center justify-between flex-1 rounded-xl border border-border px-4 py-3">
-            <span className="text-sm">Aktiv</span>
-            <Controller
-              name="isActive"
-              control={control}
-              render={({ field }) => (
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
-          </div>
-          <div className="flex items-center justify-between flex-1 rounded-xl border border-border px-4 py-3">
-            <span className="text-sm">Archiviert</span>
-            <Controller
-              name="isArchived"
-              control={control}
-              render={({ field }) => (
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              )}
-            />
           </div>
         </div>
 

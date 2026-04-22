@@ -22,4 +22,5 @@ model Post {
   isActive   Boolean  @default(true)
   isArchived Boolean  @default(false)
   isDeleted  Boolean  @default(false)
+  isTopPost  Boolean  @default(false)
 }

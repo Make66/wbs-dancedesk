@@ -45,7 +45,6 @@ const Sidebar = () => {
           )}
         </button>
       </div>
-      {isSidebarOpen && <LocationPicker />}
       <CourseTargetsLoader />
       {!isSidebarOpen ? (
         <SidebarMin />
@@ -66,6 +65,7 @@ const Sidebar = () => {
             <span>Dashboard</span>
           </NavLink>
           <div className="border-b border-gray-500" />
+          {isSidebarOpen && <LocationPicker />}
           <div>
             <div className="">
               <div
