@@ -56,7 +56,10 @@ export const courseSchema = courseBaseSchema.superRefine((values, ctx) => {
   }
 });
 
-export const courseUpdateSchema = courseBaseSchema.partial();
+export const courseUpdateSchema = courseBaseSchema.partial().extend({
+  startsAt: z.coerce.date().optional(),
+  endsAt: z.coerce.date().optional(),
+});
 
 export const courseOptions = [
   { key: 0, option: "default" },
