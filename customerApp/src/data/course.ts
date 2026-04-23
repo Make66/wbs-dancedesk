@@ -27,8 +27,6 @@ export interface UpdateCourseInput {
 }
 
 export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
-  console.log("updateCourseDB id, payload", id, data);
-  console.log("updateCourseDB payload", JSON.stringify(data));
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses/${id}`, {
       method: "PATCH",
@@ -52,8 +50,6 @@ export const updateCourseDB = async (id: string, data: UpdateCourseInput) => {
 };
 
 export const createCourseDB = async (data: CreateCourseInput) => {
-  console.log("createCourseDB payload", data);
-  console.log("createCourseDB payload", JSON.stringify(data));
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/courses`, {
       method: "POST",
