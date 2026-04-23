@@ -6,8 +6,8 @@ import { cn } from "../../lib/utils";
 function Switch({
   className,
   size = "default",
-  color = "black",
-  color2 = "white",
+  color = "",
+  color2 = "",
   ...props
 }: React.ComponentProps<typeof SwitchPrimitive.Root> & {
   size?: "sm" | "default";
