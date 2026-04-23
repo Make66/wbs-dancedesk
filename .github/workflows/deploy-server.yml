@@ -59,6 +59,9 @@ jobs:
             # Prune to production dependencies only
             npm prune --omit=dev
 
+            # Resolve any migration left in failed state (safe no-op if none exist)
+            npx prisma migrate resolve --rolled-back 20260422142722_init 2>/dev/null || true
+
             # Apply any pending DB migrations (never resets data)
             npx prisma migrate deploy
 

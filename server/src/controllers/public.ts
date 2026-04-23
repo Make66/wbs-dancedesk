@@ -154,6 +154,29 @@ export const newsHandler: RequestHandler = async (req, res) => {
   res.json({ news: record?.news ?? [] });
 };
 
+export const postsHandler: RequestHandler = async (req, res) => {
+  const { tenantId } = req.publicTenant!;
+  log(SRC, 'postsHandler', 'Public posts fetch', { tenantId });
+
+  const posts = await prisma.post.findMany({
+    where: { tenantId, isActive: true, isDeleted: false, isArchived: false },
+    select: {
+      id: true,
+      title: true,
+      teaser: true,
+      text: true,
+      imageUrl: true,
+      author: true,
+      date: true,
+      isTopPost: true,
+    },
+    orderBy: [{ isTopPost: 'desc' }, { date: 'desc' }],
+  });
+
+  log(SRC, 'postsHandler', `Fetched ${posts.length} posts`, { tenantId });
+  res.json({ posts });
+};
+
 export const coursesHandler: RequestHandler = async (req, res) => {
   const { tenantId } = req.publicTenant!;
   const { categoryId, locationId } = req.query as Record<string, string | undefined>;
