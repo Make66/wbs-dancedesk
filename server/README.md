@@ -279,6 +279,7 @@ GET  /public/courses                 → { courses[] }
 GET  /public/courses?categoryId=uuid → courses for one category
 GET  /public/courses?locationId=uuid → courses at one location
 GET  /public/news                    - X-API-Key: <key>, news stored on server, fetches/updates when outdated/empty (86400)
+GET  /public/posts                   - X-API-Key: <key>, posts stored on server, fetches/updates when outdated/empty (86400)
 ```
 
 See [docs/08_publicApi.md](../docs/08_publicApi.md) for full request/response examples and the `isActive` cascade table.
