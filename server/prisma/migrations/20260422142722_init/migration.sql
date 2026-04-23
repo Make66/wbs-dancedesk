@@ -1,5 +1,10 @@
+-- Reset partial state from any previous failed attempt (init migration only)
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+
 -- CreateEnum
-DROP TYPE IF EXISTS "AttendanceStatus";
 CREATE TYPE "AttendanceStatus" AS ENUM ('PRESENT', 'ABSENT', 'EXCUSED');
 
 -- CreateTable

@@ -47,6 +47,9 @@ jobs:
             # this is where we deploy to
             cd server
 
+            # logs directory needs to be generated manually!
+            mkdir -p logs
+
             # Install all dependencies (dev deps needed for tsc)
             npm ci
 
