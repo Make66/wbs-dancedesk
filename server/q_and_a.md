@@ -601,6 +601,45 @@ To test communication over the tunnel use: (answers a HTTP code, 000 means fail)
 curl -s -o /dev/null -w "%{http_code}" http://localhost:5050/pgadmin4/
 ```
 
+## Q: GitHub Action deploy fails with P3009 — "migrate found failed migrations"
+
+### What happened
+
+The `deploy-server.yml` workflow runs `npx prisma migrate deploy` on the server via SSH.
+If a previous migration attempt started but never completed (e.g. the process was killed mid-run),
+Prisma records it as `failed` in `_prisma_migrations` and blocks all future deploys with:
+
+```
+Error: P3009
+migrate found failed migrations in the target database, new migrations will not be applied.
+The `20260422110332_init` migration started at … failed
+```
+
+### Fix — SSH into the server and resolve the stuck migration
+
+```bash
+cd /srv/dancedesk/server
+DATABASE_URL="$(grep DATABASE_URL .env | cut -d= -f2-)" npx prisma migrate resolve --rolled-back 20260422110332_init
+```
+
+Replace `20260422110332_init` with the migration name shown in the error.
+Then re-trigger the GitHub Action (push a commit or re-run the workflow manually).
+
+### Why `--rolled-back` and not `--applied`
+
+The `_init` migration on this project creates the entire schema from scratch.
+If it failed partway through, the schema is incomplete — tables may be missing or malformed.
+Marking it as rolled back tells Prisma to attempt the migration again on the next deploy.
+Use `--applied` only if you can confirm (via `psql \dt`) that all tables were actually created.
+
+### Incident log
+
+| Date | Failed migration | Resolved with |
+|------|-----------------|---------------|
+| 2026-04-22 | `20260422110332_init` | `--rolled-back` + re-deploy |
+
+---
+
 ## Q: How save is a signInKey consist of 5-digit random letters and numbers?
 
 ### A: On entropy: the key uses randomBytes from Node's crypto module, so it's cryptographically random. With 62^5 ≈ 916 million combinations it's fine as a low-stakes sign-in shortcut, but not suitable for anything security-critical (where you'd want something much longer).
