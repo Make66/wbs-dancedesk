@@ -4,7 +4,7 @@ export const roomSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
-  capacity: z.number().optional(),
+  capacity: z.coerce.number().optional(),
 
   courses: z.preprocess(
     (val) => (Array.isArray(val) ? val : typeof val === 'string' ? [val] : []),
@@ -19,8 +19,8 @@ export const roomSchema = z.object({
   street: z.string().optional(),
   city: z.string().optional(),
   zipCode: z.string().optional(),
-  longitude: z.number().optional(),
-  latitude: z.number().optional(),
+  longitude: z.coerce.number().optional(),
+  latitude: z.coerce.number().optional(),
 
   isActive: z.boolean().optional(),
   isDeleted: z.boolean().optional()
