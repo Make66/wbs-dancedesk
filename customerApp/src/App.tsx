@@ -18,6 +18,7 @@ import {
   PostsPage,
   PostDetailPage,
   PostViewPage,
+  TextDetailPage,
 } from "./pages";
 import "./App.css";
 
@@ -44,6 +45,8 @@ function App() {
             <Route path="/post/:postId" element={<PostDetailPage />} />
             <Route path="/news/:postId" element={<PostViewPage />} />
             <Route path="/post" element={<PostDetailPage />} />
+            <Route path="/text" element={<TextDetailPage />} />
+            <Route path="/text/:textId" element={<TextDetailPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<HomePage />} />
           </Route>

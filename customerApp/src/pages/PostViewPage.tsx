@@ -63,9 +63,10 @@ const PostViewPage = () => {
           )}
 
           {post.text && (
-            <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
-              {post.text}
-            </p>
+            <div
+              className="text-sm leading-relaxed text-muted-foreground prose-editor"
+              dangerouslySetInnerHTML={{ __html: post.text }}
+            />
           )}
         </div>
       )}

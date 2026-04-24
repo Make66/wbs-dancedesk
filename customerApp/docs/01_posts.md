@@ -43,7 +43,8 @@ Prisma → Post table
 | `customerApp/src/types/post-types.ts` | `Post` TypeScript type |
 | `customerApp/src/data/post.ts` | `getPosts`, `getPostById`, `createPostDB`, `updatePostDB`, `deletePostDB` |
 | `customerApp/src/components/post/PostItem.tsx` | List card: thumbnail, title, teaser, author, date, status badges |
-| `customerApp/src/components/post/PostForm.tsx` | Create/edit form (react-hook-form) |
+| `customerApp/src/components/post/PostForm.tsx` | Create/edit form (react-hook-form); `text` field uses `RichTextEditor` |
+| `customerApp/src/components/ui/RichTextEditor.tsx` | Tiptap-based RTE with toolbar (Bold, Italic, lists, Link); outputs HTML |
 | `customerApp/src/pages/PostsPage.tsx` | List page at `/posts` |
 | `customerApp/src/pages/PostDetailPage.tsx` | Detail/create page at `/post` and `/post/:postId` |
 
@@ -101,7 +102,7 @@ model Post {
 | Gültig bis | datetime-local | `endsAt` |
 | Aktiv | Switch toggle | `isActive` |
 | Archiviert | Switch toggle | `isArchived` |
-| Text | textarea | `text` — full post body |
+| Text | RichTextEditor (Tiptap) | `text` — HTML string; toolbar: Bold, Italic, Bullet list, Ordered list, Link |
 | Kurs | select dropdown | `courseId` — populated from `/api/courses` |
 | Event | select dropdown | `eventId` — populated from `/api/events` |
 

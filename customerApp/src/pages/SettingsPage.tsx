@@ -4,6 +4,7 @@ import FederalHolidaySettingsSection from "../components/settings/FederalHoliday
 import TargetSettingsSection from "../components/settings/TargetSettingsSection";
 import RoomSettingsSection from "../components/settings/RoomSettingsSection";
 import InstructorSettingsSection from "../components/settings/InstructorSettingsSection";
+import TextSettingsSection from "../components/settings/TextSettingsSection";
 import OtherSettingsSection from "../components/settings/OtherSettingsSection";
 import RegistrationSettingsSection from "../components/settings/RegistrationSettingsSection";
 import RebateSettingsSection from "../components/settings/RebateSettingsSection";
@@ -19,6 +20,7 @@ const SettingsPage = () => {
           <TargetSettingsSection />
           <RoomSettingsSection />
           <InstructorSettingsSection />
+          <TextSettingsSection />
           <CalendarSettingsSection />
           <FederalHolidaySettingsSection />
           <HolidaySettingSection />

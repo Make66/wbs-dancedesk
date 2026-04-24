@@ -12,6 +12,7 @@ import type { Post } from "../../types/post-types";
 import type { Course } from "../../types/course-types";
 import type { Event } from "../../data/event";
 import { toast } from "react-toastify";
+import { RichTextEditor } from "../ui/RichTextEditor";
 
 type PostFormProps = {
   post?: Post;
@@ -184,11 +185,17 @@ const PostForm = ({ post }: PostFormProps) => {
 
         <div className="flex flex-col gap-1">
           <label className="text-sm text-muted-foreground">Text *</label>
-          <textarea
-            {...register("text", { required: true })}
-            rows={8}
-            className="w-full rounded-xl border border-muted-foreground bg-background/40 px-5 py-4 text-sm resize-y outline-none focus:border-3 dark:focus:border-zinc-500"
-            placeholder="Inhalt des Beitrags..."
+          <Controller
+            name="text"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <RichTextEditor
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Inhalt des Beitrags..."
+              />
+            )}
           />
         </div>
 
