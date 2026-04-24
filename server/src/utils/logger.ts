@@ -1,8 +1,8 @@
 import { appendFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
 
-// logs will be written to ./server/logs/YYYY-MM-DD.log in production, and to console in development
-const LOG_DIR = join(process.cwd(), 'logs');
+// logs will be written to ./logs/YYYY-MM-DD.log (parallel to server/) in production, and to console in development
+const LOG_DIR = join(dirname(process.cwd()), 'logs');
 const isProd = process.env.NODE_ENV === 'production';
 
 const c = {
