@@ -152,25 +152,25 @@ const CategoriesPage = () => {
         )}
       </div>
 
-      <div className="p-6 bg-background">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={visibleCategories.map((item) => item.id)}
+          strategy={verticalListSortingStrategy}
         >
-          <SortableContext
-            items={visibleCategories.map((item) => item.id)}
-            strategy={verticalListSortingStrategy}
-          >
+          <div className="p-6 bg-background">
             <div className="flex flex-col gap-4">
               {visibleCategories.map((item) => (
                 <CategoryItem key={item.id} category={item} targetId={targetId} />
               ))}
             </div>
-          </SortableContext>
-        </DndContext>
-      </div>
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 };

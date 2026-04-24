@@ -186,7 +186,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
           ref={setNodeRef}
           style={style}
           className={cn(
-            "rounded-xl p-4 shadow-2xl dark:shadow-gray-900",
+            "rounded-xl shadow-2xl dark:shadow-gray-900",
             !isOpened && "hover:scale-y-115",
             isDragging && "z-20 opacity-60",
           )}
@@ -195,7 +195,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
             {...(isEditMode && category.isActive ? attributes : {})}
             {...(isEditMode && category.isActive ? listeners : {})}
             className={cn(
-              "flex items-center justify-between",
+              "flex items-center justify-between p-4",
               isEditMode && category.isActive
                 ? "cursor-pointer touch-none active:cursor-grabbing"
                 : "cursor-pointer",
@@ -311,7 +311,7 @@ const CategoryItem = ({ category, targetId }: CategoryItemProps) => {
           </div>
 
           {isOpened && !isEditable && (
-            <div>
+            <div className="px-4 pb-4">
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
