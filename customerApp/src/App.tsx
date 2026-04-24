@@ -19,7 +19,10 @@ import {
   PostDetailPage,
   PostViewPage,
   TextDetailPage,
+  AdminPage,
 } from "./pages";
+import AdminRoute from "./components/AdminRoute";
+import AdminLayout from "./layouts/AdminLayout";
 import "./App.css";
 
 function App() {
@@ -49,6 +52,11 @@ function App() {
             <Route path="/text/:textId" element={<TextDetailPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<HomePage />} />
+          </Route>
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminPage />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

@@ -39,11 +39,11 @@ export type TextMinAggregateOutputType = {
   description: string | null
   type: number | null
   text: string | null
-  active: boolean | null
   id: string | null
   tenantId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  isActive: boolean | null
   isDeleted: boolean | null
 }
 
@@ -52,11 +52,11 @@ export type TextMaxAggregateOutputType = {
   description: string | null
   type: number | null
   text: string | null
-  active: boolean | null
   id: string | null
   tenantId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  isActive: boolean | null
   isDeleted: boolean | null
 }
 
@@ -65,11 +65,11 @@ export type TextCountAggregateOutputType = {
   description: number
   type: number
   text: number
-  active: number
   id: number
   tenantId: number
   createdAt: number
   updatedAt: number
+  isActive: number
   isDeleted: number
   _all: number
 }
@@ -88,11 +88,11 @@ export type TextMinAggregateInputType = {
   description?: true
   type?: true
   text?: true
-  active?: true
   id?: true
   tenantId?: true
   createdAt?: true
   updatedAt?: true
+  isActive?: true
   isDeleted?: true
 }
 
@@ -101,11 +101,11 @@ export type TextMaxAggregateInputType = {
   description?: true
   type?: true
   text?: true
-  active?: true
   id?: true
   tenantId?: true
   createdAt?: true
   updatedAt?: true
+  isActive?: true
   isDeleted?: true
 }
 
@@ -114,11 +114,11 @@ export type TextCountAggregateInputType = {
   description?: true
   type?: true
   text?: true
-  active?: true
   id?: true
   tenantId?: true
   createdAt?: true
   updatedAt?: true
+  isActive?: true
   isDeleted?: true
   _all?: true
 }
@@ -214,11 +214,11 @@ export type TextGroupByOutputType = {
   description: string | null
   type: number
   text: string
-  active: boolean
   id: string
   tenantId: string
   createdAt: Date
   updatedAt: Date
+  isActive: boolean
   isDeleted: boolean
   _count: TextCountAggregateOutputType | null
   _avg: TextAvgAggregateOutputType | null
@@ -250,11 +250,11 @@ export type TextWhereInput = {
   description?: Prisma.StringNullableFilter<"Text"> | string | null
   type?: Prisma.IntFilter<"Text"> | number
   text?: Prisma.StringFilter<"Text"> | string
-  active?: Prisma.BoolFilter<"Text"> | boolean
   id?: Prisma.UuidFilter<"Text"> | string
   tenantId?: Prisma.StringFilter<"Text"> | string
   createdAt?: Prisma.DateTimeFilter<"Text"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Text"> | Date | string
+  isActive?: Prisma.BoolFilter<"Text"> | boolean
   isDeleted?: Prisma.BoolFilter<"Text"> | boolean
   coursesAsTerms?: Prisma.CourseListRelationFilter
   coursesAsInfo?: Prisma.CourseListRelationFilter
@@ -265,11 +265,11 @@ export type TextOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   coursesAsTerms?: Prisma.CourseOrderByRelationAggregateInput
   coursesAsInfo?: Prisma.CourseOrderByRelationAggregateInput
@@ -284,10 +284,10 @@ export type TextWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Text"> | string | null
   type?: Prisma.IntFilter<"Text"> | number
   text?: Prisma.StringFilter<"Text"> | string
-  active?: Prisma.BoolFilter<"Text"> | boolean
   tenantId?: Prisma.StringFilter<"Text"> | string
   createdAt?: Prisma.DateTimeFilter<"Text"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Text"> | Date | string
+  isActive?: Prisma.BoolFilter<"Text"> | boolean
   isDeleted?: Prisma.BoolFilter<"Text"> | boolean
   coursesAsTerms?: Prisma.CourseListRelationFilter
   coursesAsInfo?: Prisma.CourseListRelationFilter
@@ -298,11 +298,11 @@ export type TextOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   _count?: Prisma.TextCountOrderByAggregateInput
   _avg?: Prisma.TextAvgOrderByAggregateInput
@@ -319,11 +319,11 @@ export type TextScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Text"> | string | null
   type?: Prisma.IntWithAggregatesFilter<"Text"> | number
   text?: Prisma.StringWithAggregatesFilter<"Text"> | string
-  active?: Prisma.BoolWithAggregatesFilter<"Text"> | boolean
   id?: Prisma.UuidWithAggregatesFilter<"Text"> | string
   tenantId?: Prisma.StringWithAggregatesFilter<"Text"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Text"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Text"> | Date | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"Text"> | boolean
   isDeleted?: Prisma.BoolWithAggregatesFilter<"Text"> | boolean
 }
 
@@ -332,11 +332,11 @@ export type TextCreateInput = {
   description?: string | null
   type?: number
   text?: string
-  active?: boolean
   id?: string
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   coursesAsTerms?: Prisma.CourseCreateNestedManyWithoutTextTermsInput
   coursesAsInfo?: Prisma.CourseCreateNestedManyWithoutTextInfoInput
@@ -347,11 +347,11 @@ export type TextUncheckedCreateInput = {
   description?: string | null
   type?: number
   text?: string
-  active?: boolean
   id?: string
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   coursesAsTerms?: Prisma.CourseUncheckedCreateNestedManyWithoutTextTermsInput
   coursesAsInfo?: Prisma.CourseUncheckedCreateNestedManyWithoutTextInfoInput
@@ -362,11 +362,11 @@ export type TextUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coursesAsTerms?: Prisma.CourseUpdateManyWithoutTextTermsNestedInput
   coursesAsInfo?: Prisma.CourseUpdateManyWithoutTextInfoNestedInput
@@ -377,11 +377,11 @@ export type TextUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coursesAsTerms?: Prisma.CourseUncheckedUpdateManyWithoutTextTermsNestedInput
   coursesAsInfo?: Prisma.CourseUncheckedUpdateManyWithoutTextInfoNestedInput
@@ -392,11 +392,11 @@ export type TextCreateManyInput = {
   description?: string | null
   type?: number
   text?: string
-  active?: boolean
   id?: string
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
 }
 
@@ -405,11 +405,11 @@ export type TextUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -418,11 +418,11 @@ export type TextUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -436,11 +436,11 @@ export type TextCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   type?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
 }
 
@@ -453,11 +453,11 @@ export type TextMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   type?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
 }
 
@@ -466,11 +466,11 @@ export type TextMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   type?: Prisma.SortOrder
   text?: Prisma.SortOrder
-  active?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
 }
 
@@ -515,11 +515,11 @@ export type TextCreateWithoutCoursesAsTermsInput = {
   description?: string | null
   type?: number
   text?: string
-  active?: boolean
   id?: string
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   coursesAsInfo?: Prisma.CourseCreateNestedManyWithoutTextInfoInput
 }
@@ -529,11 +529,11 @@ export type TextUncheckedCreateWithoutCoursesAsTermsInput = {
   description?: string | null
   type?: number
   text?: string
-  active?: boolean
   id?: string
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   coursesAsInfo?: Prisma.CourseUncheckedCreateNestedManyWithoutTextInfoInput
 }
@@ -548,11 +548,11 @@ export type TextCreateWithoutCoursesAsInfoInput = {
   description?: string | null
   type?: number
   text?: string
-  active?: boolean
   id?: string
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   coursesAsTerms?: Prisma.CourseCreateNestedManyWithoutTextTermsInput
 }
@@ -562,11 +562,11 @@ export type TextUncheckedCreateWithoutCoursesAsInfoInput = {
   description?: string | null
   type?: number
   text?: string
-  active?: boolean
   id?: string
   tenantId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  isActive?: boolean
   isDeleted?: boolean
   coursesAsTerms?: Prisma.CourseUncheckedCreateNestedManyWithoutTextTermsInput
 }
@@ -592,11 +592,11 @@ export type TextUpdateWithoutCoursesAsTermsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coursesAsInfo?: Prisma.CourseUpdateManyWithoutTextInfoNestedInput
 }
@@ -606,11 +606,11 @@ export type TextUncheckedUpdateWithoutCoursesAsTermsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coursesAsInfo?: Prisma.CourseUncheckedUpdateManyWithoutTextInfoNestedInput
 }
@@ -631,11 +631,11 @@ export type TextUpdateWithoutCoursesAsInfoInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coursesAsTerms?: Prisma.CourseUpdateManyWithoutTextTermsNestedInput
 }
@@ -645,11 +645,11 @@ export type TextUncheckedUpdateWithoutCoursesAsInfoInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.IntFieldUpdateOperationsInput | number
   text?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coursesAsTerms?: Prisma.CourseUncheckedUpdateManyWithoutTextTermsNestedInput
 }
@@ -699,11 +699,11 @@ export type TextSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   description?: boolean
   type?: boolean
   text?: boolean
-  active?: boolean
   id?: boolean
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
   coursesAsTerms?: boolean | Prisma.Text$coursesAsTermsArgs<ExtArgs>
   coursesAsInfo?: boolean | Prisma.Text$coursesAsInfoArgs<ExtArgs>
@@ -715,11 +715,11 @@ export type TextSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   description?: boolean
   type?: boolean
   text?: boolean
-  active?: boolean
   id?: boolean
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
 }, ExtArgs["result"]["text"]>
 
@@ -728,11 +728,11 @@ export type TextSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   description?: boolean
   type?: boolean
   text?: boolean
-  active?: boolean
   id?: boolean
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
 }, ExtArgs["result"]["text"]>
 
@@ -741,15 +741,15 @@ export type TextSelectScalar = {
   description?: boolean
   type?: boolean
   text?: boolean
-  active?: boolean
   id?: boolean
   tenantId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  isActive?: boolean
   isDeleted?: boolean
 }
 
-export type TextOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"name" | "description" | "type" | "text" | "active" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isDeleted", ExtArgs["result"]["text"]>
+export type TextOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"name" | "description" | "type" | "text" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isActive" | "isDeleted", ExtArgs["result"]["text"]>
 export type TextInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   coursesAsTerms?: boolean | Prisma.Text$coursesAsTermsArgs<ExtArgs>
   coursesAsInfo?: boolean | Prisma.Text$coursesAsInfoArgs<ExtArgs>
@@ -769,11 +769,11 @@ export type $TextPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     description: string | null
     type: number
     text: string
-    active: boolean
     id: string
     tenantId: string
     createdAt: Date
     updatedAt: Date
+    isActive: boolean
     isDeleted: boolean
   }, ExtArgs["result"]["text"]>
   composites: {}
@@ -1204,11 +1204,11 @@ export interface TextFieldRefs {
   readonly description: Prisma.FieldRef<"Text", 'String'>
   readonly type: Prisma.FieldRef<"Text", 'Int'>
   readonly text: Prisma.FieldRef<"Text", 'String'>
-  readonly active: Prisma.FieldRef<"Text", 'Boolean'>
   readonly id: Prisma.FieldRef<"Text", 'String'>
   readonly tenantId: Prisma.FieldRef<"Text", 'String'>
   readonly createdAt: Prisma.FieldRef<"Text", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Text", 'DateTime'>
+  readonly isActive: Prisma.FieldRef<"Text", 'Boolean'>
   readonly isDeleted: Prisma.FieldRef<"Text", 'Boolean'>
 }
     

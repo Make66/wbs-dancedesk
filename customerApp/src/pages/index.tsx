@@ -14,6 +14,7 @@ import PostsPage from "./PostsPage";
 import PostDetailPage from "./PostDetailPage";
 import PostViewPage from "./PostViewPage";
 import TextDetailPage from "./TextDetailPage";
+import AdminPage from "./AdminPage";
 
 export {
   HomePage,
@@ -32,4 +33,5 @@ export {
   PostDetailPage,
   PostViewPage,
   TextDetailPage,
+  AdminPage,
 };

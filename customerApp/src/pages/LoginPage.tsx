@@ -65,6 +65,7 @@ const LoginPage = () => {
           >
             <Input
               autoComplete="email"
+              autoFocus
               type="email"
               label="email"
               name="email"

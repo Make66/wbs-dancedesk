@@ -1,37 +1,69 @@
-type Location = {
-  id: string;
-  tenantId: string;
-  name: string;
-  color: string[];
-  icon: string;
-  setSeqTarget: string[];
+import type { LocationItem } from "../types/location-types";
+
+type LocationInput = {
+  name?: string;
+  description?: string;
+  imageUrl?: string;
+  street?: string;
+  city?: string;
+  zipCode?: string;
+  state?: string;
+  customerId?: string;
+  tenantId?: string;
+  isActive?: boolean;
+  color?: string[];
+  icon?: string;
+  setSeqTarget?: string[];
 };
 
-export const updateLocationDB = async (locationId: string, data: Partial<Location>) => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/locations/${locationId}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      },
-    );
+const BASE = `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/locations`;
 
-    if (!response.ok) {
-      throw new Error(`Failed to update location: ${response.status}`);
-    }
+export const getLocations = async (): Promise<LocationItem[]> => {
+  const response = await fetch(BASE, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Standorte konnten nicht geladen werden.");
+  return response.json();
+};
 
-    const contentType = response.headers.get("content-type");
+export const getLocationById = async (id: string): Promise<LocationItem> => {
+  const response = await fetch(`${BASE}/${id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Standort konnte nicht geladen werden.");
+  return response.json();
+};
 
-    if (contentType?.includes("application/json")) {
-      return response.json();
-    }
+export const createLocationDB = async (data: LocationInput): Promise<LocationItem> => {
+  const response = await fetch(BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Standort konnte nicht erstellt werden.");
+  return response.json();
+};
 
-    return null;
-  } catch (error) {
-    console.error("Error updating location:", error);
-    throw new Error("Fehler beim Aktualisieren des Standorts.");
-  }
+export const updateLocationDB = async (id: string, data: LocationInput): Promise<LocationItem> => {
+  const response = await fetch(`${BASE}/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Standort konnte nicht aktualisiert werden.");
+  return response.json();
+};
+
+export const deleteLocationDB = async (id: string): Promise<void> => {
+  const response = await fetch(`${BASE}/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Standort konnte nicht gelöscht werden.");
 };

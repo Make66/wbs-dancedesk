@@ -1,3 +1,5 @@
+# this file does not do any .gitignore work, it is only used to be copied to the root of the project when running `expo init`
+
 # Dependencies
 node_modules/
 

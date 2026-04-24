@@ -458,11 +458,11 @@ export const TextScalarFieldEnum = {
   description: 'description',
   type: 'type',
   text: 'text',
-  active: 'active',
   id: 'id',
   tenantId: 'tenantId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  isActive: 'isActive',
   isDeleted: 'isDeleted'
 } as const
 
@@ -474,8 +474,10 @@ export const UserScalarFieldEnum = {
   lastName: 'lastName',
   email: 'email',
   password: 'password',
+  role: 'role',
   imageUrl: 'imageUrl',
   refreshToken: 'refreshToken',
+  lastLogin: 'lastLogin',
   settings: 'settings',
   id: 'id',
   tenantId: 'tenantId',

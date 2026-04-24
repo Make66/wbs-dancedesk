@@ -3,9 +3,10 @@ import bcrypt from 'bcrypt';
 import prisma from '#db';
 
 export const getAllUsers: RequestHandler = async (req, res) => {
-  const { tenantId } = req.user!;
+  const { tenantId, role } = req.user!;
+  const tenantFilter = role === 'admin' ? {} : { tenantId };
   const users = await prisma.user.findMany({
-    where: { tenantId, isDeleted: false },
+    where: { ...tenantFilter, isDeleted: false },
     omit: { password: true, refreshToken: true },
   });
   res.json(users);
@@ -13,9 +14,10 @@ export const getAllUsers: RequestHandler = async (req, res) => {
 
 export const getOneUser: RequestHandler = async (req, res) => {
   const { id } = req.params;
-  const { tenantId } = req.user!;
+  const { tenantId, role } = req.user!;
+  const tenantFilter = role === 'admin' ? {} : { tenantId };
   const user = await prisma.user.findFirst({
-    where: { id, tenantId, isDeleted: false },
+    where: { id, ...tenantFilter, isDeleted: false },
     omit: { password: true, refreshToken: true },
     include: { locations: true, modules: true },
   });
@@ -24,13 +26,14 @@ export const getOneUser: RequestHandler = async (req, res) => {
 };
 
 export const createUser: RequestHandler = async (req, res) => {
-  const { tenantId } = req.user!;
+  const { tenantId, role } = req.user!;
+  const assignedTenantId = role === 'admin' ? req.body.tenantId : tenantId;
   const { password, locations, modules, ...rest } = req.body;
   const user = await prisma.user.create({
     data: {
       ...rest,
       password: await bcrypt.hash(password, 10),
-      tenantId,
+      tenantId: assignedTenantId,
       locations: { connect: (locations ?? []).map((id: string) => ({ id })) },
       modules:   { connect: (modules   ?? []).map((id: string) => ({ id })) },
     },
@@ -41,8 +44,9 @@ export const createUser: RequestHandler = async (req, res) => {
 
 export const updateUser: RequestHandler = async (req, res) => {
   const { id } = req.params;
-  const { tenantId } = req.user!;
-  const exists = await prisma.user.findFirst({ where: { id, tenantId, isDeleted: false } });
+  const { tenantId, role } = req.user!;
+  const tenantFilter = role === 'admin' ? {} : { tenantId };
+  const exists = await prisma.user.findFirst({ where: { id, ...tenantFilter, isDeleted: false } });
   if (!exists) throw new Error('User not found', { cause: { status: 404 } });
   const { password, locations, modules, ...rest } = req.body;
   const user = await prisma.user.update({
@@ -60,8 +64,9 @@ export const updateUser: RequestHandler = async (req, res) => {
 
 export const removeUser: RequestHandler = async (req, res) => {
   const { id } = req.params;
-  const { tenantId } = req.user!;
-  const exists = await prisma.user.findFirst({ where: { id, tenantId, isDeleted: false } });
+  const { tenantId, role } = req.user!;
+  const tenantFilter = role === 'admin' ? {} : { tenantId };
+  const exists = await prisma.user.findFirst({ where: { id, ...tenantFilter, isDeleted: false } });
   if (!exists) throw new Error('User not found', { cause: { status: 404 } });
   await prisma.user.update({ where: { id }, data: { isDeleted: true } });
   res.status(204).send();

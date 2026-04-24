@@ -6,15 +6,29 @@ import { FaCalendarAlt, FaNewspaper } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";
 import { ImUsers } from "react-icons/im";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut, ShieldCheck } from "lucide-react";
 import { IoSettingsSharp } from "react-icons/io5";
 import SidebarMin from "./SidebarMin";
 import LocationPicker from "./LocationPicker";
 import CourseTargetsLoader from "./DataLoader";
 import { userStore } from "../../stores/userStore";
 import SidebarTargetItem from "./SidebarTargetItem";
+import { useAuth } from "../../context";
+import { ThemeToggle } from "./ThemeToggle";
+import { toast } from "react-toastify";
+import { useModuleAccess, MODULE } from "../../lib/useModuleAccess";
 
 const Sidebar = () => {
+  const { user, handleSignOut } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await handleSignOut();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Fehler beim Abmelden.");
+    }
+  };
+  const has = useModuleAccess();
   const isSidebarOpen = userStore((state) => state.isSidebarOpen);
   const targets = targetStore((state) => state.targets);
   const activeTargets = targets.filter((target) => target.isActive);
@@ -49,7 +63,8 @@ const Sidebar = () => {
       {!isSidebarOpen ? (
         <SidebarMin />
       ) : (
-        <div className="flex flex-col gap-6 mt-6 overflow-y-scroll scrollbar">
+        <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex flex-col gap-6 mt-6 overflow-y-scroll scrollbar flex-1 pb-2">
           <NavLink
             to="/"
             className={({ isActive }) =>
@@ -64,10 +79,9 @@ const Sidebar = () => {
             <MdDashboard className="text-2xl cursor-pointer fill-current ml-2" />
             <span>Dashboard</span>
           </NavLink>
-          <div className="border-b border-gray-500" />
           {isSidebarOpen && <LocationPicker />}
-          <div>
-            <div className="">
+          {has(MODULE.KURSE) && (
+            <div>
               <div
                 onClick={() => navigate("/courses")}
                 className={cn(
@@ -81,7 +95,6 @@ const Sidebar = () => {
                   <IoSchool className="text-2xl fill-current" />
                   <span>Kurse</span>
                 </div>
-
                 <ChevronDown
                   className={cn(
                     "h-4 w-4 mr-3 transition-transform duration-200",
@@ -89,67 +102,65 @@ const Sidebar = () => {
                   )}
                 />
               </div>
+              {isCoursesActive && (
+                <div>
+                  {activeTargets.map((target) => (
+                    <SidebarTargetItem className="ml-5" key={target.id} target={target} />
+                  ))}
+                </div>
+              )}
             </div>
-            {isCoursesActive && (
-              <div>
-                {activeTargets.map((target) => {
-                  return <SidebarTargetItem className="ml-5" key={target.id} target={target} />;
-                })}
-              </div>
-            )}
-          </div>
-          <div className="border-b border-gray-500" />
-          <NavLink
-            to="/calendar"
-            className={({ isActive }) =>
-              cn(
-                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
-                isActive
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700 hover:text-white text-gray-300",
-              )
-            }
-          >
-            <FaCalendarAlt className="text-2xl cursor-pointer fill-current ml-2" />
-            <span>Kalender</span>
-          </NavLink>
-          <div className="border-b border-gray-500" />
-          <NavLink
-            to="/participants"
-            className={({ isActive }) =>
-              cn(
-                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
-                isActive
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700 hover:text-white text-gray-300",
-              )
-            }
-          >
-            <ImUsers className="text-2xl cursor-pointer fill-current ml-2" />
-            <span>Teilnehmer</span>
-          </NavLink>
-          <div className="border-b border-gray-500" />
-          <NavLink
-            to="/posts"
-            className={({ isActive }) =>
-              cn(
-                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
-                isActive
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700 hover:text-white text-gray-300",
-              )
-            }
-          >
-            <FaNewspaper className="text-2xl cursor-pointer fill-current ml-2" />
-            <span>News</span>
-          </NavLink>
-          <div className="border-b border-gray-500" />
+          )}
+          {has(MODULE.KALENDER) && (
+            <NavLink
+              to="/calendar"
+              className={({ isActive }) =>
+                cn(
+                  "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                  isActive ? "bg-gray-700 text-white" : "hover:bg-gray-700 hover:text-white text-gray-300",
+                )
+              }
+            >
+              <FaCalendarAlt className="text-2xl cursor-pointer fill-current ml-2" />
+              <span>Kalender</span>
+            </NavLink>
+          )}
+          {has(MODULE.TEILNEHMER) && (
+            <NavLink
+              to="/participants"
+              className={({ isActive }) =>
+                cn(
+                  "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                  isActive ? "bg-gray-700 text-white" : "hover:bg-gray-700 hover:text-white text-gray-300",
+                )
+              }
+            >
+              <ImUsers className="text-2xl cursor-pointer fill-current ml-2" />
+              <span>Teilnehmer</span>
+            </NavLink>
+          )}
+          {has(MODULE.NEWS) && (
+            <NavLink
+              to="/posts"
+              className={({ isActive }) =>
+                cn(
+                  "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                  isActive ? "bg-gray-700 text-white" : "hover:bg-gray-700 hover:text-white text-gray-300",
+                )
+              }
+            >
+              <FaNewspaper className="text-2xl cursor-pointer fill-current ml-2" />
+              <span>News</span>
+            </NavLink>
+          )}
 
+        </div>
+        <div className="flex flex-col border-t border-gray-600 py-2">
           <NavLink
             to="/settings"
             className={({ isActive }) =>
               cn(
-                "flex gap-3 rounded-xl py-3 px-2 mt-auto mb-4 transition-all duration-200",
+                "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
                 isActive
                   ? "bg-gray-700 text-white"
                   : "hover:bg-gray-700 hover:text-white text-gray-300",
@@ -159,6 +170,34 @@ const Sidebar = () => {
             <IoSettingsSharp className="text-2xl cursor-pointer fill-current ml-2" />
             <span>Einstellungen</span>
           </NavLink>
+          {user?.role === "admin" && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                cn(
+                  "flex gap-3 rounded-xl py-3 px-2 transition-all duration-200",
+                  isActive
+                    ? "bg-gray-700 text-white"
+                    : "hover:bg-gray-700 hover:text-white text-gray-300",
+                )
+              }
+            >
+              <ShieldCheck className="text-2xl cursor-pointer ml-2 w-6 h-6" />
+              <span>Admin</span>
+            </NavLink>
+          )}
+          <div className="flex items-center justify-end gap-4 px-4 py-2">
+            <ThemeToggle />
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors cursor-pointer"
+              aria-label="Abmelden"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
         </div>
       )}
     </aside>

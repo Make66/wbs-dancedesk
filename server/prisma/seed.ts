@@ -654,13 +654,13 @@ async function main() {
     { name: 'Allgemeine Kurshinweise',   description: 'Allgemeine Informationen zu unseren Kursen' },
   ];
 
-  const defaultTerms = await prisma.text.create({ data: { ...textTermsData[0], type: 0, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  const defaultTerms = await prisma.text.create({ data: { ...textTermsData[0], type: 0, text: loremIpsum, isActive: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
   for (const t of textTermsData.slice(1)) {
-    await prisma.text.create({ data: { ...t, type: 0, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+    await prisma.text.create({ data: { ...t, type: 0, text: loremIpsum, isActive: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
   }
-  const defaultInfo = await prisma.text.create({ data: { ...textInfosData[0], type: 1, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+  const defaultInfo = await prisma.text.create({ data: { ...textInfosData[0], type: 1, text: loremIpsum, isActive: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
   for (const t of textInfosData.slice(1)) {
-    await prisma.text.create({ data: { ...t, type: 1, text: loremIpsum, active: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
+    await prisma.text.create({ data: { ...t, type: 1, text: loremIpsum, isActive: true, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
   }
 
   // 7. courses
@@ -859,12 +859,14 @@ async function main() {
   // 10. modules
   const moduleIds: string[] = [];
   for (const data of [
-    { name: 'Kurse',         color: '#66ff33', isActive: true },
-    { name: 'Räume',         color: '#338fff', isActive: true },
-    { name: 'Lehrer',        color: '#e733ff', isActive: true },
-    { name: 'Anmeldungen',   color: '#FFCC33', isActive: true },
-    { name: 'Teilnehmer',    color: '#ff3385', isActive: true },
-    { name: 'Einstellungen', color: '#CCCCCC', isActive: true },
+    { name: 'Anmeldungen',   description: 'Kursteilnahmen und Wartelisten verwalten', color: '#FFCC33', icon: 'ClipboardList', isActive: true },
+    { name: 'Einstellungen', description: 'Systemeinstellungen und Konfiguration',    color: '#CCCCCC', icon: 'Settings',       isActive: true },
+    { name: 'Kalender',      description: 'Termine und Veranstaltungen im Überblick', color: '#33ccff', icon: 'CalendarDays',   isActive: true },
+    { name: 'Kurse',         description: 'Kursangebote erstellen und verwalten',     color: '#66ff33', icon: 'GraduationCap',  isActive: true },
+    { name: 'Lehrer',        description: 'Tanzlehrer und Instruktoren verwalten',    color: '#e733ff', icon: 'UserCheck',      isActive: true },
+    { name: 'News',          description: 'Beiträge und Neuigkeiten veröffentlichen', color: '#ff8833', icon: 'Newspaper',      isActive: true },
+    { name: 'Räume',         description: 'Räume und Standorte verwalten',            color: '#338fff', icon: 'DoorOpen',       isActive: true },
+    { name: 'Teilnehmer',    description: 'Kursteilnehmer und Profile verwalten',     color: '#ff3385', icon: 'Users',          isActive: true },
   ]) {
     const m = await prisma.module.create({ data: { ...data, tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac' } });
     moduleIds.push(m.id);
@@ -877,6 +879,7 @@ async function main() {
       lastName: 'User',
       email: 'admin@test.de',
       password: await bcrypt.hash('test123', 10),
+      role: 'admin',
       isActive: true,
       tenantId: 'a50834f8-ad1a-46d2-836a-003d8d926dac',
       modules:   { connect: moduleIds.map(id => ({ id })) },

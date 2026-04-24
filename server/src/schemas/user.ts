@@ -5,8 +5,10 @@ export const userSchema = z.object({
   lastName: z.string().min(2).max(32).optional(),
   email: z.email().optional(),
   password: z.string().min(6).max(64).optional(),
+  role: z.enum(['admin', 'user']).default('user').optional(),
   imageUrl: z.string().optional(),
   refreshToken: z.string().optional(),
+  lastLogin: z.coerce.date().optional(), // accepts both Date objects and ISO date strings
   settings: z.json().default({}).optional(),
 
   locations: z.preprocess(

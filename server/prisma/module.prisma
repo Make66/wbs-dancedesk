@@ -1,5 +1,5 @@
 model Module {
-  name        String  @default("Standard Modul")
+  name        String  @default("")
   description String? @default("")
   color       String  @default("#B5252B")
   icon        String? @default("")

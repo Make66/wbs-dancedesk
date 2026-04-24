@@ -25,7 +25,7 @@ declare global {
       user?: {
         id: string;
         tenantId: string;
-        role: 'user' | 'participant';
+        role: 'user' | 'participant' | 'admin';
       };
       publicTenant?: {
         tenantId: string;

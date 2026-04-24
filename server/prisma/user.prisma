@@ -1,11 +1,13 @@
 model User {
-  firstName    String? @default("John Doe")
-  lastName     String? @default("Doe")
-  email        String  @unique @default("admin@test.de")
-  password     String  @default("Test123!")
-  imageUrl     String  @default("/assets/images/no-profile-picture.svg")
+  firstName    String?   @default("John Doe")
+  lastName     String?   @default("Doe")
+  email        String    @unique @default("admin@test.de")
+  password     String    @default("Test123!")
+  role         String    @default("user") // 'admin' or 'user'
+  imageUrl     String    @default("/assets/images/no-profile-picture.svg")
   refreshToken String? // bcrypt hash of current refresh token; null = logged out
-  settings     Json?   @default("{}") // JSON field for user-specific settings/preferences
+  lastLogin    DateTime? // timestamp of last successful login
+  settings     Json?     @default("{}") // JSON field for user-specific settings/preferences
 
   // relations from here
   locations Location[] @relation("UserLocations") // Many-to-many relation with Location

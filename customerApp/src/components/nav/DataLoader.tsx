@@ -24,7 +24,7 @@ const DataLoader = () => {
     const fetchSettings = async () => {
       try {
         setSettingsLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings`);
+        const response = await fetch(`${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings`, { credentials: "include" });
 
         if (!response.ok) {
           throw new Error("Fehler beim Laden der Einstellungen.");
@@ -56,6 +56,7 @@ const DataLoader = () => {
       try {
         const response = await fetch(
           `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/users/${authUser.id}`,
+          { credentials: "include" },
         );
 
         if (!response.ok) {
@@ -87,6 +88,7 @@ const DataLoader = () => {
 
         const response = await fetch(
           `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/locations/${selectedLocationId}/targets`,
+          { credentials: "include" },
         );
 
         if (!response.ok) {

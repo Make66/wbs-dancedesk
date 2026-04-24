@@ -26,7 +26,7 @@ const COOKIE_OPTS = {
 // Dummy hash prevents timing attacks when user is not found
 const DUMMY_HASH = '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012345';
 
-type Role = 'user' | 'participant';
+type Role = 'user' | 'participant' | 'admin';
 
 function updateRefreshToken(id: string, hash: string | null, role: Role) {
   if (role === 'user')
@@ -114,6 +114,7 @@ export const login: RequestHandler = async (req, res) => {
     'user',
     res
   );
+  await prisma.user.update({ where: { id: user.id }, data: { lastLogin: new Date() } });
   log(SRC, 'login', 'Login successful', { id: user.id, email: user.email });
   res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName });
 };
@@ -179,7 +180,8 @@ export const me: RequestHandler = async (req, res) => {
   log(SRC, 'me', 'Fetching current user', { id });
   const user = await prisma.user.findFirst({
     where: { id, isDeleted: false },
-    select: { id: true, email: true, firstName: true, lastName: true, modules: true, imageUrl: true },
+    omit: { password: true, refreshToken: true },
+    include: { modules: true },
   });
   if (!user) throw new Error('User not found', { cause: { status: 404 } });
   res.json({ user });

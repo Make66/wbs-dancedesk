@@ -29,8 +29,10 @@ export type UserMinAggregateOutputType = {
   lastName: string | null
   email: string | null
   password: string | null
+  role: string | null
   imageUrl: string | null
   refreshToken: string | null
+  lastLogin: Date | null
   id: string | null
   tenantId: string | null
   createdAt: Date | null
@@ -44,8 +46,10 @@ export type UserMaxAggregateOutputType = {
   lastName: string | null
   email: string | null
   password: string | null
+  role: string | null
   imageUrl: string | null
   refreshToken: string | null
+  lastLogin: Date | null
   id: string | null
   tenantId: string | null
   createdAt: Date | null
@@ -59,8 +63,10 @@ export type UserCountAggregateOutputType = {
   lastName: number
   email: number
   password: number
+  role: number
   imageUrl: number
   refreshToken: number
+  lastLogin: number
   settings: number
   id: number
   tenantId: number
@@ -77,8 +83,10 @@ export type UserMinAggregateInputType = {
   lastName?: true
   email?: true
   password?: true
+  role?: true
   imageUrl?: true
   refreshToken?: true
+  lastLogin?: true
   id?: true
   tenantId?: true
   createdAt?: true
@@ -92,8 +100,10 @@ export type UserMaxAggregateInputType = {
   lastName?: true
   email?: true
   password?: true
+  role?: true
   imageUrl?: true
   refreshToken?: true
+  lastLogin?: true
   id?: true
   tenantId?: true
   createdAt?: true
@@ -107,8 +117,10 @@ export type UserCountAggregateInputType = {
   lastName?: true
   email?: true
   password?: true
+  role?: true
   imageUrl?: true
   refreshToken?: true
+  lastLogin?: true
   settings?: true
   id?: true
   tenantId?: true
@@ -196,8 +208,10 @@ export type UserGroupByOutputType = {
   lastName: string | null
   email: string
   password: string
+  role: string
   imageUrl: string
   refreshToken: string | null
+  lastLogin: Date | null
   settings: runtime.JsonValue | null
   id: string
   tenantId: string
@@ -233,8 +247,10 @@ export type UserWhereInput = {
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   email?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
+  role?: Prisma.StringFilter<"User"> | string
   imageUrl?: Prisma.StringFilter<"User"> | string
   refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
+  lastLogin?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   settings?: Prisma.JsonNullableFilter<"User">
   id?: Prisma.UuidFilter<"User"> | string
   tenantId?: Prisma.StringFilter<"User"> | string
@@ -251,8 +267,10 @@ export type UserOrderByWithRelationInput = {
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastLogin?: Prisma.SortOrderInput | Prisma.SortOrder
   settings?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
@@ -273,8 +291,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   firstName?: Prisma.StringNullableFilter<"User"> | string | null
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   password?: Prisma.StringFilter<"User"> | string
+  role?: Prisma.StringFilter<"User"> | string
   imageUrl?: Prisma.StringFilter<"User"> | string
   refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
+  lastLogin?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   settings?: Prisma.JsonNullableFilter<"User">
   tenantId?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -290,8 +310,10 @@ export type UserOrderByWithAggregationInput = {
   lastName?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastLogin?: Prisma.SortOrderInput | Prisma.SortOrder
   settings?: Prisma.SortOrderInput | Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
@@ -312,8 +334,10 @@ export type UserScalarWhereWithAggregatesInput = {
   lastName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
+  role?: Prisma.StringWithAggregatesFilter<"User"> | string
   imageUrl?: Prisma.StringWithAggregatesFilter<"User"> | string
   refreshToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  lastLogin?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   settings?: Prisma.JsonNullableWithAggregatesFilter<"User">
   id?: Prisma.UuidWithAggregatesFilter<"User"> | string
   tenantId?: Prisma.StringWithAggregatesFilter<"User"> | string
@@ -328,8 +352,10 @@ export type UserCreateInput = {
   lastName?: string | null
   email?: string
   password?: string
+  role?: string
   imageUrl?: string
   refreshToken?: string | null
+  lastLogin?: Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
   tenantId: string
@@ -346,8 +372,10 @@ export type UserUncheckedCreateInput = {
   lastName?: string | null
   email?: string
   password?: string
+  role?: string
   imageUrl?: string
   refreshToken?: string | null
+  lastLogin?: Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
   tenantId: string
@@ -364,8 +392,10 @@ export type UserUpdateInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -382,8 +412,10 @@ export type UserUncheckedUpdateInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -400,8 +432,10 @@ export type UserCreateManyInput = {
   lastName?: string | null
   email?: string
   password?: string
+  role?: string
   imageUrl?: string
   refreshToken?: string | null
+  lastLogin?: Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
   tenantId: string
@@ -416,8 +450,10 @@ export type UserUpdateManyMutationInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -432,8 +468,10 @@ export type UserUncheckedUpdateManyInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -458,8 +496,10 @@ export type UserCountOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   refreshToken?: Prisma.SortOrder
+  lastLogin?: Prisma.SortOrder
   settings?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
@@ -474,8 +514,10 @@ export type UserMaxOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   refreshToken?: Prisma.SortOrder
+  lastLogin?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -489,8 +531,10 @@ export type UserMinOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  role?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
   refreshToken?: Prisma.SortOrder
+  lastLogin?: Prisma.SortOrder
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -575,13 +619,19 @@ export type UserUncheckedUpdateManyWithoutModulesNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type UserCreateWithoutLocationsInput = {
   firstName?: string | null
   lastName?: string | null
   email?: string
   password?: string
+  role?: string
   imageUrl?: string
   refreshToken?: string | null
+  lastLogin?: Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
   tenantId: string
@@ -597,8 +647,10 @@ export type UserUncheckedCreateWithoutLocationsInput = {
   lastName?: string | null
   email?: string
   password?: string
+  role?: string
   imageUrl?: string
   refreshToken?: string | null
+  lastLogin?: Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
   tenantId: string
@@ -638,8 +690,10 @@ export type UserScalarWhereInput = {
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   email?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
+  role?: Prisma.StringFilter<"User"> | string
   imageUrl?: Prisma.StringFilter<"User"> | string
   refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
+  lastLogin?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   settings?: Prisma.JsonNullableFilter<"User">
   id?: Prisma.UuidFilter<"User"> | string
   tenantId?: Prisma.StringFilter<"User"> | string
@@ -654,8 +708,10 @@ export type UserCreateWithoutModulesInput = {
   lastName?: string | null
   email?: string
   password?: string
+  role?: string
   imageUrl?: string
   refreshToken?: string | null
+  lastLogin?: Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
   tenantId: string
@@ -671,8 +727,10 @@ export type UserUncheckedCreateWithoutModulesInput = {
   lastName?: string | null
   email?: string
   password?: string
+  role?: string
   imageUrl?: string
   refreshToken?: string | null
+  lastLogin?: Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: string
   tenantId: string
@@ -709,8 +767,10 @@ export type UserUpdateWithoutLocationsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -726,8 +786,10 @@ export type UserUncheckedUpdateWithoutLocationsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -743,8 +805,10 @@ export type UserUncheckedUpdateManyWithoutLocationsInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -759,8 +823,10 @@ export type UserUpdateWithoutModulesInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -776,8 +842,10 @@ export type UserUncheckedUpdateWithoutModulesInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -793,8 +861,10 @@ export type UserUncheckedUpdateManyWithoutModulesInput = {
   lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastLogin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -849,8 +919,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   lastName?: boolean
   email?: boolean
   password?: boolean
+  role?: boolean
   imageUrl?: boolean
   refreshToken?: boolean
+  lastLogin?: boolean
   settings?: boolean
   id?: boolean
   tenantId?: boolean
@@ -868,8 +940,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastName?: boolean
   email?: boolean
   password?: boolean
+  role?: boolean
   imageUrl?: boolean
   refreshToken?: boolean
+  lastLogin?: boolean
   settings?: boolean
   id?: boolean
   tenantId?: boolean
@@ -884,8 +958,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastName?: boolean
   email?: boolean
   password?: boolean
+  role?: boolean
   imageUrl?: boolean
   refreshToken?: boolean
+  lastLogin?: boolean
   settings?: boolean
   id?: boolean
   tenantId?: boolean
@@ -900,8 +976,10 @@ export type UserSelectScalar = {
   lastName?: boolean
   email?: boolean
   password?: boolean
+  role?: boolean
   imageUrl?: boolean
   refreshToken?: boolean
+  lastLogin?: boolean
   settings?: boolean
   id?: boolean
   tenantId?: boolean
@@ -911,7 +989,7 @@ export type UserSelectScalar = {
   isDeleted?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"firstName" | "lastName" | "email" | "password" | "imageUrl" | "refreshToken" | "settings" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isActive" | "isDeleted", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"firstName" | "lastName" | "email" | "password" | "role" | "imageUrl" | "refreshToken" | "lastLogin" | "settings" | "id" | "tenantId" | "createdAt" | "updatedAt" | "isActive" | "isDeleted", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   locations?: boolean | Prisma.User$locationsArgs<ExtArgs>
   modules?: boolean | Prisma.User$modulesArgs<ExtArgs>
@@ -931,8 +1009,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     lastName: string | null
     email: string
     password: string
+    role: string
     imageUrl: string
     refreshToken: string | null
+    lastLogin: Date | null
     settings: runtime.JsonValue | null
     id: string
     tenantId: string
@@ -1369,8 +1449,10 @@ export interface UserFieldRefs {
   readonly lastName: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
+  readonly role: Prisma.FieldRef<"User", 'String'>
   readonly imageUrl: Prisma.FieldRef<"User", 'String'>
   readonly refreshToken: Prisma.FieldRef<"User", 'String'>
+  readonly lastLogin: Prisma.FieldRef<"User", 'DateTime'>
   readonly settings: Prisma.FieldRef<"User", 'Json'>
   readonly id: Prisma.FieldRef<"User", 'String'>
   readonly tenantId: Prisma.FieldRef<"User", 'String'>
