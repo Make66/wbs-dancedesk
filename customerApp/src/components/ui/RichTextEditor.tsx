@@ -40,7 +40,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 
   useEffect(() => {
     if (!editor || editor.getHTML() === value) return;
-    editor.commands.setContent(value || "", false);
+    editor.commands.setContent(value || "");
   }, [value, editor]);
 
   const handleLink = () => {

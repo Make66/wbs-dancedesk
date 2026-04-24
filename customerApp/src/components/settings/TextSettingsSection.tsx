@@ -25,7 +25,7 @@ const TextSettingsSection = () => {
     return true;
   });
 
-  const filterBtn = (value: TypeFilter, label: string) =>
+  const filterBtn = (value: TypeFilter) =>
     `px-3 h-8 rounded-lg border text-xs font-medium transition-colors cursor-pointer ${
       typeFilter === value
         ? "bg-emerald-500 text-white border-emerald-500"
@@ -47,21 +47,21 @@ const TextSettingsSection = () => {
             <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               <button
                 type="button"
-                className={filterBtn("alle", "Alle")}
+                className={filterBtn("alle")}
                 onClick={() => setTypeFilter("alle")}
               >
                 Alle
               </button>
               <button
                 type="button"
-                className={filterBtn("agb", "AGB")}
+                className={filterBtn("agb")}
                 onClick={() => setTypeFilter("agb")}
               >
                 AGB
               </button>
               <button
                 type="button"
-                className={filterBtn("info", "Info")}
+                className={filterBtn("info")}
                 onClick={() => setTypeFilter("info")}
               >
                 Info
