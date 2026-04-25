@@ -29,13 +29,13 @@ const DUMMY_HASH = '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ01234
 type Role = 'user' | 'participant' | 'admin';
 
 function updateRefreshToken(id: string, hash: string | null, role: Role) {
-  if (role === 'user')
+  if (role === 'user' || role === 'admin')
     return prisma.user.updateMany({ where: { id }, data: { refreshToken: hash } });
   return prisma.participant.updateMany({ where: { id }, data: { refreshToken: hash } });
 }
 
 function findEntityById(id: string, role: Role) {
-  if (role === 'user')
+  if (role === 'user' || role === 'admin')
     return prisma.user.findFirst({ where: { id, isDeleted: false } });
   return prisma.participant.findFirst({ where: { id, isDeleted: false } });
 }
@@ -60,19 +60,20 @@ async function issueTokens(entity: { id: string; tenantId: string }, role: Role,
 async function performLogin<T extends { id: string; tenantId: string; password: string; email: string | null; firstName: string | null; lastName: string | null }>(
   inputPassword: string,
   find: () => Promise<T | null>,
-  role: Role,
+  getRole: (entity: T) => Role,
   res: Response
 ): Promise<T> {
   const entity = await find();
   const match = await bcrypt.compare(inputPassword, entity?.password ?? DUMMY_HASH);
   if (!entity) {
-    log(SRC, 'performLogin', 'Login failed: entity not found', { role });
+    log(SRC, 'performLogin', 'Login failed: entity not found');
     throw new Error('Invalid credentials', { cause: { status: 401 } });
   }
   if (!match) {
-    log(SRC, 'performLogin', 'Login failed: password mismatch', { role, id: entity.id });
+    log(SRC, 'performLogin', 'Login failed: password mismatch', { id: entity.id });
     throw new Error('Invalid credentials', { cause: { status: 401 } });
   }
+  const role = getRole(entity);
   await issueTokens(entity, role, res);
   return entity;
 }
@@ -111,7 +112,7 @@ export const login: RequestHandler = async (req, res) => {
   const user = await performLogin(
     req.body.password,
     () => prisma.user.findFirst({ where: { email, isDeleted: false } }),
-    'user',
+    (u) => (u.role === 'admin' ? 'admin' : 'user'),
     res
   );
   await prisma.user.update({ where: { id: user.id }, data: { lastLogin: new Date() } });
@@ -126,7 +127,7 @@ export const participantLogin: RequestHandler = async (req, res) => {
   const participant = await performLogin(
     req.body.password,
     () => prisma.participant.findFirst({ where: { email, tenantId, isDeleted: false } }),
-    'participant',
+    () => 'participant',
     res
   );
   log(SRC, 'participantLogin', 'Participant login successful', { id: participant.id, email: participant.email });
