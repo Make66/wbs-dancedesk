@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from "react-router";
 import { useState } from "react";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaNewspaper } from "react-icons/fa";
 import { FaEnvelope, FaRegCircleUser } from "react-icons/fa6";
 import { MdDashboard } from "react-icons/md";
 import { IoSchool, IoSettingsSharp } from "react-icons/io5";
@@ -14,6 +14,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import LocationPicker from "./LocationPicker";
 import CourseTargetsLoader from "./DataLoader";
 import SidebarTargetItem from "./SidebarTargetItem";
+import { useModuleAccess, MODULE } from "../../lib/useModuleAccess";
 
 type MobileNavProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ type MobileNavProps = {
 
 const MobileNav = ({ onClose }: MobileNavProps) => {
   const { handleSignOut } = useAuth();
+  const has = useModuleAccess();
   const targets = targetStore((state) => state.targets);
   const activeTargets = targets.filter((target) => target.isActive);
   const [isCoursesExpanded, setIsCoursesExpanded] = useState(true);
@@ -76,66 +78,85 @@ const MobileNav = ({ onClose }: MobileNavProps) => {
           <div className="border-b border-gray-600 my-1" />
 
           {/* Kurse */}
-          <div>
-            <div
-              onClick={() => {
-                setIsCoursesExpanded(true);
-                navigate("/courses");
-                onClose();
-              }}
-              className={cn(
-                "flex items-center justify-between rounded-xl py-4 px-4 text-lg transition-all duration-200 cursor-pointer",
-                isCoursesActive
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700 hover:text-white text-gray-300",
-              )}
-            >
-              <div className="flex items-center gap-4">
-                <IoSchool className="text-2xl fill-current" />
-                <span>Kurse</span>
-              </div>
-              <button
-                type="button"
-                className="cursor-pointer p-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsCoursesExpanded((prev) => !prev);
-                }}
-                aria-label={isCoursesExpanded ? "Kurse einklappen" : "Kurse ausklappen"}
-              >
-                <ChevronDown
+          {has(MODULE.KURSE) && (
+            <>
+              <div>
+                <div
+                  onClick={() => {
+                    setIsCoursesExpanded(true);
+                    navigate("/courses");
+                    onClose();
+                  }}
                   className={cn(
-                    "h-5 w-5 transition-transform duration-200",
-                    isCoursesExpanded && "rotate-180",
+                    "flex items-center justify-between rounded-xl py-4 px-4 text-lg transition-all duration-200 cursor-pointer",
+                    isCoursesActive
+                      ? "bg-gray-700 text-white"
+                      : "hover:bg-gray-700 hover:text-white text-gray-300",
                   )}
-                />
-              </button>
-            </div>
+                >
+                  <div className="flex items-center gap-4">
+                    <IoSchool className="text-2xl fill-current" />
+                    <span>Kurse</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="cursor-pointer p-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsCoursesExpanded((prev) => !prev);
+                    }}
+                    aria-label={isCoursesExpanded ? "Kurse einklappen" : "Kurse ausklappen"}
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "h-5 w-5 transition-transform duration-200",
+                        isCoursesExpanded && "rotate-180",
+                      )}
+                    />
+                  </button>
+                </div>
 
-            {isCoursesExpanded && (
-              <div onClick={onClose} className="ml-4">
-                {activeTargets.map((target) => (
-                  <SidebarTargetItem className="ml-4" key={target.id} target={target} />
-                ))}
+                {isCoursesExpanded && (
+                  <div onClick={onClose} className="ml-4">
+                    {activeTargets.map((target) => (
+                      <SidebarTargetItem className="ml-4" key={target.id} target={target} />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+              <div className="border-b border-gray-600 my-1" />
+            </>
+          )}
 
-          <div className="border-b border-gray-600 my-1" />
+          {has(MODULE.KALENDER) && (
+            <>
+              <NavLink to="/calendar" className={linkClass} onClick={onClose}>
+                <FaCalendarAlt className="text-2xl fill-current" />
+                <span>Kalender</span>
+              </NavLink>
+              <div className="border-b border-gray-600 my-1" />
+            </>
+          )}
 
-          <NavLink to="/calendar" className={linkClass} onClick={onClose}>
-            <FaCalendarAlt className="text-2xl fill-current" />
-            <span>Kalender</span>
-          </NavLink>
+          {has(MODULE.TEILNEHMER) && (
+            <>
+              <NavLink to="/participants" className={linkClass} onClick={onClose}>
+                <ImUsers className="text-2xl fill-current" />
+                <span>Teilnehmer</span>
+              </NavLink>
+              <div className="border-b border-gray-600 my-1" />
+            </>
+          )}
 
-          <div className="border-b border-gray-600 my-1" />
-
-          <NavLink to="/participants" className={linkClass} onClick={onClose}>
-            <ImUsers className="text-2xl fill-current" />
-            <span>Teilnehmer</span>
-          </NavLink>
-
-          <div className="border-b border-gray-600 my-1" />
+          {has(MODULE.NEWS) && (
+            <>
+              <NavLink to="/posts" className={linkClass} onClick={onClose}>
+                <FaNewspaper className="text-2xl fill-current" />
+                <span>News</span>
+              </NavLink>
+              <div className="border-b border-gray-600 my-1" />
+            </>
+          )}
 
           <NavLink to="/settings" className={linkClass} onClick={onClose}>
             <IoSettingsSharp className="text-2xl fill-current" />
