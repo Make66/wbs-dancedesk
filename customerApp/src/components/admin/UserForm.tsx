@@ -10,6 +10,7 @@ import { getLocations } from "../../data/location";
 import type { LocationItem } from "../../types/location-types";
 import type { CustomerItem } from "../../types/customer-types";
 import type { AdminPanelContext, AdminPanelControls } from "../../layouts/AdminLayout";
+import { useAuth } from "../../context";
 
 type Props = { id: string | null; ctx?: AdminPanelContext; controls: AdminPanelControls };
 
@@ -29,6 +30,7 @@ const inputClass =
   "h-10 w-full rounded-xl border border-muted-foreground bg-background/40 px-3 text-sm focus:outline-none";
 
 const UserForm = ({ id, ctx, controls }: Props) => {
+  const { user } = useAuth();
   const { closePanel, triggerRefresh } = controls;
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -42,7 +44,7 @@ const UserForm = ({ id, ctx, controls }: Props) => {
   const { register, reset, handleSubmit, watch, setValue, control } = useForm<FormValues>({
     defaultValues: {
       firstName: "", lastName: "", email: "", password: "",
-      role: "user", tenantId: ctx?.tenantId ?? "", isActive: true, modules: [], locations: [],
+      role: "user", tenantId: ctx?.tenantId ?? user?.tenantId ?? "", isActive: true, modules: [], locations: [],
     },
   });
 
@@ -64,7 +66,7 @@ const UserForm = ({ id, ctx, controls }: Props) => {
         role: u.role ?? "user", tenantId: u.tenantId ?? "",
         isActive: u.isActive ?? true,
         modules: u.modules?.map((m) => m.id) ?? [],
-        locations: (u as any).locations?.map((l: { id: string }) => l.id) ?? [],
+        locations: u.locations?.map((l) => l.id) ?? [],
       });
       setLastLogin(u.lastLogin ?? null);
     }).catch(console.error);

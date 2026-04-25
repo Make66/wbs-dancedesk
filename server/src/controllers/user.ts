@@ -27,13 +27,13 @@ export const getOneUser: RequestHandler = async (req, res) => {
 
 export const createUser: RequestHandler = async (req, res) => {
   const { tenantId, role } = req.user!;
-  const assignedTenantId = role === 'admin' ? req.body.tenantId : tenantId;
-  const { password, locations, modules, ...rest } = req.body;
+  const { password, locations, modules, tenantId: bodyTenantId, ...rest } = req.body;
+  const assignedTenantId = role === 'admin' ? (bodyTenantId || tenantId) : tenantId;
   const user = await prisma.user.create({
     data: {
       ...rest,
-      password: await bcrypt.hash(password, 10),
       tenantId: assignedTenantId,
+      password: await bcrypt.hash(password, 10),
       locations: { connect: (locations ?? []).map((id: string) => ({ id })) },
       modules:   { connect: (modules   ?? []).map((id: string) => ({ id })) },
     },

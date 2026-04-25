@@ -6,6 +6,7 @@ declare global {
     lastName: string;
     imageUrl: string;
     role?: string;
+    tenantId: string;
     modules: { id: string; name: string; color: string; seq: number; active: boolean }[];
   };
 

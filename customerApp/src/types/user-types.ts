@@ -8,5 +8,6 @@ export type UserItem = {
   tenantId: string;
   isActive: boolean;
   modules?: { id: string }[];
+  locations?: { id: string }[];
   lastLogin?: string | null;
 };
