@@ -643,3 +643,57 @@ Use `--applied` only if you can confirm (via `psql \dt`) that all tables were ac
 ## Q: How save is a signInKey consist of 5-digit random letters and numbers?
 
 ### A: On entropy: the key uses randomBytes from Node's crypto module, so it's cryptographically random. With 62^5 ≈ 916 million combinations it's fine as a low-stakes sign-in shortcut, but not suitable for anything security-critical (where you'd want something much longer).
+
+---
+
+## Q: How do I diagnose a 500 Internal Server Error on the remote Node.js server?
+
+### A: Step by step, fastest first
+
+**1. Read the response body**
+The error handler always returns `{ "message": "..." }`. Check it in DevTools (Network → Response tab) or with curl:
+```bash
+curl -s -X POST https://yourhost/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"...","password":"..."}' | jq .
+```
+If the message is `{"error":"Not found (splat)"}`, the route itself isn't matched — the server is likely running a stale build.
+
+**2. Enable server-side error logging temporarily**
+In production, `errorHandler.ts` suppresses stack traces:
+```ts
+process.env.NODE_ENV !== 'production' && console.error(err.stack);
+```
+Temporarily remove the guard, redeploy, reproduce the error, then check logs.
+
+**3. Read the process output**
+```bash
+pm2 logs dancedesk --lines 100        # pm2
+journalctl -u dancedesk -n 100        # systemd
+docker logs <container> --tail 100    # docker
+```
+
+**4. Reproduce locally on the server**
+SSH in and hit localhost directly to bypass any proxy (nginx, etc.):
+```bash
+curl -s -X POST http://localhost:8000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"...","password":"..."}' | jq .
+```
+If this works but the public URL doesn't, the proxy is the problem.
+
+**5. Confirm the running binary is current**
+```bash
+ls -la /srv/dancedesk/server/dist/src/index.js   # check mtime
+ps aux | grep node                                 # confirm process is alive
+```
+If the build is stale: `npm install && npm run build && pm2 restart dancedesk` (or equivalent).
+
+### Common root causes seen on this project
+
+| Symptom | Cause |
+|---------|-------|
+| `{"error":"Not found (splat)"}` with 404/500 | Stale build — route not compiled into `dist/` |
+| `TS7016: Could not find declaration file for 'express'` | `npm install --omit=dev` skipped `@types/*`; run `npm install` without the flag before building |
+| Prisma P3018 on deploy | `AttendanceStatus` type already exists; run `prisma migrate resolve --applied <name>` |
+| 500 on login after schema change | New column added to `.prisma` but not pushed to DB; run `prisma migrate dev` or `db push` |

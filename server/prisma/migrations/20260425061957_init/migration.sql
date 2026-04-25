@@ -390,6 +390,7 @@ CREATE TABLE "User" (
     "role" TEXT NOT NULL DEFAULT 'user',
     "imageUrl" TEXT NOT NULL DEFAULT '/assets/images/no-profile-picture.svg',
     "refreshToken" TEXT,
+    "lastLogin" TIMESTAMP(3),
     "settings" JSONB DEFAULT '{}',
     "id" UUID NOT NULL,
     "tenantId" TEXT NOT NULL,
