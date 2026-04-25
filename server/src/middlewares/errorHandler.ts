@@ -1,3 +1,4 @@
+import { log } from 'console';
 import type { ErrorRequestHandler } from 'express';
 
 type ErrorPayload = {
@@ -14,12 +15,15 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       if (cause.code === 'ACCESS_TOKEN_EXPIRED')
         res.setHeader('WWW-Authenticate', 'Bearer error="token_expired", error_description="The access token expired"');
       res.status(cause.status ?? 500).json(payload);
+      log('errorHandler', 'errorHandler', 'Error with cause:', { message: err.message, stack: err.stack, cause });
       return;
     }
     res.status(500).json(payload);
+    log('errorHandler', 'errorHandler', 'Unhandled error:', { message: err.message, stack: err.stack });
     return;
   }
   res.status(500).json({ message: 'Internal server error' });
+  log('errorHandler', 'errorHandler', 'Unknown error type:', err);
   return;
 };
 
