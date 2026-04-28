@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Settings, Save, Check } from "lucide-react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import QRCode from "qrcode";
 import APIKeyCardItem from "./APIKeyCardItem";
 import { settingsStore } from "../../stores/settingsStore";
 
@@ -26,18 +25,12 @@ const FEDERAL_STATES: { value: string; label: string }[] = [
 
 const OtherSettingsSection = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [customerId, setCustomerId] = useState<string | null>(null);
-  const [customerName, setCustomerName] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [isGeneratingApiKey, setIsGeneratingApiKey] = useState(false);
-  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
   const [apiKeyCopied, setApiKeyCopied] = useState(false);
 
   const [signInKey, setSignInKey] = useState<string | null>(null);
-  const [isGeneratingSignInKey, setIsGeneratingSignInKey] = useState(false);
-  const [signInKeyError, setSignInKeyError] = useState<string | null>(null);
   const [signInKeyCopied, setSignInKeyCopied] = useState(false);
 
   const [isSavingBasic, setIsSavingBasic] = useState(false);
@@ -83,8 +76,6 @@ const OtherSettingsSection = () => {
         }
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
-          setCustomerId(data[0].id);
-          setCustomerName(data[0].name ?? null);
           if (data[0].apiKey) setApiKey(data[0].apiKey);
           if (data[0].signInKey) setSignInKey(data[0].signInKey);
         } else {
@@ -96,95 +87,6 @@ const OtherSettingsSection = () => {
     };
     fetchCustomer();
   }, []);
-
-  const rotateApiKey = async () => {
-    if (!customerId) return;
-    setIsGeneratingApiKey(true);
-    setApiKeyError(null);
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers/${customerId}/rotate-api-key`,
-        { method: "POST", credentials: "include" },
-      );
-      if (!response.ok) throw new Error(`Fehler beim Generieren (${response.status}).`);
-      const data = await response.json();
-      setApiKey(data.apiKey);
-    } catch (error) {
-      setApiKeyError(error instanceof Error ? error.message : "Unbekannter Fehler.");
-    } finally {
-      setIsGeneratingApiKey(false);
-    }
-  };
-
-  const rotateSignInKey = async () => {
-    if (!customerId) return;
-    setIsGeneratingSignInKey(true);
-    setSignInKeyError(null);
-    try {
-      // 1. Neuen SignIn-Key generieren
-      const rotateRes = await fetch(
-        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/customers/${customerId}/rotate-signin-key`,
-        { method: "POST", credentials: "include" },
-      );
-      if (!rotateRes.ok) throw new Error(`Fehler beim Generieren (${rotateRes.status}).`);
-      const { signInKey: newKey } = await rotateRes.json();
-      setSignInKey(newKey);
-
-      // 2. QR-Code als PNG mit Tanzschulname erzeugen
-      const qrSize = 450;
-      const fontSize = 33;
-      const padding = 12;
-      const labelHeight = fontSize + padding * 2;
-      const dataUrl = await QRCode.toDataURL(newKey, {
-        type: "image/png",
-        width: qrSize,
-        margin: 0.5,
-      });
-      const qrImg = await new Promise<HTMLImageElement>((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.src = dataUrl;
-      });
-      const canvas = document.createElement("canvas");
-      canvas.width = qrSize;
-      canvas.height = qrSize + labelHeight;
-      const ctx = canvas.getContext("2d")!;
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(qrImg, 0, 0, qrSize, qrSize);
-      ctx.fillStyle = "#000000";
-      ctx.font = `${fontSize}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(customerName ?? "", qrSize / 2, qrSize + labelHeight / 2, qrSize - padding * 2);
-      const blob = await new Promise<Blob>((resolve, reject) =>
-        canvas.toBlob(
-          (b) => (b ? resolve(b) : reject(new Error("Canvas toBlob failed"))),
-          "image/png",
-        ),
-      );
-      const file = new File([blob], "signin-key-qr.png", { type: "image/png" });
-
-      // 3. Zu Cloudinary hochladen
-      const formData = new FormData();
-      formData.append("image", file);
-      const uploadRes = await fetch(
-        `${import.meta.env.VITE_APP_AUTH_SERVER_URL}/api/settings/upload-signin-qr`,
-        { method: "POST", credentials: "include", body: formData },
-      );
-      if (!uploadRes.ok) throw new Error(`Upload fehlgeschlagen (${uploadRes.status}).`);
-      const { signInKeyUrl: newUrl } = await uploadRes.json();
-
-      // 4. Store aktualisieren
-      setSettings({
-        other: { ...(settingsStore.getState().settings.other ?? {}), signInKeyUrl: newUrl },
-      });
-    } catch (error) {
-      setSignInKeyError(error instanceof Error ? error.message : "Unbekannter Fehler.");
-    } finally {
-      setIsGeneratingSignInKey(false);
-    }
-  };
 
   const saveBasic = async () => {
     setIsSavingBasic(true);
@@ -294,7 +196,7 @@ const OtherSettingsSection = () => {
             label="API-Key"
             value={apiKey}
             isGenerating={false}
-            error={apiKeyError}
+            error={null}
             disabled={false}
             copied={apiKeyCopied}
             placeholder="Kein API-Key vorhanden."
@@ -308,7 +210,7 @@ const OtherSettingsSection = () => {
             value={signInKey}
             qrImageUrl={signInKeyUrl ?? null}
             isGenerating={false}
-            error={signInKeyError}
+            error={null}
             disabled={false}
             copied={signInKeyCopied}
             placeholder="Kein SignIn-Key vorhanden."
