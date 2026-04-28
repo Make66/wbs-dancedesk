@@ -1,30 +1,33 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { env } from '@/config/env';
+import { useTenantStore } from '@/store/tenant';
 
 export type Post = {
-  userId: number;
-  id: number;
+  id: string;
   title: string;
-  body: string;
+  teaser: string;
+  text: string;
+  imageUrl: string | null;
+  author: string;
+  date: string;
+  isTopPost: boolean;
 };
 
 export function usePosts() {
+  const apiKey = useTenantStore((state) => state.customer?.apiKey ?? '');
   return useQuery({
     queryKey: ['posts'],
     queryFn: async () => {
-      const { data } = await api.get<Post[]>('/posts');
-      return data.slice(0, 20);
+      const res = await fetch(env.feedUrl, { headers: { 'x-api-key': apiKey } });
+      if (!res.ok) throw new Error(`Feed request failed: ${res.status}`);
+      const json = await res.json() as { posts: Post[] };
+      return json.posts;
     },
+    enabled: !!apiKey,
   });
 }
 
 export function usePost(postId: string) {
-  return useQuery({
-    queryKey: ['post', postId],
-    queryFn: async () => {
-      const { data } = await api.get<Post>(`/posts/${postId}`);
-      return data;
-    },
-    enabled: !!postId,
-  });
+  const { data: posts } = usePosts();
+  return { data: posts?.find((p) => p.id === postId) };
 }

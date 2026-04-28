@@ -1,14 +1,39 @@
-import { Link } from 'expo-router';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { Card } from '@/components/Card';
 import { ThemedText } from '@/components/ThemedText';
-import { usePosts } from '@/hooks/usePosts';
+import { usePosts, type Post } from '@/hooks/usePosts';
 import { useAppTheme } from '@/theme/ThemeProvider';
+
+function FeedItem({ post, onPress }: { post: Post; onPress: () => void }) {
+  const { colors } = useAppTheme();
+
+  return (
+    <Pressable onPress={onPress}>
+      <Card>
+        {post.imageUrl ? (
+          <Image source={{ uri: post.imageUrl }} style={styles.image} />
+        ) : null}
+        <View style={{ gap: 6 }}>
+          <ThemedText style={styles.cardTitle}>{post.title}</ThemedText>
+          <ThemedText style={{ color: colors.textMuted }} numberOfLines={2}>
+            {post.teaser}
+          </ThemedText>
+          <ThemedText style={[styles.meta, { color: colors.textMuted }]}>
+            {post.author} · {new Date(post.date).toLocaleDateString('de-DE')}
+          </ThemedText>
+        </View>
+      </Card>
+    </Pressable>
+  );
+}
 
 export default function FeedTab() {
   const { data, isLoading, isError } = usePosts();
   const { colors } = useAppTheme();
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -21,16 +46,13 @@ export default function FeedTab() {
   return (
     <Screen>
       <ThemedText style={styles.title}>Feed</ThemedText>
-      {isError ? <ThemedText>Failed to load posts.</ThemedText> : null}
+      {isError ? <ThemedText>Beiträge konnten nicht geladen werden.</ThemedText> : null}
       {data?.map((post) => (
-        <Link key={post.id} href={`/(app)/(tabs)/post/${post.id}`} asChild>
-          <Card>
-            <View style={{ gap: 8 }}>
-              <ThemedText style={styles.cardTitle}>{post.title}</ThemedText>
-              <ThemedText style={{ color: colors.textMuted }} numberOfLines={2}>{post.body}</ThemedText>
-            </View>
-          </Card>
-        </Link>
+        <FeedItem
+          key={post.id}
+          post={post}
+          onPress={() => router.push(`/(app)/post/${post.id}`)}
+        />
       ))}
     </Screen>
   );
@@ -39,4 +61,12 @@ export default function FeedTab() {
 const styles = StyleSheet.create({
   title: { fontSize: 26, fontWeight: '700' },
   cardTitle: { fontSize: 17, fontWeight: '600' },
+  meta: { fontSize: 12 },
+  image: {
+    height: 180,
+    marginTop: -16,
+    marginHorizontal: -16,
+    borderTopLeftRadius: 17,
+    borderTopRightRadius: 17,
+  },
 });

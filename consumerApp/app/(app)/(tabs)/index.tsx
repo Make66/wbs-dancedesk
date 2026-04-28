@@ -48,25 +48,42 @@ export default function HomeTab() {
       <Card key={course.id}>
           <View>
             <ThemedText>{course.name}</ThemedText>
-            {[...course.dates]
-              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-              .map((item) => (
-                <View key={item.date} style={styles.dateRow}>
-                  <ThemedText style={styles.bullet}>•</ThemedText>
-                  <ThemedText style={styles.dateText}>
-                    {new Date(item.date)
-                      .toLocaleDateString("de-DE", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })
-                      .replace(",", "")
-                      .replace(/(\d{2}:\d{2})/, "$1 Uhr")}
-                    {item.isStart ? " (Start)" : ""}
-                  </ThemedText>
-                </View>
-              ))}
+            {(() => {
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              yesterday.setHours(0, 0, 0, 0);
+              const sorted = [...course.dates]
+                .filter((item) => new Date(item.date) >= yesterday)
+                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+              const visible = sorted.slice(0, 5);
+              const remaining = sorted.length - visible.length;
+              return (
+                <>
+                  {visible.map((item) => (
+                    <View key={item.date} style={styles.dateRow}>
+                      <ThemedText style={styles.bullet}>•</ThemedText>
+                      <ThemedText style={styles.dateText}>
+                        {new Date(item.date)
+                          .toLocaleDateString("de-DE", {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })
+                          .replace(",", "")
+                          .replace(/(\d{2}:\d{2})/, "$1 Uhr")}
+                        {item.isStart ? " (Start)" : ""}
+                      </ThemedText>
+                    </View>
+                  ))}
+                  {remaining > 0 && (
+                    <ThemedText style={styles.moreText}>
+                      + {remaining} weitere {remaining === 1 ? "Termin" : "Termine"}
+                    </ThemedText>
+                  )}
+                </>
+              );
+            })()}
           </View>
       </Card>
     ))}
@@ -163,4 +180,5 @@ const styles = StyleSheet.create({
   },
   bullet: { fontSize: 15, lineHeight: 22 },
   dateText: { flex: 1, fontSize: 13, lineHeight: 20 },
+  moreText: { fontSize: 12, marginTop: 4 },
 });

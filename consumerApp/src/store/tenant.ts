@@ -10,10 +10,13 @@ export type TenantCustomer = {
   logoUrl: string;
   primary: string;
   secondary: string;
+  signInKey: string;
+  apiKey: string;
   street: string;
   zipCode: string;
   city: string;
-  signInKey: string;
+  longitude: number;
+  latitude: number;
 };
 
 type TenantState = {

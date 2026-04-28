@@ -9,3 +9,11 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+export const invalidateQueryCache = () => {
+  void queryClient.invalidateQueries();
+};
+
+export const clearQueryCache = () => {
+  queryClient.clear();
+};
