@@ -13,4 +13,7 @@ export type CustomerItem = {
   zipCode: string;
   tenantId: string;
   isActive: boolean;
+  apiKey?: string | null;
+  signInKey?: string | null;
+  signInKeyUrl?: string | null;
 };

@@ -12,6 +12,7 @@ type APIKeyCardItemProps = {
   disabled: boolean;
   placeholder: string;
   qrImageUrl?: string | null;
+  readOnly?: boolean;
 };
 
 const APIKeyCardItem = ({
@@ -25,6 +26,7 @@ const APIKeyCardItem = ({
   disabled,
   placeholder,
   qrImageUrl,
+  readOnly = false,
 }: APIKeyCardItemProps) => {
   const [urlCopied, setUrlCopied] = useState(false);
 
@@ -39,18 +41,20 @@ const APIKeyCardItem = ({
     <div className="rounded-2xl border border-muted-foreground bg-background/40 p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <span className="text-lg font-medium">{label}</span>
-        <button
-          type="button"
-          onClick={onRotate}
-          disabled={isGenerating || disabled}
-          className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          data-tooltip-id="tooltip"
-          data-tooltip-content={`Neuen ${label} generieren`}
-          data-tooltip-place="bottom"
-        >
-          <RefreshCw className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
-          <span className="text-sm">{isGenerating ? "Generieren…" : "Generieren"}</span>
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={onRotate}
+            disabled={isGenerating || disabled}
+            className="h-10 flex items-center gap-2 px-4 rounded-xl border border-muted-foreground bg-background/40 cursor-pointer hover:bg-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            data-tooltip-id="tooltip"
+            data-tooltip-content={`Neuen ${label} generieren`}
+            data-tooltip-place="bottom"
+          >
+            <RefreshCw className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
+            <span className="text-sm">{isGenerating ? "Generieren…" : "Generieren"}</span>
+          </button>
+        )}
       </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}

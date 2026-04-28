@@ -293,12 +293,13 @@ const OtherSettingsSection = () => {
           <APIKeyCardItem
             label="API-Key"
             value={apiKey}
-            isGenerating={isGeneratingApiKey}
+            isGenerating={false}
             error={apiKeyError}
-            disabled={!customerId}
+            disabled={false}
             copied={apiKeyCopied}
-            placeholder='Klicke auf „Generieren" um einen neuen API-Key zu erstellen.'
-            onRotate={rotateApiKey}
+            placeholder="Kein API-Key vorhanden."
+            readOnly
+            onRotate={() => {}}
             onCopy={() => apiKey && copyToClipboard(apiKey, setApiKeyCopied)}
           />
 
@@ -306,12 +307,13 @@ const OtherSettingsSection = () => {
             label="SignIn-Key"
             value={signInKey}
             qrImageUrl={signInKeyUrl ?? null}
-            isGenerating={isGeneratingSignInKey}
+            isGenerating={false}
             error={signInKeyError}
-            disabled={!customerId}
+            disabled={false}
             copied={signInKeyCopied}
-            placeholder='Klicke auf „Generieren" um einen neuen SignIn-Key zu erstellen.'
-            onRotate={rotateSignInKey}
+            placeholder="Kein SignIn-Key vorhanden."
+            readOnly
+            onRotate={() => {}}
             onCopy={() => signInKey && copyToClipboard(signInKey, setSignInKeyCopied)}
           />
         </div>
