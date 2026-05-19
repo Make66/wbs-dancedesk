@@ -389,7 +389,7 @@ sudo systemctl status dancedesk
 ### 5. View logs
 ```bash
 # File-based logs (written by the app logger):
-tail -f /srv/dancedesk/server/logs/$(date +%F).log
+tail -f /srv/dancedesk/logs/$(date +%F).log
 
 # systemd also captures stdout/stderr:
 sudo journalctl -u dancedesk -f
