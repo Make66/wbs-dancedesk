@@ -10,6 +10,7 @@ import { Card } from '@/components/Card';
 import { ThemedText } from '@/components/ThemedText';
 import { usePost } from '@/hooks/usePosts';
 import { useAppTheme } from '@/theme/ThemeProvider';
+import { resourceUrl } from '@/config/env';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -71,7 +72,7 @@ export default function PostDetailScreen() {
             </Pressable>
             <Card>
               {data.imageUrl ? (
-                <Image source={{ uri: data.imageUrl }} style={styles.image} />
+                <Image source={{ uri: resourceUrl(data.imageUrl!) }} style={styles.image} />
               ) : null}
               <View style={{ gap: 10 }}>
                 <ThemedText style={styles.title}>{data.title}</ThemedText>

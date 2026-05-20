@@ -2,6 +2,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '@/theme/ThemeProvider';
 import { useTenantStore } from '@/store/tenant';
 import { logout } from '@/features/auth/authApi';
+import { resourceUrl } from '@/config/env';
 
 type Props = {
   title: string;
@@ -18,7 +19,7 @@ export function ScreenHeader({ title, action, showLogout = false }: Props) {
   return (
     <View style={[styles.header, { borderBottomColor: colors.border }]}>
       {logoUrl ? (
-        <Image source={{ uri: logoUrl }} style={styles.logo} resizeMode="contain" />
+        <Image source={{ uri: resourceUrl(logoUrl) }} style={styles.logo} resizeMode="contain" />
       ) : null}
       <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
         {title}

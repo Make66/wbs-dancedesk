@@ -16,6 +16,7 @@ import { Camera, useCodeScanner, useCameraPermission, useCameraDevice } from 're
 import { login } from '@/features/auth/authApi';
 import { fetchCustomerByTenant } from '@/features/auth/customerApi';
 import { useTenantStore } from '@/store/tenant';
+import { resourceUrl } from '@/config/env';
 import { useAppTheme } from '@/theme/ThemeProvider';
 import { ThemedText } from '@/components/ThemedText';
 
@@ -332,7 +333,7 @@ export default function LoginScreen() {
           >
             {customer.logoUrl ? (
               <Image
-                source={{ uri: customer.logoUrl }}
+                source={{ uri: resourceUrl(customer.logoUrl) }}
                 style={styles.tenantLogo}
                 resizeMode="contain"
               />

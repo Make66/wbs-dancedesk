@@ -6,6 +6,7 @@ import { Card } from '@/components/Card';
 import { ThemedText } from '@/components/ThemedText';
 import { usePosts, type Post } from '@/hooks/usePosts';
 import { useAppTheme } from '@/theme/ThemeProvider';
+import { resourceUrl } from '@/config/env';
 
 function FeedItem({ post, onPress }: { post: Post; onPress: () => void }) {
   const { colors } = useAppTheme();
@@ -14,7 +15,7 @@ function FeedItem({ post, onPress }: { post: Post; onPress: () => void }) {
     <Pressable onPress={onPress}>
       <Card>
         {post.imageUrl ? (
-          <Image source={{ uri: post.imageUrl }} style={styles.image} />
+          <Image source={{ uri: resourceUrl(post.imageUrl!) }} style={styles.image} />
         ) : null}
         <View style={{ gap: 6 }}>
           <ThemedText style={styles.cardTitle}>{post.title}</ThemedText>

@@ -1,4 +1,4 @@
-const devBase = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
+const devBase = 'http://localhost:8000';
 
 export const env = {
   apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://192.168.178.52:8000',
