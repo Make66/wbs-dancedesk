@@ -1,4 +1,4 @@
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Switch, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { Card } from '@/components/Card';
 import { ThemedText } from '@/components/ThemedText';
@@ -6,6 +6,7 @@ import { useAppTheme } from '@/theme/ThemeProvider';
 import { signOut } from '@/features/auth/useAuthState';
 import { useOnboardingStore } from '@/store/onboarding';
 import { useTenantStore } from '@/store/tenant';
+import { useDevModeStore } from '@/store/devMode';
 import { lightColors } from '@/theme/colors';
 import { clearQueryCache, invalidateQueryCache } from '@/lib/queryClient';
 
@@ -22,6 +23,8 @@ export default function SettingsTab() {
   const { mode, resolvedMode, setMode, colors } = useAppTheme();
   const resetOnboarding = useOnboardingStore((state) => state.reset);
   const customer = useTenantStore((state) => state.customer);
+  const isDev = useDevModeStore((state) => state.isDev);
+  const setIsDev = useDevModeStore((state) => state.setIsDev);
 
   return (
     <Screen>
@@ -119,6 +122,23 @@ export default function SettingsTab() {
       </Card>
 
       <Card>
+        <ThemedText style={styles.section}>Entwickler</ThemedText>
+        <View style={styles.switchRow}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <ThemedText>Entwicklermodus</ThemedText>
+            <ThemedText style={[styles.switchHint, { color: colors.textMuted }]}>
+              Zeigt detaillierte API-Fehler als Toast an
+            </ThemedText>
+          </View>
+          <Switch
+            value={isDev}
+            onValueChange={setIsDev}
+            trackColor={{ false: colors.border, true: colors.primary }}
+          />
+        </View>
+      </Card>
+
+      <Card>
         <ThemedText style={styles.section}>Account</ThemedText>
         <Pressable
           onPress={signOut}
@@ -144,4 +164,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   pill: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 999, borderWidth: 1 },
   logout: { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 12, borderRadius: 12, borderWidth: 1 },
+  switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  switchHint: { fontSize: 12 },
 });

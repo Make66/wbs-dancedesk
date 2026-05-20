@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express';
 import prisma from '#db';
 
 export const getAllPosts: RequestHandler = async (req, res) => {
-  const { tenantId } = req.user!;
+  const { tenantId } = req.publicTenant ?? req.user!;
   const posts = await prisma.post.findMany({
     where: { tenantId, isDeleted: false },
     orderBy: [{ isTopPost: 'desc' }, { date: 'desc' }],
@@ -12,7 +12,7 @@ export const getAllPosts: RequestHandler = async (req, res) => {
 
 export const getOnePost: RequestHandler = async (req, res) => {
   const { id } = req.params;
-  const { tenantId } = req.user!;
+  const { tenantId } = req.publicTenant ?? req.user!;
   const post = await prisma.post.findFirst({ where: { id, tenantId, isDeleted: false } });
   if (!post) throw new Error('Post not found', { cause: { status: 404 } });
   res.json(post);

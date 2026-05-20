@@ -1,4 +1,5 @@
-import { View, StyleSheet } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { LogBox, StyleSheet, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Card } from '@/components/Card';
@@ -6,9 +7,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { useMyCoursesStore } from "@/store/myCourses";
 import { useEventsStore } from "@/store/events";
 import { useCourseWeekStore } from "@/store/courseWeek";
-import { useEffect } from 'react';
+import { useUserStore } from "@/store/user";
+import { hydrateAppData } from "@/features/auth/authApi";
 import { useAppTheme } from '@/theme/ThemeProvider';
-import { LogBox } from 'react-native';
 
 // Ignore specific warnings that are known and not critical for our app's functionality
 // likely inside react-navigation, react-native-reanimated, or a gesture handler
@@ -21,6 +22,15 @@ export default function HomeTab() {
   const courses = useMyCoursesStore((state) => state.courses);
   const events = useEventsStore((state) => state.events);
   const courseWeek = useCourseWeekStore((state) => state.courseWeek);
+  const participantId = useUserStore((state) => state.participant?.id);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    if (!participantId) return;
+    setRefreshing(true);
+    await hydrateAppData(participantId);
+    setRefreshing(false);
+  }, [participantId]);
 
   useEffect(() => {
     console.log('[7] HOME TAB: courses available in component —', courses.length, 'course(s):', courses);
@@ -35,7 +45,7 @@ export default function HomeTab() {
   }, [courseWeek]);
 
   return (
-    <Screen header={<ScreenHeader title="Home" showLogout />}>
+    <Screen header={<ScreenHeader title="Home" showLogout />} refreshing={refreshing} onRefresh={onRefresh}>
       <Card>
         <ThemedText style={styles.title}>Aktuelles</ThemedText>
         <ThemedText>

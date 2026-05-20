@@ -5,12 +5,28 @@ import { useUserStore, type Participant } from '@/store/user';
 import { useMyCoursesStore, type Course } from '@/store/myCourses';
 import { useEventsStore, type Event } from '@/store/events';
 import { useCourseWeekStore, type CourseWeek } from '@/store/courseWeek';
+import { showDevToast } from '@/store/devMode';
 
 const authAxios = axios.create({
   baseURL: env.apiBaseUrl,
   timeout: 15000,
   withCredentials: true,
 });
+
+authAxios.interceptors.response.use(
+  (res) => res,
+  (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      const method = error.config?.method?.toUpperCase() ?? '?';
+      const url = error.config?.url ?? '?';
+      const status = error.response?.status ?? 'network error';
+      const data = error.response?.data;
+      const detail = data ? JSON.stringify(data, null, 2) : error.message;
+      showDevToast(`${method} ${url}\n${status}: ${detail}`);
+    }
+    return Promise.reject(error);
+  }
+);
 
 async function fetchParticipantMe(): Promise<Participant> {
   console.log('[3] AUTH API: calling /api/auth/participant-me');
@@ -27,7 +43,7 @@ async function fetchParticipantMe(): Promise<Participant> {
   }
 }
 
-async function hydrateAppData(participantId: string): Promise<void> {
+export async function hydrateAppData(participantId: string): Promise<void> {
   const [coursesRes, eventsRes, courseWeekRes] = await Promise.all([
     authAxios.get(`/api/participants/${participantId}/courses`),
     authAxios.get('/api/events/upcoming'),

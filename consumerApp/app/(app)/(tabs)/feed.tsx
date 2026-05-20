@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
-import { ActivityIndicator } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, StyleSheet, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { Card } from '@/components/Card';
 import { ThemedText } from '@/components/ThemedText';
@@ -31,9 +31,16 @@ function FeedItem({ post, onPress }: { post: Post; onPress: () => void }) {
 }
 
 export default function FeedTab() {
-  const { data, isLoading, isError } = usePosts();
+  const { data, isLoading, isError, refetch } = usePosts();
   const { colors } = useAppTheme();
   const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -44,7 +51,7 @@ export default function FeedTab() {
   }
 
   return (
-    <Screen>
+    <Screen refreshing={refreshing} onRefresh={onRefresh}>
       <ThemedText style={styles.title}>Feed</ThemedText>
       {isError ? <ThemedText>Beiträge konnten nicht geladen werden.</ThemedText> : null}
       {data?.map((post) => (
